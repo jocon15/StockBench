@@ -1,5 +1,7 @@
 import re
 import time
+import logging
+from datetime import datetime
 from .broker.broker_api import *
 from .charting.charting_api import *
 from .accounting.user_account import *
@@ -8,6 +10,8 @@ from .position.position_obj import *
 
 SECONDS_PER_DAY = 86400
 DEFAULT_RSI_LENGTH = 14
+
+log = logging.getLogger()  # root
 
 
 class Simulator:
@@ -26,38 +30,120 @@ class Simulator:
 
         self.__buys = list()
         self.__sells = list()
+        self.__position_archive = list()
+
+    def enable_logging(self):
+        """Enable user logging."""
+        # set the logging level to info
+        log.setLevel(logging.INFO)
+
+        # build the filepath
+        user_logging_filepath = f'logs\\RunLog_{self.datetime_nonce_string()}'
+
+        # build the formatters
+        user_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
+
+        # make the directories if they don't already exist
+        os.makedirs(os.path.dirname(user_logging_filepath), exist_ok=True)
+
+        # create the handler
+        user_handler = logging.FileHandler(user_logging_filepath)
+
+        # set the format of the handler
+        user_handler.setFormatter(user_logging_formatter)
+
+        # add the handler to the logger
+        log.addHandler(user_handler)
+
+    def enable_developer_logging(self, _level=2):
+        """Enable developer logging."""
+        # set the logging level
+        if _level == 1:
+            log.setLevel(logging.DEBUG)
+            # build the formatter
+            developer_logging_formatter = logging.Formatter('%(funcName)s:%(lineno)d|%(levelname)s|%(message)s')
+        elif _level == 3:
+            log.setLevel(logging.WARNING)
+            # build the formatter
+            developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
+        elif _level == 4:
+            log.setLevel(logging.ERROR)
+            # build the formatter
+            developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
+        elif _level == 5:
+            log.setLevel(logging.CRITICAL)
+            # build the formatter
+            developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
+        else:
+            log.setLevel(logging.INFO)
+            # build the formatter
+            developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
+
+        # build the filepath
+        developer_logging_filepath = f'dev\\DevLog_{self.datetime_nonce_string()}'
+
+        # make the directories if they don't already exist
+        os.makedirs(os.path.dirname(developer_logging_filepath), exist_ok=True)
+
+        # create the handler
+        developer_handler = logging.FileHandler(developer_logging_filepath)
+
+        # set the format of the handler
+        developer_handler.setFormatter(developer_logging_formatter)
+
+        # add the handler to the logger
+        log.addHandler(developer_handler)
+
+    @staticmethod
+    def datetime_nonce_string() -> str:
+        """Convert current date and time to string."""
+        return datetime.now().strftime("%m_%d_%Y__%H_%M_%S")
+
+    @staticmethod
+    def unix_to_string(_unix_date, _format='%Y-%m-%d') -> str:
+        return datetime.utcfromtimestamp(_unix_date).strftime(_format)
 
     def load_strategy(self, strategy: dict):
-        if not strategy:
-            raise Exception('Strategy cannot be empty')
+        """Load a strategy.
+
+         Args:
+             strategy (dict): The strategy as a dictionary.
+         """
         self.__strategy = strategy
 
     def __error_check_strategy(self):
+        """Check the strategy for errors"""
+        log.debug('Checking strategy for errors...')
         if not self.__strategy:
+            log.critical('No strategy uploaded')
             raise Exception('No strategy uploaded')
-
         if 'start' not in self.__strategy.keys():
+            log.critical("Strategy missing 'start' key")
             raise Exception("Strategy missing 'start' key")
-
         if 'end' not in self.__strategy.keys():
+            log.critical("Strategy missing 'end' key")
             raise Exception("Strategy missing 'end' key")
-
         if 'buy' not in self.__strategy.keys():
+            log.critical("Strategy missing 'buy' key")
             raise Exception("Strategy missing 'buy' key")
-
         if 'sell' not in self.__strategy.keys():
+            log.critical("Strategy missing 'sell' key")
             raise Exception("Strategy missing 'sell' key")
+        log.debug('No errors found in the strategy')
 
     @staticmethod
     def __error_check_timestamps(_start, _end):
         """Simple check that the timestamps are valid."""
         if _start > _end:
+            log.critical('Start timestamp must be before end timestamp')
             raise Exception('Start timestamp must be before end timestamp')
         if _start > int(time.time()):
+            log.critical('Start timestamp must not be in the future')
             raise Exception('Start timestamp must not be in the future')
 
     def __parse_strategy(self):
         """Parse the strategy for relevant information needed to make the API request."""
+        log.debug('Parsing strategy...')
         additional_days = 0
 
         # build a list of sub keys from the buy and sell sections
@@ -87,7 +173,7 @@ class Simulator:
             elif 'color' in key:
                 try:
                     num = len(self.__strategy['buy']['color'])
-                    if type(num) != dict:
+                    if type(self.__strategy['buy']['color']) != dict:
                         raise Exception('Candle stick signals must be a dict')
                 except KeyError:
                     num = len(self.__strategy['sell']['color'])
@@ -142,6 +228,9 @@ class Simulator:
         # add the closing price to the sell list
         self.__sells.append(_sell_price)
 
+        # add the position to the archive
+        self.__position_archive.append(_position)
+
         # calculate the deposit amount
         deposit_amount = round(_position.get_sell_price() * _position.get_share_count(), 3)
 
@@ -149,15 +238,8 @@ class Simulator:
         self.__account.deposit(deposit_amount)
 
     def run(self, symbol: str):
-        """"""
+        """Run a simulation on an asset."""
         # ===================== Buying ==========================
-        # FIXME: If the script is buying, there is no position open
-        #   - so why do we need to pass _position?
-        #   - What if we want to have some sort of method where you could have multiple open trades?
-        #   - Multiple trades gets very complex very quick, and it is hard to get the user to input
-        #   - it in a way that is manageable by the code
-        #   - IN THESE functions for buy, we don't need to pass in anything, we just need to return
-        #   - the tuple
         def handle_RSI_buys() -> tuple:
             """Abstracted logic for RSI buy signals.
 
@@ -174,7 +256,7 @@ class Simulator:
             _num = DEFAULT_RSI_LENGTH
             _nums = re.findall(r'\d+', key)
             if len(_nums) == 1:
-                _num = float(_nums[1])
+                _num = float(_nums[0])
 
             # get the RSI value for current day
             rsi = self.__indicators_API.RSI(_num, current_day_index)
@@ -183,7 +265,7 @@ class Simulator:
             # this is the trigger value
             _nums = re.findall(r'\d+', _value)
             if len(_nums) == 1:
-                _trigger = float(_nums[1])
+                _trigger = float(_nums[0])
             else:
                 print('Found invalid format RSI (invalid number found in trigger value)')
                 # if no trigger value available, exit
@@ -231,7 +313,7 @@ class Simulator:
             _nums = re.findall(r'\d+', key)
             # since we have no default SMA, there must be a value provided, else exit
             if len(_nums) == 1:
-                _num = int(_nums[1])
+                _num = int(_nums[0])
 
                 # get the sma value for the current day
                 sma = self.__indicators_API.SMA(_num, current_day_index)
@@ -240,7 +322,7 @@ class Simulator:
                 # this is the trigger value
                 _nums = re.findall(r'\d+', _value)
                 if len(_nums) == 1:
-                    _trigger = float(_nums[1])
+                    _trigger = float(_nums[0])
                 else:
                     print('Found invalid format SMA (invalid number found in trigger value)')
                     # if no trigger value available, exit
@@ -325,7 +407,7 @@ class Simulator:
             _num = DEFAULT_RSI_LENGTH
             _nums = re.findall(r'\d+', key)
             if len(_nums) == 1:
-                _num = float(_nums[1])
+                _num = float(_nums[0])
 
             # get the RSI value for current day
             rsi = self.__indicators_API.RSI(_num, current_day_index)
@@ -334,7 +416,7 @@ class Simulator:
             # this is the trigger value
             _nums = re.findall(r'\d+', _value)
             if len(_nums) == 1:
-                _trigger = float(_nums[1])
+                _trigger = float(_nums[0])
             else:
                 print('Found invalid format RSI (invalid number found in trigger value)')
                 # if no trigger value available, exit
@@ -382,7 +464,7 @@ class Simulator:
             _nums = re.findall(r'\d+', key)
             # since we have no default SMA, there must be a value provided, else exit
             if len(_nums) == 1:
-                _num = int(_nums[1])
+                _num = int(_nums[0])
 
                 # get the sma value for the current day
                 sma = self.__indicators_API.SMA(_num, current_day_index)
@@ -391,7 +473,7 @@ class Simulator:
                 # this is the trigger value
                 _nums = re.findall(r'\d+', _value)
                 if len(_nums) == 1:
-                    _trigger = float(_nums[1])
+                    _trigger = float(_nums[0])
                 else:
                     print('Found invalid format SMA (invalid number found in trigger value)')
                     # if no trigger value available, exit
@@ -520,6 +602,7 @@ class Simulator:
             return _position, False
 
         # set the objects symbol to the passed value, so we can use it everywhere
+        log.info(f'Setting up simulation for symbol: {symbol}...')
         self.__symbol = symbol.upper()
 
         # check the strategy for errors
@@ -530,10 +613,6 @@ class Simulator:
 
         # get the data from the servers
         df = self.__broker_API.get_daily_data(self.__symbol, self.__augmented_start_date_unix, self.__end_date_unix)
-        # FIXME: This should fetch use the correct amount of data
-        #   now we can start working on the looping logic
-
-        # FIXME: Before we can start looping, we need to figure out how many days we need to loop across
 
         # initialize the indicators API with the data
         self.__indicators_API = Indicators(df)
@@ -541,18 +620,26 @@ class Simulator:
         # len(df['close']) does the same thing as the below line
         total_days = int((self.__end_date_unix - self.__augmented_start_date_unix) / SECONDS_PER_DAY)
         days_in_focus = int((self.__end_date_unix - self.__start_date_unix) / SECONDS_PER_DAY)
-
         focus_start_day = total_days - days_in_focus
 
         buy_mode = True
         position = None
 
-        # REMINDER: we want to give the user control of the start and end day
-        # DUE TO WEEKENDS AND HOLIDAYS, the window size will most likely not be the expected amount of days
-        # BUT WE ENSURE SUFFICIENT DATA in the parse_strategy() function
+        log.info(f'Setup for symbol:{self.__symbol} complete')
+
+        log.info('==== Simulation Details =====')
+        log.info(f'Start Date  : {self.unix_to_string(self.__start_date_unix)}')
+        log.info(f'End Date    : {self.unix_to_string(self.__end_date_unix)}')
+        log.info(f'Window Size : {days_in_focus}')
+        log.info('=============================')
+
+        log.info(f'Beginning simulation for symbol:{self.__symbol}...')
+
+        # ===================== Simulation Loop ======================
+        # FIXME: add TQDM here?????????????
         for current_day_index in range(focus_start_day, len(df['Close'])):
-            # we loop from the focus start day (200)
-            # to the total amount of days in the set (400)
+            # we loop from the focus start day (ex. 200)
+            # to the total amount of days in the set (ex. 400)
             # the day_index represents the index of the current day in the
             # data set, so if we need something like SMA200 we just get all
             # the days from now to now-200
@@ -560,14 +647,9 @@ class Simulator:
             # a start and an end day and calculate the SMA X
 
             # --- debug ----
-            os.system('cls')
-            print(f'Current Day index: {current_day_index}')
-            # print(f'Starting day: {focus_start_day}')
-            # print(f'Total window size: {len(df["Close"])}')
+            # os.system('cls')
+            # print(f'Current Day index: {current_day_index}')
             # --- debug ----
-
-            # --- testing ---
-            # --- testing ---
 
             if buy_mode:
                 buy_keys = self.__strategy['buy'].keys()
@@ -607,33 +689,9 @@ class Simulator:
                     if key == 'color':
                         position, buy_mode = handle_candle_stick_sells(position)
 
-        # FIXME: We need to put x more days in the query
-        #   - Then we have data to work with on day 1 of the user requesting it
-        #   - RSI is 14, but what about something wild like SMA 200?
-        #   - A workaround for something like that is working out what indicators
-        #   - the user wants before requesting the data.
+    # FIXME: Once the simulation is done,
+    #   - We need to add all of the data to the dataframe.
+    #   - Export the dataframe and any other relevant information to the charting API.
+    #   - Then whatever the user wants charted gets charted.
+    #   - Then we can look into logging and report building
 
-        # FIXME:
-        #   - Step 1: User enters a strategy
-        #   - Step 2: We need to parse that strategy for errors and modded dates
-        #   -   Set them to self.augmented_start_unix
-
-        # start 5 days in so we have some data
-        for index in range(5, len(df['Close'])):
-            pass
-
-        """
-        for bar in data['bars'][self.__symbol]:
-            if buy_mode:
-                pass
-            else:
-                # sell mode
-                if self.__stop_profit:
-                    # sell position
-                    pass
-                if self.__stop_loss:
-                    # sell position
-                    pass
-        """
-
-# convert the keys to plaintext and make them env vars so we can put this on github

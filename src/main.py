@@ -24,6 +24,9 @@ strategy = {
 def main():
     stock_sim = Simulator(1000.0)
 
+    stock_sim.enable_logging()
+    stock_sim.enable_developer_logging()
+
     stock_sim.load_strategy(strategy)
 
     stock_sim.run('MSFT')

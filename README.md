@@ -39,4 +39,4 @@ stock_sim.run('MSFT')
 ```
 
 ## Results
-![input1](https://github.com/jocon15/StockBench/master/images/example_chart.png)
+![chart](https://github.com/jocon15/StockBench/blob/master/images/example_chart.png)

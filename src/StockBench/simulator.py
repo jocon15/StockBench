@@ -1,12 +1,15 @@
 import re
 import time
+import math
 import logging
+from tqdm import tqdm
 from datetime import datetime
 from .broker.broker_api import *
 from .charting.charting_api import *
 from .accounting.user_account import *
 from .indicators.indicators_api import *
 from .position.position_obj import *
+from .analysis.analysis_api import *
 
 SECONDS_PER_DAY = 86400
 DEFAULT_RSI_LENGTH = 14
@@ -19,18 +22,24 @@ class Simulator:
         self.__account = UserAccount(balance)
         self.__broker_API = BrokerAPI()
         self.__charting_API = ChartingAPI()
-        self.__indicators_API = None  # gets constructed once we have the data
+        self.__indicators_API = Indicators()  # gets constructed once we have the data
+        self.__analyzer_API = None    # gets constructed once we have the data
 
         self.__strategy = None
         self.__start_date_unix = None
         self.__end_date_unix = None
         self.__augmented_start_date_unix = None
 
+        self.__df = None
         self.__symbol = None
 
-        self.__buys = list()
-        self.__sells = list()
+        self.__buy_list = list()
+        self.__sell_list = list()
+
         self.__position_archive = list()
+
+        self.__reporting_on = False
+        self.__charting_on = False
 
     def enable_logging(self):
         """Enable user logging."""
@@ -94,13 +103,21 @@ class Simulator:
         # add the handler to the logger
         log.addHandler(developer_handler)
 
+    def enable_reporting(self):
+        """Enable report building."""
+        self.__reporting_on = True
+
+    def enable_charting(self):
+        """Enable charting."""
+        self.__charting_on = True
+
     @staticmethod
     def datetime_nonce_string() -> str:
         """Convert current date and time to string."""
         return datetime.now().strftime("%m_%d_%Y__%H_%M_%S")
 
     @staticmethod
-    def unix_to_string(_unix_date, _format='%Y-%m-%d') -> str:
+    def unix_to_string(_unix_date, _format='%m-%d-%Y') -> str:
         return datetime.utcfromtimestamp(_unix_date).strftime(_format)
 
     def load_strategy(self, strategy: dict):
@@ -141,18 +158,18 @@ class Simulator:
             log.critical('Start timestamp must not be in the future')
             raise Exception('Start timestamp must not be in the future')
 
-    def __parse_strategy(self):
+    def __parse_strategy_timestamps(self):
         """Parse the strategy for relevant information needed to make the API request."""
-        log.debug('Parsing strategy...')
-        additional_days = 0
-
-        # build a list of sub keys from the buy and sell sections
-        keys = list()
+        log.debug('Parsing strategy for timestamps...')
         if 'start' in self.__strategy.keys():
             self.__start_date_unix = int(self.__strategy['start'])
         if 'end' in self.__strategy.keys():
             self.__end_date_unix = int(self.__strategy['end'])
 
+        additional_days = 0
+
+        # build a list of sub keys from the buy and sell sections
+        keys = list()
         if 'buy' in self.__strategy.keys():
             for key in self.__strategy['buy'].keys():
                 keys.append(key)
@@ -162,8 +179,16 @@ class Simulator:
 
         for key in keys:
             if 'RSI' in key:
-                if additional_days < 14:
-                    additional_days = 14
+                # ======== key based =========
+                nums = re.findall(r'\d+', key)
+                if len(nums) == 1:
+                    num = int(nums[0])
+                    if additional_days < num:
+                        additional_days = num
+                    # add the RSI data to the df
+                    self.__add_RSI(num)
+                else:
+                    additional_days = DEFAULT_RSI_LENGTH
             elif 'SMA' in key:
                 nums = re.findall(r'\d+', key)
                 if len(nums) == 1:
@@ -190,11 +215,122 @@ class Simulator:
         self.__error_check_timestamps(self.__start_date_unix, self.__end_date_unix)
         self.__augmented_start_date_unix = self.__start_date_unix - (additional_days * SECONDS_PER_DAY)
 
-    def __create_position(self, _buy_price) -> Position:
+    def __parse_strategy_rules(self):
+        """Parse the strategy for relevant information needed to make the API request."""
+        log.debug('Parsing strategy for indicators and rules...')
+        additional_days = 0
+
+        # build a list of sub keys from the buy and sell sections
+        keys = list()
+        if 'buy' in self.__strategy.keys():
+            for key in self.__strategy['buy'].keys():
+                keys.append(key)
+        if 'sell' in self.__strategy.keys():
+            for key in self.__strategy['sell'].keys():
+                keys.append(key)
+
+        # buy keys
+        for key in self.__strategy['buy'].keys():
+            if 'RSI' in key:
+                # ======== key based =========
+                nums = re.findall(r'\d+', key)
+                if len(nums) == 1:
+                    num = int(nums[0])
+                    # add the RSI data to the df
+                    self.__add_RSI(num)
+                else:
+                    # add the RSI data to the df
+                    self.__add_RSI(DEFAULT_RSI_LENGTH)
+                # ======== value based (rsi limit)=========
+                _value = self.__strategy['buy'][key]
+                _nums = re.findall(r'\d+', _value)
+                if len(_nums) == 1:
+                    _trigger = float(_nums[0])
+                    self.__add_lower_RSI(_trigger)
+            elif 'SMA' in key:
+                nums = re.findall(r'\d+', key)
+                if len(nums) == 1:
+                    num = int(nums[0])
+                    # add the SMA data to the df
+                    self.__add_SMA(num)
+        # sell keys
+        for key in self.__strategy['sell'].keys():
+            if 'RSI' in key:
+                # ======== key based =========
+                nums = re.findall(r'\d+', key)
+                if len(nums) == 1:
+                    num = int(nums[0])
+                    # add the RSI data to the df
+                    self.__add_RSI(num)
+                else:
+                    # add the RSI data to the df
+                    self.__add_RSI(DEFAULT_RSI_LENGTH)
+                # ======== value based (rsi limit)=========
+                _value = self.__strategy['sell'][key]
+                _nums = re.findall(r'\d+', _value)
+                if len(_nums) == 1:
+                    _trigger = float(_nums[0])
+                    self.__add_upper_RSI(_trigger)
+            elif 'SMA' in key:
+                nums = re.findall(r'\d+', key)
+                if len(nums) == 1:
+                    num = int(nums[0])
+                    # add the SMA data to the df
+                    self.__add_SMA(num)
+
+    def __add_RSI(self, _length: int):
+        """Pre-calculate the RSI values and add them to the df."""
+        # get a list of close price values
+        price_data = list()
+        for i in range(len(self.__df['Close'])):
+            price_data.append(self.__df['Close'][i])
+
+        # calculate the RSI values from the indicator API
+        rsi_values = self.__indicators_API.RSI(DEFAULT_RSI_LENGTH, price_data)
+
+        # add the calculated values to the df
+        self.__df['RSI'] = rsi_values
+
+    def __add_upper_RSI(self, _trigger_value: float):
+        """Add upper RSI trigger to the df."""
+        self.__df['RSI_upper'] = _trigger_value
+
+    def __add_lower_RSI(self, _trigger_value: float):
+        """Add lower RSI trigger to the df."""
+        self.__df['RSI_lower'] = _trigger_value
+
+    def __add_SMA(self, _length: int):
+        """Pre-calculate the SMA values and add them to the df."""
+        # get a list of close price values
+        column_title = f'SMA{_length}'
+
+        # if we already have SMA values in the df, we don't need to add them again
+        # so just return
+        for (col_name, col_vals) in self.__df.iteritems():
+            if column_title in col_name:
+                return
+
+        # get a list of price values in the form of a list
+        price_data = list()
+        for i in range(len(self.__df['Close'])):
+            price_data.append(self.__df['Close'][i])
+
+        # calculate the SMA values from the indicator API
+        sma_values = self.__indicators_API.SMA(_length, price_data)
+
+        # add the calculated values to the df
+        self.__df[column_title] = sma_values
+
+    def __add_buys_sells(self):
+        """Adds the buy and sell lists to the DataFrame."""
+        self.__df['Buy'] = self.__buy_list
+        self.__df['Sell'] = self.__sell_list
+
+    def __create_position(self, _current_day_index: int) -> Position:
         """Creates a position and updates the account.
 
         Args:
-            _buy_price (float): The asset price that the position is purchased at.
+            _current_day_index (int): The index of the current day
 
         return:
             Position: The created Position object.
@@ -202,37 +338,44 @@ class Simulator:
         Notes:
             The assumption is that the user wants to use full buying power (for now)
         """
-        # add the buying price to the buy list
-        self.__buys.append(_buy_price)
+        log.info('Creating the position...')
 
-        # calculate the withdrawal amount
-        share_count = round(self.__account.get_balance() / _buy_price, 3)
+        # add the buying price to the DataFrame
+        _buy_price = self.__df['Close'][_current_day_index]
+
+        # calculate the withdrawal amount (nearest whole share - floor direction)
+        share_count = float(math.floor(self.__account.get_balance() / _buy_price))
         withdraw_amount = round(_buy_price * share_count, 3)
 
         # withdraw the money from the account
         self.__account.withdraw(withdraw_amount)
 
+        log.info('Position created successfully')
+
         # build and return the new position
         return Position(_buy_price, share_count)
 
-    def __liquidate_position(self, _position: Position, _sell_price: float):
+    def __liquidate_position(self, _position: Position, _current_day_index: int):
         """Closes the position and updates the account.
 
         Args:
             _position (Position): The position to close.
-            _sell_price (float): The asset price that the position is sold at.
+            _current_day_index (int): The index of the current day
         """
+        log.info('Closing the position...')
         # close the position
-        _position.close_position(_sell_price)
+        _position.close_position(self.__df['Close'][_current_day_index])
 
-        # add the closing price to the sell list
-        self.__sells.append(_sell_price)
+        # add the closing price to the DataFrame
+        _sell_price = float(self.__df['Close'][_current_day_index])
 
         # add the position to the archive
         self.__position_archive.append(_position)
 
         # calculate the deposit amount
         deposit_amount = round(_position.get_sell_price() * _position.get_share_count(), 3)
+
+        log.info('Position closed successfully')
 
         # deposit the value of the position to the account
         self.__account.deposit(deposit_amount)
@@ -250,6 +393,7 @@ class Simulator:
                 This functions is internal (fxn inside fxn) which means everything in the outer
                 function run() is global here
             """
+            log.debug('Checking RSI buy triggers...')
             # get the unchecked trigger value from the strategy
             _value = self.__strategy['buy'][key]
             # find the value of the RSI else default
@@ -259,7 +403,10 @@ class Simulator:
                 _num = float(_nums[0])
 
             # get the RSI value for current day
-            rsi = self.__indicators_API.RSI(_num, current_day_index)
+            # old way where we calculate it on the spot (deprecated)
+            # rsi = self.__indicators_API.RSI(_num, current_day_index)
+            # new way where we just pull the pre-calculated value from the col in the df
+            rsi = self.__df['RSI'][current_day_index]
 
             # check that the value from {key: value} has a number in it
             # this is the trigger value
@@ -267,6 +414,7 @@ class Simulator:
             if len(_nums) == 1:
                 _trigger = float(_nums[0])
             else:
+                log.warning('Found invalid format RSI (invalid number found in trigger value)')
                 print('Found invalid format RSI (invalid number found in trigger value)')
                 # if no trigger value available, exit
                 return None, True
@@ -274,24 +422,36 @@ class Simulator:
             # trigger checks
             if '<=' in _value:
                 if rsi <= _trigger:
-                    _position = self.__create_position(df['Close'][current_day_index])
+                    log.info(f"RSI '<=' trigger hit!")
+                    _position = self.__create_position(current_day_index)
+                    insert_buy()
                     return _position, False
             elif '>=' in _value:
                 if rsi >= _trigger:
-                    _position = self.__create_position(df['Close'][current_day_index])
+                    log.info(f"RSI '>=' trigger hit!")
+                    _position = self.__create_position(current_day_index)
+                    insert_buy()
                     return _position, False
             elif '<' in _value:
                 if rsi < _trigger:
-                    _position = self.__create_position(df['Close'][current_day_index])
+                    log.info(f"RSI '<' trigger hit!")
+                    _position = self.__create_position(current_day_index)
+                    insert_buy()
                     return _position, False
             elif '>' in _value:
                 if rsi > _trigger:
-                    _position = self.__create_position(df['Close'][current_day_index])
+                    log.info(f"RSI '>' trigger hit!")
+                    _position = self.__create_position(current_day_index)
+                    insert_buy()
                     return _position, False
             elif '=' in _value:
                 if rsi == _trigger:
-                    _position = self.__create_position(df['Close'][current_day_index])
+                    log.info(f"RSI '==' trigger hit!")
+                    _position = self.__create_position(current_day_index)
+                    insert_buy()
                     return _position, False
+
+            log.debug('All RSI triggers checked')
 
             # catch all case if nothing was hit (which is ok!)
             # No position and buying is still enabled
@@ -307,6 +467,8 @@ class Simulator:
                 This functions is internal (fxn inside fxn) which means everything in the outer
                 function run() is global here
             """
+            log.debug('Checking SMA buy triggers...')
+
             # get the unchecked trigger value from the strategy
             _value = self.__strategy['buy'][key]
             # find the SMA length, else exit
@@ -316,7 +478,11 @@ class Simulator:
                 _num = int(_nums[0])
 
                 # get the sma value for the current day
-                sma = self.__indicators_API.SMA(_num, current_day_index)
+                # old way where we calculate it on the spot (deprecated)
+                # sma = self.__indicators_API.SMA(_num, current_day_index)
+                # new way where we just pull the pre-calculated value from the col in the df
+                title = f'SMA{_num}'
+                sma = self.__df[title][current_day_index]
 
                 # check that the value from {key: value} has a number in it
                 # this is the trigger value
@@ -331,28 +497,41 @@ class Simulator:
                 # trigger checks
                 if '<=' in _value:
                     if sma <= _trigger:
-                        _position = self.__create_position(df['Close'][current_day_index])
+                        log.info(f"SMA '<=' trigger hit!")
+                        _position = self.__create_position(current_day_index)
+                        insert_buy()
                         return _position, False
                 elif '>=' in _value:
                     if sma >= _trigger:
-                        _position = self.__create_position(df['Close'][current_day_index])
+                        log.info(f"SMA '>=' trigger hit!")
+                        _position = self.__create_position(current_day_index)
+                        insert_buy()
                         return _position, False
                 elif '<' in _value:
                     if sma < _trigger:
-                        _position = self.__create_position(df['Close'][current_day_index])
+                        log.info(f"SMA '<' trigger hit!")
+                        _position = self.__create_position(current_day_index)
+                        insert_buy()
                         return _position, False
                 elif '>' in _value:
                     if sma > _trigger:
-                        _position = self.__create_position(df['Close'][current_day_index])
+                        log.info(f"SMA '>' trigger hit!")
+                        _position = self.__create_position(current_day_index)
+                        insert_buy()
                         return _position, False
                 elif '=' in _value:
                     if sma == _trigger:
-                        _position = self.__create_position(df['Close'][current_day_index])
+                        log.info(f"SMA '==' trigger hit!")
+                        _position = self.__create_position(current_day_index)
+                        insert_buy()
                         return _position, False
+
+                log.debug('All SMA triggers checked')
 
                 # catch all case if nothing was hit (which is ok!)
                 return None, True
 
+            log.warning(f'Warning: {key} is in incorrect format and will be ignored')
             print(f'Warning: {key} is in incorrect format and will be ignored')
             return None, True
 
@@ -366,6 +545,8 @@ class Simulator:
                 This functions is internal (fxn inside fxn) which means everything in the outer
                 function run() is global here.
             """
+            log.debug('Checking candle stick buy triggers...')
+
             # find out how many keys there are
             num_keys = len(self.__strategy['buy'][key])
 
@@ -383,8 +564,12 @@ class Simulator:
 
             # check for trigger
             if actual_colors == trigger_colors:
-                _position = self.__create_position(df['Close'][current_day_index])
+                log.info('Candle stick trigger hit!')
+                _position = self.__create_position(current_day_index)
+                insert_buy()
                 return _position, False
+
+            log.debug('All candle stick triggers checked')
 
             # catch all case if nothing was hit (which is ok!)
             return None, True
@@ -401,6 +586,8 @@ class Simulator:
                 function run() is global here
 
             """
+            log.debug('Checking RSI sell triggers...')
+
             # get the unchecked trigger value from the strategy
             _value = self.__strategy['sell'][key]
             # find the value of the RSI else default
@@ -410,7 +597,10 @@ class Simulator:
                 _num = float(_nums[0])
 
             # get the RSI value for current day
-            rsi = self.__indicators_API.RSI(_num, current_day_index)
+            # old way where we calculate it on the spot (deprecated)
+            # rsi = self.__indicators_API.RSI(_num, current_day_index)
+            # new way where we just pull the pre-calculated value from the col in the df
+            rsi = self.__df['RSI'][current_day_index]
 
             # check that the value from {key: value} has a number in it
             # this is the trigger value
@@ -425,24 +615,36 @@ class Simulator:
             # trigger checks
             if '<=' in _value:
                 if rsi <= _trigger:
-                    _position.close_position(df['Close'][current_day_index])
+                    log.info(f"RSI '<=' trigger hit!")
+                    self.__liquidate_position(_position, current_day_index)
+                    insert_sell()
                     return None, True
             elif '>=' in _value:
                 if rsi >= _trigger:
-                    _position.close_position(df['Close'][current_day_index])
+                    log.info(f"RSI '>=' trigger hit!")
+                    self.__liquidate_position(_position, current_day_index)
+                    insert_sell()
                     return None, True
             elif '<' in _value:
                 if rsi < _trigger:
-                    _position.close_position(df['Close'][current_day_index])
+                    log.info(f"RSI '<' trigger hit!")
+                    self.__liquidate_position(_position, current_day_index)
+                    insert_sell()
                     return None, True
             elif '>' in _value:
                 if rsi > _trigger:
-                    _position.close_position(df['Close'][current_day_index])
+                    log.info(f"RSI '>' trigger hit!")
+                    self.__liquidate_position(_position, current_day_index)
+                    insert_sell()
                     return None, True
             elif '=' in _value:
                 if rsi == _trigger:
-                    _position.close_position(df['Close'][current_day_index])
+                    log.info(f"RSI '==' trigger hit!")
+                    self.__liquidate_position(_position, current_day_index)
+                    insert_sell()
                     return None, True
+
+            log.debug('All RSI triggers checked')
 
             # catch all case if nothing was hit (which is ok!)
             # No position and buying is still enabled
@@ -458,6 +660,8 @@ class Simulator:
                 This functions is internal (fxn inside fxn) which means everything in the outer
                 function run() is global here
             """
+            log.debug('Checking SMA sell triggers...')
+
             # get the unchecked trigger value from the strategy
             _value = self.__strategy['sell'][key]
             # find the SMA length, else exit
@@ -467,7 +671,11 @@ class Simulator:
                 _num = int(_nums[0])
 
                 # get the sma value for the current day
-                sma = self.__indicators_API.SMA(_num, current_day_index)
+                # old way where we calculate it on the spot (deprecated)
+                # sma = self.__indicators_API.SMA(_num, current_day_index)
+                # new way where we just pull the pre-calculated value from the col in the df
+                title = f'SMA{_num}'
+                sma = self.__df[title][current_day_index]
 
                 # check that the value from {key: value} has a number in it
                 # this is the trigger value
@@ -482,27 +690,41 @@ class Simulator:
                 # trigger checks
                 if '<=' in _value:
                     if sma <= _trigger:
-                        _position.close_position(df['Close'][current_day_index])
+                        log.info(f"SMA '<=' trigger hit!")
+                        self.__liquidate_position(_position, current_day_index)
+                        insert_sell()
                         return None, True
                 elif '>=' in _value:
                     if sma >= _trigger:
-                        _position.close_position(df['Close'][current_day_index])
+                        log.info(f"SMA '>=' trigger hit!")
+                        self.__liquidate_position(_position, current_day_index)
+                        insert_sell()
                         return None, True
                 elif '<' in _value:
                     if sma < _trigger:
-                        _position.close_position(df['Close'][current_day_index])
+                        log.info(f"SMA '<' trigger hit!")
+                        self.__liquidate_position(_position, current_day_index)
+                        insert_sell()
                         return None, True
                 elif '>' in _value:
                     if sma > _trigger:
-                        _position.close_position(df['Close'][current_day_index])
+                        log.info(f"SMA '>' trigger hit!")
+                        self.__liquidate_position(_position, current_day_index)
+                        insert_sell()
                         return None, True
                 elif '=' in _value:
                     if sma == _trigger:
-                        _position.close_position(df['Close'][current_day_index])
+                        log.info(f"SMA '==' trigger hit!")
+                        self.__liquidate_position(_position, current_day_index)
+                        insert_sell()
                         return None, True
+
+                log.debug('All SMA triggers checked')
 
                 # catch all case if nothing was hit (which is ok!)
                 return _position, False
+
+            log.warning(f'Warning: {key} is in incorrect format and will be ignored')
 
             print(f'Warning: {key} is in incorrect format and will be ignored')
             return _position, False
@@ -520,18 +742,24 @@ class Simulator:
                 This functions is internal (fxn inside fxn) which means everything in the outer
                 function run() is global here.
             """
+            log.debug('Checking stop profit triggers...')
+
             # get the trigger from the strategy
             _trigger = float(self.__strategy['sell']['stop_profit'])
 
             # get the profit/loss from the strategy
-            p_l = _position.profit_loss(df['Close'][current_day_index])
+            p_l = _position.profit_loss(self.__df['Close'][current_day_index])
 
             # check for profit
             if p_l > 0:
                 # check for trigger
                 if p_l >= _trigger:
-                    _position.close_position(df['Close'][current_day_index])
+                    log.info('Stop profit trigger hit!')
+                    self.__liquidate_position(_position, current_day_index)
+                    insert_sell()
                     return None, True
+
+            log.debug('Stop profit triggers checked')
 
             # catch all case if nothing was hit (which is ok!)
             return _position, False
@@ -549,18 +777,24 @@ class Simulator:
                 This functions is internal (fxn inside fxn) which means everything in the outer
                 function run() is global here.
             """
+            log.debug('Checking stop loss triggers...')
+
             # get the trigger from the strategy
             _trigger = float(self.__strategy['sell']['stop_loss'])
 
             # get the profit/loss from the position
-            p_l = _position.profit_loss(df['Close'][current_day_index])
+            p_l = _position.profit_loss(self.__df['Close'][current_day_index])
 
             # check for a loss
             if p_l < 0:
                 # check trigger
                 if abs(p_l) >= abs(_trigger):
-                    _position.close_position(df['Close'][current_day_index])
+                    log.info('Stop loss trigger hit!')
+                    self.__liquidate_position(_position, current_day_index)
+                    insert_sell()
                     return None, True
+
+            log.debug('Stop loss triggers checked')
 
             # catch all case if nothing was hit (which is ok!)
             return _position, False
@@ -578,6 +812,8 @@ class Simulator:
                 This functions is internal (fxn inside fxn) which means everything in the outer
                 function run() is global here.
             """
+            log.debug('Checking candle stick sell triggers')
+
             # find out how many keys there are
             num_keys = len(self.__strategy['sell'][key])
 
@@ -595,11 +831,23 @@ class Simulator:
 
             # check for trigger
             if actual_colors == trigger_colors:
-                _position.close_position(df['Close'][current_day_index])
+                log.info('Candle stick trigger hit!')
+                self.__liquidate_position(_position, current_day_index)
+                insert_sell()
                 return None, True
+
+            log.debug('All candle stick triggers checked')
 
             # catch all case if nothing was hit (which is ok!)
             return _position, False
+
+        def insert_buy():
+            """Abstraction for adding a buy to the buy list."""
+            self.__buy_list[current_day_index] = self.__df['Close'][current_day_index]
+
+        def insert_sell():
+            """Abstraction for adding a sell to the sell list."""
+            self.__sell_list[current_day_index] = self.__df['Close'][current_day_index]
 
         # set the objects symbol to the passed value, so we can use it everywhere
         log.info(f'Setting up simulation for symbol: {symbol}...')
@@ -608,36 +856,52 @@ class Simulator:
         # check the strategy for errors
         self.__error_check_strategy()
 
-        # parse the strategy so we know what the user wants
-        self.__parse_strategy()
+        # parse the strategy for timestamps, so we know what the user wants
+        self.__parse_strategy_timestamps()
 
         # get the data from the servers
-        df = self.__broker_API.get_daily_data(self.__symbol, self.__augmented_start_date_unix, self.__end_date_unix)
+        self.__df = self.__broker_API.get_daily_data(self.__symbol,
+                                                     self.__augmented_start_date_unix,
+                                                     self.__end_date_unix)
+
+        # parse the strategy for rules
+        self.__parse_strategy_rules()
 
         # initialize the indicators API with the data
-        self.__indicators_API = Indicators(df)
+        # FIXME: The below line is actually deprecated
+        # self.__indicators_API.add_data(self.__df)
+        # FIXME: The above line is actually deprecated
+        # instead
+        self.__indicators_API.add_data(self.__df)
 
         # len(df['close']) does the same thing as the below line
         total_days = int((self.__end_date_unix - self.__augmented_start_date_unix) / SECONDS_PER_DAY)
         days_in_focus = int((self.__end_date_unix - self.__start_date_unix) / SECONDS_PER_DAY)
         focus_start_day = total_days - days_in_focus
+        trade_able_days = len(self.__df["Close"]) - focus_start_day
 
         buy_mode = True
         position = None
 
-        log.info(f'Setup for symbol:{self.__symbol} complete')
+        # initialize the lists to the correct size (values to None)
+        self.__buy_list = [None for _ in range(len(self.__df['Close']))]
+        self.__sell_list = [None for _ in range(len(self.__df['Close']))]
+
+        log.info(f'Setup for symbol: {self.__symbol} complete')
 
         log.info('==== Simulation Details =====')
-        log.info(f'Start Date  : {self.unix_to_string(self.__start_date_unix)}')
-        log.info(f'End Date    : {self.unix_to_string(self.__end_date_unix)}')
-        log.info(f'Window Size : {days_in_focus}')
+        log.info(f'Symbol          : {self.__symbol}')
+        log.info(f'Start Date      : {self.unix_to_string(self.__start_date_unix)}')
+        log.info(f'End Date        : {self.unix_to_string(self.__end_date_unix)}')
+        log.info(f'Window Size     : {days_in_focus}')
+        log.info(f'Trade-able Days : {trade_able_days}')
+        log.info(f'Account Value   : {self.__account.get_balance()}')
         log.info('=============================')
 
-        log.info(f'Beginning simulation for symbol:{self.__symbol}...')
+        log.info(f'Beginning simulation...')
 
         # ===================== Simulation Loop ======================
-        # FIXME: add TQDM here?????????????
-        for current_day_index in range(focus_start_day, len(df['Close'])):
+        for current_day_index in tqdm(range(focus_start_day, len(self.__df['Close']))):
             # we loop from the focus start day (ex. 200)
             # to the total amount of days in the set (ex. 400)
             # the day_index represents the index of the current day in the
@@ -650,6 +914,8 @@ class Simulator:
             # os.system('cls')
             # print(f'Current Day index: {current_day_index}')
             # --- debug ----
+
+            log.debug(f'Current day index: {current_day_index}')
 
             if buy_mode:
                 buy_keys = self.__strategy['buy'].keys()
@@ -688,10 +954,45 @@ class Simulator:
                             break
                     if key == 'color':
                         position, buy_mode = handle_candle_stick_sells(position)
+                if current_day_index == (len(self.__df['Close']) - 1):
+                    # the position is still open at the end of the simulation
+                    log.info('Position closed due to end of simulation reached')
+                    self.__liquidate_position(position, self.__df['Close'][current_day_index])
+                    break
 
-    # FIXME: Once the simulation is done,
-    #   - We need to add all of the data to the dataframe.
-    #   - Export the dataframe and any other relevant information to the charting API.
-    #   - Then whatever the user wants charted gets charted.
-    #   - Then we can look into logging and report building
+        # add the buys and sells to the df
+        self.__add_buys_sells()
 
+        # chop the dataframe and reset index
+        self.__df.drop(index=range(0, focus_start_day), inplace=True)
+        self.__df.reset_index(inplace=True)
+
+        log.info('Simulation complete!')
+
+        # initiate the analyzer with the positions data
+        self.__analyzer_API = SimulationAnalyzer(self.__position_archive)
+
+        log.info('====== Simulation Results ======')
+        log.info(f'Trades made   : {len(self.__position_archive)}')
+        log.info(f'Total P/L     : {self.__analyzer_API.total_pl()}')
+        log.info(f'Avg. P/L      : {self.__analyzer_API.avg_pl()}')
+        log.info(f'Effectiveness : {self.__analyzer_API.effectiveness()}')
+        log.info(f'Account Value : {self.__account.get_balance()}')
+        log.info('================================')
+
+        print('====== Simulation Results ======')
+        print(f'Trades made   : {len(self.__position_archive)}')
+        print(f'Total P/L     : {self.__analyzer_API.total_pl()}')
+        print(f'Avg. P/L      : {self.__analyzer_API.avg_pl()}')
+        print(f'Effectiveness : {self.__analyzer_API.effectiveness()}')
+        print(f'Account Value : {self.__account.get_balance()}')
+        print('================================')
+
+        # any report building goes here!
+        # FIXME: Report building
+        #   - I like being able to see the dataframe
+        #   - We could export the df to excel
+        #       - the df already looks like an excel sheet
+
+        if self.__charting_on:
+            self.__charting_API.chart(self.__df)

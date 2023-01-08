@@ -16,6 +16,18 @@ DEFAULT_RSI_LENGTH = 14
 
 log = logging.getLogger()  # root
 
+# ------------ - Additional days needed for accurate indicators at simulation start (algorithm defined)
+# |   OHLC   |
+# |   OHLC   |
+# ------------ - Start of the simulation (user defined)
+# |   OHLC   |
+# |   OHLC   |
+# |   OHLC   |
+# |   OHLC   |
+# |   OHLC   |
+# |   OHLC   |
+# ------------ - End of the simulation (user defined)
+
 
 class Simulator:
     def __init__(self, balance: float):
@@ -867,14 +879,10 @@ class Simulator:
         # parse the strategy for rules
         self.__parse_strategy_rules()
 
-        # initialize the indicators API with the data
-        # FIXME: The below line is actually deprecated
-        # self.__indicators_API.add_data(self.__df)
-        # FIXME: The above line is actually deprecated
-        # instead
+        # give the indicators API the data
         self.__indicators_API.add_data(self.__df)
 
-        # len(df['close']) does the same thing as the below line
+        # calculate window lengths
         total_days = int((self.__end_date_unix - self.__augmented_start_date_unix) / SECONDS_PER_DAY)
         days_in_focus = int((self.__end_date_unix - self.__start_date_unix) / SECONDS_PER_DAY)
         focus_start_day = total_days - days_in_focus
@@ -995,4 +1003,4 @@ class Simulator:
         #       - the df already looks like an excel sheet
 
         if self.__charting_on:
-            self.__charting_API.chart(self.__df)
+            self.__charting_API.chart(self.__df, self.__symbol)

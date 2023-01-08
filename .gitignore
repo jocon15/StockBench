@@ -1,6 +1,7 @@
 # custom
 notes.docx
 ~notes.docx
+*.html
 logs/
 dev/
 .idea/

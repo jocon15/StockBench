@@ -1,7 +1,10 @@
 import re
+import logging
 import pandas as pd
 import plotly.graph_objects as fplt
 from plotly.subplots import make_subplots
+
+log = logging.getLogger()
 
 
 class ChartingAPI:
@@ -12,20 +15,15 @@ class ChartingAPI:
         self.__RSI_ROW = 2
         # add any more constants here...
 
-    def chart(self, _df):
+    def chart(self, _df, _symbol):
         # FIXME: Might need to take in a filepath to output the html file to
         """Chart the data.
 
         Args:
             _df (DataFrame): The full DataFrame post-simulation.
+            _symbol (str): The symbol the simulation was run on.
         """
-        # chop the
-
-
         self.__df = _df
-
-
-
 
         rows = 1
         cols = 1
@@ -71,7 +69,8 @@ class ChartingAPI:
                     color="#fcc203"), name='RSI Lower'), row=self.__RSI_ROW, col=1)
 
         # update the layout
-        fig.update_layout(template='plotly_dark', title=' day chart for {self.symbol}',
+        window_size = len(self.__df['Close'])
+        fig.update_layout(template='plotly_dark', title=f'{window_size} day chart for {_symbol}',
                           xaxis_title='Date (UNIX)', yaxis_title='Price (USD)', xaxis_rangeslider_visible=False)
 
         fig.write_html('figure.html', auto_open=True)
@@ -91,5 +90,3 @@ class ChartingAPI:
         # When we loop through the rubric, have a counter that counts how many subplots we need
         #   Subplots should be in a defined order, 1 is always data + sma, 2 is always RSI
         #   if there is no RSI in the rubric, the chart should not render an empty RSI chart
-
-        pass

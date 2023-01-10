@@ -642,7 +642,11 @@ class Simulator:
 
             # build the trigger list
             for _key in sorted(_value.keys()):
-                trigger_colors.append(_value[_key])
+                candle_color = _value[_key]
+                if candle_color == 'green':
+                    trigger_colors.append(1)
+                else:
+                    trigger_colors.append(0)
 
             # build the actual list
             for i in range(num_keys):
@@ -1045,8 +1049,6 @@ class Simulator:
                         position, buy_mode = handle_or_buy_triggers()
                         if not buy_mode:
                             break
-                if not buy_mode:
-                    break
             else:
                 # sell mode
                 sell_keys = self.__strategy['sell'].keys()
@@ -1061,13 +1063,13 @@ class Simulator:
                         position, buy_mode = handle_or_sell_triggers()
                         if buy_mode:
                             break
-                if buy_mode:
-                    break
                 if current_day_index == (len(self.__df['Close']) - 1):
                     # the position is still open at the end of the simulation
                     log.info('Position closed due to end of simulation reached')
-                    self.__liquidate_position(position, self.__df['Close'][current_day_index])
-                    insert_sell()
+                    # check that position still exists - if so sell
+                    if position:
+                        self.__liquidate_position(position, self.__df['Close'][current_day_index])
+                        insert_sell()
                     break
 
         # add the buys and sells to the df
@@ -1084,18 +1086,18 @@ class Simulator:
 
         log.info('====== Simulation Results ======')
         log.info(f'Trades made   : {len(self.__position_archive)}')
-        log.info(f'Total P/L     : {self.__analyzer_API.total_pl()}')
-        log.info(f'Avg. P/L      : {self.__analyzer_API.avg_pl()}')
         log.info(f'Effectiveness : {self.__analyzer_API.effectiveness()}')
+        log.info(f'Avg. P/L      : {self.__analyzer_API.avg_pl()}')
+        log.info(f'Total P/L     : {self.__account.get_profit_loss()}')
         log.info(f'Account Value : {self.__account.get_balance()}')
         log.info('================================')
 
         print('====== Simulation Results ======')
         print(f'Trades made   : {len(self.__position_archive)}')
-        print(f'Total P/L     : {self.__analyzer_API.total_pl()}')
-        print(f'Avg. P/L      : {self.__analyzer_API.avg_pl()}')
-        print(f'Effectiveness : {self.__analyzer_API.effectiveness()}')
-        print(f'Account Value : {self.__account.get_balance()}')
+        print(f'Effectiveness : {self.__analyzer_API.effectiveness()}%')
+        print(f'Avg. P/L      : ${self.__analyzer_API.avg_pl()}')
+        print(f'Total P/L     : ${self.__account.get_profit_loss()}')
+        print(f'Account Value : ${self.__account.get_balance()}')
         print('================================')
 
         # any report building goes here!

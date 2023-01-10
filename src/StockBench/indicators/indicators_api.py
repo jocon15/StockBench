@@ -20,7 +20,7 @@ class Indicators:
         return:
             int: The color of the candle on that day (0 -> red) (1 -> green).
         """
-        if not self.__data:
+        if self.__data.empty:
             raise Exception('Data must be supplied to the object first using add_data().')
         if _current_day_index < 0:
             raise Exception('Current day index is out of bounds (less than 0)')

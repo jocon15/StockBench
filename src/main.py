@@ -7,7 +7,10 @@ strategy = {
     'end': int(time.time()),                     # now
     'buy': {
         'RSI': '<40',
-        'SMA20': '>256',
+        'and1': {
+            'SMA20': '>256',
+            'RSI': '>10'
+        },
         'price': '>200',  # FIXME: still need to implement this one
         'color': {
             '2': 'red',
@@ -26,7 +29,7 @@ def main():
     stock_sim = Simulator(1000.00)
 
     stock_sim.enable_logging()
-    # stock_sim.enable_developer_logging()
+    stock_sim.enable_developer_logging()
 
     stock_sim.load_strategy(strategy)
 

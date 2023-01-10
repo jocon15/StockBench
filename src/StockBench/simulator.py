@@ -242,54 +242,79 @@ class Simulator:
             for key in self.__strategy['sell'].keys():
                 keys.append(key)
 
+        def rsi_buy(_key, _value):
+            # ======== key based =========
+            nums = re.findall(r'\d+', _key)
+            if len(nums) == 1:
+                num = int(nums[0])
+                # add the RSI data to the df
+                self.__add_RSI(num)
+            else:
+                # add the RSI data to the df
+                self.__add_RSI(DEFAULT_RSI_LENGTH)
+            # ======== value based (rsi limit)=========
+            # _value = self.__strategy['buy'][key]
+            _nums = re.findall(r'\d+', _value)
+            if len(_nums) == 1:
+                _trigger = float(_nums[0])
+                self.__add_lower_RSI(_trigger)
+
+        def sma_buy(_key):
+            nums = re.findall(r'\d+', _key)
+            if len(nums) == 1:
+                num = int(nums[0])
+                # add the SMA data to the df
+                self.__add_SMA(num)
+
+        def rsi_sell(_key, _value):
+            # ======== key based =========
+            nums = re.findall(r'\d+', _key)
+            if len(nums) == 1:
+                num = int(nums[0])
+                # add the RSI data to the df
+                self.__add_RSI(num)
+            else:
+                # add the RSI data to the df
+                self.__add_RSI(DEFAULT_RSI_LENGTH)
+            # ======== value based (rsi limit)=========
+            # _value = self.__strategy['sell'][key]
+            _nums = re.findall(r'\d+', _value)
+            if len(_nums) == 1:
+                _trigger = float(_nums[0])
+                self.__add_upper_RSI(_trigger)
+
+        def sma_sell(_key):
+            nums = re.findall(r'\d+', _key)
+            if len(nums) == 1:
+                num = int(nums[0])
+                # add the SMA data to the df
+                self.__add_SMA(num)
+
         # buy keys
         for key in self.__strategy['buy'].keys():
             if 'RSI' in key:
-                # ======== key based =========
-                nums = re.findall(r'\d+', key)
-                if len(nums) == 1:
-                    num = int(nums[0])
-                    # add the RSI data to the df
-                    self.__add_RSI(num)
-                else:
-                    # add the RSI data to the df
-                    self.__add_RSI(DEFAULT_RSI_LENGTH)
-                # ======== value based (rsi limit)=========
-                _value = self.__strategy['buy'][key]
-                _nums = re.findall(r'\d+', _value)
-                if len(_nums) == 1:
-                    _trigger = float(_nums[0])
-                    self.__add_lower_RSI(_trigger)
+                rsi_buy(key,  self.__strategy['buy'][key])
             elif 'SMA' in key:
-                nums = re.findall(r'\d+', key)
-                if len(nums) == 1:
-                    num = int(nums[0])
-                    # add the SMA data to the df
-                    self.__add_SMA(num)
+                sma_buy(key)
+            elif 'and' in key:
+                for inner_key in self.__strategy['buy'][key].keys():
+                    if 'RSI' in inner_key:
+                        rsi_buy(inner_key, self.__strategy['buy'][key][inner_key])
+                    elif 'SMA' in inner_key:
+                        sma_buy(inner_key)
+
         # sell keys
         for key in self.__strategy['sell'].keys():
             if 'RSI' in key:
-                # ======== key based =========
-                nums = re.findall(r'\d+', key)
-                if len(nums) == 1:
-                    num = int(nums[0])
-                    # add the RSI data to the df
-                    self.__add_RSI(num)
-                else:
-                    # add the RSI data to the df
-                    self.__add_RSI(DEFAULT_RSI_LENGTH)
-                # ======== value based (rsi limit)=========
-                _value = self.__strategy['sell'][key]
-                _nums = re.findall(r'\d+', _value)
-                if len(_nums) == 1:
-                    _trigger = float(_nums[0])
-                    self.__add_upper_RSI(_trigger)
+                rsi_sell(key, self.__strategy['sell'][key])
             elif 'SMA' in key:
-                nums = re.findall(r'\d+', key)
-                if len(nums) == 1:
-                    num = int(nums[0])
-                    # add the SMA data to the df
-                    self.__add_SMA(num)
+                sma_sell(key)
+            elif 'and' in key:
+                for inner_key in self.__strategy['sell'][key].keys():
+                    if 'RSI' in inner_key:
+                        rsi_sell(inner_key, self.__strategy['sell'][key][inner_key])
+                    elif 'SMA' in inner_key:
+                        sma_sell(inner_key)
 
     def __add_RSI(self, _length: int):
         """Pre-calculate the RSI values and add them to the df."""
@@ -306,10 +331,20 @@ class Simulator:
 
     def __add_upper_RSI(self, _trigger_value: float):
         """Add upper RSI trigger to the df."""
+        # if we already have RSI upper values in the df, we don't need to add them again
+        for (col_name, col_vals) in self.__df.iteritems():
+            if 'rsi_upper' in col_name:
+                return
+
         self.__df['RSI_upper'] = _trigger_value
 
     def __add_lower_RSI(self, _trigger_value: float):
         """Add lower RSI trigger to the df."""
+        # if we already have RSI lower values in the df, we don't need to add them again
+        for (col_name, col_vals) in self.__df.iteritems():
+            if 'rsi_upper' in col_name:
+                return
+
         self.__df['RSI_lower'] = _trigger_value
 
     def __add_SMA(self, _length: int):
@@ -318,7 +353,6 @@ class Simulator:
         column_title = f'SMA{_length}'
 
         # if we already have SMA values in the df, we don't need to add them again
-        # so just return
         for (col_name, col_vals) in self.__df.iteritems():
             if column_title in col_name:
                 return
@@ -405,9 +439,9 @@ class Simulator:
             # check for all types of triggers
             if 'RSI' in key:
                 trigger_hit = check_rsi_buy_trigger(key, self.__strategy['buy'][key])
-            if 'SMA' in key:
+            elif 'SMA' in key:
                 trigger_hit = check_sma_buy_trigger(key, self.__strategy['buy'][key])
-            if key == 'color':
+            elif key == 'color':
                 trigger_hit = check_candle_colors_buy_trigger(self.__strategy['buy'][key])
 
             if trigger_hit:
@@ -430,12 +464,13 @@ class Simulator:
                 # reset trigger indicator
                 trigger_hit = False
                 # check for all types of triggers
-                if 'RSI' in key:
-                    trigger_hit = check_rsi_buy_trigger(key, self.__strategy['buy'][key][inner_key])
-                if 'SMA' in key:
-                    trigger_hit = check_sma_buy_trigger(key, self.__strategy['buy'][key][inner_key])
-                if key == 'color':
+                if 'RSI' in inner_key:
+                    trigger_hit = check_rsi_buy_trigger(inner_key, self.__strategy['buy'][key][inner_key])
+                elif 'SMA' in inner_key:
+                    trigger_hit = check_sma_buy_trigger(inner_key, self.__strategy['buy'][key][inner_key])
+                elif inner_key == 'color':
                     trigger_hit = check_candle_colors_buy_trigger(self.__strategy['buy'][key][inner_key])
+
                 if not trigger_hit:
                     # not all triggers were hit
                     return _position, True
@@ -632,13 +667,13 @@ class Simulator:
             # check for all types of triggers
             if 'RSI' in key:
                 trigger_hit = check_rsi_sell_trigger(key, self.__strategy['sell'][key])
-            if 'SMA' in key:
+            elif 'SMA' in key:
                 trigger_hit = check_sma_sell_trigger(key, self.__strategy['sell'][key])
-            if key == 'stop_loss':
+            elif key == 'stop_loss':
                 trigger_hit = check_stop_loss_sell_trigger(self.__strategy['sell'][key])
-            if key == 'stop_profit':
+            elif key == 'stop_profit':
                 trigger_hit = check_stop_profit_sell_trigger(self.__strategy['sell'][key])
-            if key == 'color':
+            elif key == 'color':
                 trigger_hit = check_candle_colors_sell_trigger(self.__strategy['sell'][key])
 
             if trigger_hit:
@@ -660,16 +695,17 @@ class Simulator:
                 # reset trigger indicator
                 trigger_hit = False
                 # check for all types of triggers
-                if 'RSI' in key:
-                    trigger_hit = check_rsi_sell_trigger(key, self.__strategy['sell'][key][inner_key])
-                if 'SMA' in key:
-                    trigger_hit = check_sma_sell_trigger(key, self.__strategy['sell'][key][inner_key])
-                if key == 'stop_loss':
+                if 'RSI' in inner_key:
+                    trigger_hit = check_rsi_sell_trigger(inner_key, self.__strategy['sell'][key][inner_key])
+                elif 'SMA' in inner_key:
+                    trigger_hit = check_sma_sell_trigger(inner_key, self.__strategy['sell'][key][inner_key])
+                elif inner_key == 'stop_loss':
                     trigger_hit = check_stop_loss_sell_trigger(self.__strategy['sell'][key][inner_key])
-                if key == 'stop_profit':
+                elif inner_key == 'stop_profit':
                     trigger_hit = check_stop_profit_sell_trigger(self.__strategy['sell'][key][inner_key])
-                if key == 'color':
+                elif inner_key == 'color':
                     trigger_hit = check_candle_colors_sell_trigger(self.__strategy['sell'][key][inner_key])
+
                 if not trigger_hit:
                     # not all triggers were hit
                     return position, False
@@ -1002,11 +1038,15 @@ class Simulator:
                     if 'and' in key:
                         # handle and triggers
                         position, buy_mode = handle_and_buy_triggers()
+                        if not buy_mode:
+                            break
                     else:
                         # handle or triggers
                         position, buy_mode = handle_or_buy_triggers()
-                    if not buy_mode:
-                        break
+                        if not buy_mode:
+                            break
+                if not buy_mode:
+                    break
             else:
                 # sell mode
                 sell_keys = self.__strategy['sell'].keys()
@@ -1014,9 +1054,13 @@ class Simulator:
                     if 'and' in key:
                         # handle and triggers
                         position, buy_mode = handle_and_sell_triggers()
+                        if buy_mode:
+                            break
                     else:
                         # handle or triggers
                         position, buy_mode = handle_or_sell_triggers()
+                        if buy_mode:
+                            break
                 if buy_mode:
                     break
                 if current_day_index == (len(self.__df['Close']) - 1):

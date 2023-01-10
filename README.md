@@ -43,15 +43,15 @@ stock_sim.run('MSFT')
 ![chart](https://github.com/jocon15/StockBench/blob/master/images/example_chart.png)
 
 # Under Construction
-This project is currently under development. The intention of this project is to be a proof-of-concept for simulating stock trading strategies. So far, we have had success in simulating strategies with multiple basic triggers.
+This project is currently in-development. The intention of this project is to be a proof-of-concept for simulating stock trading strategies. So far, we have had success in simulating strategies with multiple basic triggers.
 
 As seen from the charts, a ellegant chart can be produced depiting the simulation results. The logging is working as intended and the production of an excel sheet with the simulation data is under develoment.
 
 I will likely be making changes to several things, listed below.
 
-- [ ] Provide support for 'and' triggers. EX: sell if RSI > 60 and SMA20 > 26 (complex triggering)
+- [x] Provide support for 'and' triggers. EX: sell if RSI > 60 and SMA20 > 26 (complex triggering)
 - [ ] Provide support for variable triggers. EX: sell if SMA20 > current price (complex triggering)
 - [ ] Provide support for additional indicators.
 - [ ] Provide support for exporting simulation data to excel
 - [ ] Investigate potential better ways for user to define strategy
-- [ ] Posible GUI interface
+- [ ] Investigate posible GUI interface

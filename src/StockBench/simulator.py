@@ -199,7 +199,7 @@ class Simulator:
                     if additional_days < num:
                         additional_days = num
                     # add the RSI data to the df
-                    self.__add_RSI(num)
+                    self.__add_rsi(num)
                 else:
                     additional_days = DEFAULT_RSI_LENGTH
             elif 'SMA' in key:
@@ -248,23 +248,23 @@ class Simulator:
             if len(nums) == 1:
                 num = int(nums[0])
                 # add the RSI data to the df
-                self.__add_RSI(num)
+                self.__add_rsi(num)
             else:
                 # add the RSI data to the df
-                self.__add_RSI(DEFAULT_RSI_LENGTH)
+                self.__add_rsi(DEFAULT_RSI_LENGTH)
             # ======== value based (rsi limit)=========
             # _value = self.__strategy['buy'][key]
             _nums = re.findall(r'\d+', _value)
             if len(_nums) == 1:
                 _trigger = float(_nums[0])
-                self.__add_lower_RSI(_trigger)
+                self.__add_lower_rsi(_trigger)
 
         def sma_buy(_key):
             nums = re.findall(r'\d+', _key)
             if len(nums) == 1:
                 num = int(nums[0])
                 # add the SMA data to the df
-                self.__add_SMA(num)
+                self.__add_sma(num)
 
         def rsi_sell(_key, _value):
             # ======== key based =========
@@ -272,23 +272,23 @@ class Simulator:
             if len(nums) == 1:
                 num = int(nums[0])
                 # add the RSI data to the df
-                self.__add_RSI(num)
+                self.__add_rsi(num)
             else:
                 # add the RSI data to the df
-                self.__add_RSI(DEFAULT_RSI_LENGTH)
+                self.__add_rsi(DEFAULT_RSI_LENGTH)
             # ======== value based (rsi limit)=========
             # _value = self.__strategy['sell'][key]
             _nums = re.findall(r'\d+', _value)
             if len(_nums) == 1:
                 _trigger = float(_nums[0])
-                self.__add_upper_RSI(_trigger)
+                self.__add_upper_rsi(_trigger)
 
         def sma_sell(_key):
             nums = re.findall(r'\d+', _key)
             if len(nums) == 1:
                 num = int(nums[0])
                 # add the SMA data to the df
-                self.__add_SMA(num)
+                self.__add_sma(num)
 
         # buy keys
         for key in self.__strategy['buy'].keys():
@@ -316,7 +316,7 @@ class Simulator:
                     elif 'SMA' in inner_key:
                         sma_sell(inner_key)
 
-    def __add_RSI(self, _length: int):
+    def __add_rsi(self, _length: int):
         """Pre-calculate the RSI values and add them to the df."""
         # get a list of close price values
         price_data = list()
@@ -329,7 +329,7 @@ class Simulator:
         # add the calculated values to the df
         self.__df['RSI'] = rsi_values
 
-    def __add_upper_RSI(self, _trigger_value: float):
+    def __add_upper_rsi(self, _trigger_value: float):
         """Add upper RSI trigger to the df."""
         # if we already have RSI upper values in the df, we don't need to add them again
         for (col_name, col_vals) in self.__df.iteritems():
@@ -338,7 +338,7 @@ class Simulator:
 
         self.__df['RSI_upper'] = _trigger_value
 
-    def __add_lower_RSI(self, _trigger_value: float):
+    def __add_lower_rsi(self, _trigger_value: float):
         """Add lower RSI trigger to the df."""
         # if we already have RSI lower values in the df, we don't need to add them again
         for (col_name, col_vals) in self.__df.iteritems():
@@ -347,7 +347,7 @@ class Simulator:
 
         self.__df['RSI_lower'] = _trigger_value
 
-    def __add_SMA(self, _length: int):
+    def __add_sma(self, _length: int):
         """Pre-calculate the SMA values and add them to the df."""
         # get a list of close price values
         column_title = f'SMA{_length}'

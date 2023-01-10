@@ -1,5 +1,5 @@
 # StockBench
-A back-tester for testing stock trading strategies on historical data.
+A back-tester for testing stock trading strategies with historical data.
 
 ![chart](https://github.com/jocon15/StockBench/blob/master/images/example_chart.png)
 
@@ -30,7 +30,6 @@ strategy = {
 # simulation settings
 stock_sim = Simulator(1000.00)
 stock_sim.enable_logging()
-stock_sim.enable_developer_logging()
 stock_sim.load_strategy(strategy)
 stock_sim.enable_reporting()
 stock_sim.enable_charting()

@@ -398,16 +398,17 @@ class Simulator:
 
         # ===================== Buying ==========================
         def handle_or_buy_triggers() -> tuple:
+            """Abstraction for sorting the buy triggers with OR logic."""
             _position = None
             trigger_hit = False
 
             # check for all types of triggers
             if 'RSI' in key:
-                trigger_hit = check_RSI_buy_trigger()
+                trigger_hit = check_rsi_buy_trigger(key, self.__strategy['buy'][key])
             if 'SMA' in key:
-                trigger_hit = check_SMA_buy_trigger()
+                trigger_hit = check_sma_buy_trigger(key, self.__strategy['buy'][key])
             if key == 'color':
-                trigger_hit = check_candle_colors_buy_trigger()
+                trigger_hit = check_candle_colors_buy_trigger(self.__strategy['buy'][key])
 
             if trigger_hit:
                 # create the position
@@ -419,22 +420,22 @@ class Simulator:
             return _position, True
 
         def handle_and_buy_triggers() -> tuple:
-            """
+            """ Abstraction for sorting the buy triggers with AND logic
 
             Notes:
                  This is an AND comparison so all operands need to evaluate to true
             """
             _position = None
-            for _trigger in self.__strategy['buy'][key].keys():
+            for inner_key in self.__strategy['buy'][key].keys():
                 # reset trigger indicator
                 trigger_hit = False
                 # check for all types of triggers
                 if 'RSI' in key:
-                    trigger_hit = check_RSI_buy_trigger()
+                    trigger_hit = check_rsi_buy_trigger(key, self.__strategy['buy'][key][inner_key])
                 if 'SMA' in key:
-                    trigger_hit = check_SMA_buy_trigger()
+                    trigger_hit = check_sma_buy_trigger(key, self.__strategy['buy'][key][inner_key])
                 if key == 'color':
-                    trigger_hit = check_candle_colors_buy_trigger()
+                    trigger_hit = check_candle_colors_buy_trigger(self.__strategy['buy'][key][inner_key])
                 if not trigger_hit:
                     # not all triggers were hit
                     return _position, True
@@ -445,8 +446,12 @@ class Simulator:
             insert_buy()
             return _position, False
 
-        def check_RSI_buy_trigger() -> bool:
+        def check_rsi_buy_trigger(_key, _value) -> bool:
             """Abstracted logic for RSI buy signals.
+
+            Args:
+                _key (str): The key value of the trigger.
+                _value (str): The value of the trigger.
 
             return:
                 bool: True if the trigger was hit.
@@ -456,11 +461,10 @@ class Simulator:
                 function run() is global here
             """
             log.debug('Checking RSI buy triggers...')
-            # get the unchecked trigger value from the strategy
-            _value = self.__strategy['buy'][key]
+
             # find the value of the RSI else default
             _num = DEFAULT_RSI_LENGTH
-            _nums = re.findall(r'\d+', key)
+            _nums = re.findall(r'\d+', _key)
             if len(_nums) == 1:
                 _num = float(_nums[0])
 
@@ -509,8 +513,12 @@ class Simulator:
             # No position and buying is still enabled
             return False
 
-        def check_SMA_buy_trigger() -> bool:
+        def check_sma_buy_trigger(_key, _value) -> bool:
             """Abstracted logic for SMA buy signals.
+
+            Args:
+                _key (str): The key value of the trigger.
+                _value (str): The value of the trigger.
 
             return:
                 bool: True if the trigger was hit.
@@ -521,10 +529,8 @@ class Simulator:
             """
             log.debug('Checking SMA buy triggers...')
 
-            # get the unchecked trigger value from the strategy
-            _value = self.__strategy['buy'][key]
             # find the SMA length, else exit
-            _nums = re.findall(r'\d+', key)
+            _nums = re.findall(r'\d+', _key)
             # since we have no default SMA, there must be a value provided, else exit
             if len(_nums) == 1:
                 _num = int(_nums[0])
@@ -577,8 +583,11 @@ class Simulator:
             print(f'Warning: {key} is in incorrect format and will be ignored')
             return False
 
-        def check_candle_colors_buy_trigger() -> bool:
+        def check_candle_colors_buy_trigger(_value) -> bool:
             """Abstracted logic for candle stick buy signals.
+
+            Args:
+                _value (dict): The value of the trigger.
 
             return:
                 bool: True if the trigger was hit.
@@ -589,16 +598,16 @@ class Simulator:
             """
             log.debug('Checking candle stick buy triggers...')
 
-            # find out how many keys there are
-            num_keys = len(self.__strategy['buy'][key])
+            # find out how many keys there are (_value is a dict)
+            num_keys = len(_value)
 
             # these will both need to be in ascending order [today, yesterday...]
             trigger_colors = list()
             actual_colors = list()
 
             # build the trigger list
-            for _key in sorted(self.__strategy['buy'][key].keys()):
-                trigger_colors.append(self.__strategy['buy'][key][_key])
+            for _key in sorted(_value.keys()):
+                trigger_colors.append(_value[_key])
 
             # build the actual list
             for i in range(num_keys):
@@ -617,19 +626,20 @@ class Simulator:
         # ===================== Selling ===========================
 
         def handle_or_sell_triggers() -> tuple:
+            """Abstraction for sorting the buy triggers with OR logic."""
             trigger_hit = False
 
             # check for all types of triggers
             if 'RSI' in key:
-                trigger_hit = check_RSI_sell_trigger()
+                trigger_hit = check_rsi_sell_trigger(key, self.__strategy['sell'][key])
             if 'SMA' in key:
-                trigger_hit = check_SMA_sell_trigger()
+                trigger_hit = check_sma_sell_trigger(key, self.__strategy['sell'][key])
             if key == 'stop_loss':
-                trigger_hit = check_stop_loss_sell_trigger()
+                trigger_hit = check_stop_loss_sell_trigger(self.__strategy['sell'][key])
             if key == 'stop_profit':
-                trigger_hit = check_stop_profit_sell_trigger()
+                trigger_hit = check_stop_profit_sell_trigger(self.__strategy['sell'][key])
             if key == 'color':
-                trigger_hit = check_candle_colors_sell_trigger()
+                trigger_hit = check_candle_colors_sell_trigger(self.__strategy['sell'][key])
 
             if trigger_hit:
                 # create the position
@@ -641,20 +651,25 @@ class Simulator:
             return position, False
 
         def handle_and_sell_triggers() -> tuple:
-            for _trigger in self.__strategy['sell'][key].keys():
+            """ Abstraction for sorting the sell triggers with AND logic
+
+            Notes:
+                 This is an AND comparison so all operands need to evaluate to true
+            """
+            for inner_key in self.__strategy['sell'][key].keys():
                 # reset trigger indicator
                 trigger_hit = False
                 # check for all types of triggers
                 if 'RSI' in key:
-                    trigger_hit = check_RSI_sell_trigger()
+                    trigger_hit = check_rsi_sell_trigger(key, self.__strategy['sell'][key][inner_key])
                 if 'SMA' in key:
-                    trigger_hit = check_SMA_sell_trigger()
+                    trigger_hit = check_sma_sell_trigger(key, self.__strategy['sell'][key][inner_key])
                 if key == 'stop_loss':
-                    trigger_hit = check_stop_loss_sell_trigger()
+                    trigger_hit = check_stop_loss_sell_trigger(self.__strategy['sell'][key][inner_key])
                 if key == 'stop_profit':
-                    trigger_hit = check_stop_profit_sell_trigger()
+                    trigger_hit = check_stop_profit_sell_trigger(self.__strategy['sell'][key][inner_key])
                 if key == 'color':
-                    trigger_hit = check_candle_colors_sell_trigger()
+                    trigger_hit = check_candle_colors_sell_trigger(self.__strategy['sell'][key][inner_key])
                 if not trigger_hit:
                     # not all triggers were hit
                     return position, False
@@ -665,8 +680,12 @@ class Simulator:
             insert_sell()
             return None, True
 
-        def check_RSI_sell_trigger() -> bool:
+        def check_rsi_sell_trigger(_key, _value) -> bool:
             """Abstracted logic for RSI sell signals.
+
+            Args:
+                _key (str): The key value of the trigger.
+                _value (str): The value of the trigger.
 
             return:
                 bool: True if the trigger was hit.
@@ -678,11 +697,9 @@ class Simulator:
             """
             log.debug('Checking RSI sell triggers...')
 
-            # get the unchecked trigger value from the strategy
-            _value = self.__strategy['sell'][key]
             # find the value of the RSI else default
             _num = DEFAULT_RSI_LENGTH
-            _nums = re.findall(r'\d+', key)
+            _nums = re.findall(r'\d+', _key)
             if len(_nums) == 1:
                 _num = float(_nums[0])
 
@@ -730,8 +747,12 @@ class Simulator:
             # No position and buying is still enabled
             return False
 
-        def check_SMA_sell_trigger() -> bool:
+        def check_sma_sell_trigger(_key, _value) -> bool:
             """Abstracted logic for RSI sell signals.
+
+            Args:
+                _key (str): The key value of the trigger.
+                _value (str): The value of the trigger.
 
             return:
                 bool: True if the trigger was hit.
@@ -742,10 +763,8 @@ class Simulator:
             """
             log.debug('Checking SMA sell triggers...')
 
-            # get the unchecked trigger value from the strategy
-            _value = self.__strategy['sell'][key]
             # find the SMA length, else exit
-            _nums = re.findall(r'\d+', key)
+            _nums = re.findall(r'\d+', _key)
             # since we have no default SMA, there must be a value provided, else exit
             if len(_nums) == 1:
                 _num = int(_nums[0])
@@ -799,8 +818,11 @@ class Simulator:
             print(f'Warning: {key} is in incorrect format and will be ignored')
             return False
 
-        def check_stop_profit_sell_trigger() -> bool:
+        def check_stop_profit_sell_trigger(_value) -> bool:
             """Abstracted logic for stop profit sell signals.
+
+            Args:
+                _value (str): The value of the trigger.
 
             return:
                 bool: True if the trigger was hit.
@@ -812,7 +834,7 @@ class Simulator:
             log.debug('Checking stop profit triggers...')
 
             # get the trigger from the strategy
-            _trigger = float(self.__strategy['sell']['stop_profit'])
+            _trigger = float(_value)
 
             # get the profit/loss from the strategy
             p_l = position.profit_loss(self.__df['Close'][current_day_index])
@@ -829,8 +851,11 @@ class Simulator:
             # catch all case if nothing was hit (which is ok!)
             return False
 
-        def check_stop_loss_sell_trigger() -> bool:
+        def check_stop_loss_sell_trigger(_value) -> bool:
             """Abstracted logic for stop loss sell signals.
+
+            Args:
+                _value (str): The value of the trigger.
 
             return:
                 bool: True if the trigger was hit.
@@ -842,7 +867,7 @@ class Simulator:
             log.debug('Checking stop loss triggers...')
 
             # get the trigger from the strategy
-            _trigger = float(self.__strategy['sell']['stop_loss'])
+            _trigger = float(_value)
 
             # get the profit/loss from the position
             p_l = position.profit_loss(self.__df['Close'][current_day_index])
@@ -859,8 +884,11 @@ class Simulator:
             # catch all case if nothing was hit (which is ok!)
             return False
 
-        def check_candle_colors_sell_trigger() -> bool:
+        def check_candle_colors_sell_trigger(_value) -> bool:
             """Abstracted logic for stop loss sell signals.
+
+            Args:
+                _value (dict): The value of the trigger.
 
             return:
                 bool: True if the trigger was hit.
@@ -872,15 +900,15 @@ class Simulator:
             log.debug('Checking candle stick sell triggers')
 
             # find out how many keys there are
-            num_keys = len(self.__strategy['sell'][key])
+            num_keys = len(_value)
 
             # these will both need to be in ascending order [today, yesterday...]
             trigger_colors = list()
             actual_colors = list()
 
             # build the trigger list
-            for _key in sorted(self.__strategy['sell'][key].keys()):
-                trigger_colors.append(self.__strategy['sell'][key][_key])
+            for _key in sorted(_value.keys()):
+                trigger_colors.append(_value[_key])
 
             # build the actual list
             for i in range(num_keys):

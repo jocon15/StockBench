@@ -6,3 +6,11 @@ SECONDS_30_DAYS = 2592000
 SECONDS_1_WEEK = 604800
 SECONDS_1_DAY = 86400
 
+
+# ========== Indicator Constants ==========
+DEFAULT_RSI_LENGTH = 14
+
+
+# ========== Strategy Constants ==========
+CURRENT_PRICE_SYMBOL = '$price'
+

@@ -2,6 +2,7 @@ import re
 import time
 import math
 import logging
+import constants as const
 from tqdm import tqdm
 from datetime import datetime
 from .broker.broker_api import *
@@ -11,8 +12,6 @@ from .indicators.indicators_api import *
 from .position.position_obj import *
 from .analysis.analysis_api import *
 
-SECONDS_PER_DAY = 86400
-DEFAULT_RSI_LENGTH = 14
 
 log = logging.getLogger()  # root
 
@@ -201,7 +200,7 @@ class Simulator:
                     # add the RSI data to the df
                     self.__add_rsi(num)
                 else:
-                    additional_days = DEFAULT_RSI_LENGTH
+                    additional_days = const.DEFAULT_RSI_LENGTH
             elif 'SMA' in key:
                 nums = re.findall(r'\d+', key)
                 if len(nums) == 1:
@@ -226,7 +225,7 @@ class Simulator:
         # now, we should always have enough days to supply the indicators that the user requires
 
         self.__error_check_timestamps(self.__start_date_unix, self.__end_date_unix)
-        self.__augmented_start_date_unix = self.__start_date_unix - (additional_days * SECONDS_PER_DAY)
+        self.__augmented_start_date_unix = self.__start_date_unix - (additional_days * const.SECONDS_1_DAY)
 
     def __parse_strategy_rules(self):
         """Parse the strategy for relevant information needed to make the API request."""
@@ -251,7 +250,7 @@ class Simulator:
                 self.__add_rsi(num)
             else:
                 # add the RSI data to the df
-                self.__add_rsi(DEFAULT_RSI_LENGTH)
+                self.__add_rsi(const.DEFAULT_RSI_LENGTH)
             # ======== value based (rsi limit)=========
             # _value = self.__strategy['buy'][key]
             _nums = re.findall(r'\d+', _value)
@@ -275,7 +274,7 @@ class Simulator:
                 self.__add_rsi(num)
             else:
                 # add the RSI data to the df
-                self.__add_rsi(DEFAULT_RSI_LENGTH)
+                self.__add_rsi(const.DEFAULT_RSI_LENGTH)
             # ======== value based (rsi limit)=========
             # _value = self.__strategy['sell'][key]
             _nums = re.findall(r'\d+', _value)
@@ -324,7 +323,7 @@ class Simulator:
             price_data.append(self.__df['Close'][i])
 
         # calculate the RSI values from the indicator API
-        rsi_values = self.__indicators_API.RSI(DEFAULT_RSI_LENGTH, price_data)
+        rsi_values = self.__indicators_API.RSI(const.DEFAULT_RSI_LENGTH, price_data)
 
         # add the calculated values to the df
         self.__df['RSI'] = rsi_values
@@ -443,6 +442,8 @@ class Simulator:
                 trigger_hit = check_sma_buy_trigger(key, self.__strategy['buy'][key])
             elif key == 'color':
                 trigger_hit = check_candle_colors_buy_trigger(self.__strategy['buy'][key])
+            elif key == 'price':
+                trigger_hit = check_price_buy_trigger(self.__strategy['buy'][key])
 
             if trigger_hit:
                 # create the position
@@ -470,6 +471,8 @@ class Simulator:
                     trigger_hit = check_sma_buy_trigger(inner_key, self.__strategy['buy'][key][inner_key])
                 elif inner_key == 'color':
                     trigger_hit = check_candle_colors_buy_trigger(self.__strategy['buy'][key][inner_key])
+                elif key == 'price':
+                    trigger_hit = check_price_buy_trigger(self.__strategy['buy'][key][inner_key])
 
                 if not trigger_hit:
                     # not all triggers were hit
@@ -498,7 +501,7 @@ class Simulator:
             log.debug('Checking RSI buy triggers...')
 
             # find the value of the RSI else default
-            _num = DEFAULT_RSI_LENGTH
+            _num = const.DEFAULT_RSI_LENGTH
             _nums = re.findall(r'\d+', _key)
             if len(_nums) == 1:
                 _num = float(_nums[0])
@@ -509,16 +512,19 @@ class Simulator:
             # new way where we just pull the pre-calculated value from the col in the df
             rsi = self.__df['RSI'][current_day_index]
 
-            # check that the value from {key: value} has a number in it
-            # this is the trigger value
-            _nums = re.findall(r'\d+', _value)
-            if len(_nums) == 1:
-                _trigger = float(_nums[0])
+            if const.CURRENT_PRICE_SYMBOL in _value:
+                _trigger = self.__df['Close'][current_day_index]
             else:
-                log.warning('Found invalid format RSI (invalid number found in trigger value)')
-                print('Found invalid format RSI (invalid number found in trigger value)')
-                # if no trigger value available, exit
-                return False
+                # check that the value from {key: value} has a number in it
+                # this is the trigger value
+                _nums = re.findall(r'\d+', _value)
+                if len(_nums) == 1:
+                    _trigger = float(_nums[0])
+                else:
+                    log.warning('Found invalid format RSI (invalid number found in trigger value)')
+                    print('Found invalid format RSI (invalid number found in trigger value)')
+                    # if no trigger value available, exit
+                    return False
 
             # trigger checks
             if '<=' in _value:
@@ -577,15 +583,18 @@ class Simulator:
                 title = f'SMA{_num}'
                 sma = self.__df[title][current_day_index]
 
-                # check that the value from {key: value} has a number in it
-                # this is the trigger value
-                _nums = re.findall(r'\d+', _value)
-                if len(_nums) == 1:
-                    _trigger = float(_nums[0])
+                if const.CURRENT_PRICE_SYMBOL in _value:
+                    _trigger = self.__df['Close'][current_day_index]
                 else:
-                    print('Found invalid format SMA (invalid number found in trigger value)')
-                    # if no trigger value available, exit
-                    return False
+                    # check that the value from {key: value} has a number in it
+                    # this is the trigger value
+                    _nums = re.findall(r'\d+', _value)
+                    if len(_nums) == 1:
+                        _trigger = float(_nums[0])
+                    else:
+                        print('Found invalid format SMA (invalid number found in trigger value)')
+                        # if no trigger value available, exit
+                        return False
 
                 # trigger checks
                 if '<=' in _value:
@@ -662,6 +671,49 @@ class Simulator:
             # catch all case if nothing was hit (which is ok!)
             return False
 
+        def check_price_buy_trigger(_value):
+            """Abstracted logic for price buy signals"""
+            log.debug('Checking price buy triggers...')
+
+            price = self.__df['Close'][current_day_index]
+
+            # check that the value from {key: value} has a number in it
+            # this is the trigger value
+            _nums = re.findall(r'\d+', _value)
+            if len(_nums) == 1:
+                _trigger = float(_nums[0])
+            else:
+                print('Found invalid format price (invalid number found in trigger value)')
+                # if no trigger value available, exit
+                return False
+
+            # trigger checks
+            if '<=' in _value:
+                if price <= _trigger:
+                    log.info(f"Price '<=' trigger hit!")
+                    return True
+            elif '>=' in _value:
+                if price >= _trigger:
+                    log.info(f"Price '>=' trigger hit!")
+                    return True
+            elif '<' in _value:
+                if price < _trigger:
+                    log.info(f"Price '<' trigger hit!")
+                    return True
+            elif '>' in _value:
+                if price > _trigger:
+                    log.info(f"Price '>' trigger hit!")
+                    return True
+            elif '=' in _value:
+                if price == _trigger:
+                    log.info(f"Price '==' trigger hit!")
+                    return True
+
+            log.debug('All Price triggers checked')
+
+            # catch all case if nothing was hit (which is ok!)
+            return False
+
         # ===================== Selling ===========================
 
         def handle_or_sell_triggers() -> tuple:
@@ -679,6 +731,8 @@ class Simulator:
                 trigger_hit = check_stop_profit_sell_trigger(self.__strategy['sell'][key])
             elif key == 'color':
                 trigger_hit = check_candle_colors_sell_trigger(self.__strategy['sell'][key])
+            elif key == 'price':
+                trigger_hit = check_price_sell_trigger(self.__strategy['sell'][key])
 
             if trigger_hit:
                 # create the position
@@ -709,6 +763,8 @@ class Simulator:
                     trigger_hit = check_stop_profit_sell_trigger(self.__strategy['sell'][key][inner_key])
                 elif inner_key == 'color':
                     trigger_hit = check_candle_colors_sell_trigger(self.__strategy['sell'][key][inner_key])
+                elif key == 'price':
+                    trigger_hit = check_price_sell_trigger(self.__strategy['sell'][key])
 
                 if not trigger_hit:
                     # not all triggers were hit
@@ -738,7 +794,7 @@ class Simulator:
             log.debug('Checking RSI sell triggers...')
 
             # find the value of the RSI else default
-            _num = DEFAULT_RSI_LENGTH
+            _num = const.DEFAULT_RSI_LENGTH
             _nums = re.findall(r'\d+', _key)
             if len(_nums) == 1:
                 _num = float(_nums[0])
@@ -749,15 +805,18 @@ class Simulator:
             # new way where we just pull the pre-calculated value from the col in the df
             rsi = self.__df['RSI'][current_day_index]
 
-            # check that the value from {key: value} has a number in it
-            # this is the trigger value
-            _nums = re.findall(r'\d+', _value)
-            if len(_nums) == 1:
-                _trigger = float(_nums[0])
+            if const.CURRENT_PRICE_SYMBOL in _value:
+                _trigger = self.__df['Close'][current_day_index]
             else:
-                print('Found invalid format RSI (invalid number found in trigger value)')
-                # if no trigger value available, exit
-                return False
+                # check that the value from {key: value} has a number in it
+                # this is the trigger value
+                _nums = re.findall(r'\d+', _value)
+                if len(_nums) == 1:
+                    _trigger = float(_nums[0])
+                else:
+                    print('Found invalid format RSI (invalid number found in trigger value)')
+                    # if no trigger value available, exit
+                    return False
 
             # trigger checks
             if '<=' in _value:
@@ -816,15 +875,18 @@ class Simulator:
                 title = f'SMA{_num}'
                 sma = self.__df[title][current_day_index]
 
-                # check that the value from {key: value} has a number in it
-                # this is the trigger value
-                _nums = re.findall(r'\d+', _value)
-                if len(_nums) == 1:
-                    _trigger = float(_nums[0])
+                if const.CURRENT_PRICE_SYMBOL in _value:
+                    _trigger = self.__df['Close'][current_day_index]
                 else:
-                    print('Found invalid format SMA (invalid number found in trigger value)')
-                    # if no trigger value available, exit
-                    return False
+                    # check that the value from {key: value} has a number in it
+                    # this is the trigger value
+                    _nums = re.findall(r'\d+', _value)
+                    if len(_nums) == 1:
+                        _trigger = float(_nums[0])
+                    else:
+                        print('Found invalid format SMA (invalid number found in trigger value)')
+                        # if no trigger value available, exit
+                        return False
 
                 # trigger checks
                 if '<=' in _value:
@@ -964,6 +1026,49 @@ class Simulator:
             # catch all case if nothing was hit (which is ok!)
             return False
 
+        def check_price_sell_trigger(_value):
+            """Abstracted logic for price buy signals"""
+            log.debug('Checking price buy triggers...')
+
+            price = self.__df['Close'][current_day_index]
+
+            # check that the value from {key: value} has a number in it
+            # this is the trigger value
+            _nums = re.findall(r'\d+', _value)
+            if len(_nums) == 1:
+                _trigger = float(_nums[0])
+            else:
+                print('Found invalid format price (invalid number found in trigger value)')
+                # if no trigger value available, exit
+                return False
+
+            # trigger checks
+            if '<=' in _value:
+                if price <= _trigger:
+                    log.info(f"Price '<=' trigger hit!")
+                    return True
+            elif '>=' in _value:
+                if price >= _trigger:
+                    log.info(f"Price '>=' trigger hit!")
+                    return True
+            elif '<' in _value:
+                if price < _trigger:
+                    log.info(f"Price '<' trigger hit!")
+                    return True
+            elif '>' in _value:
+                if price > _trigger:
+                    log.info(f"Price '>' trigger hit!")
+                    return True
+            elif '=' in _value:
+                if price == _trigger:
+                    log.info(f"Price '==' trigger hit!")
+                    return True
+
+            log.debug('All Price triggers checked')
+
+            # catch all case if nothing was hit (which is ok!)
+            return False
+
         def insert_buy():
             """Abstraction for adding a buy to the buy list."""
             self.__buy_list[current_day_index] = self.__df['Close'][current_day_index]
@@ -994,8 +1099,8 @@ class Simulator:
         self.__indicators_API.add_data(self.__df)
 
         # calculate window lengths
-        total_days = int((self.__end_date_unix - self.__augmented_start_date_unix) / SECONDS_PER_DAY)
-        days_in_focus = int((self.__end_date_unix - self.__start_date_unix) / SECONDS_PER_DAY)
+        total_days = int((self.__end_date_unix - self.__augmented_start_date_unix) / const.SECONDS_1_DAY)
+        days_in_focus = int((self.__end_date_unix - self.__start_date_unix) / const.SECONDS_1_DAY)
         focus_start_day = total_days - days_in_focus
         trade_able_days = len(self.__df["Close"]) - focus_start_day
 

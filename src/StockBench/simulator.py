@@ -2,7 +2,7 @@ import re
 import time
 import math
 import logging
-import constants as const
+from .constants import *
 from tqdm import tqdm
 from datetime import datetime
 from .broker.broker_api import *
@@ -200,7 +200,7 @@ class Simulator:
                     # add the RSI data to the df
                     self.__add_rsi(num)
                 else:
-                    additional_days = const.DEFAULT_RSI_LENGTH
+                    additional_days = DEFAULT_RSI_LENGTH
             elif 'SMA' in key:
                 nums = re.findall(r'\d+', key)
                 if len(nums) == 1:
@@ -225,7 +225,7 @@ class Simulator:
         # now, we should always have enough days to supply the indicators that the user requires
 
         self.__error_check_timestamps(self.__start_date_unix, self.__end_date_unix)
-        self.__augmented_start_date_unix = self.__start_date_unix - (additional_days * const.SECONDS_1_DAY)
+        self.__augmented_start_date_unix = self.__start_date_unix - (additional_days * SECONDS_1_DAY)
 
     def __parse_strategy_rules(self):
         """Parse the strategy for relevant information needed to make the API request."""
@@ -249,7 +249,7 @@ class Simulator:
                 self.__add_rsi(num)
             else:
                 # add the RSI data to the df
-                self.__add_rsi(const.DEFAULT_RSI_LENGTH)
+                self.__add_rsi(DEFAULT_RSI_LENGTH)
             # ======== value based (rsi limit)=========
             # _value = self.__strategy['buy'][key]
             _nums = re.findall(r'\d+', _value)
@@ -273,7 +273,7 @@ class Simulator:
                 self.__add_rsi(num)
             else:
                 # add the RSI data to the df
-                self.__add_rsi(const.DEFAULT_RSI_LENGTH)
+                self.__add_rsi(DEFAULT_RSI_LENGTH)
             # ======== value based (rsi limit)=========
             # _value = self.__strategy['sell'][key]
             _nums = re.findall(r'\d+', _value)
@@ -322,7 +322,7 @@ class Simulator:
             price_data.append(self.__df['Close'][i])
 
         # calculate the RSI values from the indicator API
-        rsi_values = self.__indicators_API.RSI(const.DEFAULT_RSI_LENGTH, price_data)
+        rsi_values = self.__indicators_API.RSI(DEFAULT_RSI_LENGTH, price_data)
 
         # add the calculated values to the df
         self.__df['RSI'] = rsi_values
@@ -548,7 +548,7 @@ class Simulator:
         # ===================== Triggers ===========================
 
         def check_rsi_trigger(_key, _value) -> bool:
-            """Abstracted logic for RSI buy signals.
+            """Abstracted logic for RSI triggers.
 
             Args:
                 _key (str): The key value of the trigger.
@@ -561,10 +561,10 @@ class Simulator:
                 This functions is internal (fxn inside fxn) which means everything in the outer
                 function run() is global here
             """
-            log.debug('Checking RSI buy triggers...')
+            log.debug('Checking RSI triggers...')
 
             # find the value of the RSI else default
-            _num = const.DEFAULT_RSI_LENGTH
+            _num = DEFAULT_RSI_LENGTH
             _nums = re.findall(r'\d+', _key)
             if len(_nums) == 1:
                 _num = float(_nums[0])
@@ -575,7 +575,7 @@ class Simulator:
             # new way where we just pull the pre-calculated value from the col in the df
             rsi = self.__df['RSI'][current_day_index]
 
-            if const.CURRENT_PRICE_SYMBOL in _value:
+            if CURRENT_PRICE_SYMBOL in _value:
                 _trigger = self.__df['Close'][current_day_index]
             else:
                 # check that the value from {key: value} has a number in it
@@ -618,7 +618,7 @@ class Simulator:
             return False
 
         def check_sma_trigger(_key, _value) -> bool:
-            """Abstracted logic for SMA buy signals.
+            """Abstracted logic for SMA triggers.
 
             Args:
                 _key (str): The key value of the trigger.
@@ -631,7 +631,7 @@ class Simulator:
                 This functions is internal (fxn inside fxn) which means everything in the outer
                 function run() is global here
             """
-            log.debug('Checking SMA buy triggers...')
+            log.debug('Checking SMA triggers...')
 
             # find the SMA length, else exit
             _nums = re.findall(r'\d+', _key)
@@ -646,7 +646,7 @@ class Simulator:
                 title = f'SMA{_num}'
                 sma = self.__df[title][current_day_index]
 
-                if const.CURRENT_PRICE_SYMBOL in _value:
+                if CURRENT_PRICE_SYMBOL in _value:
                     _trigger = self.__df['Close'][current_day_index]
                 else:
                     # check that the value from {key: value} has a number in it
@@ -691,7 +691,7 @@ class Simulator:
             return False
 
         def check_candle_colors_trigger(_value) -> bool:
-            """Abstracted logic for candle stick buy signals.
+            """Abstracted logic for candle stick triggers.
 
             Args:
                 _value (dict): The value of the trigger.
@@ -703,7 +703,7 @@ class Simulator:
                 This functions is internal (fxn inside fxn) which means everything in the outer
                 function run() is global here.
             """
-            log.debug('Checking candle stick buy triggers...')
+            log.debug('Checking candle stick triggers...')
 
             # find out how many keys there are (_value is a dict)
             num_keys = len(_value)
@@ -735,8 +735,19 @@ class Simulator:
             return False
 
         def check_price_trigger(_value):
-            """Abstracted logic for price buy signals"""
-            log.debug('Checking price buy triggers...')
+            """Abstracted logic for price triggers.
+
+            Args:
+                _value (str): The value of the trigger.
+
+            return:
+                bool: True if the trigger was hit.
+
+            Notes:
+                This functions is internal (fxn inside fxn) which means everything in the outer
+                function run() is global here.
+            """
+            log.debug('Checking price triggers...')
 
             price = self.__df['Close'][current_day_index]
 
@@ -778,7 +789,7 @@ class Simulator:
             return False
 
         def check_stop_profit_trigger(_value) -> bool:
-            """Abstracted logic for stop profit sell signals.
+            """Abstracted logic for stop profit triggers.
 
             Args:
                 _value (str): The value of the trigger.
@@ -811,7 +822,7 @@ class Simulator:
             return False
 
         def check_stop_loss_trigger(_value) -> bool:
-            """Abstracted logic for stop loss sell signals.
+            """Abstracted logic for stop loss triggers.
 
             Args:
                 _value (str): The value of the trigger.
@@ -873,8 +884,8 @@ class Simulator:
         self.__indicators_API.add_data(self.__df)
 
         # calculate window lengths
-        total_days = int((self.__end_date_unix - self.__augmented_start_date_unix) / const.SECONDS_1_DAY)
-        days_in_focus = int((self.__end_date_unix - self.__start_date_unix) / const.SECONDS_1_DAY)
+        total_days = int((self.__end_date_unix - self.__augmented_start_date_unix) / SECONDS_1_DAY)
+        days_in_focus = int((self.__end_date_unix - self.__start_date_unix) / SECONDS_1_DAY)
         focus_start_day = total_days - days_in_focus
         trade_able_days = len(self.__df["Close"]) - focus_start_day
 

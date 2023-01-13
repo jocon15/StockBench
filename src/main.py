@@ -1,12 +1,13 @@
 import time
+from StockBench.constants import *
 from StockBench.simulator import Simulator
-import StockBench.constants as const
+
 
 strategy = {
-    'start': int(time.time()) - const.SECONDS_5_YEAR,  # 100 days in the past
+    'start': int(time.time()) - SECONDS_5_YEAR,  # 100 days in the past
     'end': int(time.time()),                     # now
     'buy': {
-        # 'RSI': '>20',
+        'RSI': '<30',
         'and1': {
             'SMA20': '>50',
             'color': {

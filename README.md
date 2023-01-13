@@ -4,9 +4,11 @@ A back-tester for testing stock trading strategies with historical data.
 ![chart](https://github.com/jocon15/StockBench/blob/master/images/example_chart.png)
 
 ## Getting Started
-First, you need to get your own API keys from https://alpaca.markets/.
+First, you need to get your own API keys from [Aplaca Markets](https://alpaca.markets/).
 
 Add them as environment variables.
+
+Check out [Building a Strategy](https://github.com/jocon15/StockBench/wiki/Building-a-Strategy) for more information about constructing a strategy.
 
 Setup your simulation...
 ```
@@ -15,12 +17,11 @@ from StockBench.simulator import Simulator
 import StockBench.constants as const
 
 strategy = {
-    'start': int(time.time()) - const.SECONDS_5_YEAR,  # 100 days in the past
-    'end': int(time.time()),                           # now
+    'start': int(time.time()) - const.SECONDS_5_YEAR,
+    'end': int(time.time()),
     'buy': {
         'RSI': '<40',
         'SMA20': '>256',
-        }
     },
     'sell': {
         'stop_loss': '50',
@@ -49,7 +50,6 @@ As seen from the charts, a ellegant chart can be produced depiting the simulatio
 
 I will likely be making changes to several things, listed below.
 
-- [x] Provide support for 'and' triggers. EX: sell if RSI > 60 and SMA20 > 26 (complex triggering)
 - [ ] Provide support for variable triggers. EX: sell if SMA20 > current price (complex triggering)
 - [ ] Provide support for additional indicators.
 - [ ] Provide support for exporting simulation data to excel

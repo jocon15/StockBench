@@ -451,6 +451,17 @@ class Simulator:
         # deposit the value of the position to the account
         self.__account.deposit(deposit_amount)
 
+    def __print_results(self):
+        """Prints the simulation results if terminal logging is off"""
+        if not self.__user_terminal_logging_on:
+            print('====== Simulation Results ======')
+            print(f'Trades made   : {len(self.__position_archive)}')
+            print(f'Effectiveness : {self.__analyzer_API.effectiveness()}%')
+            print(f'Avg. P/L      : ${self.__analyzer_API.avg_pl()}')
+            print(f'Total P/L     : ${self.__account.get_profit_loss()}')
+            print(f'Account Value : ${self.__account.get_balance()}')
+            print('================================')
+
     def run(self, symbol: str):
         """Run a simulation on an asset."""
 
@@ -909,7 +920,7 @@ class Simulator:
         log.info(f'Beginning simulation...')
 
         # ===================== Simulation Loop ======================
-        for current_day_index in tqdm(range(focus_start_day, len(self.__df['Close']))):
+        for current_day_index in range(focus_start_day, len(self.__df['Close'])):
             # we loop from the focus start day (ex. 200)
             # to the total amount of days in the set (ex. 400)
             # the day_index represents the index of the current day in the
@@ -981,13 +992,7 @@ class Simulator:
         log.info(f'Account Value : {self.__account.get_balance()}')
         log.info('================================')
 
-        print('====== Simulation Results ======')
-        print(f'Trades made   : {len(self.__position_archive)}')
-        print(f'Effectiveness : {self.__analyzer_API.effectiveness()}%')
-        print(f'Avg. P/L      : ${self.__analyzer_API.avg_pl()}')
-        print(f'Total P/L     : ${self.__account.get_profit_loss()}')
-        print(f'Account Value : ${self.__account.get_balance()}')
-        print('================================')
+        self.__print_results()
 
         # any report building goes here!
         # FIXME: Report building

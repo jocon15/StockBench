@@ -14,3 +14,7 @@ DEFAULT_RSI_LENGTH = 14
 # ========== Strategy Constants ==========
 CURRENT_PRICE_SYMBOL = '$price'
 
+
+# ========== System Constants ============
+DOUBLE_COMPARISON_EPSILON = 0.1
+

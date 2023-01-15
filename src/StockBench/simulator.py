@@ -1,4 +1,5 @@
 import re
+import sys
 import time
 import math
 import logging
@@ -52,8 +53,9 @@ class Simulator:
 
         self.__reporting_on = False
         self.__charting_on = False
+        self.__user_terminal_logging_on = False
 
-    def enable_logging(self):
+    def enable_logging(self, terminal=False):
         """Enable user logging."""
         # set the logging level to info
         log.setLevel(logging.INFO)
@@ -76,7 +78,20 @@ class Simulator:
         # add the handler to the logger
         log.addHandler(user_handler)
 
-    def enable_developer_logging(self, _level=2):
+        if terminal:
+            # create the terminal handler
+            terminal_handler = logging.StreamHandler(sys.stdout)
+
+            # set the formal of the handler
+            terminal_handler.setFormatter(user_logging_formatter)
+
+            # add the handler to the logger
+            log.addHandler(terminal_handler)
+
+            # tell the developer logging that we're using the terminal
+            self.__user_terminal_logging_on = True
+
+    def enable_developer_logging(self, _level=2, terminal=False):
         """Enable developer logging."""
         # set the logging level
         if _level == 1:
@@ -114,6 +129,17 @@ class Simulator:
 
         # add the handler to the logger
         log.addHandler(developer_handler)
+
+        if terminal:
+            if not self.__user_terminal_logging_on:
+                # create the terminal handler
+                terminal_handler = logging.StreamHandler(sys.stdout)
+
+                # set the formal of the handler
+                terminal_handler.setFormatter(developer_logging_formatter)
+
+                # add the handler to the logger
+                log.addHandler(terminal_handler)
 
     def enable_reporting(self):
         """Enable report building."""
@@ -547,6 +573,34 @@ class Simulator:
 
         # ===================== Triggers ===========================
 
+        def basic_triggers_check(indicator_value, operator_value, trigger_value):
+            """Abstraction for basic trigger comparison operators.
+
+            Args:
+                indicator_value (float): The value of the indicator.
+                operator_value (str): The operator defined in the strategy
+                trigger_value (float): The value of the trigger.
+
+            returns:
+                bool: True if the trigger was hit.
+            """
+            if operator_value == '<=':
+                if indicator_value <= trigger_value:
+                    return True
+            elif operator_value == '>=':
+                if indicator_value >= trigger_value:
+                    return True
+            elif operator_value == '<':
+                if indicator_value < trigger_value:
+                    return True
+            elif operator_value == '>':
+                if indicator_value > trigger_value:
+                    return True
+            elif operator_value == '=':
+                if (indicator_value - trigger_value) <= DOUBLE_COMPARISON_EPSILON:
+                    return True
+            return False
+
         def check_rsi_trigger(_key, _value) -> bool:
             """Abstracted logic for RSI triggers.
 
@@ -576,13 +630,15 @@ class Simulator:
             rsi = self.__df['RSI'][current_day_index]
 
             if CURRENT_PRICE_SYMBOL in _value:
-                _trigger = self.__df['Close'][current_day_index]
+                trigger = self.__df['Close'][current_day_index]
+                operator = _value.replace('$price', '')
             else:
                 # check that the value from {key: value} has a number in it
                 # this is the trigger value
                 _nums = re.findall(r'\d+', _value)
                 if len(_nums) == 1:
-                    _trigger = float(_nums[0])
+                    trigger = float(_nums[0])
+                    operator = _value.replace(str(_nums[0]), '')
                 else:
                     log.warning('Found invalid format RSI (invalid number found in trigger value)')
                     print('Found invalid format RSI (invalid number found in trigger value)')
@@ -590,32 +646,11 @@ class Simulator:
                     return False
 
             # trigger checks
-            if '<=' in _value:
-                if rsi <= _trigger:
-                    log.info(f"RSI '<=' trigger hit!")
-                    return True
-            elif '>=' in _value:
-                if rsi >= _trigger:
-                    log.info(f"RSI '>=' trigger hit!")
-                    return True
-            elif '<' in _value:
-                if rsi < _trigger:
-                    log.info(f"RSI '<' trigger hit!")
-                    return True
-            elif '>' in _value:
-                if rsi > _trigger:
-                    log.info(f"RSI '>' trigger hit!")
-                    return True
-            elif '=' in _value:
-                if rsi == _trigger:
-                    log.info(f"RSI '==' trigger hit!")
-                    return True
+            result = basic_triggers_check(rsi, operator, trigger)
 
             log.debug('All RSI triggers checked')
 
-            # catch all case if nothing was hit (which is ok!)
-            # No position and buying is still enabled
-            return False
+            return result
 
         def check_sma_trigger(_key, _value) -> bool:
             """Abstracted logic for SMA triggers.
@@ -647,44 +682,26 @@ class Simulator:
                 sma = self.__df[title][current_day_index]
 
                 if CURRENT_PRICE_SYMBOL in _value:
-                    _trigger = self.__df['Close'][current_day_index]
+                    trigger = self.__df['Close'][current_day_index]
+                    operator = _value.replace('$price', '')
                 else:
                     # check that the value from {key: value} has a number in it
                     # this is the trigger value
                     _nums = re.findall(r'\d+', _value)
                     if len(_nums) == 1:
-                        _trigger = float(_nums[0])
+                        trigger = float(_nums[0])
+                        operator = _value.replace(str(_nums[0]), '')
                     else:
                         print('Found invalid format SMA (invalid number found in trigger value)')
                         # if no trigger value available, exit
                         return False
 
                 # trigger checks
-                if '<=' in _value:
-                    if sma <= _trigger:
-                        log.info(f"SMA '<=' trigger hit!")
-                        return True
-                elif '>=' in _value:
-                    if sma >= _trigger:
-                        log.info(f"SMA '>=' trigger hit!")
-                        return True
-                elif '<' in _value:
-                    if sma < _trigger:
-                        log.info(f"SMA '<' trigger hit!")
-                        return True
-                elif '>' in _value:
-                    if sma > _trigger:
-                        log.info(f"SMA '>' trigger hit!")
-                        return True
-                elif '=' in _value:
-                    if sma == _trigger:
-                        log.info(f"SMA '==' trigger hit!")
-                        return True
+                result = basic_triggers_check(sma, operator, trigger)
 
                 log.debug('All SMA triggers checked')
 
-                # catch all case if nothing was hit (which is ok!)
-                return False
+                return result
 
             log.warning(f'Warning: {key} is in incorrect format and will be ignored')
             print(f'Warning: {key} is in incorrect format and will be ignored')
@@ -755,38 +772,20 @@ class Simulator:
             # this is the trigger value
             _nums = re.findall(r'\d+', _value)
             if len(_nums) == 1:
-                _trigger = float(_nums[0])
+                trigger = float(_nums[0])
+                operator = _value.replace(str(_nums[0]), '')
             else:
                 print('Found invalid format price (invalid number found in trigger value)')
                 # if no trigger value available, exit
                 return False
 
             # trigger checks
-            if '<=' in _value:
-                if price <= _trigger:
-                    log.info(f"Price '<=' trigger hit!")
-                    return True
-            elif '>=' in _value:
-                if price >= _trigger:
-                    log.info(f"Price '>=' trigger hit!")
-                    return True
-            elif '<' in _value:
-                if price < _trigger:
-                    log.info(f"Price '<' trigger hit!")
-                    return True
-            elif '>' in _value:
-                if price > _trigger:
-                    log.info(f"Price '>' trigger hit!")
-                    return True
-            elif '=' in _value:
-                if price == _trigger:
-                    log.info(f"Price '==' trigger hit!")
-                    return True
+            result = basic_triggers_check(price, operator, trigger)
 
             log.debug('All Price triggers checked')
 
             # catch all case if nothing was hit (which is ok!)
-            return False
+            return result
 
         def check_stop_profit_trigger(_value) -> bool:
             """Abstracted logic for stop profit triggers.

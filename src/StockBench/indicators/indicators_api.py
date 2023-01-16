@@ -3,7 +3,28 @@ import statistics
 
 
 class Indicators:
+    """This class defines an indicators object.
 
+    The indicators object is used as an API for the simulator to use to calculate values for indicators. For example,
+    the simulation will likely require an indicator like SMA, in which case the simulation needs the values of SMA
+    for every day in the simulation.
+
+    The simulator will pass the relevant data needed for the calculation to the dedicated function in this API. The
+    specific function will then return the calculated values for that indicator. The simulator adds that data to the
+    DataFrame prior to the simulation.
+
+    The simulator is designed to request additional data beyond the simulation window to have accurate indicator data
+    day 1 of the simulation window. Because we've done that, the first few calculated values of these indicators will
+    be incorrect (as expected) due to too small sample size. Since the simulator has requested additional data, the
+    incorrect early indicator values will get cut off by the simulation window. Essentially, the indicator data will
+    be accurate by the time the simulation starts and the data will be accurate throughout the simulation.
+
+    ****************************************************************************************************************
+        If you're adding an indicator, make sure that you add the correct amount of additional days needed in the
+        __parse_strategy_timestamps() function in the simulator class.
+    ****************************************************************************************************************
+
+    """
     def __init__(self):
         self.__data = None
 

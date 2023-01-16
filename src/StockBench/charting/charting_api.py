@@ -1,6 +1,7 @@
 import re
 import logging
 import pandas as pd
+from .color_constants import *
 import plotly.graph_objects as fplt
 from plotly.subplots import make_subplots
 
@@ -8,6 +9,11 @@ log = logging.getLogger()
 
 
 class ChartingAPI:
+    """This class defines a charting object.
+
+    The charting object is used as an API for the simulator to chart the data. All charting functionality is done
+    through this API.
+    """
     def __init__(self):
         self.__subplot_count = 1
         self.__df = None
@@ -48,25 +54,48 @@ class ChartingAPI:
         # add additional traces
         for (column_name, column_data) in self.__df.iteritems():
             if 'SMA' in column_name:
-                fig.add_trace(fplt.Scatter(x=self.__df['Date'], y=self.__df[column_name], line=dict(
-                    color="#e0e0e0"), name='10SMA'), row=1, col=1)
+                fig.add_trace(fplt.Scatter(
+                    x=self.__df['Date'],
+                    y=self.__df[column_name], line=dict(color=WHITE),
+                    name='10SMA'),
+                    row=1, col=1)
             if column_name == 'Buy':
                 fig.add_trace(fplt.Scatter(
-                    x=self.__df['Date'], y=self.__df['Buy'], name='Buy', mode='markers',
-                    marker=dict(color="#fcad03")), row=1, col=1)
+                    x=self.__df['Date'],
+                    y=self.__df['Buy'],
+                    name='Buy',
+                    mode='markers',
+                    marker=dict(color=BUY_COLOR)),
+                    row=1, col=1)
             if column_name == 'Sell':
                 fig.add_trace(fplt.Scatter(
-                    x=self.__df['Date'], y=self.__df['Sell'], name='Sell', mode='markers',
-                    marker=dict(color="#03fcd3")), row=1, col=1)
+                    x=self.__df['Date'],
+                    y=self.__df['Sell'],
+                    name='Sell',
+                    mode='markers',
+                    marker=dict(color=SELL_COLOR)),
+                    row=1, col=1)
             if column_name == 'RSI':
-                fig.add_trace(fplt.Scatter(x=self.__df['Date'], y=self.__df['RSI'], line=dict(
-                    color="#e0e0e0"), name='RSI'), row=self.__RSI_ROW, col=1)
+                fig.add_trace(fplt.Scatter(
+                    x=self.__df['Date'],
+                    y=self.__df['RSI'],
+                    line=dict(color=WHITE),
+                    name='RSI'),
+                    row=self.__RSI_ROW, col=1)
             if column_name == 'RSI_upper':
-                fig.add_trace(fplt.Scatter(x=self.__df['Date'], y=self.__df['RSI_upper'], line=dict(
-                    color="#fcc203"), name='RSI Upper'), row=self.__RSI_ROW, col=1)
+                fig.add_trace(fplt.Scatter(
+                    x=self.__df['Date'],
+                    y=self.__df['RSI_upper'],
+                    line=dict(color=HORIZONTAL_TRIGGER_YELLOW),
+                    name='RSI Upper'),
+                    row=self.__RSI_ROW, col=1)
             if column_name == 'RSI_lower':
-                fig.add_trace(fplt.Scatter(x=self.__df['Date'], y=self.__df['RSI_lower'], line=dict(
-                    color="#fcc203"), name='RSI Lower'), row=self.__RSI_ROW, col=1)
+                fig.add_trace(fplt.Scatter(
+                    x=self.__df['Date'],
+                    y=self.__df['RSI_lower'],
+                    line=dict(color=HORIZONTAL_TRIGGER_YELLOW),
+                    name='RSI Lower'),
+                    row=self.__RSI_ROW, col=1)
 
         # update the layout
         window_size = len(self.__df['Close'])
@@ -86,7 +115,7 @@ class ChartingAPI:
 
         # Notes
         # Make a bunch of constants for things like color.
-        #   Define a bunch of colors that we like and then make them constants so it's easier
+        #   Define a bunch of colors that we like and then make them constants, so it's easier
         # When we loop through the rubric, have a counter that counts how many subplots we need
         #   Subplots should be in a defined order, 1 is always data + sma, 2 is always RSI
         #   if there is no RSI in the rubric, the chart should not render an empty RSI chart

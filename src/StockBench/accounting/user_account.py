@@ -1,7 +1,11 @@
 
 
 class UserAccount:
+    """This class defines a user account object.
 
+    This class is intended to be used as a singleton. The account object keeps track of the users account for
+    analytical purposes.
+    """
     def __init__(self, balance: float):
         self.__balance = balance
         self.__initial_balance = balance

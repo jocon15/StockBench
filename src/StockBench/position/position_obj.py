@@ -1,11 +1,10 @@
-# FIXME:
-#   - This class represents a position object. A position is where we purchase an asset.
-#   - When we purchase an asset, we have a share count and a share price.
-#   - While the position is alive, there is no sell_price, yet.
-#   - But we can calculate the profit/loss of the live position at any time given the
-#   - current price of the asset.
-
 class Position:
+    """This class defines a position object.
+
+    A position is one or more shares purchased at the same price for a particular asset. The position objects is
+    needed because we need to keep tract of the purchase price of those shares. In the context of a simulation,
+    the position is going to be opened on one day, likely held for some time, then liquidated. At the liquidation
+    point, we want to have all the details regarding that position in one place for analytical purposes."""
     def __init__(self, _buy_price: float, _share_count: float):
         self.__buy_price = _buy_price
         self.__sell_price = None
@@ -45,10 +44,25 @@ class Position:
         return current_value - initial_value
 
     def get_buy_price(self):
+        """Accessor for the purchase price of the position.
+
+        return:
+            float: The purchase price.
+        """
         return self.__buy_price
 
     def get_share_count(self):
+        """Accessor for the share count of the position.
+
+        return:
+            float: The share count.
+        """
         return self.__share_count
 
     def get_sell_price(self):
+        """Accessor for the liquidation price of the position.
+
+        return:
+            float: The liquidation price.
+        """
         return self.__sell_price

@@ -17,20 +17,26 @@ from .analysis.analysis_api import *
 log = logging.getLogger()  # root
 
 
-# ------------ - Additional days needed for accurate indicators at simulation start (algorithm defined)
-# |   OHLC   |
-# |   OHLC   |
-# ------------ - Start of the simulation (user defined)
-# |   OHLC   |
-# |   OHLC   |
-# |   OHLC   |
-# |   OHLC   |
-# |   OHLC   |
-# |   OHLC   |
-# ------------ - End of the simulation (user defined)
-
-
 class Simulator:
+    """This class defines a simulator object.
+
+    This class serves as the one and only API between the user and the simulation. The simulator handles
+    simulation setup and eventual run.
+
+
+    Here's the breakdown of the simulation data compared to the simulation window
+    ------------ - Additional days needed for accurate indicators at simulation start (algorithm defined)
+    |   OHLC   |
+    |   OHLC   |
+    ------------ - Start of the simulation (user defined)
+    |   OHLC   |
+    |   OHLC   |
+    |   OHLC   |
+    |   OHLC   |
+    |   OHLC   |
+    |   OHLC   |
+    ------------ - End of the simulation (user defined)
+    """
     def __init__(self, balance: float):
         self.__account = UserAccount(balance)
         self.__broker_API = BrokerAPI()
@@ -56,7 +62,11 @@ class Simulator:
         self.__user_terminal_logging_on = False
 
     def enable_logging(self, terminal=False):
-        """Enable user logging."""
+        """Enable user logging.
+
+        Args:
+            terminal (bool): Flag for enabling terminal logging in addition to file logging.
+        """
         # set the logging level to info
         log.setLevel(logging.INFO)
 
@@ -91,22 +101,31 @@ class Simulator:
             # tell the developer logging that we're using the terminal
             self.__user_terminal_logging_on = True
 
-    def enable_developer_logging(self, _level=2, terminal=False):
-        """Enable developer logging."""
+    def enable_developer_logging(self, level=2, terminal=False):
+        """Enable developer logging.
+
+        Args:
+            level (int): The logging level for the logger.
+            terminal (bool): Flag for enabling terminal logging in addition to file logging.
+
+        Notes:
+            - If user_logging terminal is enabled, it will supersede the developer terminal logging.
+                Make sure the user terminal logging is disabled before enabling developer terminal logging.
+        """
         # set the logging level
-        if _level == 1:
+        if level == 1:
             log.setLevel(logging.DEBUG)
             # build the formatter
             developer_logging_formatter = logging.Formatter('%(funcName)s:%(lineno)d|%(levelname)s|%(message)s')
-        elif _level == 3:
+        elif level == 3:
             log.setLevel(logging.WARNING)
             # build the formatter
             developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
-        elif _level == 4:
+        elif level == 4:
             log.setLevel(logging.ERROR)
             # build the formatter
             developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
-        elif _level == 5:
+        elif level == 5:
             log.setLevel(logging.CRITICAL)
             # build the formatter
             developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
@@ -156,6 +175,15 @@ class Simulator:
 
     @staticmethod
     def unix_to_string(_unix_date, _format='%m-%d-%Y') -> str:
+        """Convert a unix date to a string of custom format.
+
+        Args:
+            _unix_date (int): The unix timestamp to convert.
+            _format (str): The format to convert to.
+
+        return:
+            (str): The converted string in custom format.
+        """
         return datetime.utcfromtimestamp(_unix_date).strftime(_format)
 
     def load_strategy(self, strategy: dict):

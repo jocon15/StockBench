@@ -71,7 +71,7 @@ class Simulator:
         log.setLevel(logging.INFO)
 
         # build the filepath
-        user_logging_filepath = f'logs\\RunLog_{self.datetime_nonce_string()}'
+        user_logging_filepath = f'logs\\RunLog_{self.__datetime_nonce_string()}'
 
         # build the formatters
         user_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
@@ -135,7 +135,7 @@ class Simulator:
             developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
 
         # build the filepath
-        developer_logging_filepath = f'dev\\DevLog_{self.datetime_nonce_string()}'
+        developer_logging_filepath = f'dev\\DevLog_{self.__datetime_nonce_string()}'
 
         # make the directories if they don't already exist
         os.makedirs(os.path.dirname(developer_logging_filepath), exist_ok=True)
@@ -169,12 +169,12 @@ class Simulator:
         self.__charting_on = True
 
     @staticmethod
-    def datetime_nonce_string() -> str:
+    def __datetime_nonce_string() -> str:
         """Convert current date and time to string."""
         return datetime.now().strftime("%m_%d_%Y__%H_%M_%S")
 
     @staticmethod
-    def unix_to_string(_unix_date, _format='%m-%d-%Y') -> str:
+    def __unix_to_string(_unix_date, _format='%m-%d-%Y') -> str:
         """Convert a unix date to a string of custom format.
 
         Args:
@@ -938,8 +938,8 @@ class Simulator:
 
         log.info('==== Simulation Details =====')
         log.info(f'Symbol          : {self.__symbol}')
-        log.info(f'Start Date      : {self.unix_to_string(self.__start_date_unix)}')
-        log.info(f'End Date        : {self.unix_to_string(self.__end_date_unix)}')
+        log.info(f'Start Date      : {self.__unix_to_string(self.__start_date_unix)}')
+        log.info(f'End Date        : {self.__unix_to_string(self.__end_date_unix)}')
         log.info(f'Window Size     : {days_in_focus}')
         log.info(f'Trade-able Days : {trade_able_days}')
         log.info(f'Account Value   : {self.__account.get_balance()}')

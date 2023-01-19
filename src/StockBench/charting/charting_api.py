@@ -54,10 +54,12 @@ class ChartingAPI:
         # add additional traces
         for (column_name, column_data) in self.__df.iteritems():
             if 'SMA' in column_name:
+                nums = re.findall(r'\d+', column_name)
+                length = nums[0]
                 fig.add_trace(fplt.Scatter(
                     x=self.__df['Date'],
                     y=self.__df[column_name], line=dict(color=WHITE),
-                    name='10SMA'),
+                    name=f'SMA{length}'),
                     row=1, col=1)
             if column_name == 'Buy':
                 fig.add_trace(fplt.Scatter(

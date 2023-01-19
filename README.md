@@ -6,9 +6,9 @@ A back-tester for testing stock trading strategies with historical data.
 ## Getting Started
 First, you need to get your own API keys from [Aplaca Markets](https://alpaca.markets/).
 
-Add them as environment variables.
+Add them as [Environment Variables](https://github.com/jocon15/StockBench/wiki/Environment-Variables).
 
-Check out [Building a Strategy](https://github.com/jocon15/StockBench/wiki/Building-a-Strategy) for more information about constructing a strategy.
+Check out [Building a Strategy](https://github.com/jocon15/StockBench/wiki/Building-a-Strategy) for more information about constructing a custom strategy.
 
 Setup your simulation...
 ```
@@ -50,8 +50,9 @@ As seen from the charts, a ellegant chart can be produced depiting the simulatio
 
 I will likely be making changes to several things, listed below.
 
-- [ ] Provide support for variable triggers. EX: sell if SMA20 > current price (complex triggering)
+- [x] Provide support for variable triggers. EX: sell if SMA20 > current price (complex triggering)
 - [ ] Provide support for additional indicators.
 - [ ] Provide support for exporting simulation data to excel
 - [ ] Investigate potential better ways for user to define strategy
 - [ ] Investigate posible GUI interface
+- [ ] Investigate news search triggering with Google search date filters

@@ -43,6 +43,12 @@ stock_sim.run('MSFT')
 ## Results
 ![chart](https://github.com/jocon15/StockBench/blob/master/images/example_chart.png)
 
+
+## Diving Deeper
+StockBench allows users to generate a report of all the data used during the simulation. By enabling reporting, the simulation will generate an Excel file.
+
+![report](https://github.com/jocon15/StockBench/blob/master/images/excel.png)
+
 # Under Construction
 This project is currently in-development. The intention of this project is to be a proof-of-concept for simulating stock trading strategies. So far, we have had success in simulating strategies with multiple basic triggers.
 

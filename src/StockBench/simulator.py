@@ -9,6 +9,7 @@ from datetime import datetime
 from .broker.broker_api import *
 from .charting.charting_api import *
 from .accounting.user_account import *
+from .exporting.exporting_api import *
 from .indicators.indicators_api import *
 from .position.position_obj import *
 from .analysis.analysis_api import *
@@ -42,6 +43,7 @@ class Simulator:
         self.__broker_API = BrokerAPI()
         self.__charting_API = ChartingAPI()
         self.__indicators_API = Indicators()  # gets constructed once we have the data
+        self.__exporting_API = ExportingAPI()
         self.__analyzer_API = None  # gets constructed once we have the data
 
         self.__strategy = None
@@ -1028,5 +1030,12 @@ class Simulator:
         #   - We could export the df to excel
         #       - the df already looks like an excel sheet
 
+        if self.__reporting_on:
+            # load exporter with the data
+            self.__exporting_API.load_data(self.__df)
+            # export the data
+            self.__exporting_API.export()
+
         if self.__charting_on:
+            # chart the data
             self.__charting_API.chart(self.__df, self.__symbol)

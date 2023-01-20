@@ -37,7 +37,7 @@ def main():
 
     stock_sim.load_strategy(strategy)
 
-    # stock_sim.enable_reporting()
+    stock_sim.enable_reporting()
     stock_sim.enable_charting()
 
     stock_sim.run('MSFT')

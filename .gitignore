@@ -4,6 +4,7 @@ notes.docx
 *.html
 logs/
 dev/
+excel/
 .idea/
 
 # Byte-compiled / optimized / DLL files

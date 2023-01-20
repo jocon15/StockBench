@@ -25,7 +25,8 @@ class Simulator:
     simulation setup and eventual run.
 
 
-    Here's the breakdown of the simulation data compared to the simulation window
+    Here's the breakdown of the simulation data compared to the simulation window:
+
     ------------ - Additional days needed for accurate indicators at simulation start (algorithm defined)
     |   OHLC   |
     |   OHLC   |

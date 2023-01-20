@@ -4,8 +4,8 @@ from StockBench.simulator import Simulator
 
 
 strategy = {
-    'start': int(time.time()) - SECONDS_5_YEAR,  # 100 days in the past
-    'end': int(time.time()),                     # now
+    'start': int(time.time()) - SECONDS_5_YEAR,
+    'end': int(time.time()),
     'buy': {
         'RSI': '<30',
         'and1': {

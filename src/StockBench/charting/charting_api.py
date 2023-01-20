@@ -105,19 +105,3 @@ class ChartingAPI:
                           xaxis_title='Date (UNIX)', yaxis_title='Price (USD)', xaxis_rangeslider_visible=False)
 
         fig.write_html('figure.html', auto_open=True)
-        # Step 1
-        # loop through the rubric and calculate + add any of the missing data to the df
-        # Step 2
-        # Once the df is full, chop the remaining data off that is not in the focus area
-        #   *There should be a key:value in the rubric that tells us what day the focus starts at
-        # Step 3
-        # Graph everything in the dataframe using plotly
-        # Step 4
-        # Show the graph
-
-        # Notes
-        # Make a bunch of constants for things like color.
-        #   Define a bunch of colors that we like and then make them constants, so it's easier
-        # When we loop through the rubric, have a counter that counts how many subplots we need
-        #   Subplots should be in a defined order, 1 is always data + sma, 2 is always RSI
-        #   if there is no RSI in the rubric, the chart should not render an empty RSI chart

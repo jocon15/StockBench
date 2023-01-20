@@ -170,24 +170,6 @@ class Simulator:
         """Enable charting."""
         self.__charting_on = True
 
-    @staticmethod
-    def __datetime_nonce_string() -> str:
-        """Convert current date and time to string."""
-        return datetime.now().strftime("%m_%d_%Y__%H_%M_%S")
-
-    @staticmethod
-    def __unix_to_string(_unix_date, _format='%m-%d-%Y') -> str:
-        """Convert a unix date to a string of custom format.
-
-        Args:
-            _unix_date (int): The unix timestamp to convert.
-            _format (str): The format to convert to.
-
-        return:
-            (str): The converted string in custom format.
-        """
-        return datetime.utcfromtimestamp(_unix_date).strftime(_format)
-
     def load_strategy(self, strategy: dict):
         """Load a strategy.
 
@@ -195,302 +177,6 @@ class Simulator:
              strategy (dict): The strategy as a dictionary.
          """
         self.__strategy = strategy
-
-    def __error_check_strategy(self):
-        """Check the strategy for errors"""
-        log.debug('Checking strategy for errors...')
-        if not self.__strategy:
-            log.critical('No strategy uploaded')
-            raise Exception('No strategy uploaded')
-        if 'start' not in self.__strategy.keys():
-            log.critical("Strategy missing 'start' key")
-            raise Exception("Strategy missing 'start' key")
-        if 'end' not in self.__strategy.keys():
-            log.critical("Strategy missing 'end' key")
-            raise Exception("Strategy missing 'end' key")
-        if 'buy' not in self.__strategy.keys():
-            log.critical("Strategy missing 'buy' key")
-            raise Exception("Strategy missing 'buy' key")
-        if 'sell' not in self.__strategy.keys():
-            log.critical("Strategy missing 'sell' key")
-            raise Exception("Strategy missing 'sell' key")
-        log.debug('No errors found in the strategy')
-
-    @staticmethod
-    def __error_check_timestamps(_start, _end):
-        """Simple check that the timestamps are valid."""
-        if _start > _end:
-            log.critical('Start timestamp must be before end timestamp')
-            raise Exception('Start timestamp must be before end timestamp')
-        if _start > int(time.time()):
-            log.critical('Start timestamp must not be in the future')
-            raise Exception('Start timestamp must not be in the future')
-
-    def __parse_strategy_timestamps(self):
-        """Parse the strategy for relevant information needed to make the API request."""
-        log.debug('Parsing strategy for timestamps...')
-        if 'start' in self.__strategy.keys():
-            self.__start_date_unix = int(self.__strategy['start'])
-        if 'end' in self.__strategy.keys():
-            self.__end_date_unix = int(self.__strategy['end'])
-
-        additional_days = 0
-
-        # build a list of sub keys from the buy and sell sections
-        keys = list()
-        if 'buy' in self.__strategy.keys():
-            for key in self.__strategy['buy'].keys():
-                keys.append(key)
-        if 'sell' in self.__strategy.keys():
-            for key in self.__strategy['sell'].keys():
-                keys.append(key)
-
-        for key in keys:
-            if 'RSI' in key:
-                # ======== key based =========
-                nums = re.findall(r'\d+', key)
-                if len(nums) == 1:
-                    num = int(nums[0])
-                    if additional_days < num:
-                        additional_days = num
-                    # add the RSI data to the df
-                    self.__add_rsi(num)
-                else:
-                    additional_days = DEFAULT_RSI_LENGTH
-            elif 'SMA' in key:
-                nums = re.findall(r'\d+', key)
-                if len(nums) == 1:
-                    num = int(nums[0])
-                    if additional_days < num:
-                        additional_days = num
-            elif 'color' in key:
-                try:
-                    num = len(self.__strategy['buy']['color'])
-                    if type(self.__strategy['buy']['color']) != dict:
-                        raise Exception('Candle stick signals must be a dict')
-                except KeyError:
-                    num = len(self.__strategy['sell']['color'])
-                if additional_days < num:
-                    additional_days = num
-
-        # add a buffer
-        if additional_days != 0:
-            # we figure 2 weekdays and a holiday for every week of additional days
-            # since it gets cast to int, the decimal is cut off -> it's usually < 3 per week after cast
-            additional_days += int((additional_days / 7) * 3)
-        # now, we should always have enough days to supply the indicators that the user requires
-
-        self.__error_check_timestamps(self.__start_date_unix, self.__end_date_unix)
-        self.__augmented_start_date_unix = self.__start_date_unix - (additional_days * SECONDS_1_DAY)
-
-    def __parse_strategy_rules(self):
-        """Parse the strategy for relevant information needed to make the API request."""
-        log.debug('Parsing strategy for indicators and rules...')
-
-        # build a list of sub keys from the buy and sell sections
-        keys = list()
-        if 'buy' in self.__strategy.keys():
-            for key in self.__strategy['buy'].keys():
-                keys.append(key)
-        if 'sell' in self.__strategy.keys():
-            for key in self.__strategy['sell'].keys():
-                keys.append(key)
-
-        def rsi_buy(_key, _value):
-            # ======== key based =========
-            nums = re.findall(r'\d+', _key)
-            if len(nums) == 1:
-                num = int(nums[0])
-                # add the RSI data to the df
-                self.__add_rsi(num)
-            else:
-                # add the RSI data to the df
-                self.__add_rsi(DEFAULT_RSI_LENGTH)
-            # ======== value based (rsi limit)=========
-            # _value = self.__strategy['buy'][key]
-            _nums = re.findall(r'\d+', _value)
-            if len(_nums) == 1:
-                _trigger = float(_nums[0])
-                self.__add_lower_rsi(_trigger)
-
-        def sma_buy(_key):
-            nums = re.findall(r'\d+', _key)
-            if len(nums) == 1:
-                num = int(nums[0])
-                # add the SMA data to the df
-                self.__add_sma(num)
-
-        def rsi_sell(_key, _value):
-            # ======== key based =========
-            nums = re.findall(r'\d+', _key)
-            if len(nums) == 1:
-                num = int(nums[0])
-                # add the RSI data to the df
-                self.__add_rsi(num)
-            else:
-                # add the RSI data to the df
-                self.__add_rsi(DEFAULT_RSI_LENGTH)
-            # ======== value based (rsi limit)=========
-            # _value = self.__strategy['sell'][key]
-            _nums = re.findall(r'\d+', _value)
-            if len(_nums) == 1:
-                _trigger = float(_nums[0])
-                self.__add_upper_rsi(_trigger)
-
-        def sma_sell(_key):
-            nums = re.findall(r'\d+', _key)
-            if len(nums) == 1:
-                num = int(nums[0])
-                # add the SMA data to the df
-                self.__add_sma(num)
-
-        # buy keys
-        for key in self.__strategy['buy'].keys():
-            if 'RSI' in key:
-                rsi_buy(key,  self.__strategy['buy'][key])
-            elif 'SMA' in key:
-                sma_buy(key)
-            elif 'and' in key:
-                for inner_key in self.__strategy['buy'][key].keys():
-                    if 'RSI' in inner_key:
-                        rsi_buy(inner_key, self.__strategy['buy'][key][inner_key])
-                    elif 'SMA' in inner_key:
-                        sma_buy(inner_key)
-
-        # sell keys
-        for key in self.__strategy['sell'].keys():
-            if 'RSI' in key:
-                rsi_sell(key, self.__strategy['sell'][key])
-            elif 'SMA' in key:
-                sma_sell(key)
-            elif 'and' in key:
-                for inner_key in self.__strategy['sell'][key].keys():
-                    if 'RSI' in inner_key:
-                        rsi_sell(inner_key, self.__strategy['sell'][key][inner_key])
-                    elif 'SMA' in inner_key:
-                        sma_sell(inner_key)
-
-    def __add_rsi(self, _length: int):
-        """Pre-calculate the RSI values and add them to the df."""
-        # get a list of close price values
-        price_data = list()
-        for i in range(len(self.__df['Close'])):
-            price_data.append(self.__df['Close'][i])
-
-        # calculate the RSI values from the indicator API
-        rsi_values = self.__indicators_API.RSI(DEFAULT_RSI_LENGTH, price_data)
-
-        # add the calculated values to the df
-        self.__df['RSI'] = rsi_values
-
-    def __add_upper_rsi(self, _trigger_value: float):
-        """Add upper RSI trigger to the df."""
-        # if we already have RSI upper values in the df, we don't need to add them again
-        for (col_name, col_vals) in self.__df.iteritems():
-            if 'rsi_upper' in col_name:
-                return
-
-        self.__df['RSI_upper'] = _trigger_value
-
-    def __add_lower_rsi(self, _trigger_value: float):
-        """Add lower RSI trigger to the df."""
-        # if we already have RSI lower values in the df, we don't need to add them again
-        for (col_name, col_vals) in self.__df.iteritems():
-            if 'rsi_upper' in col_name:
-                return
-
-        self.__df['RSI_lower'] = _trigger_value
-
-    def __add_sma(self, _length: int):
-        """Pre-calculate the SMA values and add them to the df."""
-        # get a list of close price values
-        column_title = f'SMA{_length}'
-
-        # if we already have SMA values in the df, we don't need to add them again
-        for (col_name, col_vals) in self.__df.iteritems():
-            if column_title in col_name:
-                return
-
-        # get a list of price values in the form of a list
-        price_data = list()
-        for i in range(len(self.__df['Close'])):
-            price_data.append(self.__df['Close'][i])
-
-        # calculate the SMA values from the indicator API
-        sma_values = self.__indicators_API.SMA(_length, price_data)
-
-        # add the calculated values to the df
-        self.__df[column_title] = sma_values
-
-    def __add_buys_sells(self):
-        """Adds the buy and sell lists to the DataFrame."""
-        self.__df['Buy'] = self.__buy_list
-        self.__df['Sell'] = self.__sell_list
-
-    def __create_position(self, _current_day_index: int) -> Position:
-        """Creates a position and updates the account.
-
-        Args:
-            _current_day_index (int): The index of the current day
-
-        return:
-            Position: The created Position object.
-
-        Notes:
-            The assumption is that the user wants to use full buying power (for now)
-        """
-        log.info('Creating the position...')
-
-        # add the buying price to the DataFrame
-        _buy_price = self.__df['Close'][_current_day_index]
-
-        # calculate the withdrawal amount (nearest whole share - floor direction)
-        share_count = float(math.floor(self.__account.get_balance() / _buy_price))
-        withdraw_amount = round(_buy_price * share_count, 3)
-
-        # withdraw the money from the account
-        self.__account.withdraw(withdraw_amount)
-
-        log.info('Position created successfully')
-
-        # build and return the new position
-        return Position(_buy_price, share_count)
-
-    def __liquidate_position(self, _position: Position, _current_day_index: int):
-        """Closes the position and updates the account.
-
-        Args:
-            _position (Position): The position to close.
-            _current_day_index (int): The index of the current day
-        """
-        log.info('Closing the position...')
-        # close the position
-        _position.close_position(self.__df['Close'][_current_day_index])
-
-        # add the closing price to the DataFrame
-        _sell_price = float(self.__df['Close'][_current_day_index])
-
-        # add the position to the archive
-        self.__position_archive.append(_position)
-
-        # calculate the deposit amount
-        deposit_amount = round(_position.get_sell_price() * _position.get_share_count(), 3)
-
-        log.info('Position closed successfully')
-
-        # deposit the value of the position to the account
-        self.__account.deposit(deposit_amount)
-
-    def __print_results(self):
-        """Prints the simulation results if terminal logging is off"""
-        if not self.__user_terminal_logging_on:
-            print('====== Simulation Results ======')
-            print(f'Trades made   : {len(self.__position_archive)}')
-            print(f'Effectiveness : {self.__analyzer_API.effectiveness()}%')
-            print(f'Avg. P/L      : ${self.__analyzer_API.avg_pl()}')
-            print(f'Total P/L     : ${self.__account.get_profit_loss()}')
-            print(f'Account Value : ${self.__account.get_balance()}')
-            print('================================')
 
     def run(self, symbol: str):
         """Run a simulation on an asset."""
@@ -1039,3 +725,317 @@ class Simulator:
         if self.__charting_on:
             # chart the data
             self.__charting_API.chart(self.__df, self.__symbol)
+
+    def __error_check_strategy(self):
+        """Check the strategy for errors"""
+        log.debug('Checking strategy for errors...')
+        if not self.__strategy:
+            log.critical('No strategy uploaded')
+            raise Exception('No strategy uploaded')
+        if 'start' not in self.__strategy.keys():
+            log.critical("Strategy missing 'start' key")
+            raise Exception("Strategy missing 'start' key")
+        if 'end' not in self.__strategy.keys():
+            log.critical("Strategy missing 'end' key")
+            raise Exception("Strategy missing 'end' key")
+        if 'buy' not in self.__strategy.keys():
+            log.critical("Strategy missing 'buy' key")
+            raise Exception("Strategy missing 'buy' key")
+        if 'sell' not in self.__strategy.keys():
+            log.critical("Strategy missing 'sell' key")
+            raise Exception("Strategy missing 'sell' key")
+        log.debug('No errors found in the strategy')
+
+    def __parse_strategy_timestamps(self):
+        """Parse the strategy for relevant information needed to make the API request."""
+        log.debug('Parsing strategy for timestamps...')
+        if 'start' in self.__strategy.keys():
+            self.__start_date_unix = int(self.__strategy['start'])
+        if 'end' in self.__strategy.keys():
+            self.__end_date_unix = int(self.__strategy['end'])
+
+        additional_days = 0
+
+        # build a list of sub keys from the buy and sell sections
+        keys = list()
+        if 'buy' in self.__strategy.keys():
+            for key in self.__strategy['buy'].keys():
+                keys.append(key)
+        if 'sell' in self.__strategy.keys():
+            for key in self.__strategy['sell'].keys():
+                keys.append(key)
+
+        for key in keys:
+            if 'RSI' in key:
+                # ======== key based =========
+                nums = re.findall(r'\d+', key)
+                if len(nums) == 1:
+                    num = int(nums[0])
+                    if additional_days < num:
+                        additional_days = num
+                    # add the RSI data to the df
+                    self.__add_rsi(num)
+                else:
+                    additional_days = DEFAULT_RSI_LENGTH
+            elif 'SMA' in key:
+                nums = re.findall(r'\d+', key)
+                if len(nums) == 1:
+                    num = int(nums[0])
+                    if additional_days < num:
+                        additional_days = num
+            elif 'color' in key:
+                try:
+                    num = len(self.__strategy['buy']['color'])
+                    if type(self.__strategy['buy']['color']) != dict:
+                        raise Exception('Candle stick signals must be a dict')
+                except KeyError:
+                    num = len(self.__strategy['sell']['color'])
+                if additional_days < num:
+                    additional_days = num
+
+        # add a buffer
+        if additional_days != 0:
+            # we figure 2 weekdays and a holiday for every week of additional days
+            # since it gets cast to int, the decimal is cut off -> it's usually < 3 per week after cast
+            additional_days += int((additional_days / 7) * 3)
+        # now, we should always have enough days to supply the indicators that the user requires
+
+        self.__error_check_timestamps(self.__start_date_unix, self.__end_date_unix)
+        self.__augmented_start_date_unix = self.__start_date_unix - (additional_days * SECONDS_1_DAY)
+
+    def __parse_strategy_rules(self):
+        """Parse the strategy for relevant information needed to make the API request."""
+        log.debug('Parsing strategy for indicators and rules...')
+
+        # build a list of sub keys from the buy and sell sections
+        keys = list()
+        if 'buy' in self.__strategy.keys():
+            for key in self.__strategy['buy'].keys():
+                keys.append(key)
+        if 'sell' in self.__strategy.keys():
+            for key in self.__strategy['sell'].keys():
+                keys.append(key)
+
+        def rsi_buy(_key, _value):
+            # ======== key based =========
+            nums = re.findall(r'\d+', _key)
+            if len(nums) == 1:
+                num = int(nums[0])
+                # add the RSI data to the df
+                self.__add_rsi(num)
+            else:
+                # add the RSI data to the df
+                self.__add_rsi(DEFAULT_RSI_LENGTH)
+            # ======== value based (rsi limit)=========
+            # _value = self.__strategy['buy'][key]
+            _nums = re.findall(r'\d+', _value)
+            if len(_nums) == 1:
+                _trigger = float(_nums[0])
+                self.__add_lower_rsi(_trigger)
+
+        def sma_buy(_key):
+            nums = re.findall(r'\d+', _key)
+            if len(nums) == 1:
+                num = int(nums[0])
+                # add the SMA data to the df
+                self.__add_sma(num)
+
+        def rsi_sell(_key, _value):
+            # ======== key based =========
+            nums = re.findall(r'\d+', _key)
+            if len(nums) == 1:
+                num = int(nums[0])
+                # add the RSI data to the df
+                self.__add_rsi(num)
+            else:
+                # add the RSI data to the df
+                self.__add_rsi(DEFAULT_RSI_LENGTH)
+            # ======== value based (rsi limit)=========
+            # _value = self.__strategy['sell'][key]
+            _nums = re.findall(r'\d+', _value)
+            if len(_nums) == 1:
+                _trigger = float(_nums[0])
+                self.__add_upper_rsi(_trigger)
+
+        def sma_sell(_key):
+            nums = re.findall(r'\d+', _key)
+            if len(nums) == 1:
+                num = int(nums[0])
+                # add the SMA data to the df
+                self.__add_sma(num)
+
+        # buy keys
+        for key in self.__strategy['buy'].keys():
+            if 'RSI' in key:
+                rsi_buy(key,  self.__strategy['buy'][key])
+            elif 'SMA' in key:
+                sma_buy(key)
+            elif 'and' in key:
+                for inner_key in self.__strategy['buy'][key].keys():
+                    if 'RSI' in inner_key:
+                        rsi_buy(inner_key, self.__strategy['buy'][key][inner_key])
+                    elif 'SMA' in inner_key:
+                        sma_buy(inner_key)
+
+        # sell keys
+        for key in self.__strategy['sell'].keys():
+            if 'RSI' in key:
+                rsi_sell(key, self.__strategy['sell'][key])
+            elif 'SMA' in key:
+                sma_sell(key)
+            elif 'and' in key:
+                for inner_key in self.__strategy['sell'][key].keys():
+                    if 'RSI' in inner_key:
+                        rsi_sell(inner_key, self.__strategy['sell'][key][inner_key])
+                    elif 'SMA' in inner_key:
+                        sma_sell(inner_key)
+
+    def __add_rsi(self, _length: int):
+        """Pre-calculate the RSI values and add them to the df."""
+        # get a list of close price values
+        price_data = list()
+        for i in range(len(self.__df['Close'])):
+            price_data.append(self.__df['Close'][i])
+
+        # calculate the RSI values from the indicator API
+        rsi_values = self.__indicators_API.RSI(DEFAULT_RSI_LENGTH, price_data)
+
+        # add the calculated values to the df
+        self.__df['RSI'] = rsi_values
+
+    def __add_upper_rsi(self, _trigger_value: float):
+        """Add upper RSI trigger to the df."""
+        # if we already have RSI upper values in the df, we don't need to add them again
+        for (col_name, col_vals) in self.__df.iteritems():
+            if 'rsi_upper' in col_name:
+                return
+
+        self.__df['RSI_upper'] = _trigger_value
+
+    def __add_lower_rsi(self, _trigger_value: float):
+        """Add lower RSI trigger to the df."""
+        # if we already have RSI lower values in the df, we don't need to add them again
+        for (col_name, col_vals) in self.__df.iteritems():
+            if 'rsi_upper' in col_name:
+                return
+
+        self.__df['RSI_lower'] = _trigger_value
+
+    def __add_sma(self, _length: int):
+        """Pre-calculate the SMA values and add them to the df."""
+        # get a list of close price values
+        column_title = f'SMA{_length}'
+
+        # if we already have SMA values in the df, we don't need to add them again
+        for (col_name, col_vals) in self.__df.iteritems():
+            if column_title in col_name:
+                return
+
+        # get a list of price values in the form of a list
+        price_data = list()
+        for i in range(len(self.__df['Close'])):
+            price_data.append(self.__df['Close'][i])
+
+        # calculate the SMA values from the indicator API
+        sma_values = self.__indicators_API.SMA(_length, price_data)
+
+        # add the calculated values to the df
+        self.__df[column_title] = sma_values
+
+    def __add_buys_sells(self):
+        """Adds the buy and sell lists to the DataFrame."""
+        self.__df['Buy'] = self.__buy_list
+        self.__df['Sell'] = self.__sell_list
+
+    def __create_position(self, _current_day_index: int) -> Position:
+        """Creates a position and updates the account.
+
+        Args:
+            _current_day_index (int): The index of the current day
+
+        return:
+            Position: The created Position object.
+
+        Notes:
+            The assumption is that the user wants to use full buying power (for now)
+        """
+        log.info('Creating the position...')
+
+        # add the buying price to the DataFrame
+        _buy_price = self.__df['Close'][_current_day_index]
+
+        # calculate the withdrawal amount (nearest whole share - floor direction)
+        share_count = float(math.floor(self.__account.get_balance() / _buy_price))
+        withdraw_amount = round(_buy_price * share_count, 3)
+
+        # withdraw the money from the account
+        self.__account.withdraw(withdraw_amount)
+
+        log.info('Position created successfully')
+
+        # build and return the new position
+        return Position(_buy_price, share_count)
+
+    def __liquidate_position(self, _position: Position, _current_day_index: int):
+        """Closes the position and updates the account.
+
+        Args:
+            _position (Position): The position to close.
+            _current_day_index (int): The index of the current day
+        """
+        log.info('Closing the position...')
+        # close the position
+        _position.close_position(self.__df['Close'][_current_day_index])
+
+        # add the closing price to the DataFrame
+        _sell_price = float(self.__df['Close'][_current_day_index])
+
+        # add the position to the archive
+        self.__position_archive.append(_position)
+
+        # calculate the deposit amount
+        deposit_amount = round(_position.get_sell_price() * _position.get_share_count(), 3)
+
+        log.info('Position closed successfully')
+
+        # deposit the value of the position to the account
+        self.__account.deposit(deposit_amount)
+
+    def __print_results(self):
+        """Prints the simulation results if terminal logging is off"""
+        if not self.__user_terminal_logging_on:
+            print('====== Simulation Results ======')
+            print(f'Trades made   : {len(self.__position_archive)}')
+            print(f'Effectiveness : {self.__analyzer_API.effectiveness()}%')
+            print(f'Avg. P/L      : ${self.__analyzer_API.avg_pl()}')
+            print(f'Total P/L     : ${self.__account.get_profit_loss()}')
+            print(f'Account Value : ${self.__account.get_balance()}')
+            print('================================')
+
+    @staticmethod
+    def __datetime_nonce_string() -> str:
+        """Convert current date and time to string."""
+        return datetime.now().strftime("%m_%d_%Y__%H_%M_%S")
+
+    @staticmethod
+    def __unix_to_string(_unix_date, _format='%m-%d-%Y') -> str:
+        """Convert a unix date to a string of custom format.
+
+        Args:
+            _unix_date (int): The unix timestamp to convert.
+            _format (str): The format to convert to.
+
+        return:
+            (str): The converted string in custom format.
+        """
+        return datetime.utcfromtimestamp(_unix_date).strftime(_format)
+
+    @staticmethod
+    def __error_check_timestamps(_start, _end):
+        """Simple check that the timestamps are valid."""
+        if _start > _end:
+            log.critical('Start timestamp must be before end timestamp')
+            raise Exception('Start timestamp must be before end timestamp')
+        if _start > int(time.time()):
+            log.critical('Start timestamp must not be in the future')
+            raise Exception('Start timestamp must not be in the future')

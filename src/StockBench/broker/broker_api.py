@@ -64,6 +64,37 @@ class BrokerAPI:
         pass
 
     @staticmethod
+    def json_to_df(json_data):
+        """Convert JSON to Pandas.DataFrame.
+
+        Args:
+            json_data (JSON): The JSON data to convert.
+
+        return
+            Pandas.DataFrame: The converted data as a DateFrame
+        """
+        log.debug('Converting JSON to DF...')
+        _time = []
+        _open = []
+        _high = []
+        _low = []
+        _close = []
+        for data_point in json_data:
+            _time.append(str(data_point['t']))
+            _open.append(float(data_point['o']))
+            _high.append(float(data_point['h']))
+            _low.append(float(data_point['l']))
+            _close.append(float(data_point['c']))
+        df = pd.DataFrame()
+        df.insert(0, 'Date', _time)
+        df.insert(1, 'Open', _open)
+        df.insert(2, 'High', _high)
+        df.insert(3, 'Low', _low)
+        df.insert(4, 'Close', _close)
+        log.debug('Conversion complete')
+        return df
+
+    @staticmethod
     def __unix_to_utc_date(start_date_unix: int, end_date_unix: int) -> tuple:
         """Convert 2 dates from unix to UTC-date.
 
@@ -112,37 +143,6 @@ class BrokerAPI:
             # do something if the request fails
             log.critical('Connection error during request')
             print('Connection error trying to connect to brokerage servers!')
-
-    @staticmethod
-    def json_to_df(json_data):
-        """Convert JSON to Pandas.DataFrame.
-
-        Args:
-            json_data (JSON): The JSON data to convert.
-
-        return
-            Pandas.DataFrame: The converted data as a DateFrame
-        """
-        log.debug('Converting JSON to DF...')
-        _time = []
-        _open = []
-        _high = []
-        _low = []
-        _close = []
-        for data_point in json_data:
-            _time.append(str(data_point['t']))
-            _open.append(float(data_point['o']))
-            _high.append(float(data_point['h']))
-            _low.append(float(data_point['l']))
-            _close.append(float(data_point['c']))
-        df = pd.DataFrame()
-        df.insert(0, 'Date', _time)
-        df.insert(1, 'Open', _open)
-        df.insert(2, 'High', _high)
-        df.insert(3, 'Low', _low)
-        df.insert(4, 'Close', _close)
-        log.debug('Conversion complete')
-        return df
 
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
-
-
 class SimulationAnalyzer:
+    """This class defined an analyzer object.
+
+    The analyzer object is used to evaluate the positional results of a simulation."""
     def __init__(self, _positions: list):
         self.__positions = _positions
         self.__sum_cache = None

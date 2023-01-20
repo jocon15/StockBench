@@ -15,7 +15,7 @@ strategy = {
                 '0': 'green'
             }
         },
-        'price': '>200',  # FIXME: still need to implement this one
+        'price': '>200',
         'color': {
             '2': 'red',
             '1': 'red',

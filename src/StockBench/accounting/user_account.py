@@ -1,5 +1,3 @@
-
-
 class UserAccount:
     """This class defines a user account object.
 

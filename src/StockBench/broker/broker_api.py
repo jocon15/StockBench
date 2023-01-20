@@ -11,19 +11,18 @@ DELAY_SECONDS_15MIN = 960
 
 
 class BrokerAPI:
+    """This class defines a BrokerAPI object.
+
+    The BrokerAPI object is an API used by the simulator to interact with the broker. The broker is the data supplier.
+    The simulator calculates the correct range of data to request. Then, this API handles the physical interaction
+    by requesting and formatting the relevant data.
+    """
     def __init__(self, timeout=5):
         self.__API_KEY = os.environ['ALPACA_API_KEY']
         self.__SECRET_KEY = os.environ['ALPACA_SECRET_KEY']
 
         self.__BASE_URL = 'https://api.alpaca.markets'
         self.__BARS_URL = 'https://data.alpaca.markets/v2/stocks/bars?'
-        self.__ACCOUNT_URL = '{}/v2/account'.format(self.__BASE_URL)
-        self.__POSITIONS_URL = '{}/v2/positions/'.format(self.__BASE_URL)
-        self.__CLOSE_URL = '{}/v2/positions/'.format(self.__BASE_URL)
-        self.__ORDERS_URL = '{}/v2/orders'.format(self.__BASE_URL)
-        self.__CLOCK_URL = '{}/v2/clock'.format(self.__BASE_URL)
-        self.__ASSET_URL = '{}/v2/assets/'.format(self.__BASE_URL)
-        self.__UPDATE_CONFIGURATIONS_URL = '{}/v2/account/configurations'.format(self.__BASE_URL)
         self.__HEADERS = {'APCA-API-KEY-ID': self.__API_KEY, 'APCA-API-SECRET-KEY': self.__SECRET_KEY}
         self.__timeout = timeout
 

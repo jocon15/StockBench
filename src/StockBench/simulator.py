@@ -193,6 +193,8 @@ class Simulator:
                 trigger_hit = check_rsi_trigger(key, self.__strategy['buy'][key])
             elif 'SMA' in key:
                 trigger_hit = check_sma_trigger(key, self.__strategy['buy'][key])
+            elif 'volume' in key:
+                trigger_hit = check_volume_trigger(self.__strategy['buy'][key])
             elif key == 'color':
                 trigger_hit = check_candle_colors_trigger(self.__strategy['buy'][key])
             elif key == 'price':
@@ -222,6 +224,8 @@ class Simulator:
                     trigger_hit = check_rsi_trigger(inner_key, self.__strategy['buy'][key][inner_key])
                 elif 'SMA' in inner_key:
                     trigger_hit = check_sma_trigger(inner_key, self.__strategy['buy'][key][inner_key])
+                elif 'volume' in key:
+                    trigger_hit = check_volume_trigger(self.__strategy['buy'][key])
                 elif inner_key == 'color':
                     trigger_hit = check_candle_colors_trigger(self.__strategy['buy'][key][inner_key])
                 elif key == 'price':
@@ -248,6 +252,8 @@ class Simulator:
                 trigger_hit = check_rsi_trigger(key, self.__strategy['sell'][key])
             elif 'SMA' in key:
                 trigger_hit = check_sma_trigger(key, self.__strategy['sell'][key])
+            elif 'volume' in key:
+                trigger_hit = check_volume_trigger(self.__strategy['buy'][key])
             elif key == 'stop_loss':
                 trigger_hit = check_stop_loss_trigger(self.__strategy['sell'][key])
             elif key == 'stop_profit':
@@ -280,6 +286,8 @@ class Simulator:
                     trigger_hit = check_rsi_trigger(inner_key, self.__strategy['sell'][key][inner_key])
                 elif 'SMA' in inner_key:
                     trigger_hit = check_sma_trigger(inner_key, self.__strategy['sell'][key][inner_key])
+                elif 'volume' in key:
+                    trigger_hit = check_volume_trigger(self.__strategy['buy'][key])
                 elif inner_key == 'stop_loss':
                     trigger_hit = check_stop_loss_trigger(self.__strategy['sell'][key][inner_key])
                 elif inner_key == 'stop_profit':
@@ -434,6 +442,32 @@ class Simulator:
             log.warning(f'Warning: {key} is in incorrect format and will be ignored')
             print(f'Warning: {key} is in incorrect format and will be ignored')
             return False
+
+        def check_volume_trigger(_value) -> bool:
+            """"""
+            volume = self.__df['volume'][current_day_index]
+
+            if CURRENT_PRICE_SYMBOL in _value:
+                trigger = self.__df['Close'][current_day_index]
+                operator = _value.replace('$price', '')
+            else:
+                # check that the value from {key: value} has a number in it
+                # this is the trigger value
+                _nums = re.findall(r'\d+', _value)
+                if len(_nums) == 1:
+                    trigger = float(_nums[0])
+                    operator = _value.replace(str(_nums[0]), '')
+                else:
+                    print('Found invalid format SMA (invalid number found in trigger value)')
+                    # if no trigger value available, exit
+                    return False
+
+            # trigger checks
+            result = basic_triggers_check(volume, operator, trigger)
+
+            log.debug('All volume triggers checked')
+
+            return result
 
         def check_candle_colors_trigger(_value) -> bool:
             """Abstracted logic for candle stick triggers.

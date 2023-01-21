@@ -78,18 +78,21 @@ class BrokerAPI:
         _high = []
         _low = []
         _close = []
+        _volume = []
         for data_point in json_data:
             _time.append(str(data_point['t']))
             _open.append(float(data_point['o']))
             _high.append(float(data_point['h']))
             _low.append(float(data_point['l']))
             _close.append(float(data_point['c']))
+            _volume.append(float(data_point['v']))
         df = pd.DataFrame()
-        df.insert(0, 'Date', _time)
+        df.insert(0, 'Date', time)
         df.insert(1, 'Open', _open)
         df.insert(2, 'High', _high)
         df.insert(3, 'Low', _low)
         df.insert(4, 'Close', _close)
+        df.insert(5, 'volume', _volume)
         log.debug('Conversion complete')
         return df
 

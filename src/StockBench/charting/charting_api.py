@@ -18,8 +18,9 @@ class ChartingAPI:
         self.__subplot_count = 1
         self.__df = None
 
-        self.__RSI_ROW = 2
+        self.__next_row = 1
         # add any more constants here...
+        self.__rsi_row = None
 
     def chart(self, _df, _symbol):
         # FIXME: Might need to take in a filepath to output the html file to
@@ -83,21 +84,30 @@ class ChartingAPI:
                     y=self.__df['RSI'],
                     line=dict(color=WHITE),
                     name='RSI'),
-                    row=self.__RSI_ROW, col=1)
+                    row=self.__next_row, col=1)
+                self.__rsi_row = self.__next_row
+                self.__next_row += 1
             if column_name == 'RSI_upper':
                 fig.add_trace(fplt.Scatter(
                     x=self.__df['Date'],
                     y=self.__df['RSI_upper'],
                     line=dict(color=HORIZONTAL_TRIGGER_YELLOW),
                     name='RSI Upper'),
-                    row=self.__RSI_ROW, col=1)
+                    row=self.__rsi_row, col=1)
             if column_name == 'RSI_lower':
                 fig.add_trace(fplt.Scatter(
                     x=self.__df['Date'],
                     y=self.__df['RSI_lower'],
                     line=dict(color=HORIZONTAL_TRIGGER_YELLOW),
                     name='RSI Lower'),
-                    row=self.__RSI_ROW, col=1)
+                    row=self.__rsi_row, col=1)
+            if column_name == 'volume':
+                fig.add_trace(fplt.Bar(
+                    x=self.__df['Date'],
+                    y=self.__df['volume']),
+                    row=self.__next_row,
+                    col=1)
+                self.__next_row += 1
 
         # update the layout
         window_size = len(self.__df['Close'])

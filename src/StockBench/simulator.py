@@ -745,12 +745,6 @@ class Simulator:
 
         self.__print_results()
 
-        # any report building goes here!
-        # FIXME: Report building
-        #   - I like being able to see the dataframe
-        #   - We could export the df to excel
-        #       - the df already looks like an excel sheet
-
         if self.__reporting_on:
             # load exporter with the data
             self.__exporting_API.load_data(self.__df)

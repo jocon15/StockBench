@@ -15,7 +15,6 @@ strategy = {
                 '0': 'green'
             }
         },
-        'price': '>200',
         'color': {
             '2': 'red',
             '1': 'red',
@@ -23,7 +22,7 @@ strategy = {
         }
     },
     'sell': {
-        # 'stop_loss': '50',
+        'price': '<200',
         'RSI': '>60'
     }
 }

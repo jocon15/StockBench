@@ -118,6 +118,6 @@ class ChartingAPI:
         # update the layout
         window_size = len(self.__df['Close'])
         fig.update_layout(template='plotly_dark', title=f'{window_size} day simulation for {_symbol}',
-                          xaxis_title='Date (UNIX)', yaxis_title='Price (USD)', xaxis_rangeslider_visible=False)
+                          xaxis_title='Date', yaxis_title='Price (USD)', xaxis_rangeslider_visible=False)
 
         fig.write_html('figure.html', auto_open=True)

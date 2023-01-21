@@ -1,7 +1,7 @@
 # StockBench
-#### A back-tester for testing stock trading strategies with historical data.
+### A back-tester for testing stock trading strategies with historical data.
 
-![chart](https://github.com/jocon15/StockBench/blob/master/images/example_chart.png)
+![chart](https://github.com/jocon15/StockBench/blob/master/images/TSLA.png)
 
 # How it Works
 StockBench allows you to run a simulation on any US security where data is available. StockBench sources market data from [Alpaca Markets](https://alpaca.markets/).
@@ -53,7 +53,7 @@ stock_sim.run('MSFT')
 
 ## Results
 Each simulation will render a chart that shows the price data and relevant indicators.
-![chart](https://github.com/jocon15/StockBench/blob/master/images/example_chart.png)
+![chart](https://github.com/jocon15/StockBench/blob/master/images/MSFT.png)
 
 
 ## Diving Deeper
@@ -76,6 +76,7 @@ This project is currently under development. The intention of this project is to
 #### Low Level Development
 - [ ] Logging for the export API
 - [ ] Volume bars are overly dark
+- [ ] Add red to volume chart
 - [ ] Update images in the readme
 - [ ] Add images of the indicators to the wiki
 - [ ] Sub chart titles (side)

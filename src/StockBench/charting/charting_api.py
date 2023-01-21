@@ -18,7 +18,7 @@ class ChartingAPI:
         self.__subplot_count = 1
         self.__df = None
 
-        self.__next_row = 1
+        self.__next_row = 2
         # add any more constants here...
         self.__rsi_row = None
 
@@ -40,6 +40,9 @@ class ChartingAPI:
             if column_name == 'RSI':
                 chart_list.append([{"type": "scatter"}])
                 rows += 1
+            if column_name == 'volume':
+                chart_list.append([{"type": "bar"}])
+                rows += 1
             # here you would add any other checks for additional subplots (rows/cols)
 
         # create the parent plot
@@ -50,7 +53,8 @@ class ChartingAPI:
                                 open=self.__df['Open'],
                                 high=self.__df['High'],
                                 low=self.__df['Low'],
-                                close=self.__df['Close'], name='Price Data'), row=1, col=1)
+                                close=self.__df['Close'],
+                                name='Price Data'), row=1, col=1)
 
         # add additional traces
         for (column_name, column_data) in self.__df.iteritems():
@@ -107,6 +111,8 @@ class ChartingAPI:
                     y=self.__df['volume']),
                     row=self.__next_row,
                     col=1)
+                fig.update_traces(marker_color=BULL_GREEN, selector=dict(type='bar'))
+                fig.update_traces(name='volume', selector=dict(type='bar'))
                 self.__next_row += 1
 
         # update the layout

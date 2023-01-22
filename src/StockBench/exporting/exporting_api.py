@@ -18,19 +18,23 @@ class ExportingAPI:
     def __init__(self):
         self.__df = None
 
+        log.debug('Opening workbook...')
         self.__NONCE = self.__nonce()
-        report_filepath = f'excel\\simulation_{self.__NONCE}.xlsx'
+        report_filepath = os.path.join('excel', f'simulation_{self.__NONCE}.xlsx')
         # make the directories if they don't already exist
         os.makedirs(os.path.dirname(report_filepath), exist_ok=True)
         self.__workbook = xlsxwriter.Workbook(report_filepath)
         self.__data_worksheet = self.__workbook.add_worksheet('Data')
+        log.debug('Opening workbook complete')
 
         # Data worksheet offsets
         self.__DATA_COLUMN_HEADER_ROW = 3
         self.__DATA_COLUMN_HEADER_COL = 0
 
     def __del__(self):
+        log.debug('Closing workbook...')
         self.__workbook.close()
+        log.debug('Closing workbook complete')
 
     def load_data(self, data):
         """Load the simulation data."""
@@ -48,6 +52,7 @@ class ExportingAPI:
 
     def __write_df(self):
         """Write the DateFrame data to the worksheet."""
+        log.debug('Writing dataframe to worksheet...')
         if self.__df.empty:
             raise Exception('Data needs to be uploaded first')
         col = self.__DATA_COLUMN_HEADER_COL
@@ -57,10 +62,9 @@ class ExportingAPI:
             row = self.__DATA_COLUMN_HEADER_ROW + 1
             for element in column_data:
                 if element:
-                    # print(f'{element} {type(element)}')
                     if type(element) == float:
                         if math.isnan(element):
-                            # print nothing for nan
+                            # print nothing for nan elements
                             self.__data_worksheet.write_string(row, col, '')
                         else:
                             self.__data_worksheet.write(row, col, element)
@@ -70,6 +74,7 @@ class ExportingAPI:
                         self.__data_worksheet.write(row, col, element)
                 row += 1
             col += 1
+        log.debug('Writing dataframe to worksheet complete')
 
     @staticmethod
     def __nonce():

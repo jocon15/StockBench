@@ -74,7 +74,7 @@ class Simulator:
         log.setLevel(logging.INFO)
 
         # build the filepath
-        user_logging_filepath = f'logs\\RunLog_{self.__datetime_nonce_string()}'
+        user_logging_filepath = os.path.join('logs', f'RunLog_{self.__datetime_nonce_string()}')
 
         # build the formatters
         user_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
@@ -138,7 +138,7 @@ class Simulator:
             developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
 
         # build the filepath
-        developer_logging_filepath = f'dev\\DevLog_{self.__datetime_nonce_string()}'
+        developer_logging_filepath = os.path.join('dev', f'DevLog_{self.__datetime_nonce_string()}')
 
         # make the directories if they don't already exist
         os.makedirs(os.path.dirname(developer_logging_filepath), exist_ok=True)

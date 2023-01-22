@@ -8,7 +8,7 @@ StockBench allows you to run a simulation on any US security where data is avail
 
 You begin by defining a strategy that you would like to test. StockBench allows for quite some freedom in defining a strategy. It can be simple or complex. Once you have a strategy picked out, you can play with the simulation settings. Check out the [StockBench Wiki](https://github.com/jocon15/StockBench/wiki) for more information on settings, indicators, and rules.
 
-Now that you have everything the way you like, you can start the simulation. As expected, the simulator iterates over the data as if it were trading in real time. The simulator is allowed to access previous data, but never future data. It cannot see the future, yet. The simulator makes artificial trades based on your strategy. Once the simulation is complete, the terminal will show the results of the simulation. A chart will then pop up showing the price data and any other indicators defined in the strategy.
+Now that you have everything the way you like, you can start the simulation. The simulator will request the data relevant to your strategy. As expected, the simulator iterates over the data as if it were trading in real time. The simulator is allowed to access previous data, but never future data. The simulator makes artificial trades based on your strategy. Once the simulation is complete, the terminal will show the results of the simulation. A chart will then pop up showing the price data and any other indicators defined in the strategy.
 
 And just like that, you have simulated a strategy on historical data. Have fun!
 
@@ -57,7 +57,7 @@ Each simulation will render a chart that shows the price data and relevant indic
 
 
 ## Diving Deeper
-StockBench allows users to generate a report of all the data used during the simulation. By enabling reporting, the simulation will generate an Excel file.
+StockBench allows users to generate a report of all the data used during the simulation. By enabling reporting, the simulation will generate an Excel (.xlsx) file.
 
 ![report](https://github.com/jocon15/StockBench/blob/master/images/excel.png)
 
@@ -74,7 +74,6 @@ This project is currently under development. The intention of this project is to
 - [x] Support for exporting simulation data to excel
 
 #### Low Level Development
-- [ ] Logging for the export API
 - [ ] Volume bars are overly dark
 - [ ] Add red to volume chart
 - [ ] Update images in the readme

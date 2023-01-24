@@ -26,11 +26,11 @@ class Indicators:
 
     """
     def __init__(self):
-        self.__data = None
+        self.__data_object = None
 
-    def add_data(self, data: pd.DataFrame):
+    def add_data(self, data_obj):
         """Supply the object with data"""
-        self.__data = data
+        self.__data_object = data_obj
 
     def candle_color(self, current_day_index: int) -> int:
         """ Calculate the color of a candle on a given day.
@@ -41,10 +41,13 @@ class Indicators:
         return:
             int: The color of the candle on that day (0 -> red) (1 -> green).
         """
-        if self.__data.empty:
-            raise Exception('Data must be supplied to the object first using add_data().')
         if current_day_index < 0:
             raise Exception('Current day index is out of bounds (less than 0)')
+
+        # FIXME: this function needs to be moved somewhere else where we add the candle
+        #   colors to the dataframe as a column
+
+        #open_price = self.__data_object.get_data_point(self.__data_object.OPEN, )
 
         open_price = self.__data['Open'][current_day_index]
         close_price = self.__data['Close'][current_day_index]
@@ -53,12 +56,12 @@ class Indicators:
         return 0
 
     @staticmethod
-    def SMA(sma_length: int, price_date: list) -> list:
+    def SMA(sma_length: int, price_data: list) -> list:
         """Calculate the RSI values for a list of price values.
 
         Args:
             sma_length (int): The length of the SMA to calculate.
-            price_date (list): The price data to calculate the RSI from.
+            price_data (list): The price data to calculate the RSI from.
 
         return:
             list: The list of calculated SMA values.
@@ -66,7 +69,7 @@ class Indicators:
         price_values = list()
         sma_values = list()
         all_sma_values = list()
-        for element in price_date:
+        for element in price_data:
             if len(price_values) < sma_length:
                 price_values.append(float(element))
                 avg = round(statistics.mean(price_values), 3)

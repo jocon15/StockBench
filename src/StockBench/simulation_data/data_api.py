@@ -8,6 +8,8 @@ class DataAPI:
         self.OPEN = 'Open'
         self.HIGH = 'High'
         self.LOW = 'Low'
+        self.VOLUME = 'volume'
+        self.COLOR = 'color'
 
     def add_column(self, name: str, data: any):
         """Adds a list of data as a column in the DataFrame."""
@@ -57,7 +59,6 @@ class DataAPI:
             raise Exception('Input name type must be a string!')
         # FIXME: check that the column is actually in the dataframe
         return self.__df[name].values.tolist()
-
 
     def get_chopped_df(self, window_start_day: int):
         """chop the dataframe and reset index

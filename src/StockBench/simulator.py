@@ -56,7 +56,6 @@ class Simulator:
         self.__end_date_unix = None
         self.__augmented_start_date_unix = None
 
-        # self.__df = None
         self.__symbol = None
 
         self.__buy_list = list()
@@ -218,9 +217,6 @@ class Simulator:
         sim_window_start_day = total_days - days_in_focus
         trade_able_days = self.__data_API.get_data_length() - sim_window_start_day
 
-        buy_mode = True
-        position = None
-
         # initialize the lists to the correct size (values to None)
         self.__buy_list = [None for _ in range(self.__data_API.get_data_length())]
         self.__sell_list = [None for _ in range(self.__data_API.get_data_length())]
@@ -235,6 +231,9 @@ class Simulator:
         log.info(f'Trade-able Days : {trade_able_days}')
         log.info(f'Account Value   : {self.__account.get_balance()}')
         log.info('=============================')
+
+        buy_mode = True
+        position = None
 
         log.info(f'Beginning simulation...')
 
@@ -253,21 +252,29 @@ class Simulator:
             if buy_mode:
                 was_triggered = self.__trigger_API.check_buy_triggers(self.__data_API, current_day_index)
                 if was_triggered:
+                    # create a position
                     position = self.__create_position(current_day_index)
+                    # switch to selling
+                    buy_mode = False
             else:
                 # sell mode
-                # new logic
                 was_triggered = self.__trigger_API.check_sell_triggers(self.__data_API, position, current_day_index)
                 if was_triggered:
+                    # close the position
                     self.__liquidate_position(position, current_day_index)
-                # keep this in new logic
+                    # clear the stored position
+                    position = None
+                    # switch to buying
+                    buy_mode = True
                 elif current_day_index == (self.__data_API.get_data_length() - 1):
                     # the position is still open at the end of the simulation
                     log.info('Position closed due to end of simulation reached')
                     # check that position still exists - if so sell
                     if position:
+                        # close the position
                         self.__liquidate_position(position, current_day_index)
-                    break  # FIXME: this may be unnecessary
+                    # exit the loop as a precaution
+                    break
 
         # add the buys and sells to the df
         self.__add_buys_sells()
@@ -444,6 +451,8 @@ class Simulator:
                 rsi_buy(key, self.__strategy['buy'][key])
             elif 'SMA' in key:
                 sma_buy(key)
+            elif 'color' in key:
+                self.__add_candle_colors()
             elif 'and' in key:
                 for inner_key in self.__strategy['buy'][key].keys():
                     if 'RSI' in inner_key:
@@ -457,6 +466,8 @@ class Simulator:
                 rsi_sell(key, self.__strategy['sell'][key])
             elif 'SMA' in key:
                 sma_sell(key)
+            elif 'color' in key:
+                self.__add_candle_colors()
             elif 'and' in key:
                 for inner_key in self.__strategy['sell'][key].keys():
                     if 'RSI' in inner_key:
@@ -466,6 +477,11 @@ class Simulator:
 
     def __add_rsi(self, _length: int):
         """Pre-calculate the RSI values and add them to the df."""
+        # if we already have RSI upper values in the df, we don't need to add them again
+        for col_name in self.__data_API.get_column_names():
+            if 'RSI' in col_name:
+                return
+
         # get a list of price values as a list
         price_data = self.__data_API.get_column_data(self.__data_API.CLOSE)
 
@@ -524,6 +540,22 @@ class Simulator:
         """Adds the buy and sell lists to the DataFrame."""
         self.__data_API.add_column('Buy', self.__buy_list)
         self.__data_API.add_column('Sell', self.__sell_list)
+
+    def __add_candle_colors(self):
+        # if we already have SMA values in the df, we don't need to add them again
+        for col_name in self.__data_API.get_column_names():
+            if 'Color' in col_name:
+                return
+
+        # get the 2 data lists
+        open_values = self.__data_API.get_column_data(self.__data_API.OPEN)
+        close_values = self.__data_API.get_column_data(self.__data_API.CLOSE)
+
+        # calculate the colors
+        color_values = self.__indicators_API.candle_color(open_values, close_values)
+
+        # add the colors to the df
+        self.__data_API.add_column('color', color_values)
 
     def __create_position(self, _current_day_index: int) -> Position:
         """Creates a position and updates the account.

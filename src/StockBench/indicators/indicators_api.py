@@ -32,28 +32,28 @@ class Indicators:
         """Supply the object with data"""
         self.__data_object = data_obj
 
-    def candle_color(self, current_day_index: int) -> int:
+    @staticmethod
+    def candle_color(open_data: list, close_data: list) -> list:
         """ Calculate the color of a candle on a given day.
 
         Args:
-            current_day_index (int): The index of the current date to get the candle color at.
+            open_data (list): The open price data.
+            close_data (list): The close price data.
 
         return:
-            int: The color of the candle on that day (0 -> red) (1 -> green).
+            list: the colors that correspond to the candles
         """
-        if current_day_index < 0:
-            raise Exception('Current day index is out of bounds (less than 0)')
+        if len(open_data) != len(close_data):
+            raise Exception('Data list lengths must match!')
 
-        # FIXME: this function needs to be moved somewhere else where we add the candle
-        #   colors to the dataframe as a column
+        colors = list()
+        for i in range(len(open_data)):
+            if float(close_data[i]) > float(open_data[i]):
+                colors.append('green')
+            else:
+                colors.append('red')
 
-        #open_price = self.__data_object.get_data_point(self.__data_object.OPEN, )
-
-        open_price = self.__data['Open'][current_day_index]
-        close_price = self.__data['Close'][current_day_index]
-        if close_price >= open_price:
-            return 1
-        return 0
+        return colors
 
     @staticmethod
     def SMA(sma_length: int, price_data: list) -> list:

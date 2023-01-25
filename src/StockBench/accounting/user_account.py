@@ -5,17 +5,18 @@ class UserAccount:
     analytical purposes.
     """
     def __init__(self, balance: float):
-        self.__balance = balance
-        self.__initial_balance = balance
+        # don't check for negative yet in case we implement leverage trading
+        self.__balance = float(balance)
+        self.__initial_balance = float(balance)
 
     def get_balance(self):
         return round(self.__balance, 2)
 
     def deposit(self, value: float):
-        self.__balance += value
+        self.__balance += float(value)
 
     def withdraw(self, value: float):
-        self.__balance -= value
+        self.__balance -= float(value)
 
     def get_profit_loss(self):
         return round(self.__balance - self.__initial_balance, 2)

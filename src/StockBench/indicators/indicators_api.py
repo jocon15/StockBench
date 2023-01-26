@@ -25,13 +25,6 @@ class Indicators:
     ****************************************************************************************************************
 
     """
-    def __init__(self):
-        self.__data_object = None
-
-    def add_data(self, data_obj):
-        """Supply the object with data"""
-        self.__data_object = data_obj
-
     @staticmethod
     def candle_color(open_data: list, close_data: list) -> list:
         """ Calculate the color of a candle on a given day.

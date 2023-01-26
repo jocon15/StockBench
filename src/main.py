@@ -40,7 +40,7 @@ def main():
 
     stock_sim.load_strategy(strategy)
 
-    stock_sim.run('MSFT')
+    stock_sim.run('AAPL')
 
 
 if __name__ == '__main__':

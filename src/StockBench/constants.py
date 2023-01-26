@@ -16,5 +16,5 @@ CURRENT_PRICE_SYMBOL = '$price'
 
 
 # ========== System Constants ============
-DOUBLE_COMPARISON_EPSILON = 0.1
+FLOAT_COMPARISON_EPSILON = 0.001
 

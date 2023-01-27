@@ -94,7 +94,7 @@ class Indicators:
         rsi = []
         all_rsi = list()  # archive to return
         for i in range(1, len(price_data)):
-            dif = price_data[i] - price_data[i - 1]
+            dif = float(price_data[i]) - float(price_data[i - 1])
             if dif > 0:
                 if len(gain) == rsi_length:
                     gain.pop(0)

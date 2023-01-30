@@ -1,22 +1,22 @@
+import os
 import re
 import sys
 import time
 import math
 import logging
 from .constants import *
-from tqdm import tqdm
 from datetime import datetime
-from .broker.broker_api import *
-from .charting.charting_api import *
-from .accounting.user_account import *
-from .exporting.exporting_api import *
-from .indicators.indicators_api import *
-from .position.position_obj import *
-from .triggers.triggering_api import *
-from .simulation_data.data_api import *
-from .analysis.analysis_api import *
+from .broker.broker_api import BrokerAPI
+from .charting.charting_api import ChartingAPI
+from .accounting.user_account import UserAccount
+from .exporting.exporting_api import ExportingAPI
+from .indicators.indicators_api import Indicators
+from .position.position_obj import Position
+from .triggers.triggering_api import TriggerAPI
+from .simulation_data.data_api import DataAPI
+from .analysis.analysis_api import SimulationAnalyzer
 
-log = logging.getLogger()  # root
+log = logging.getLogger()
 
 
 class Simulator:
@@ -42,6 +42,11 @@ class Simulator:
     """
 
     def __init__(self, balance: float):
+        """Constructor.
+
+        Args:
+            balance (float): The initial balance for the account.
+        """
         self.__account = UserAccount(balance)
         self.__broker_API = BrokerAPI()
         self.__charting_API = ChartingAPI()
@@ -186,7 +191,11 @@ class Simulator:
         self.__trigger_API = TriggerAPI(strategy)
 
     def run(self, symbol: str):
-        """Run a simulation on an asset."""
+        """Run a simulation on an asset.
+
+        Args:
+            symbol (str): The symbol to run the simulation on.
+        """
         # set the objects symbol to the passed value, so we can use it everywhere
         log.info(f'Setting up simulation for symbol: {symbol}...')
         self.__symbol = symbol.upper()
@@ -207,9 +216,6 @@ class Simulator:
 
         # parse the strategy for rules
         self.__parse_strategy_rules()
-
-        # give the indicators API the data object
-        self.__indicators_API.add_data(self.__data_API)
 
         # calculate window lengths
         total_days = int((self.__end_date_unix - self.__augmented_start_date_unix) / SECONDS_1_DAY)
@@ -475,8 +481,12 @@ class Simulator:
                     elif 'SMA' in inner_key:
                         sma_sell(inner_key)
 
-    def __add_rsi(self, _length: int):
-        """Pre-calculate the RSI values and add them to the df."""
+    def __add_rsi(self, length: int):
+        """Pre-calculate the RSI values and add them to the df.
+
+        Args:
+            length (int): The length of the RSI to use.
+        """
         # if we already have RSI upper values in the df, we don't need to add them again
         for col_name in self.__data_API.get_column_names():
             if 'RSI' in col_name:
@@ -486,41 +496,53 @@ class Simulator:
         price_data = self.__data_API.get_column_data(self.__data_API.CLOSE)
 
         # calculate the RSI values from the indicator API
-        rsi_values = self.__indicators_API.RSI(DEFAULT_RSI_LENGTH, price_data)
+        rsi_values = self.__indicators_API.RSI(length, price_data)
 
         # add the calculated values to the df
         self.__data_API.add_column('RSI', rsi_values)
 
-    def __add_upper_rsi(self, _trigger_value: float):
-        """Add upper RSI trigger to the df."""
+    def __add_upper_rsi(self, trigger_value: float):
+        """Add upper RSI trigger to the df.
+
+        Args:
+            trigger_value (float): The trigger value for the upper RSI.
+        """
         # if we already have RSI upper values in the df, we don't need to add them again
         for col_name in self.__data_API.get_column_names():
             if 'rsi_upper' in col_name:
                 return
 
         # create a list of the trigger value repeated
-        list_values = [_trigger_value for _ in range(self.__data_API.get_data_length())]
+        list_values = [trigger_value for _ in range(self.__data_API.get_data_length())]
 
         # add the list to the data
         self.__data_API.add_column('RSI_upper', list_values)
 
-    def __add_lower_rsi(self, _trigger_value: float):
-        """Add lower RSI trigger to the df."""
+    def __add_lower_rsi(self, trigger_value: float):
+        """Add lower RSI trigger to the df.
+
+        Args:
+            trigger_value (float): The trigger value for the lower RSI.
+        """
         # if we already have RSI lower values in the df, we don't need to add them again
         for col_name in self.__data_API.get_column_names():
             if 'rsi_upper' in col_name:
                 return
 
         # create a list of the trigger value repeated
-        list_values = [_trigger_value for _ in range(self.__data_API.get_data_length())]
+        list_values = [trigger_value for _ in range(self.__data_API.get_data_length())]
 
         # add the list to the data
         self.__data_API.add_column('RSI_lower', list_values)
 
-    def __add_sma(self, _length: int):
-        """Pre-calculate the SMA values and add them to the df."""
+    def __add_sma(self, length: int):
+        """Pre-calculate the SMA values and add them to the df.
+
+        Args:
+            length (int): The length of the SMA to use.
+        """
         # get a list of close price values
-        column_title = f'SMA{_length}'
+        column_title = f'SMA{length}'
 
         # if we already have SMA values in the df, we don't need to add them again
         for col_name in self.__data_API.get_column_names():
@@ -531,7 +553,7 @@ class Simulator:
         price_data = self.__data_API.get_column_data(self.__data_API.CLOSE)
 
         # calculate the SMA values from the indicator API
-        sma_values = self.__indicators_API.SMA(_length, price_data)
+        sma_values = self.__indicators_API.SMA(length, price_data)
 
         # add the calculated values to the df
         self.__data_API.add_column(column_title, sma_values)
@@ -542,6 +564,7 @@ class Simulator:
         self.__data_API.add_column('Sell', self.__sell_list)
 
     def __add_candle_colors(self):
+        """Adds the candle colors to the DataFrame."""
         # if we already have SMA values in the df, we don't need to add them again
         for col_name in self.__data_API.get_column_names():
             if 'Color' in col_name:
@@ -557,11 +580,11 @@ class Simulator:
         # add the colors to the df
         self.__data_API.add_column('color', color_values)
 
-    def __create_position(self, _current_day_index: int) -> Position:
+    def __create_position(self, current_day_index: int) -> Position:
         """Creates a position and updates the account.
 
         Args:
-            _current_day_index (int): The index of the current day
+            current_day_index (int): The index of the current day
 
         return:
             Position: The created Position object.
@@ -572,7 +595,7 @@ class Simulator:
         log.info('Creating the position...')
 
         # add the buying price to the DataFrame
-        _buy_price = self.__data_API.get_data_point(self.__data_API.CLOSE, _current_day_index)
+        _buy_price = self.__data_API.get_data_point(self.__data_API.CLOSE, current_day_index)
 
         # calculate the withdrawal amount (nearest whole share - floor direction)
         share_count = float(math.floor(self.__account.get_balance() / _buy_price))
@@ -582,33 +605,33 @@ class Simulator:
         self.__account.withdraw(withdraw_amount)
 
         # Adding the buy price to the buy list
-        self.__buy_list[_current_day_index] = _buy_price
+        self.__buy_list[current_day_index] = _buy_price
 
         log.info('Position created successfully')
 
         # build and return the new position
         return Position(_buy_price, share_count)
 
-    def __liquidate_position(self, _position: Position, _current_day_index: int):
+    def __liquidate_position(self, position: Position, current_day_index: int):
         """Closes the position and updates the account.
 
         Args:
-            _position (Position): The position to close.
-            _current_day_index (int): The index of the current day
+            position (Position): The position to close.
+            current_day_index (int): The index of the current day
         """
         log.info('Closing the position...')
 
         # get the cosing price
-        _sell_price = float(self.__data_API.get_data_point(self.__data_API.CLOSE, _current_day_index))
+        _sell_price = float(self.__data_API.get_data_point(self.__data_API.CLOSE, current_day_index))
 
         # close the position
-        _position.close_position(_sell_price)
+        position.close_position(_sell_price)
 
         # add the position to the archive
-        self.__position_archive.append(_position)
+        self.__position_archive.append(position)
 
         # calculate the deposit amount
-        deposit_amount = round(_sell_price * _position.get_share_count(), 3)
+        deposit_amount = round(_sell_price * position.get_share_count(), 3)
 
         log.info('Position closed successfully')
 
@@ -616,7 +639,7 @@ class Simulator:
         self.__account.deposit(deposit_amount)
 
         # Adding the sell price to the sell list
-        self.__sell_list[_current_day_index] = _sell_price
+        self.__sell_list[current_day_index] = _sell_price
 
     def __print_results(self):
         """Prints the simulation results if terminal logging is off"""
@@ -643,16 +666,21 @@ class Simulator:
             _format (str): The format to convert to.
 
         return:
-            (str): The converted string in custom format.
+            str: The converted string in custom format.
         """
         return datetime.utcfromtimestamp(_unix_date).strftime(_format)
 
     @staticmethod
-    def __error_check_timestamps(_start, _end):
-        """Simple check that the timestamps are valid."""
-        if _start > _end:
+    def __error_check_timestamps(start, end):
+        """Simple check that the timestamps are valid.
+
+        Args:
+            start (any): Unix timestamp of the start date.
+            end (any): Unix timestamp of the end date.
+        """
+        if start > end:
             log.critical('Start timestamp must be before end timestamp')
             raise Exception('Start timestamp must be before end timestamp')
-        if _start > int(time.time()):
+        if start > int(time.time()):
             log.critical('Start timestamp must not be in the future')
             raise Exception('Start timestamp must not be in the future')

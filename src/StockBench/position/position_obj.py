@@ -5,30 +5,30 @@ class Position:
     needed because we need to keep tract of the purchase price of those shares. In the context of a simulation,
     the position is going to be opened on one day, likely held for some time, then liquidated. At the liquidation
     point, we want to have all the details regarding that position in one place for analytical purposes."""
-    def __init__(self, _buy_price: float, _share_count: float):
-        self.__buy_price = _buy_price
+    def __init__(self, buy_price: float, share_count: float):
+        self.__buy_price = float(buy_price)
         self.__sell_price = None
-        self.__share_count = _share_count
+        self.__share_count = float(share_count)
 
-    def close_position(self, _sell_price: float):
+    def close_position(self, sell_price: float):
         """ Close the position.
 
         Args:
-            _sell_price (float): The sell price of the position.
+            sell_price (float): The sell price of the position.
         """
-        self.__sell_price = _sell_price
+        self.__sell_price = float(sell_price)
 
-    def profit_loss(self, _current_price: float) -> float:
+    def profit_loss(self, current_price: float) -> float:
         """Calculate the profit/loss for the position for a current price
 
         Args:
-            _current_price (float): The current price of the asset.
+            current_price (float): The current price of the asset.
 
         return:
             float: The current profit/loss value of the position.
         """
         initial_value = self.__share_count * self.__buy_price
-        current_value = self.__share_count * _current_price
+        current_value = self.__share_count * float(current_price)
         return current_value - initial_value
 
     def lifetime_profit_loss(self) -> float:

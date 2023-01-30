@@ -25,13 +25,6 @@ class Indicators:
     ****************************************************************************************************************
 
     """
-    def __init__(self):
-        self.__data_object = None
-
-    def add_data(self, data_obj):
-        """Supply the object with data"""
-        self.__data_object = data_obj
-
     @staticmethod
     def candle_color(open_data: list, close_data: list) -> list:
         """ Calculate the color of a candle on a given day.
@@ -101,7 +94,7 @@ class Indicators:
         rsi = []
         all_rsi = list()  # archive to return
         for i in range(1, len(price_data)):
-            dif = price_data[i] - price_data[i - 1]
+            dif = float(price_data[i]) - float(price_data[i - 1])
             if dif > 0:
                 if len(gain) == rsi_length:
                     gain.pop(0)

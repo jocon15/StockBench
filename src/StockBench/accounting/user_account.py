@@ -5,17 +5,38 @@ class UserAccount:
     analytical purposes.
     """
     def __init__(self, balance: float):
-        self.__balance = balance
-        self.__initial_balance = balance
+        # don't check for negative yet in case we implement leverage trading
+        self.__balance = float(balance)
+        self.__initial_balance = float(balance)
 
-    def get_balance(self):
+    def get_balance(self) -> float:
+        """Get the current balance of the account.
+
+        returns:
+            float: The balance of the account.
+        """
         return round(self.__balance, 2)
 
     def deposit(self, value: float):
-        self.__balance += value
+        """Deposit money into the account.
+
+        Args:
+            value (float): The value to add to the account.
+        """
+        self.__balance += float(value)
 
     def withdraw(self, value: float):
-        self.__balance -= value
+        """Withdraw money from the account.
 
-    def get_profit_loss(self):
+        Args:
+            value (float): The value to remove from the account.
+        """
+        self.__balance -= float(value)
+
+    def get_profit_loss(self) -> float:
+        """Get the current profit/loss of the account.
+
+        returns:
+            float: The profit/loss amount.
+        """
         return round(self.__balance - self.__initial_balance, 2)

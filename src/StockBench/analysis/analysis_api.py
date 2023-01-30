@@ -28,7 +28,7 @@ class SimulationAnalyzer:
         self.__eff_cache = round(_eff, 3)
         return self.__eff_cache
 
-    def total_pl(self) -> float:
+    def total_profit_loss(self) -> float:
         """Calculates the total profit/loss of the simulation."""
         # check for cached sum value
         if self.__sum_cache:
@@ -42,14 +42,14 @@ class SimulationAnalyzer:
         self.__sum_cache = round(_sum, 3)
         return self.__sum_cache
 
-    def avg_pl(self) -> float:
+    def avg_profit_loss(self) -> float:
         """Calculates the average profit/loss of the simulation."""
         # check for cached avg pl value
         if self.__avg_pl_cache:
             return self.__avg_pl_cache
 
         try:
-            _avg_pl = self.total_pl() / float(len(self.__positions))
+            _avg_pl = self.total_profit_loss() / float(len(self.__positions))
         except ZeroDivisionError:
             _avg_pl = 0.0
 

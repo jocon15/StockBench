@@ -64,25 +64,4 @@ StockBench allows users to generate a report of all the data used during the sim
 # Roadmap
 This project is currently under development. The intention of this project is to be a proof-of-concept for simulating stock trading strategies on a large scale. We've shown that the dictionary strategy definition can be used as a means of defining a strategy with both basic and complex rules. Below we've listed some of the new features as well as things we'd like to see implemented or changed.
 
-
-#### Recently Built Features
-- [x] Support of AND and OR triggers (complex triggering)
-- [x] Support for variable triggers (complex triggering)
-- [x] Support for volume triggers
-- [x] Support for volume charting
-- [x] Support for terminal logging
-- [x] Support for exporting simulation data to excel
-
-#### Low Level Development
-- [ ] Volume bars are overly dark
-- [ ] Add red to volume chart
-- [ ] Update images in the readme
-- [ ] Add images of the indicators to the wiki
-- [ ] Sub chart titles (side)
-- [ ] General cleanup and optimization (in-progress)
-
-#### High Level Features
-- [ ] Provide support for additional indicators.
-- [ ] Investigate possible GUI
-- [ ] Investigate news search triggering with Google search date filters
-- [ ] Have the run function return the simulation results so the user can easily use them
+Check out our [Trello Board](https://trello.com/b/XtEbMZL4/stockbench) for more information on where we're headed next.

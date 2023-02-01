@@ -1,4 +1,5 @@
 import statistics
+from StockBench.function_tools.function_wrappers import performance_timer
 
 
 class Indicators:
@@ -25,6 +26,7 @@ class Indicators:
 
     """
     @staticmethod
+    @performance_timer
     def candle_color(open_data: list, close_data: list) -> list:
         """ Calculate the color of a candle on a given day.
 
@@ -48,6 +50,7 @@ class Indicators:
         return colors
 
     @staticmethod
+    @performance_timer
     def SMA(sma_length: int, price_data: list) -> list:
         """Calculate the RSI values for a list of price values.
 
@@ -77,6 +80,7 @@ class Indicators:
         return all_sma_values
 
     @staticmethod
+    @performance_timer
     def RSI(rsi_length: int, price_data: list) -> list:
         """Calculate the RSI values for a list of price values.
 

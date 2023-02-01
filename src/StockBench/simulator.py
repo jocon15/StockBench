@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import time
+from time import perf_counter
 import math
 import logging
 from .constants import *
@@ -71,6 +72,8 @@ class Simulator:
         self.__reporting_on = False
         self.__charting_on = False
         self.__user_terminal_logging_on = False
+
+        self.__elapsed_time = None
 
     def enable_logging(self, terminal=False):
         """Enable user logging.
@@ -198,6 +201,7 @@ class Simulator:
         """
         # set the objects symbol to the passed value, so we can use it everywhere
         log.info(f'Setting up simulation for symbol: {symbol}...')
+        start_time = perf_counter()
         self.__symbol = symbol.upper()
 
         # check the strategy for errors
@@ -293,7 +297,11 @@ class Simulator:
         # initiate the analyzer with the positions data
         self.__analyzer_API = SimulationAnalyzer(self.__position_archive)
 
+        end_time = perf_counter()
+        self.__elapsed_time = end_time - start_time
+
         log.info('====== Simulation Results ======')
+        log.info(f'Elapsed time  : {self.__elapsed_time} seconds')
         log.info(f'Trades made   : {len(self.__position_archive)}')
         log.info(f'Effectiveness : {self.__analyzer_API.effectiveness()}')
         log.info(f'Avg. P/L      : {self.__analyzer_API.avg_profit_loss()}')
@@ -645,6 +653,7 @@ class Simulator:
         """Prints the simulation results if terminal logging is off"""
         if not self.__user_terminal_logging_on:
             print('====== Simulation Results ======')
+            print(f'Elapsed time  : {self.__elapsed_time} seconds')
             print(f'Trades made   : {len(self.__position_archive)}')
             print(f'Effectiveness : {self.__analyzer_API.effectiveness()}%')
             print(f'Avg. P/L      : ${self.__analyzer_API.avg_profit_loss()}')

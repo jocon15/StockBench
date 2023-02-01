@@ -4,6 +4,7 @@ notes.docx
 *.html
 logs/
 dev/
+out/
 excel/
 .idea/
 

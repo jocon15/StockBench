@@ -193,7 +193,7 @@ class Simulator:
         # initialize the member object
         self.__trigger_API = TriggerAPI(strategy)
 
-    def run(self, symbol: str):
+    def run(self, symbol: str) -> dict:
         """Run a simulation on an asset.
 
         Args:
@@ -320,6 +320,22 @@ class Simulator:
         if self.__charting_on:
             # chart the chopped data
             self.__charting_API.chart(chopped_temp_df, self.__symbol)
+
+        return {
+            'symbol': symbol,
+            'trades_made': len(self.__position_archive),
+            'effectiveness': self.__analyzer_API.effectiveness(),
+            'average_profit_loss': self.__analyzer_API.avg_profit_loss(),
+            'total_profit_loss': self.__account.get_profit_loss(),
+            'account_value': self.__account.get_balance()
+        }
+
+    def run_multiple(self, symbols: list) -> list:
+        results = list()
+        for symbol in symbols:
+            results.append(self.run(symbol))
+
+        return results
 
     def __error_check_strategy(self):
         """Check the strategy for errors"""

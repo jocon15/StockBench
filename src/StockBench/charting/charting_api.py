@@ -1,9 +1,10 @@
+import os
 import re
 import logging
-import pandas as pd
-from .color_constants import *
+from .charting_constants import *
 import plotly.graph_objects as fplt
 from plotly.subplots import make_subplots
+from StockBench.function_tools.nonce import datetime_nonce
 
 log = logging.getLogger()
 
@@ -15,22 +16,21 @@ class ChartingAPI:
     through this API.
     """
     def __init__(self):
-        self.__subplot_count = 1
         self.__df = None
 
-        self.__next_row = 2
+        self.__next_row = DEFAULT_SUBPLOT_ROWS
         # add any more constants here...
         self.__rsi_row = None
 
-    def chart(self, _df, _symbol):
+    def chart(self, df, symbol):
         # FIXME: Might need to take in a filepath to output the html file to
         """Chart the data.
 
         Args:
-            _df (DataFrame): The full DataFrame post-simulation.
-            _symbol (str): The symbol the simulation was run on.
+            df (DataFrame): The full DataFrame post-simulation.
+            symbol (str): The symbol the simulation was run on.
         """
-        self.__df = _df
+        self.__df = df
 
         rows = 1
         cols = 1
@@ -117,7 +117,14 @@ class ChartingAPI:
 
         # update the layout
         window_size = len(self.__df['Close'])
-        fig.update_layout(template='plotly_dark', title=f'{window_size} day simulation for {_symbol}',
+        fig.update_layout(template='plotly_dark', title=f'{window_size} day simulation for {symbol}',
                           xaxis_title='Date', yaxis_title='Price (USD)', xaxis_rangeslider_visible=False)
 
-        fig.write_html('figure.html', auto_open=True)
+        chart_filepath = os.path.join('figures', f'figure_{symbol}_{datetime_nonce()}.html')
+        # make the directories if they don't already exist
+        os.makedirs(os.path.dirname(chart_filepath), exist_ok=True)
+
+        fig.write_html(chart_filepath, auto_open=True)
+
+        # reset the next row in case we run another simulation
+        self.__next_row = DEFAULT_SUBPLOT_ROWS

@@ -13,8 +13,7 @@ def performance_timer(original_fxn):
         start = perf_counter()
         result = original_fxn(*args, **kwargs)
         end = perf_counter()
-        elapsed = end - start
-        log.debug(f'Function: {original_fxn.__name__} took {elapsed} seconds')
+        log.debug(f'Function: {original_fxn.__name__} took {end - start} seconds')
         return result
 
     return wrapper

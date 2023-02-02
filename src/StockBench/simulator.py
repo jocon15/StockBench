@@ -2,10 +2,10 @@ import os
 import re
 import sys
 import time
-from time import perf_counter
 import math
 import logging
 from .constants import *
+from time import perf_counter
 from datetime import datetime
 from .broker.broker_api import BrokerAPI
 from .charting.charting_api import ChartingAPI
@@ -16,6 +16,7 @@ from .position.position_obj import Position
 from .triggers.triggering_api import TriggerAPI
 from .simulation_data.data_api import DataAPI
 from .analysis.analysis_api import SimulationAnalyzer
+from .function_tools.nonce import datetime_nonce
 
 log = logging.getLogger()
 
@@ -52,7 +53,7 @@ class Simulator:
         self.__broker_API = BrokerAPI()
         self.__charting_API = ChartingAPI()
         self.__indicators_API = Indicators()
-        self.__exporting_API = ExportingAPI()
+        self.__exporting_API = None  # gets constructed once we have the symbol
         self.__data_API = None  # gets constructed once we request the data
         self.__trigger_API = None  # gets constructed once we have the strategy
         self.__analyzer_API = None  # gets constructed once we have the completed simulation data
@@ -85,7 +86,7 @@ class Simulator:
         log.setLevel(logging.INFO)
 
         # build the filepath
-        user_logging_filepath = os.path.join('logs', f'RunLog_{self.__datetime_nonce_string()}')
+        user_logging_filepath = os.path.join('logs', f'RunLog_{datetime_nonce()}')
 
         # build the formatters
         user_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
@@ -149,7 +150,7 @@ class Simulator:
             developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
 
         # build the filepath
-        developer_logging_filepath = os.path.join('dev', f'DevLog_{self.__datetime_nonce_string()}')
+        developer_logging_filepath = os.path.join('dev', f'DevLog_{datetime_nonce()}')
 
         # make the directories if they don't already exist
         os.makedirs(os.path.dirname(developer_logging_filepath), exist_ok=True)
@@ -312,6 +313,8 @@ class Simulator:
         self.__print_results()
 
         if self.__reporting_on:
+            # create the exporting object
+            self.__exporting_API = ExportingAPI(self.__symbol)
             # load exporter with the chopped data
             self.__exporting_API.load_data(chopped_temp_df)
             # export the data
@@ -322,7 +325,7 @@ class Simulator:
             self.__charting_API.chart(chopped_temp_df, self.__symbol)
 
         return {
-            'symbol': symbol,
+            'symbol': self.__symbol,
             'trades_made': len(self.__position_archive),
             'effectiveness': self.__analyzer_API.effectiveness(),
             'average_profit_loss': self.__analyzer_API.avg_profit_loss(),
@@ -676,11 +679,6 @@ class Simulator:
             print(f'Total P/L     : ${self.__account.get_profit_loss()}')
             print(f'Account Value : ${self.__account.get_balance()}')
             print('================================')
-
-    @staticmethod
-    def __datetime_nonce_string() -> str:
-        """Convert current date and time to string."""
-        return datetime.now().strftime("%m_%d_%Y__%H_%M_%S")
 
     @staticmethod
     def __unix_to_string(_unix_date, _format='%m-%d-%Y') -> str:

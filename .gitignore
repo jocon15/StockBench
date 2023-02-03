@@ -6,6 +6,7 @@ logs/
 dev/
 out/
 excel/
+figures/
 .idea/
 
 # Byte-compiled / optimized / DLL files

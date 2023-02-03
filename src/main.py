@@ -32,7 +32,7 @@ strategy = {
 def main():
     stock_sim = Simulator(1000.00)
 
-    stock_sim.enable_logging(terminal=True)
+    stock_sim.enable_logging()
     # stock_sim.enable_developer_logging(1)
 
     stock_sim.enable_reporting()
@@ -40,7 +40,9 @@ def main():
 
     stock_sim.load_strategy(strategy)
 
-    stock_sim.run('AAPL')
+    # stock_sim.run('AAPL')
+
+    print(stock_sim.run_multiple(['AAPL', 'MSFT', 'TSLA']))
 
 
 if __name__ == '__main__':

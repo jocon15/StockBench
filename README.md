@@ -17,9 +17,11 @@ And just like that, you have simulated a strategy on historical data. Have fun!
 
 2. Add them as [Environment Variables](https://github.com/jocon15/StockBench/wiki/Environment-Variables).
 
-3. Import the simulator and constants.
+3. Run `pip install .` in the StockBench repository.
 
-4. Build a strategy, check out [Building a Strategy](https://github.com/jocon15/StockBench/wiki/Building-a-Strategy).
+4. Import the simulator and constants in your script.
+
+5. Build a strategy, check out [Building a Strategy](https://github.com/jocon15/StockBench/wiki/Building-a-Strategy).
 
 ```
 import time
@@ -39,14 +41,12 @@ strategy = {
     }
 }
 
-# simulation settings
 stock_sim = Simulator(1000.00)
 stock_sim.enable_logging()
 stock_sim.load_strategy(strategy)
 stock_sim.enable_reporting()
 stock_sim.enable_charting()
 
-# run the simulation on MSFT
 stock_sim.run('MSFT')
 
 ```

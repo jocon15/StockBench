@@ -1,9 +1,9 @@
 import os
 import re
-import sys
 import time
 import math
 import logging
+from tqdm import tqdm
 from .constants import *
 from time import perf_counter
 from datetime import datetime
@@ -72,108 +72,8 @@ class Simulator:
 
         self.__reporting_on = False
         self.__charting_on = False
-        self.__user_terminal_logging_on = False
 
         self.__elapsed_time = None
-
-    def enable_logging(self, terminal=False):
-        """Enable user logging.
-
-        Args:
-            terminal (bool): Flag for enabling terminal logging in addition to file logging.
-        """
-        # set the logging level to info
-        log.setLevel(logging.INFO)
-
-        # build the filepath
-        user_logging_filepath = os.path.join('logs', f'RunLog_{datetime_nonce()}')
-
-        # build the formatters
-        user_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
-
-        # make the directories if they don't already exist
-        os.makedirs(os.path.dirname(user_logging_filepath), exist_ok=True)
-
-        # create the handler
-        user_handler = logging.FileHandler(user_logging_filepath)
-
-        # set the format of the handler
-        user_handler.setFormatter(user_logging_formatter)
-
-        # add the handler to the logger
-        log.addHandler(user_handler)
-
-        if terminal:
-            # create the terminal handler
-            terminal_handler = logging.StreamHandler(sys.stdout)
-
-            # set the formal of the handler
-            terminal_handler.setFormatter(user_logging_formatter)
-
-            # add the handler to the logger
-            log.addHandler(terminal_handler)
-
-            # tell the developer logging that we're using the terminal
-            self.__user_terminal_logging_on = True
-
-    def enable_developer_logging(self, level=2, terminal=False):
-        """Enable developer logging.
-
-        Args:
-            level (int): The logging level for the logger.
-            terminal (bool): Flag for enabling terminal logging in addition to file logging.
-
-        Notes:
-            - If user_logging terminal is enabled, it will supersede the developer terminal logging.
-                Make sure the user terminal logging is disabled before enabling developer terminal logging.
-        """
-        # set the logging level
-        if level == 1:
-            log.setLevel(logging.DEBUG)
-            # build the formatter
-            developer_logging_formatter = logging.Formatter('%(funcName)s:%(lineno)d|%(levelname)s|%(message)s')
-        elif level == 3:
-            log.setLevel(logging.WARNING)
-            # build the formatter
-            developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
-        elif level == 4:
-            log.setLevel(logging.ERROR)
-            # build the formatter
-            developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
-        elif level == 5:
-            log.setLevel(logging.CRITICAL)
-            # build the formatter
-            developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
-        else:
-            log.setLevel(logging.INFO)
-            # build the formatter
-            developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
-
-        # build the filepath
-        developer_logging_filepath = os.path.join('dev', f'DevLog_{datetime_nonce()}')
-
-        # make the directories if they don't already exist
-        os.makedirs(os.path.dirname(developer_logging_filepath), exist_ok=True)
-
-        # create the handler
-        developer_handler = logging.FileHandler(developer_logging_filepath)
-
-        # set the format of the handler
-        developer_handler.setFormatter(developer_logging_formatter)
-
-        # add the handler to the logger
-        log.addHandler(developer_handler)
-
-        if terminal:
-            if not self.__user_terminal_logging_on:
-                # create the terminal handler
-                terminal_handler = logging.StreamHandler(sys.stdout)
-
-                # set the formal of the handler
-                terminal_handler.setFormatter(developer_logging_formatter)
-
-                # add the handler to the logger
-                log.addHandler(terminal_handler)
 
     def enable_reporting(self):
         """Enable report building."""
@@ -243,13 +143,15 @@ class Simulator:
         log.info(f'Account Value   : {self.__account.get_balance()}')
         log.info('=============================')
 
+        self.__print_header()
+
         buy_mode = True
         position = None
 
         log.info(f'Beginning simulation...')
 
         # ===================== Simulation Loop ======================
-        for current_day_index in range(sim_window_start_day, self.__data_API.get_data_length()):
+        for current_day_index in tqdm(range(sim_window_start_day, self.__data_API.get_data_length())):
             # we loop from the focus start day (ex. 200)
             # to the total amount of days in the set (ex. 400)
             # the day_index represents the index of the current day in the
@@ -339,6 +241,74 @@ class Simulator:
             results.append(self.run(symbol))
 
         return results
+
+    @staticmethod
+    def enable_logging():
+        """Enable user logging."""
+        # set the logging level to info
+        log.setLevel(logging.INFO)
+
+        # build the filepath
+        user_logging_filepath = os.path.join('logs', f'RunLog_{datetime_nonce()}')
+
+        # build the formatters
+        user_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
+
+        # make the directories if they don't already exist
+        os.makedirs(os.path.dirname(user_logging_filepath), exist_ok=True)
+
+        # create the handler
+        user_handler = logging.FileHandler(user_logging_filepath)
+
+        # set the format of the handler
+        user_handler.setFormatter(user_logging_formatter)
+
+        # add the handler to the logger
+        log.addHandler(user_handler)
+
+    @staticmethod
+    def enable_developer_logging(level=2):
+        """Enable developer logging.
+
+        Args:
+            level (int): The logging level for the logger.
+        """
+        # set the logging level
+        if level == 1:
+            log.setLevel(logging.DEBUG)
+            # build the formatter
+            developer_logging_formatter = logging.Formatter('%(funcName)s:%(lineno)d|%(levelname)s|%(message)s')
+        elif level == 3:
+            log.setLevel(logging.WARNING)
+            # build the formatter
+            developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
+        elif level == 4:
+            log.setLevel(logging.ERROR)
+            # build the formatter
+            developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
+        elif level == 5:
+            log.setLevel(logging.CRITICAL)
+            # build the formatter
+            developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
+        else:
+            log.setLevel(logging.INFO)
+            # build the formatter
+            developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
+
+        # build the filepath
+        developer_logging_filepath = os.path.join('dev', f'DevLog_{datetime_nonce()}')
+
+        # make the directories if they don't already exist
+        os.makedirs(os.path.dirname(developer_logging_filepath), exist_ok=True)
+
+        # create the handler
+        developer_handler = logging.FileHandler(developer_logging_filepath)
+
+        # set the format of the handler
+        developer_handler.setFormatter(developer_logging_formatter)
+
+        # add the handler to the logger
+        log.addHandler(developer_handler)
 
     def __error_check_strategy(self):
         """Check the strategy for errors"""
@@ -668,17 +638,22 @@ class Simulator:
         # Adding the sell price to the sell list
         self.__sell_list[current_day_index] = _sell_price
 
+    def __print_header(self):
+        """Prints the simulation header."""
+        print('======= Simulation Start =======')
+        print(f'Running simulation on {self.__symbol}...')
+        print('================================')
+
     def __print_results(self):
-        """Prints the simulation results if terminal logging is off"""
-        if not self.__user_terminal_logging_on:
-            print('====== Simulation Results ======')
-            print(f'Elapsed time  : {self.__elapsed_time} seconds')
-            print(f'Trades made   : {len(self.__position_archive)}')
-            print(f'Effectiveness : {self.__analyzer_API.effectiveness()}%')
-            print(f'Avg. P/L      : ${self.__analyzer_API.avg_profit_loss()}')
-            print(f'Total P/L     : ${self.__account.get_profit_loss()}')
-            print(f'Account Value : ${self.__account.get_balance()}')
-            print('================================')
+        """Prints the simulation results."""
+        print('====== Simulation Results ======')
+        print(f'Elapsed time  : {self.__elapsed_time} seconds')
+        print(f'Trades made   : {len(self.__position_archive)}')
+        print(f'Effectiveness : {self.__analyzer_API.effectiveness()}%')
+        print(f'Avg. P/L      : ${self.__analyzer_API.avg_profit_loss()}')
+        print(f'Total P/L     : ${self.__account.get_profit_loss()}')
+        print(f'Account Value : ${self.__account.get_balance()}')
+        print('================================')
 
     @staticmethod
     def __unix_to_string(_unix_date, _format='%m-%d-%Y') -> str:

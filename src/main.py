@@ -32,7 +32,7 @@ strategy = {
 def main():
     stock_sim = Simulator(1000.00)
 
-    stock_sim.enable_logging(terminal=True)
+    stock_sim.enable_logging()
     # stock_sim.enable_developer_logging(1)
 
     stock_sim.enable_reporting()

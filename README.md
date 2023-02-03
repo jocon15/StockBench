@@ -48,7 +48,6 @@ stock_sim.enable_reporting()
 stock_sim.enable_charting()
 
 stock_sim.run('MSFT')
-
 ```
 
 ## Results
@@ -62,6 +61,4 @@ StockBench allows users to generate a report of all the data used during the sim
 ![report](https://github.com/jocon15/StockBench/blob/master/images/excel.png)
 
 # Roadmap
-This project is currently under development. The intention of this project is to be a proof-of-concept for simulating stock trading strategies on a large scale. We've shown that the dictionary strategy definition can be used as a means of defining a strategy with both basic and complex rules. Below we've listed some of the new features as well as things we'd like to see implemented or changed.
-
-Check out our [Trello Board](https://trello.com/b/XtEbMZL4/stockbench) for more information on where we're headed next.
+This project is currently under development. The intention of this project is to be a proof-of-concept for simulating stock trading strategies on a large scale. Check out our [Trello Board](https://trello.com/b/XtEbMZL4/stockbench) for more information on where we're headed next.

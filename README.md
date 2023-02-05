@@ -55,9 +55,12 @@ stock_sim.run('MSFT')
 ```
 
 ## Results
-Each simulation will render a chart that shows the price data and relevant indicators.
+Each simulation will render a chart that shows the price data and relevant indicators:
 ![chart](https://github.com/jocon15/StockBench/blob/master/images/MSFT.png)
 
+
+Or test your strategy on multiple symbols:
+![chart](https://github.com/jocon15/StockBench/blob/mp_tasks/images/multi_display.png)
 
 ## Diving Deeper
 StockBench allows users to generate a report of all the data used during the simulation. By enabling reporting, the simulation will generate an Excel (.xlsx) file.

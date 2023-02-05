@@ -3,7 +3,7 @@
 
 One Symbol                 |  Many Symbols
 :-------------------------:|:-------------------------:
-![single](https://github.com/jocon15/StockBench/blob/master/images/TSLA.png)  |  ![multi](https://github.com/jocon15/StockBench/blob/master/images/multi_display.png)
+![single](https://github.com/jocon15/StockBench/blob/master/images/TSLA.png)  |  ![multi](https://github.com/jocon15/StockBench/blob/mp_tasks/images/multi_display.png)
 
 
 

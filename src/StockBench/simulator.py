@@ -7,8 +7,10 @@ from tqdm import tqdm
 from .constants import *
 from time import perf_counter
 from datetime import datetime
+from multiprocessing import Process
 from .broker.broker_api import BrokerAPI
-from .charting.charting_api import ChartingAPI
+from .displays.singular import SingularDisplay
+from .displays.multiple import MultipleDisplay
 from .accounting.user_account import UserAccount
 from .exporting.exporting_api import ExportingAPI
 from .indicators.indicators_api import Indicators
@@ -51,9 +53,7 @@ class Simulator:
         """
         self.__account = UserAccount(balance)
         self.__broker_API = BrokerAPI()
-        self.__charting_API = ChartingAPI()
         self.__indicators_API = Indicators()
-        self.__exporting_API = None  # gets constructed once we have the symbol
         self.__data_API = None  # gets constructed once we request the data
         self.__trigger_API = None  # gets constructed once we have the strategy
         self.__analyzer_API = None  # gets constructed once we have the completed simulation data
@@ -73,6 +73,8 @@ class Simulator:
         self.__reporting_on = False
         self.__charting_on = False
 
+        self.__running_multiple = False
+
         self.__elapsed_time = None
 
     def enable_reporting(self):
@@ -80,7 +82,7 @@ class Simulator:
         self.__reporting_on = True
 
     def enable_charting(self):
-        """Enable charting."""
+        """Enable displays."""
         self.__charting_on = True
 
     def load_strategy(self, strategy: dict):
@@ -103,7 +105,11 @@ class Simulator:
         # set the objects symbol to the passed value, so we can use it everywhere
         log.info(f'Setting up simulation for symbol: {symbol}...')
         start_time = perf_counter()
+
         self.__symbol = symbol.upper()
+
+        # reset the attributes()
+        self.__reset_attributes()
 
         # check the strategy for errors
         self.__error_check_strategy()
@@ -143,7 +149,8 @@ class Simulator:
         log.info(f'Account Value   : {self.__account.get_balance()}')
         log.info('=============================')
 
-        self.__print_header()
+        if not self.__running_multiple:
+            self.__print_header()
 
         buy_mode = True
         position = None
@@ -151,7 +158,7 @@ class Simulator:
         log.info(f'Beginning simulation...')
 
         # ===================== Simulation Loop ======================
-        for current_day_index in tqdm(range(sim_window_start_day, self.__data_API.get_data_length())):
+        for current_day_index in range(sim_window_start_day, self.__data_API.get_data_length()):
             # we loop from the focus start day (ex. 200)
             # to the total amount of days in the set (ex. 400)
             # the day_index represents the index of the current day in the
@@ -212,19 +219,22 @@ class Simulator:
         log.info(f'Account Value : {self.__account.get_balance()}')
         log.info('================================')
 
-        self.__print_results()
+        if not self.__running_multiple:
+            self.__print_results()
 
         if self.__reporting_on:
-            # create the exporting object
-            self.__exporting_API = ExportingAPI(self.__symbol)
-            # load exporter with the chopped data
-            self.__exporting_API.load_data(chopped_temp_df)
-            # export the data
-            self.__exporting_API.export()
+            # create an exporting object
+            exporting_API = ExportingAPI()
+            # export the data on a separate process
+            exporting_process = Process(target=exporting_API.export, args=(chopped_temp_df, self.__symbol))
+            exporting_process.start()
 
         if self.__charting_on:
-            # chart the chopped data
-            self.__charting_API.chart(chopped_temp_df, self.__symbol)
+            # create the displays object
+            charting_API = SingularDisplay()
+            # chart the data on a separate process
+            charting_process = Process(target=charting_API.chart, args=(chopped_temp_df, self.__symbol))
+            charting_process.start()
 
         return {
             'symbol': self.__symbol,
@@ -236,10 +246,21 @@ class Simulator:
         }
 
     def run_multiple(self, symbols: list) -> list:
+        # disable printing for TQDM
+        self.__running_multiple = True
         results = list()
-        for symbol in symbols:
-            results.append(self.run(symbol))
-
+        for symbol in tqdm(symbols, f'Simulating {len(symbols)} symbols'):
+            try:
+                result = self.run(symbol)
+            except Exception as e:
+                print(f'\nException {type(e)} caught, retrying...')
+                result = self.run(symbol)
+            results.append(result)
+        # re-enable printing for TQDM
+        self.__running_multiple = False
+        # create the display object
+        display = MultipleDisplay()
+        display.chart(results)
         return results
 
     @staticmethod
@@ -309,6 +330,12 @@ class Simulator:
 
         # add the handler to the logger
         log.addHandler(developer_handler)
+
+    def __reset_attributes(self):
+        self.__account.reset()
+        self.__buy_list = list()
+        self.__sell_list = list()
+        self.__position_archive = list()
 
     def __error_check_strategy(self):
         """Check the strategy for errors"""

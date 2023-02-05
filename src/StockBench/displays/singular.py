@@ -1,7 +1,7 @@
 import os
 import re
 import logging
-from .charting_constants import *
+from .display_constants import *
 import plotly.graph_objects as fplt
 from plotly.subplots import make_subplots
 from StockBench.function_tools.nonce import datetime_nonce
@@ -9,10 +9,10 @@ from StockBench.function_tools.nonce import datetime_nonce
 log = logging.getLogger()
 
 
-class ChartingAPI:
-    """This class defines a charting object.
+class SingularDisplay:
+    """This class defines a displays object.
 
-    The charting object is used as an API for the simulator to chart the data. All charting functionality is done
+    The displays object is used as an API for the simulator to chart the data. All displays functionality is done
     through this API.
     """
     def __init__(self):
@@ -23,7 +23,6 @@ class ChartingAPI:
         self.__rsi_row = None
 
     def chart(self, df, symbol):
-        # FIXME: Might need to take in a filepath to output the html file to
         """Chart the data.
 
         Args:

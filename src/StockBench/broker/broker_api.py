@@ -1,9 +1,9 @@
 import logging
 import os
-import json
 import requests
 import pandas as pd
 from datetime import datetime
+from StockBench.function_tools.function_wrappers import performance_timer
 
 log = logging.getLogger()
 
@@ -17,7 +17,7 @@ class BrokerAPI:
     The simulator calculates the correct range of data to request. Then, this API handles the physical interaction
     by requesting and formatting the relevant data.
     """
-    def __init__(self, timeout=5):
+    def __init__(self, timeout=15):
         self.__API_KEY = os.environ['ALPACA_API_KEY']
         self.__SECRET_KEY = os.environ['ALPACA_SECRET_KEY']
 
@@ -28,6 +28,7 @@ class BrokerAPI:
 
         self.__symbol = None
 
+    @performance_timer
     def get_daily_data(self, symbol: str, start_date_unix: int, end_date_unix: int):
         """Retrieve bars data with 1-Day resolution.
 
@@ -63,6 +64,7 @@ class BrokerAPI:
         pass
 
     @staticmethod
+    @performance_timer
     def json_to_df(json_data):
         """Convert JSON to Pandas.DataFrame.
 

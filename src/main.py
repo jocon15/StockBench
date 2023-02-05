@@ -1,4 +1,5 @@
 import time
+from StockBench.composites.snp500 import snp500_tickers
 from StockBench.constants import *
 from StockBench.simulator import Simulator
 
@@ -32,17 +33,21 @@ strategy = {
 def main():
     stock_sim = Simulator(1000.00)
 
-    stock_sim.enable_logging()
+    # stock_sim.enable_logging()
     # stock_sim.enable_developer_logging(1)
 
-    stock_sim.enable_reporting()
-    stock_sim.enable_charting()
+    # stock_sim.enable_reporting()
+    # stock_sim.enable_charting()
 
     stock_sim.load_strategy(strategy)
 
     # stock_sim.run('AAPL')
 
-    print(stock_sim.run_multiple(['AAPL', 'MSFT', 'TSLA']))
+    # print(stock_sim.run_multiple(['AAPL', 'MSFT', 'TSLA']))
+
+    result = stock_sim.run_multiple(snp500_tickers[:200])
+
+    print(result)
 
 
 if __name__ == '__main__':

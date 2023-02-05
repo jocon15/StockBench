@@ -15,18 +15,12 @@ class ExportingAPI:
     The user may want to see the physical data used during the simulation. (This can also help us debug)
     The exporting feature allows us to export the entire simulation (simulation window) data to an Excel file.
     The rendered Excel file looks exactly like the Pandas DataFrame."""
-    def __init__(self, symbol):
-        self.__symbol = symbol
+    def __init__(self):
+        self.__symbol = None
         self.__df = None
-
-        log.debug('Opening workbook...')
-        self.__NONCE = datetime_nonce()
-        report_filepath = os.path.join('excel', f'simulation_{symbol}_{self.__NONCE}.xlsx')
-        # make the directories if they don't already exist
-        os.makedirs(os.path.dirname(report_filepath), exist_ok=True)
-        self.__workbook = xlsxwriter.Workbook(report_filepath)
-        self.__data_worksheet = self.__workbook.add_worksheet('Data')
-        log.debug('Opening workbook complete')
+        self.__NONCE = None
+        self.__workbook = None
+        self.__data_worksheet = None
 
         # Data worksheet offsets
         self.__DATA_COLUMN_HEADER_ROW = 3
@@ -39,12 +33,13 @@ class ExportingAPI:
             self.__workbook.close()
             log.debug('Closing workbook complete')
 
-    def load_data(self, data):
-        """Load the simulation data."""
-        self.__df = data
-
-    def export(self):
+    def export(self, df, symbol):
         """Export the data to an Excel file."""
+        self.__symbol = symbol
+        self.__df = df
+
+        self.__open_workbook()
+
         self.__add_titles()
         self.__write_df()
         # write anything else here
@@ -55,6 +50,17 @@ class ExportingAPI:
         self.__workbook = None
         self.__data_worksheet = None
         log.debug('Closing workbook complete')
+
+    def __open_workbook(self):
+        log.debug('Opening workbook...')
+        self.__NONCE = datetime_nonce()
+        report_filepath = os.path.join('excel', f'simulation_{self.__symbol}_{self.__NONCE}.xlsx')
+        # make the directories if they don't already exist
+        os.makedirs(os.path.dirname(report_filepath), exist_ok=True)
+
+        self.__workbook = xlsxwriter.Workbook(report_filepath)
+        self.__data_worksheet = self.__workbook.add_worksheet('Data')
+        log.debug('Opening workbook complete')
 
     def __add_titles(self):
         """Add titles to the worksheet."""

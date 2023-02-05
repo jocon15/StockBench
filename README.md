@@ -1,7 +1,11 @@
 # StockBench
 ### A back-tester for testing stock trading strategies with historical data.
 
-![chart](https://github.com/jocon15/StockBench/blob/master/images/TSLA.png)
+One Symbol                 |  Many Symbols
+:-------------------------:|:-------------------------:
+![single](https://github.com/jocon15/StockBench/blob/master/images/TSLA.png)  |  ![multi](https://github.com/jocon15/StockBench/blob/master/images/multi_display.png)
+
+
 
 # How it Works
 StockBench allows you to run a simulation on any US security where data is available. StockBench sources market data from [Alpaca Markets](https://alpaca.markets/).

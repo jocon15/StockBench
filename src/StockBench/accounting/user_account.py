@@ -9,14 +9,6 @@ class UserAccount:
         self.__balance = float(balance)
         self.__initial_balance = float(balance)
 
-    def get_balance(self) -> float:
-        """Get the current balance of the account.
-
-        returns:
-            float: The balance of the account.
-        """
-        return round(self.__balance, 2)
-
     def deposit(self, value: float):
         """Deposit money into the account.
 
@@ -32,6 +24,17 @@ class UserAccount:
             value (float): The value to remove from the account.
         """
         self.__balance -= float(value)
+
+    def reset(self):
+        self.__balance = self.__initial_balance
+
+    def get_balance(self) -> float:
+        """Get the current balance of the account.
+
+        returns:
+            float: The balance of the account.
+        """
+        return round(self.__balance, 2)
 
     def get_profit_loss(self) -> float:
         """Get the current profit/loss of the account.

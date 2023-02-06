@@ -1,9 +1,13 @@
 # StockBench
+
+<p align="center">
+    <img src ="https://img.shields.io/badge/version-0.0.1-blueviolet.svg"/> <img src ="https://img.shields.io/badge/platform-windows-yellow.svg"/> <img src ="https://img.shields.io/badge/python-3.10-blue.svg" /> <img src ="https://img.shields.io/github/license/jocon15/StockBench.svg?color=orange"/>
+</p>
 ### A back-tester for testing stock trading strategies with historical data.
 
 One Symbol                 |  Many Symbols
 :-------------------------:|:-------------------------:
-![single](https://github.com/jocon15/StockBench/blob/master/images/TSLA.png)  |  ![multi](https://github.com/jocon15/StockBench/blob/mp_tasks/images/multi_display.png)
+![single](https://github.com/jocon15/StockBench/blob/master/images/TSLA.png)  |  ![multi](https://github.com/jocon15/StockBench/blob/master/images/multi_display.png)
 
 
 
@@ -59,8 +63,8 @@ Each simulation will render a chart that shows the price data and relevant indic
 ![chart](https://github.com/jocon15/StockBench/blob/master/images/MSFT.png)
 
 
-Or test your strategy on multiple symbols:
-![chart](https://github.com/jocon15/StockBench/blob/mp_tasks/images/multi_display.png)
+Or test your strategy on multiple symbols and see overview analytics:
+![chart](https://github.com/jocon15/StockBench/blob/master/images/multi_display.png)
 
 ## Diving Deeper
 StockBench allows users to generate a report of all the data used during the simulation. By enabling reporting, the simulation will generate an Excel (.xlsx) file.

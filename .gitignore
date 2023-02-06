@@ -6,7 +6,9 @@ logs/
 dev/
 out/
 excel/
-figures/
+figures
+displays/
+offline_images/
 .idea/
 
 # Byte-compiled / optimized / DLL files

@@ -1,5 +1,6 @@
 import os
 import re
+import json
 import time
 import math
 import logging
@@ -77,6 +78,8 @@ class Simulator:
 
         self.__elapsed_time = None
 
+        self.__stored_results = None
+
     def enable_reporting(self):
         """Enable report building."""
         self.__reporting_on = True
@@ -96,11 +99,13 @@ class Simulator:
         # initialize the member object
         self.__trigger_API = TriggerAPI(strategy)
 
-    def run(self, symbol: str) -> dict:
+    def run(self, symbol: str, show_chart=True, save_chart=False) -> dict:
         """Run a simulation on an asset.
 
         Args:
             symbol (str): The symbol to run the simulation on.
+            show_chart (bool): Show the chart when finished.
+            save_chart (bool): Save the chart when finished.
         """
         # set the objects symbol to the passed value, so we can use it everywhere
         log.info(f'Setting up simulation for symbol: {symbol}...')
@@ -229,11 +234,12 @@ class Simulator:
             exporting_process = Process(target=exporting_API.export, args=(chopped_temp_df, self.__symbol))
             exporting_process.start()
 
-        if self.__charting_on:
+        if show_chart or save_chart:
             # create the display object
             charting_API = SingularDisplay()
             # chart the data on a separate process
-            charting_process = Process(target=charting_API.chart, args=(chopped_temp_df, self.__symbol))
+            charting_process = Process(target=charting_API.chart,
+                                       args=(chopped_temp_df, self.__symbol, show_chart, save_chart))
             charting_process.start()
 
         return {
@@ -245,22 +251,68 @@ class Simulator:
             'account_value': self.__account.get_balance()
         }
 
-    def run_multiple(self, symbols: list) -> list:
+    def run_multiple(self, symbols: list, show_individual_charts=False, save_individual_charts=False, show_chart=True,
+                     save_chart=False) -> list:
         # disable printing for TQDM
         self.__running_multiple = True
         results = list()
         for symbol in tqdm(symbols, f'Simulating {len(symbols)} symbols'):
             try:
-                result = self.run(symbol)
+                result = self.run(symbol, show_individual_charts, save_individual_charts)
             except Exception as e:
                 print(f'\nException {type(e)} caught, retrying...')
                 result = self.run(symbol)
             results.append(result)
         # re-enable printing for TQDM
         self.__running_multiple = False
+        # save the results in case the user wants to write them to file
+        self.__stored_results = results
         # create the display object
         display = MultipleDisplay()
-        display.chart(results)
+        display.chart(results, show_chart, save_chart)
+        return results
+
+    def save_results_json(self, file_name=None):
+        # validate file name
+        if not file_name:
+            log.debug('No filename entered, using nonce')
+            file_name = f'save_{datetime_nonce()}'
+        else:
+            file_name = file_name.replace('.json', '')
+
+        # check for stored results
+        if self.__stored_results:
+            filepath = os.path.join('saved_simulations', f'{file_name}.json')
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+
+            # save the results to file
+            with open(filepath, 'w+') as file:
+                json.dump(self.__stored_results, file, indent=4)
+        else:
+            log.debug('No stored data available to write! Run a multi-sim first using run_multiple()')
+
+    @staticmethod
+    def display_results_from_json(file_name: str, show_chart=True, save_chart=False):
+        # validate file name
+        if file_name == '':
+            log.error('Save file name cannot be empty string')
+            raise Exception('Save file name cannot be empty string')
+        else:
+            file_name = file_name.replace('.json', '')
+
+        filepath = os.path.join('saved_simulations', f'{file_name}.json')
+
+        if not os.path.exists(filepath):
+            log.error('Specified save file does not exist!')
+            raise Exception('Specified save file does not exist!')
+
+        # load the data
+        with open(filepath, 'r') as file:
+            results = json.load(file)
+
+        # display the loaded data
+        display = MultipleDisplay()
+        display.chart(results, show_chart, save_chart)
         return results
 
     @staticmethod

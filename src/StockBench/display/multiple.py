@@ -11,7 +11,7 @@ class MultipleDisplay:
     def __init__(self):
         self.__data = None
 
-    def chart(self, data):
+    def chart(self, data, show=True, save=False):
         self.__data = data
 
         rows = 2
@@ -93,7 +93,12 @@ class MultipleDisplay:
         # make the directories if they don't already exist
         os.makedirs(os.path.dirname(chart_filepath), exist_ok=True)
 
-        fig.write_html(chart_filepath, auto_open=True)
+        if show and not save:
+            fig.show()
+        if save and not show:
+            fig.write_html(chart_filepath, auto_open=False)
+        if show and save:
+            fig.write_html(chart_filepath, auto_open=True)
 
     def __get_symbols(self) -> list:
         return self.__get_list_by_name('symbol')

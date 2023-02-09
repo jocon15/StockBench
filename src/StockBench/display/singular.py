@@ -22,7 +22,7 @@ class SingularDisplay:
         # add any more constants here...
         self.__rsi_row = None
 
-    def chart(self, df, symbol):
+    def chart(self, df, symbol, show=True, save=False):
         """Chart the data.
 
         Args:
@@ -123,7 +123,12 @@ class SingularDisplay:
         # make the directories if they don't already exist
         os.makedirs(os.path.dirname(chart_filepath), exist_ok=True)
 
-        fig.write_html(chart_filepath, auto_open=True)
+        if show and not save:
+            fig.show()
+        if save and not show:
+            fig.write_html(chart_filepath, auto_open=False)
+        if show and save:
+            fig.write_html(chart_filepath, auto_open=True)
 
         # reset the next row in case we run another simulation
         self.__next_row = DEFAULT_SUBPLOT_ROWS

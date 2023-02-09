@@ -45,7 +45,12 @@ def main():
 
     # print(stock_sim.run_multiple(['AAPL', 'MSFT', 'TSLA']))
 
-    result = stock_sim.run_multiple(snp500_tickers[:200])
+    result = stock_sim.run_multiple(snp500_tickers[:10], show_individual_charts=False, save_individual_charts=False,
+                                    show_chart=True, save_chart=False)
+
+    # stock_sim.save_results('example_file_name')
+
+    # stock_sim.display_results_from_save('example_file_name')
 
     print(result)
 

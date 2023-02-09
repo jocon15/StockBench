@@ -2,13 +2,14 @@
 notes.docx
 ~notes.docx
 *.html
-logs/
 dev/
-out/
-excel/
-figures
 displays/
+excel/
+figures/
+logs/
+saved_simulations/
 offline_images/
+out/
 .idea/
 
 # Byte-compiled / optimized / DLL files

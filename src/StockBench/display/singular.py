@@ -10,9 +10,9 @@ log = logging.getLogger()
 
 
 class SingularDisplay:
-    """This class defines a displays object.
+    """This class defines a display object.
 
-    The displays object is used as an API for the simulator to chart the data. All displays functionality is done
+    The display object is used as an API for the simulator to chart the data. All display functionality is done
     through this API.
     """
     def __init__(self):

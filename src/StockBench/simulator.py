@@ -9,8 +9,8 @@ from time import perf_counter
 from datetime import datetime
 from multiprocessing import Process
 from .broker.broker_api import BrokerAPI
-from .displays.singular import SingularDisplay
-from .displays.multiple import MultipleDisplay
+from .display.singular import SingularDisplay
+from .display.multiple import MultipleDisplay
 from .accounting.user_account import UserAccount
 from .exporting.exporting_api import ExportingAPI
 from .indicators.indicators_api import Indicators
@@ -82,7 +82,7 @@ class Simulator:
         self.__reporting_on = True
 
     def enable_charting(self):
-        """Enable displays."""
+        """Enable display."""
         self.__charting_on = True
 
     def load_strategy(self, strategy: dict):
@@ -230,7 +230,7 @@ class Simulator:
             exporting_process.start()
 
         if self.__charting_on:
-            # create the displays object
+            # create the display object
             charting_API = SingularDisplay()
             # chart the data on a separate process
             charting_process = Process(target=charting_API.chart, args=(chopped_temp_df, self.__symbol))

@@ -37,15 +37,19 @@ def main():
     # stock_sim.enable_developer_logging(1)
 
     # stock_sim.enable_reporting()
-    # stock_sim.enable_charting()
 
     stock_sim.load_strategy(strategy)
 
-    # stock_sim.run('AAPL')
+    # stock_sim.run('AAPL', show_chart=True, save_chart=False)
 
     # print(stock_sim.run_multiple(['AAPL', 'MSFT', 'TSLA']))
 
-    result = stock_sim.run_multiple(snp500_tickers[:200])
+    result = stock_sim.run_multiple(snp500_tickers[:100], show_individual_charts=False, save_individual_charts=False,
+                                    show_chart=True, save_chart=False)
+
+    # stock_sim.save_results('example_file_name')
+
+    # stock_sim.display_results_from_save('example_file_name')
 
     print(result)
 

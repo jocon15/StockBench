@@ -1,3 +1,6 @@
+from StockBench.indicators.indicators_api import Indicators
+
+
 class DataAPI:
     """"""
     def __init__(self, data):
@@ -71,3 +74,97 @@ class DataAPI:
         self.__df.drop(index=range(0, window_start_day), inplace=True)
         self.__df.reset_index(inplace=True)
         return self.__df
+    
+    def add_rsi(self, length: int):
+        """Pre-calculate the RSI values and add them to the df.
+
+        Args:
+            length (int): The length of the RSI to use.
+        """
+        # if we already have RSI upper values in the df, we don't need to add them again
+        for col_name in self.get_column_names():
+            if 'RSI' in col_name:
+                return
+
+        # get a list of price values as a list
+        price_data = self.get_column_data(self.CLOSE)
+
+        # calculate the RSI values from the indicator API
+        rsi_values = Indicators.RSI(length, price_data)
+
+        # add the calculated values to the df
+        self.add_column('RSI', rsi_values)
+
+    def add_upper_rsi(self, trigger_value: float):
+        """Add upper RSI trigger to the df.
+
+        Args:
+            trigger_value (float): The trigger value for the upper RSI.
+        """
+        # if we already have RSI upper values in the df, we don't need to add them again
+        for col_name in self.get_column_names():
+            if 'rsi_upper' in col_name:
+                return
+
+        # create a list of the trigger value repeated
+        list_values = [trigger_value for _ in range(self.get_data_length())]
+
+        # add the list to the data
+        self.add_column('RSI_upper', list_values)
+
+    def add_lower_rsi(self, trigger_value: float):
+        """Add lower RSI trigger to the df.
+
+        Args:
+            trigger_value (float): The trigger value for the lower RSI.
+        """
+        # if we already have RSI lower values in the df, we don't need to add them again
+        for col_name in self.get_column_names():
+            if 'rsi_upper' in col_name:
+                return
+
+        # create a list of the trigger value repeated
+        list_values = [trigger_value for _ in range(self.get_data_length())]
+
+        # add the list to the data
+        self.add_column('RSI_lower', list_values)
+
+    def add_sma(self, length: int):
+        """Pre-calculate the SMA values and add them to the df.
+
+        Args:
+            length (int): The length of the SMA to use.
+        """
+        # get a list of close price values
+        column_title = f'SMA{length}'
+
+        # if we already have SMA values in the df, we don't need to add them again
+        for col_name in self.get_column_names():
+            if column_title in col_name:
+                return
+
+        # get a list of price values as a list
+        price_data = self.get_column_data(self.CLOSE)
+
+        # calculate the SMA values from the indicator API
+        sma_values = Indicators.SMA(length, price_data)
+
+        # add the calculated values to the df
+        self.add_column(column_title, sma_values)
+
+    def add_candle_colors(self):
+        """Adds the candle colors to the DataFrame."""
+        # if we already have SMA values in the df, we don't need to add them again
+        for col_name in self.get_column_names():
+            if 'Color' in col_name:
+                return
+
+        # get the 2 data lists
+        open_values = self.get_column_data(self.OPEN)
+        close_values = self.get_column_data(self.CLOSE)
+
+        # calculate the colors
+        color_values = Indicators.candle_color(open_values, close_values)
+
+        # add the colors to the df
+        self.add_column('color', color_values)

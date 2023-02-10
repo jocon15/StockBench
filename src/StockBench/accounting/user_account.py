@@ -5,6 +5,11 @@ class UserAccount:
     analytical purposes.
     """
     def __init__(self, balance: float):
+        """Constructor
+
+        Args:
+            balance (float): The starting balance of the account
+        """
         # don't check for negative yet in case we implement leverage trading
         self.__balance = float(balance)
         self.__initial_balance = float(balance)
@@ -26,6 +31,7 @@ class UserAccount:
         self.__balance -= float(value)
 
     def reset(self):
+        """Reset the account balance to the initial amount."""
         self.__balance = self.__initial_balance
 
     def get_balance(self) -> float:

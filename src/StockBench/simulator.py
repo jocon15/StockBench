@@ -72,21 +72,20 @@ class Simulator:
         self.__position_archive = list()
 
         self.__reporting_on = False
-        self.__charting_on = False
-
         self.__running_multiple = False
 
         self.__elapsed_time = None
 
         self.__stored_results = None
 
+        # folder paths
+        self.__save_folder = 'saved_simulations'
+        self.__logs_folder = 'logs'
+        self.__dev_folder = 'dev'
+
     def enable_reporting(self):
         """Enable report building."""
         self.__reporting_on = True
-
-    def enable_charting(self):
-        """Enable display."""
-        self.__charting_on = True
 
     def load_strategy(self, strategy: dict):
         """Load a strategy.
@@ -282,17 +281,16 @@ class Simulator:
 
         # check for stored results
         if self.__stored_results:
-            filepath = os.path.join('saved_simulations', f'{file_name}.json')
+            filepath = os.path.join(self.__save_folder, f'{file_name}.json')
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
             # save the results to file
-            with open(filepath, 'w+') as file:
+            with open(filepath, 'w') as file:
                 json.dump(self.__stored_results, file, indent=4)
         else:
             log.debug('No stored data available to write! Run a multi-sim first using run_multiple()')
 
-    @staticmethod
-    def display_results_from_json(file_name: str, show_chart=True, save_chart=False):
+    def display_results_from_json(self, file_name: str, show_chart=True, save_chart=False):
         # validate file name
         if file_name == '':
             log.error('Save file name cannot be empty string')
@@ -300,7 +298,7 @@ class Simulator:
         else:
             file_name = file_name.replace('.json', '')
 
-        filepath = os.path.join('saved_simulations', f'{file_name}.json')
+        filepath = os.path.join(self.__save_folder, f'{file_name}.json')
 
         if not os.path.exists(filepath):
             log.error('Specified save file does not exist!')
@@ -315,14 +313,13 @@ class Simulator:
         display.chart(results, show_chart, save_chart)
         return results
 
-    @staticmethod
-    def enable_logging():
+    def enable_logging(self):
         """Enable user logging."""
         # set the logging level to info
         log.setLevel(logging.INFO)
 
         # build the filepath
-        user_logging_filepath = os.path.join('logs', f'RunLog_{datetime_nonce()}')
+        user_logging_filepath = os.path.join(self.__logs_folder, f'RunLog_{datetime_nonce()}')
 
         # build the formatters
         user_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
@@ -339,8 +336,7 @@ class Simulator:
         # add the handler to the logger
         log.addHandler(user_handler)
 
-    @staticmethod
-    def enable_developer_logging(level=2):
+    def enable_developer_logging(self, level=2):
         """Enable developer logging.
 
         Args:
@@ -369,7 +365,7 @@ class Simulator:
             developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
 
         # build the filepath
-        developer_logging_filepath = os.path.join('dev', f'DevLog_{datetime_nonce()}')
+        developer_logging_filepath = os.path.join(self.__dev_folder, f'DevLog_{datetime_nonce()}')
 
         # make the directories if they don't already exist
         os.makedirs(os.path.dirname(developer_logging_filepath), exist_ok=True)

@@ -37,11 +37,10 @@ def main():
     # stock_sim.enable_developer_logging(1)
 
     # stock_sim.enable_reporting()
-    # stock_sim.enable_charting()
 
     stock_sim.load_strategy(strategy)
 
-    # stock_sim.run('AAPL')
+    # stock_sim.run('AAPL', show_chart=True, save_chart=False)
 
     # print(stock_sim.run_multiple(['AAPL', 'MSFT', 'TSLA']))
 

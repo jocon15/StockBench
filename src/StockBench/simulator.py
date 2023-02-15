@@ -81,6 +81,72 @@ class Simulator:
         self.__logs_folder = 'logs'
         self.__dev_folder = 'dev'
 
+    def enable_logging(self):
+        """Enable user logging."""
+        # set the logging level to info
+        log.setLevel(logging.INFO)
+
+        # build the filepath
+        user_logging_filepath = os.path.join(self.__logs_folder, f'RunLog_{datetime_nonce()}')
+
+        # build the formatters
+        user_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
+
+        # make the directories if they don't already exist
+        os.makedirs(os.path.dirname(user_logging_filepath), exist_ok=True)
+
+        # create the handler
+        user_handler = logging.FileHandler(user_logging_filepath)
+
+        # set the format of the handler
+        user_handler.setFormatter(user_logging_formatter)
+
+        # add the handler to the logger
+        log.addHandler(user_handler)
+
+    def enable_developer_logging(self, level=2):
+        """Enable developer logging.
+
+        Args:
+            level (int): The logging level for the logger.
+        """
+        # set the logging level
+        if level == 1:
+            log.setLevel(logging.DEBUG)
+            # build the formatter
+            developer_logging_formatter = logging.Formatter('%(funcName)s:%(lineno)d|%(levelname)s|%(message)s')
+        elif level == 3:
+            log.setLevel(logging.WARNING)
+            # build the formatter
+            developer_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
+        elif level == 4:
+            log.setLevel(logging.ERROR)
+            # build the formatter
+            developer_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
+        elif level == 5:
+            log.setLevel(logging.CRITICAL)
+            # build the formatter
+            developer_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
+        else:
+            log.setLevel(logging.INFO)
+            # build the formatter
+            developer_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
+
+        # build the filepath
+        developer_logging_filepath = os.path.join(self.__dev_folder, f'DevLog_{datetime_nonce()}')
+
+        # make the directories if they don't already exist
+        os.makedirs(os.path.dirname(developer_logging_filepath), exist_ok=True)
+
+        # create the handler
+        developer_handler = logging.FileHandler(developer_logging_filepath)
+
+        # set the format of the handler
+        developer_handler.setFormatter(developer_logging_formatter)
+
+        # add the handler to the logger
+        log.addHandler(developer_handler)
+
     def enable_reporting(self):
         """Enable report building."""
         self.__reporting_on = True
@@ -340,72 +406,6 @@ class Simulator:
         display = MultipleDisplay()
         display.chart(results, True, save_chart)
         return results
-
-    def enable_logging(self):
-        """Enable user logging."""
-        # set the logging level to info
-        log.setLevel(logging.INFO)
-
-        # build the filepath
-        user_logging_filepath = os.path.join(self.__logs_folder, f'RunLog_{datetime_nonce()}')
-
-        # build the formatters
-        user_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
-
-        # make the directories if they don't already exist
-        os.makedirs(os.path.dirname(user_logging_filepath), exist_ok=True)
-
-        # create the handler
-        user_handler = logging.FileHandler(user_logging_filepath)
-
-        # set the format of the handler
-        user_handler.setFormatter(user_logging_formatter)
-
-        # add the handler to the logger
-        log.addHandler(user_handler)
-
-    def enable_developer_logging(self, level=2):
-        """Enable developer logging.
-
-        Args:
-            level (int): The logging level for the logger.
-        """
-        # set the logging level
-        if level == 1:
-            log.setLevel(logging.DEBUG)
-            # build the formatter
-            developer_logging_formatter = logging.Formatter('%(funcName)s:%(lineno)d|%(levelname)s|%(message)s')
-        elif level == 3:
-            log.setLevel(logging.WARNING)
-            # build the formatter
-            developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
-        elif level == 4:
-            log.setLevel(logging.ERROR)
-            # build the formatter
-            developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
-        elif level == 5:
-            log.setLevel(logging.CRITICAL)
-            # build the formatter
-            developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
-        else:
-            log.setLevel(logging.INFO)
-            # build the formatter
-            developer_logging_formatter = logging.Formatter('%(lineno)d|%(levelname)s|%(message)s')
-
-        # build the filepath
-        developer_logging_filepath = os.path.join(self.__dev_folder, f'DevLog_{datetime_nonce()}')
-
-        # make the directories if they don't already exist
-        os.makedirs(os.path.dirname(developer_logging_filepath), exist_ok=True)
-
-        # create the handler
-        developer_handler = logging.FileHandler(developer_logging_filepath)
-
-        # set the format of the handler
-        developer_handler.setFormatter(developer_logging_formatter)
-
-        # add the handler to the logger
-        log.addHandler(developer_handler)
 
     def __reset_attributes(self):
         self.__account.reset()

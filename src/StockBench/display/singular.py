@@ -1,8 +1,9 @@
 import os
-import re
 import logging
+from .rsi import RSI
+from .ohlc import OHLC
+from .volume import Volume
 from .display_constants import *
-import plotly.graph_objects as fplt
 from plotly.subplots import make_subplots
 from StockBench.function_tools.nonce import datetime_nonce
 
@@ -12,15 +13,16 @@ log = logging.getLogger()
 class SingularDisplay:
     """This class defines a display object.
 
-    The display object is used as an API for the simulator to chart the data. All display functionality is done
-    through this API.
+    The display object is used as an API for the simulator to chart the data. The display will use the simulation
+    data to establish which subplots need to be added to the singular chart. The subplots abstract all of that
+    specific subplots details to make it easier to edit. This API simply aggregates the subplot objects and
+    assembles the final parent plot that gets displayed to the user.
     """
     def __init__(self):
         self.__df = None
 
-        self.__next_row = DEFAULT_SUBPLOT_ROWS
-        # add any more constants here...
-        self.__rsi_row = None
+        self.__subplot_objects = list()
+        self.__subplot_types = list()
 
     def chart(self, df, symbol, show=True, save=False):
         """Chart the data.
@@ -28,91 +30,42 @@ class SingularDisplay:
         Args:
             df (DataFrame): The full DataFrame post-simulation.
             symbol (str): The symbol the simulation was run on.
+            show (bool): Show the chart.
+            save (bool): Save the chart.
         """
         self.__df = df
 
-        rows = 1
-        cols = 1
-        chart_list = [[{"type": "ohlc"}]]
-        # get the subplot count
+        # add the ohlc because that's always there
+        self.__subplot_objects.append(OHLC())
+
+        # activate the subplot objects if evidence is found in the df
         for (column_name, column_data) in self.__df.iteritems():
             if column_name == 'RSI':
-                chart_list.append([{"type": "scatter"}])
-                rows += 1
+                self.__subplot_objects.append(RSI())
             if column_name == 'volume':
-                chart_list.append([{"type": "bar"}])
-                rows += 1
-            # here you would add any other checks for additional subplots (rows/cols)
+                self.__subplot_objects.append(Volume())
 
-        # create the parent plot
-        fig = make_subplots(rows=rows, cols=cols, shared_xaxes=True, vertical_spacing=0.06, specs=chart_list)
+        # get the subplot types
+        for subplot in self.__subplot_objects:
+            self.__subplot_types.append(subplot.get_type())
 
-        # add default OHLC trace
-        fig.add_trace(fplt.Ohlc(x=self.__df['Date'],
-                                open=self.__df['Open'],
-                                high=self.__df['High'],
-                                low=self.__df['Low'],
-                                close=self.__df['Close'],
-                                name='Price Data'), row=1, col=1)
+        # build the parent plot
+        cols = col = 1  # only one col in every row
+        rows = len(self.__subplot_objects)
+        fig = make_subplots(rows=rows, cols=cols, shared_xaxes=True, vertical_spacing=0.06, specs=self.__subplot_types)
 
-        # add additional traces
+        # add subplots and traces from the objects to the parent plot
+        for enum_row, subplot in enumerate(self.__subplot_objects):
+            row = enum_row + 1
+            fig.add_trace(subplot.get_subplot(self.__df), row=row, col=col)
+            for trace in subplot.get_traces(self.__df):
+                fig.add_trace(trace, row=row, col=col)
+
+        # if we need to add any color changes, do it here
         for (column_name, column_data) in self.__df.iteritems():
-            if 'SMA' in column_name:
-                nums = re.findall(r'\d+', column_name)
-                length = nums[0]
-                fig.add_trace(fplt.Scatter(
-                    x=self.__df['Date'],
-                    y=self.__df[column_name], line=dict(color=WHITE),
-                    name=f'SMA{length}'),
-                    row=1, col=1)
-            if column_name == 'Buy':
-                fig.add_trace(fplt.Scatter(
-                    x=self.__df['Date'],
-                    y=self.__df['Buy'],
-                    name='Buy',
-                    mode='markers',
-                    marker=dict(color=BUY_COLOR)),
-                    row=1, col=1)
-            if column_name == 'Sell':
-                fig.add_trace(fplt.Scatter(
-                    x=self.__df['Date'],
-                    y=self.__df['Sell'],
-                    name='Sell',
-                    mode='markers',
-                    marker=dict(color=SELL_COLOR)),
-                    row=1, col=1)
-            if column_name == 'RSI':
-                fig.add_trace(fplt.Scatter(
-                    x=self.__df['Date'],
-                    y=self.__df['RSI'],
-                    line=dict(color=WHITE),
-                    name='RSI'),
-                    row=self.__next_row, col=1)
-                self.__rsi_row = self.__next_row
-                self.__next_row += 1
-            if column_name == 'RSI_upper':
-                fig.add_trace(fplt.Scatter(
-                    x=self.__df['Date'],
-                    y=self.__df['RSI_upper'],
-                    line=dict(color=HORIZONTAL_TRIGGER_YELLOW),
-                    name='RSI Upper'),
-                    row=self.__rsi_row, col=1)
-            if column_name == 'RSI_lower':
-                fig.add_trace(fplt.Scatter(
-                    x=self.__df['Date'],
-                    y=self.__df['RSI_lower'],
-                    line=dict(color=HORIZONTAL_TRIGGER_YELLOW),
-                    name='RSI Lower'),
-                    row=self.__rsi_row, col=1)
             if column_name == 'volume':
-                fig.add_trace(fplt.Bar(
-                    x=self.__df['Date'],
-                    y=self.__df['volume']),
-                    row=self.__next_row,
-                    col=1)
                 fig.update_traces(marker_color=BULL_GREEN, selector=dict(type='bar'))
                 fig.update_traces(name='volume', selector=dict(type='bar'))
-                self.__next_row += 1
 
         # update the layout
         window_size = len(self.__df['Close'])
@@ -129,6 +82,3 @@ class SingularDisplay:
             fig.write_html(chart_filepath, auto_open=False)
         if show and save:
             fig.write_html(chart_filepath, auto_open=True)
-
-        # reset the next row in case we run another simulation
-        self.__next_row = DEFAULT_SUBPLOT_ROWS

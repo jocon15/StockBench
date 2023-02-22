@@ -4,6 +4,14 @@ from StockBench.display.display_constants import *
 
 
 class RSI(Subplot):
+    """This class is a subclass of the Subplot class.
+
+    An RSI object contains the subplot with RSI data.
+
+    Additional traces include:
+        - RSI upper trigger
+        - RSI lower trigger
+    """
     def __init__(self):
         super().__init__([{"type": "scatter"}])
 

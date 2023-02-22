@@ -13,8 +13,10 @@ log = logging.getLogger()
 class SingularDisplay:
     """This class defines a display object.
 
-    The display object is used as an API for the simulator to chart the data. All display functionality is done
-    through this API.
+    The display object is used as an API for the simulator to chart the data. The display will use the simulation
+    data to establish which subplots need to be added to the singular chart. The subplots abstract all of that
+    specific subplots details to make it easier to edit. This API simply aggregates the subplot objects and
+    assembles the final parent plot that gets displayed to the user.
     """
     def __init__(self):
         self.__df = None

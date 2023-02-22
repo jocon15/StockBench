@@ -3,14 +3,17 @@ from .subplot import Subplot
 import plotly.graph_objects as fplt
 from StockBench.display.display_constants import *
 
-'''Reminder that if ohlc and rsi share any attributes, we can make a subplot superclass to keep it DRY
-
-Type is a shared attribute, and get_type() is a shared method, so you instantiate the superclass and pass 
-it the [{}] value for the type 
-'''
-
 
 class OHLC(Subplot):
+    """This class is a subclass of the Subplot class.
+
+    A OHLC object contains the subplot with candlestick price data.
+
+    Additional traces include:
+        - SMA curves
+        - Buy points
+        - Sell points
+    """
     def __init__(self):
         super().__init__([{"type": "ohlc"}])
 

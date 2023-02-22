@@ -3,6 +3,12 @@ import plotly.graph_objects as fplt
 
 
 class Volume(Subplot):
+    """This class is a subclass of the Subplot class.
+
+    A Volume object contains the subplot with volume data.
+
+    Additional traces include:
+    """
     def __init__(self):
         super().__init__([{"type": "bar"}])
 

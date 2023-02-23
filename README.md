@@ -13,7 +13,7 @@ One Symbol                 |  Many Symbols
 
 
 # How it Works
-StockBench allows you to run a simulation on any US security where data is available. StockBench sources market data from [Alpaca Markets](https://alpaca.markets/).
+StockBench is a US security simulation suite designed for testing strategies on historical data. StockBench sources market data from [Alpaca Markets](https://alpaca.markets/).
 
 You begin by defining a strategy that you would like to test. StockBench allows for quite some freedom in defining a strategy. It can be simple or complex. Once you have a strategy picked out, you can play with the simulation settings. Check out the [StockBench Wiki](https://github.com/jocon15/StockBench/wiki) for more information on settings, indicators, and rules.
 
@@ -25,6 +25,8 @@ And just like that, you have simulated a strategy on historical data. Have fun!
 1. First, you need to get your own API keys from [Alpaca Markets](https://alpaca.markets/).
 
 2. Add them as [Environment Variables](https://github.com/jocon15/StockBench/wiki/Environment-Variables).
+
+3. Restart your PC to enable the [Environment Variables](https://github.com/jocon15/StockBench/wiki/Environment-Variables).
 
 3. Run `pip install .` in the StockBench repository.
 

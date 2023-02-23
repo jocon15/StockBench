@@ -20,7 +20,9 @@ class DataAPI:
             raise Exception('Input data type must be a string!')
         if type(data) != list:
             raise Exception('Input data type must be a string!')
-        # FIXME: Make sure that a column with that name does not already exist
+        for col_name in self.get_column_names():
+            if name == col_name:
+                raise Exception('A column with that name already exists!')
 
         self.__df[name] = data
 
@@ -35,9 +37,9 @@ class DataAPI:
             col_names.append(col_name)
         return col_names
 
-    def get_data_point(self, name: str, current_day_index: int):
+    def get_data_point(self, column_name: str, current_day_index: int):
         """Gets a single data point from the DataFrame."""
-        if type(name) != str:
+        if type(column_name) != str:
             raise Exception('Input name type must be a string!')
         if type(current_day_index) != int:
             raise Exception('Input day index must be an integer!')
@@ -46,7 +48,7 @@ class DataAPI:
         # of any type, it's best for the outside to do they type checking themselves.
         # Not ideal but it keeps the number of functions to get data to a minimum.
         # Also, the "outside" is just going to be the simulator.
-        return self.__df[name][current_day_index]
+        return self.__df[column_name][current_day_index]
 
     def get_multiple_data_points(self, name: str, current_day_index: int, num_points: int):
         """Gets multiple data points from the DataFrame"""

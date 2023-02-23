@@ -62,10 +62,10 @@ class SingularDisplay:
                 fig.add_trace(trace, row=row, col=col)
 
         # if we need to add any color changes, do it here
-        for (column_name, column_data) in self.__df.iteritems():
-            if column_name == 'volume':
-                fig.update_traces(marker_color=BULL_GREEN, selector=dict(type='bar'))
-                fig.update_traces(name='volume', selector=dict(type='bar'))
+        # for (column_name, column_data) in self.__df.iteritems():
+        #     if column_name == 'volume':
+        #         fig.update_traces(marker_color=BULL_GREEN, selector=dict(type='bar'))
+        #         fig.update_traces(name='volume', selector=dict(type='bar'))
 
         # update the layout
         window_size = len(self.__df['Close'])

@@ -1,5 +1,7 @@
+import numpy as np
 from .subplot import Subplot
 import plotly.graph_objects as fplt
+from .display_constants import *
 
 
 class Volume(Subplot):
@@ -22,9 +24,12 @@ class Volume(Subplot):
         return:
             A plotly subplot.
         """
+        df['volume_colors'] = np.where(df['color'] == 'red', BEAR_RED, BULL_GREEN)
         return fplt.Bar(
                     x=df['Date'],
-                    y=df['volume'])
+                    y=df['volume'],
+                    name='Volume',
+                    marker_color=df['volume_colors'])
 
     @staticmethod
     def get_traces(df) -> list:

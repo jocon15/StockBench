@@ -1,5 +1,7 @@
 import os
 import statistics
+import numpy as np
+import pandas as pd
 from .display_constants import *
 import plotly.graph_objects as fplt
 from plotly.subplots import make_subplots
@@ -30,8 +32,19 @@ class MultipleDisplay:
                             subplot_titles=chart_titles)
 
         # Profit/Loss Bar Chart
+        # FIXME: this needs a loop that assembles colors
+        # df['volume_colors'] = np.where(df['color'] == 'red', BEAR_RED, BULL_GREEN)
+        color_df = pd.DataFrame()
+        bar_colors = list()
+        for value in self.__get_total_pl_per_symbol():
+            if value > 0:
+                bar_colors.append(BULL_GREEN)
+            else:
+                bar_colors.append(BEAR_RED)
+        color_df['colors'] = bar_colors
+
         fig.add_trace(fplt.Bar(x=self.__get_symbols(), y=self.__get_total_pl_per_symbol(),
-                               marker=dict(color=BULL_GREEN)), row=1, col=1)
+                               marker_color=color_df['colors']), row=1, col=1)
 
         # for the pie chart (avg effectiveness)
         # effectiveness = self.__get_avg_effectiveness()

@@ -51,7 +51,8 @@ class OHLC(Subplot):
                 length = nums[0]
                 traces.append(fplt.Scatter(
                     x=df['Date'],
-                    y=df[column_name], line=dict(color=WHITE),
+                    y=df[column_name],
+                    line=dict(color=SMA_YELLOW),
                     name=f'SMA{length}'))
             if column_name == 'Buy':
                 traces.append(fplt.Scatter(

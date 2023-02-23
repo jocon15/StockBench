@@ -1,13 +1,11 @@
 # =========== Charting Constants =============
-# defines the default number of subplots in the chart
-# first is OHLC, second is volume
-DEFAULT_SUBPLOT_ROWS = 2
 
 # ============ Generic Colors ================
 WHITE = "#e0e0e0"
 BULL_GREEN = '#185e01'
 BEAR_RED = '#de1b1b'
 OFF_BLUE = '#5a77fa'
+SMA_YELLOW = '#a6f3f5'
 
 # ======= Application Specific ===============
 HORIZONTAL_TRIGGER_YELLOW = "#fcc203"

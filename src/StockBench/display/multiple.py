@@ -32,8 +32,6 @@ class MultipleDisplay:
                             subplot_titles=chart_titles)
 
         # Profit/Loss Bar Chart
-        # FIXME: this needs a loop that assembles colors
-        # df['volume_colors'] = np.where(df['color'] == 'red', BEAR_RED, BULL_GREEN)
         color_df = pd.DataFrame()
         bar_colors = list()
         for value in self.__get_total_pl_per_symbol():

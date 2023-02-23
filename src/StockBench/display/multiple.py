@@ -1,6 +1,5 @@
 import os
 import statistics
-import numpy as np
 import pandas as pd
 from .display_constants import *
 import plotly.graph_objects as fplt
@@ -31,76 +30,25 @@ class MultipleDisplay:
                             specs=chart_list,
                             subplot_titles=chart_titles)
 
-        # Profit/Loss Bar Chart
-        color_df = pd.DataFrame()
-        bar_colors = list()
-        for value in self.__get_total_pl_per_symbol():
-            if value > 0:
-                bar_colors.append(BULL_GREEN)
-            else:
-                bar_colors.append(BEAR_RED)
-        color_df['colors'] = bar_colors
+        # Profit/Loss Bar
+        fig.add_trace(self.__profit_loss_bar(), row=1, col=1)
 
-        fig.add_trace(fplt.Bar(x=self.__get_symbols(), y=self.__get_total_pl_per_symbol(),
-                               marker_color=color_df['colors']), row=1, col=1)
+        # Avg Profit/Loss Gauge
+        fig.add_trace(self.__avg_effectiveness_gauge(), row=1, col=2)
 
-        # for the pie chart (avg effectiveness)
-        # effectiveness = self.__get_avg_effectiveness()
-        # values = self.__list_out_of_100(effectiveness)
-        # fig.add_trace(fplt.Pie(values=values), row=1, col=2)
+        # Total Trades Made Bar
+        fig.add_trace(self.__trades_made_bar(), row=2, col=1)
 
-        indicator_value = self.__get_avg_effectiveness()
-        if indicator_value > 0:
-            bar_color = 'green'
-        else:
-            bar_color = 'red'
+        # Avg Profit/Loss Gauge
+        fig.add_trace(self.__avg_profit_loss_gauge(), row=2, col=2)
 
-        fig.add_trace(fplt.Indicator(
-            domain={'x': [0, 1], 'y': [0, 1]},
-            value=indicator_value,
-            mode="gauge+number+delta",
-            title={'text': "Global Average Effectiveness(%)"},
-            # delta={'reference': 0},
-            gauge={'axis': {'range': [0, 100]},
-                   'bar': {'color': bar_color},
-                   'steps': [
-                       {'range': [0, 50], 'color': "grey"},
-                       {'range': [50, 100], 'color': "darkgrey"}]}),
-            row=1, col=2)
-
-        # for the bar (total trades made)
-        #   this could be stacked so you can visualize it better
-        fig.add_trace(fplt.Bar(x=self.__get_symbols(), y=self.__get_trades_per_symbol(),
-                               marker=dict(color=OFF_BLUE)), row=2, col=1)
-        # fig.update_traces(marker_color=BULL_GREEN, selector=dict(type='bar'))
-        # fig.update_traces(name='volume', selector=dict(type='bar'))
-
-        # for the dial
-        # fig.add_trace(fplt.Barpolar(theta=[0, 45, 90], r=[2, 3, 1]), row=1, col=2)
-
-        indicator_value = self.__get_avg_pl()
-        if indicator_value > 0:
-            bar_color = 'green'
-        else:
-            bar_color = 'red'
-
-        fig.add_trace(fplt.Indicator(
-            domain={'x': [0, 1], 'y': [0, 1]},
-            value=indicator_value,
-            mode="gauge+number+delta",
-            title={'text': "Global Average Profit/Loss($)"},
-            # delta={'reference': 0},
-            gauge={'axis': {'range': [-1000, 1000]},
-                   'bar': {'color': bar_color},
-                   'steps': [
-                       {'range': [-1000, 0], 'color': "grey"},
-                       {'range': [0, 1000], 'color': "darkgrey"}]}),
-            row=2, col=2)
-
+        # set the layout
         fig.update_layout(template='plotly_dark', title=f'Simulation Results for {len(self.__data)} Symbols',
                           xaxis_rangeslider_visible=False, showlegend=False)
 
+        # build the filepath
         chart_filepath = os.path.join('display', f'display_{datetime_nonce()}.html')
+
         # make the directories if they don't already exist
         os.makedirs(os.path.dirname(chart_filepath), exist_ok=True)
 
@@ -110,6 +58,66 @@ class MultipleDisplay:
             fig.write_html(chart_filepath, auto_open=False)
         if show and save:
             fig.write_html(chart_filepath, auto_open=True)
+
+    def __profit_loss_bar(self):
+        color_df = pd.DataFrame()
+        bar_colors = list()
+        for value in self.__get_total_pl_per_symbol():
+            if value > 0:
+                bar_colors.append(BULL_GREEN)
+            else:
+                bar_colors.append(BEAR_RED)
+        color_df['colors'] = bar_colors
+
+        return fplt.Bar(
+            x=self.__get_symbols(),
+            y=self.__get_total_pl_per_symbol(),
+            marker_color=color_df['colors'])
+
+    def __avg_effectiveness_gauge(self):
+        indicator_value = self.__get_avg_effectiveness()
+        if indicator_value > 0:
+            bar_color = 'green'
+        else:
+            bar_color = 'red'
+
+        return fplt.Indicator(
+            domain={'x': [0, 1], 'y': [0, 1]},
+            value=indicator_value,
+            mode="gauge+number+delta",
+            title={'text': "Global Average Effectiveness(%)"},
+            # delta={'reference': 0},
+            gauge={'axis': {'range': [0, 100]},
+                   'bar': {'color': bar_color},
+                   'steps': [
+                       {'range': [0, 50], 'color': "grey"},
+                       {'range': [50, 100], 'color': "darkgrey"}]})
+
+    def __avg_profit_loss_gauge(self):
+
+        indicator_value = self.__get_avg_pl()
+        if indicator_value > 0:
+            bar_color = 'green'
+        else:
+            bar_color = 'red'
+
+        return fplt.Indicator(
+            domain={'x': [0, 1], 'y': [0, 1]},
+            value=indicator_value,
+            mode="gauge+number+delta",
+            title={'text': "Global Average Profit/Loss($)"},
+            # delta={'reference': 0},
+            gauge={'axis': {'range': [-1000, 1000]},
+                   'bar': {'color': bar_color},
+                   'steps': [
+                       {'range': [-1000, 0], 'color': "grey"},
+                       {'range': [0, 1000], 'color': "darkgrey"}]})
+
+    def __trades_made_bar(self):
+        return fplt.Bar(
+            x=self.__get_symbols(),
+            y=self.__get_trades_per_symbol(),
+            marker=dict(color=OFF_BLUE))
 
     def __get_symbols(self) -> list:
         return self.__get_list_by_name('symbol')

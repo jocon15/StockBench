@@ -12,7 +12,7 @@ class MultipleDisplay:
     def __init__(self):
         self.__data = None
 
-    def chart(self, data, show=True, save=False):
+    def chart(self, data, show=True, save=False, dark_mode=True):
         self.__data = data
 
         rows = 2
@@ -43,8 +43,12 @@ class MultipleDisplay:
         fig.add_trace(self.__avg_profit_loss_gauge(), row=2, col=2)
 
         # set the layout
-        fig.update_layout(template='plotly_dark', title=f'Simulation Results for {len(self.__data)} Symbols',
-                          xaxis_rangeslider_visible=False, showlegend=False)
+        if dark_mode:
+            fig.update_layout(template='plotly_dark', title=f'Simulation Results for {len(self.__data)} Symbols',
+                              xaxis_rangeslider_visible=False, showlegend=False)
+        else:
+            fig.update_layout(title=f'Simulation Results for {len(self.__data)} Symbols',
+                              xaxis_rangeslider_visible=False, showlegend=False)
 
         # build the filepath
         chart_filepath = os.path.join('display', f'display_{datetime_nonce()}.html')
@@ -76,7 +80,7 @@ class MultipleDisplay:
 
     def __avg_effectiveness_gauge(self):
         indicator_value = self.__get_avg_effectiveness()
-        if indicator_value > 0:
+        if indicator_value > 50.0:
             bar_color = 'green'
         else:
             bar_color = 'red'
@@ -90,7 +94,7 @@ class MultipleDisplay:
             gauge={'axis': {'range': [0, 100]},
                    'bar': {'color': bar_color},
                    'steps': [
-                       {'range': [0, 50], 'color': "grey"},
+                       {'range': [0, 50], 'color': "darkgrey"},
                        {'range': [50, 100], 'color': "darkgrey"}]})
 
     def __avg_profit_loss_gauge(self):
@@ -110,7 +114,7 @@ class MultipleDisplay:
             gauge={'axis': {'range': [-1000, 1000]},
                    'bar': {'color': bar_color},
                    'steps': [
-                       {'range': [-1000, 0], 'color': "grey"},
+                       {'range': [-1000, 0], 'color': "darkgrey"},
                        {'range': [0, 1000], 'color': "darkgrey"}]})
 
     def __trades_made_bar(self):

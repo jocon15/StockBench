@@ -3,7 +3,6 @@ import logging
 from .rsi import RSI
 from .ohlc import OHLC
 from .volume import Volume
-from .display_constants import *
 from plotly.subplots import make_subplots
 from StockBench.function_tools.nonce import datetime_nonce
 
@@ -24,7 +23,7 @@ class SingularDisplay:
         self.__subplot_objects = list()
         self.__subplot_types = list()
 
-    def chart(self, df, symbol, show=True, save=False):
+    def chart(self, df, symbol, show=True, save=False, dark_mode=True):
         """Chart the data.
 
         Args:
@@ -32,6 +31,7 @@ class SingularDisplay:
             symbol (str): The symbol the simulation was run on.
             show (bool): Show the chart.
             save (bool): Save the chart.
+            dark_mode (bool): Build chart in dark mode.
         """
         self.__df = df
 
@@ -69,8 +69,12 @@ class SingularDisplay:
 
         # update the layout
         window_size = len(self.__df['Close'])
-        fig.update_layout(template='plotly_dark', title=f'{window_size} day simulation for {symbol}',
-                          xaxis_title='Date', yaxis_title='Price (USD)', xaxis_rangeslider_visible=False)
+        if dark_mode:
+            fig.update_layout(template='plotly_dark', title=f'{window_size} day simulation for {symbol}',
+                              xaxis_title='Date', yaxis_title='Price (USD)', xaxis_rangeslider_visible=False)
+        else:
+            fig.update_layout(title=f'{window_size} day simulation for {symbol}',
+                              xaxis_title='Date', yaxis_title='Price (USD)', xaxis_rangeslider_visible=False)
 
         chart_filepath = os.path.join('figures', f'figure_{symbol}_{datetime_nonce()}.html')
         # make the directories if they don't already exist

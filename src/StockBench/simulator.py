@@ -162,13 +162,14 @@ class Simulator:
         # initialize the member object
         self.__trigger_API = TriggerAPI(strategy)
 
-    def run(self, symbol: str, show_chart=True, save_chart=False) -> dict:
+    def run(self, symbol: str, show_chart=True, save_chart=False, dark_mode=True) -> dict:
         """Run a simulation on an asset.
 
         Args:
             symbol (str): The symbol to run the simulation on.
             show_chart (bool): Show the chart when finished.
             save_chart (bool): Save the chart when finished.
+            dark_mode (bool): Build chart in dark mode.
         """
         # set the objects symbol to the passed value, so we can use it everywhere
         log.info(f'Setting up simulation for symbol: {symbol}...')
@@ -302,7 +303,7 @@ class Simulator:
             charting_API = SingularDisplay()
             # chart the data on a separate process
             charting_process = Process(target=charting_API.chart,
-                                       args=(chopped_temp_df, self.__symbol, show_chart, save_chart))
+                                       args=(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode))
             charting_process.start()
 
         return {
@@ -319,7 +320,8 @@ class Simulator:
                      show_individual_charts=False,
                      save_individual_charts=False,
                      show_chart=True,
-                     save_chart=False) -> list:
+                     save_chart=False,
+                     dark_mode=True) -> list:
         """Simulate a list of assets.
 
         Args:
@@ -328,6 +330,7 @@ class Simulator:
             save_individual_charts (bool): Save the chart for each symbol.
             show_chart (bool): Show the chart when finished.
             save_chart (bool): Save the chart when finished.
+            dark_mode (bool): Build chart in dark mode.
         """
         # disable printing for TQDM
         self.__running_multiple = True
@@ -349,7 +352,7 @@ class Simulator:
 
         # create the display object
         display = MultipleDisplay()
-        display.chart(results, show_chart, save_chart)
+        display.chart(results, show_chart, save_chart, dark_mode)
         return results
 
     def save_results_json(self, file_name=None):
@@ -376,12 +379,13 @@ class Simulator:
         else:
             log.debug('No stored data available to write! Run a multi-sim first using run_multiple()')
 
-    def display_results_from_json(self, file_name: str, save_chart=False):
+    def display_results_from_json(self, file_name: str, save_chart=False, dark_mode=True):
         """Load and display the results from a JSON file.
 
         Args:
             file_name (str): The name of the file to load.
             save_chart (bool): Save the chart that was displayed.
+            dark_mode (bool): Build chart in dark mode.
         """
         # validate file name
         if file_name == '':
@@ -404,7 +408,7 @@ class Simulator:
 
         # display the loaded data
         display = MultipleDisplay()
-        display.chart(results, True, save_chart)
+        display.chart(results, True, save_chart, dark_mode)
         return results
 
     def __reset_attributes(self):

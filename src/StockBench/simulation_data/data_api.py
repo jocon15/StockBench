@@ -33,7 +33,7 @@ class DataAPI:
     def get_column_names(self) -> list:
         """Get the names of the columns in the DataFrame."""
         col_names = list()
-        for (col_name, col_vals) in self.__df.iteritems():
+        for (col_name, col_vals) in self.__df.items():
             col_names.append(col_name)
         return col_names
 

@@ -3,6 +3,7 @@ import logging
 from .rsi import RSI
 from .ohlc import OHLC
 from .volume import Volume
+from .stochastic import Stochastic
 from plotly.subplots import make_subplots
 from StockBench.function_tools.nonce import datetime_nonce
 
@@ -39,11 +40,13 @@ class SingularDisplay:
         self.__subplot_objects.append(OHLC())
 
         # activate the subplot objects if evidence is found in the df
-        for (column_name, column_data) in self.__df.iteritems():
+        for (column_name, column_data) in self.__df.items():
             if column_name == 'RSI':
                 self.__subplot_objects.append(RSI())
             if column_name == 'volume':
                 self.__subplot_objects.append(Volume())
+            if column_name == 'stochastic_oscillator':
+                self.__subplot_objects.append(Stochastic())
 
         # get the subplot types
         for subplot in self.__subplot_objects:

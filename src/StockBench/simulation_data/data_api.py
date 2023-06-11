@@ -1,4 +1,4 @@
-from StockBench.indicators.indicators_api import Indicators
+from StockBench.indicators.indicators import Indicators
 
 
 class DataAPI:
@@ -130,6 +130,62 @@ class DataAPI:
 
         # add the list to the data
         self.add_column('RSI_lower', list_values)
+
+    def add_stochastic_oscillator(self, length: int):
+        """Pre-calculate the RSI values and add them to the df.
+
+        Args:
+            length (int): The length of the RSI to use.
+        """
+        # if we already have SO values in the df, we don't need to add them again
+        for col_name in self.get_column_names():
+            if 'stochastic_oscillator' in col_name:
+                return
+
+        # get data to calculate SO
+        high_data = self.get_column_data(self.HIGH)
+        low_data = self.get_column_data(self.LOW)
+        close_data = self.get_column_data(self.CLOSE)
+
+        # calculate SO
+        stochastic_values = Indicators.stochastic_oscillator(length, high_data, low_data, close_data)
+
+        # add the calculated values to the df
+        self.add_column('stochastic_oscillator', stochastic_values)
+
+    def add_upper_stochastic(self, trigger_value):
+        """Add upper stochastic trigger to the df.
+
+        Args:
+            trigger_value (float): The trigger value for the upper stochastic.
+        """
+        # if we already have values in the df, we don't need to add them again
+        for col_name in self.get_column_names():
+            if 'stochastic_upper' in col_name:
+                return
+
+        # create a list of the trigger value repeated
+        list_values = [trigger_value for _ in range(self.get_data_length())]
+
+        # add the list to the data
+        self.add_column('stochastic_upper', list_values)
+
+    def add_lower_stochastic(self, trigger_value):
+        """Add lower stochastic trigger to the df.
+
+        Args:
+            trigger_value (float): The trigger value for the lower stochastic.
+        """
+        # if we already have values in the df, we don't need to add them again
+        for col_name in self.get_column_names():
+            if 'stochastic_lower' in col_name:
+                return
+
+        # create a list of the trigger value repeated
+        list_values = [trigger_value for _ in range(self.get_data_length())]
+
+        # add the list to the data
+        self.add_column('stochastic_lower', list_values)
 
     def add_sma(self, length: int):
         """Pre-calculate the SMA values and add them to the df.

@@ -9,6 +9,7 @@ SECONDS_1_DAY = 86400
 
 # ========== Indicator Constants ==========
 DEFAULT_RSI_LENGTH = 14
+DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH = 14
 
 
 # ========== Strategy Constants ==========

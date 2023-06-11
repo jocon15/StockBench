@@ -101,6 +101,8 @@ class TriggerAPI:
             trigger_hit = self.__check_rsi_trigger(_key, self.__strategy['buy'][_key])
         elif 'SMA' in _key:
             trigger_hit = self.__check_sma_trigger(_key, self.__strategy['buy'][_key])
+        elif 'stochastic' in _key:
+            trigger_hit = self.__check_stochastic_trigger(_key, self.__strategy['buy'][_key])
         elif 'volume' in _key:
             trigger_hit = self.__check_volume_trigger(self.__strategy['buy'][_key])
         elif _key == 'color':
@@ -130,6 +132,8 @@ class TriggerAPI:
                 trigger_hit = self.__check_rsi_trigger(inner_key, self.__strategy['buy'][_key][inner_key])
             elif 'SMA' in inner_key:
                 trigger_hit = self.__check_sma_trigger(inner_key, self.__strategy['buy'][_key][inner_key])
+            elif 'stochastic' in inner_key:
+                trigger_hit = self.__check_stochastic_trigger(inner_key, self.__strategy['buy'][_key][inner_key])
             elif 'volume' in _key:
                 trigger_hit = self.__check_volume_trigger(self.__strategy['buy'][_key])
             elif inner_key == 'color':
@@ -155,6 +159,8 @@ class TriggerAPI:
             trigger_hit = self.__check_rsi_trigger(_key, self.__strategy['sell'][_key])
         elif 'SMA' in _key:
             trigger_hit = self.__check_sma_trigger(_key, self.__strategy['sell'][_key])
+        elif 'stochastic' in _key:
+            trigger_hit = self.__check_stochastic_trigger(_key, self.__strategy['sell'][_key])
         elif 'volume' in _key:
             trigger_hit = self.__check_volume_trigger(self.__strategy['buy'][_key])
         elif _key == 'stop_loss':
@@ -186,6 +192,8 @@ class TriggerAPI:
                 trigger_hit = self.__check_rsi_trigger(inner_key, self.__strategy['sell'][_key][inner_key])
             elif 'SMA' in inner_key:
                 trigger_hit = self.__check_sma_trigger(inner_key, self.__strategy['sell'][_key][inner_key])
+            elif 'stochastic' in inner_key:
+                trigger_hit = self.__check_stochastic_trigger(inner_key, self.__strategy['sell'][_key][inner_key])
             elif 'volume' in _key:
                 trigger_hit = self.__check_volume_trigger(self.__strategy['buy'][_key])
             elif inner_key == 'stop_loss':
@@ -281,6 +289,57 @@ class TriggerAPI:
 
         # trigger checks
         result = self.__basic_triggers_check(rsi, operator, trigger)
+
+        log.debug('All RSI triggers checked')
+
+        return result
+
+    def __check_stochastic_trigger(self, _key, _value) -> bool:
+        """Abstracted logic for RSI triggers.
+
+        Args:
+            _key (str): The key value of the trigger.
+            _value (str): The value of the trigger.
+
+        return:
+            bool: True if the trigger was hit.
+
+        Notes:
+            This functions is internal (fxn inside fxn) which means everything in the outer
+            function run() is global here
+        """
+        log.debug('Checking stochastic oscillator triggers...')
+
+        # find the value of the RSI else default
+        _num = DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH
+        _nums = re.findall(r'\d+', _key)
+        if len(_nums) == 1:
+            _num = float(_nums[0])
+
+        # get the RSI value for current day
+        # old way where we calculate it on the spot (deprecated)
+        # rsi = self.__indicators_API.RSI(_num, current_day_index)
+        # new way where we just pull the pre-calculated value from the col in the df
+        stochastic = self.__data_object.get_data_point('stochastic_oscillator', self.__current_day_index)
+
+        if CURRENT_PRICE_SYMBOL in _value:
+            trigger = float(self.__data_object.get_data_point(self.__data_object.CLOSE, self.__current_day_index))
+            operator = _value.replace(CURRENT_PRICE_SYMBOL, '')
+        else:
+            # check that the value from {key: value} has a number in it
+            # this is the trigger value
+            _nums = re.findall(r'\d+', _value)
+            if len(_nums) == 1:
+                trigger = float(_nums[0])
+                operator = _value.replace(str(_nums[0]), '')
+            else:
+                log.warning('Found invalid format stochastic (invalid number found in trigger value)')
+                print('Found invalid format stochastic (invalid number found in trigger value)')
+                # if no trigger value available, exit
+                return False
+
+        # trigger checks
+        result = self.__basic_triggers_check(stochastic, operator, trigger)
 
         log.debug('All RSI triggers checked')
 

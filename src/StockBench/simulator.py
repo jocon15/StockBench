@@ -302,9 +302,11 @@ class Simulator:
             # create the display object
             charting_API = SingularDisplay()
             # chart the data on a separate process
-            charting_process = Process(target=charting_API.chart,
-                                       args=(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode))
-            charting_process.start()
+            # charting_process = Process(target=charting_API.chart,
+            #                            args=(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode))
+            # charting_process.start()
+
+            charting_API.chart(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode)
 
         return {
             'symbol': self.__symbol,
@@ -483,6 +485,17 @@ class Simulator:
                     num = len(self.__strategy['sell']['color'])
                 if additional_days < num:
                     additional_days = num
+            elif 'stochastic' in key:
+                # ======== key based =========
+                nums = re.findall(r'\d+', key)
+                if len(nums) == 1:
+                    num = int(nums[0])
+                    if additional_days < num:
+                        additional_days = num
+                    # add the RSI data to the df
+                    self.__data_API.add_stochastic_oscillator(num)
+                else:
+                    additional_days = DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH
 
         # add a buffer
         if additional_days != 0:
@@ -531,6 +544,23 @@ class Simulator:
                 # add the SMA data to the df
                 self.__data_API.add_sma(num)
 
+        def stochastic_buy(_key, _value):
+            # ======== key based =========
+            nums = re.findall(r'\d+', _key)
+            if len(nums) == 1:
+                num = int(nums[0])
+                # add the RSI data to the df
+                self.__data_API.add_stochastic_oscillator(num)
+            else:
+                # add the RSI data to the df
+                self.__data_API.add_stochastic_oscillator(DEFAULT_RSI_LENGTH)
+            # ======== value based (rsi limit)=========
+            # _value = self.__strategy['buy'][key]
+            _nums = re.findall(r'\d+', _value)
+            if len(_nums) == 1:
+                _trigger = float(_nums[0])
+                self.__data_API.add_lower_stochastic(_trigger)
+
         def rsi_sell(_key, _value):
             # ======== key based =========
             nums = re.findall(r'\d+', _key)
@@ -555,12 +585,31 @@ class Simulator:
                 # add the SMA data to the df
                 self.__data_API.add_sma(num)
 
+        def stochastic_sell(_key, _value):
+            # ======== key based =========
+            nums = re.findall(r'\d+', _key)
+            if len(nums) == 1:
+                num = int(nums[0])
+                # add the RSI data to the df
+                self.__data_API.add_stochastic_oscillator(num)
+            else:
+                # add the RSI data to the df
+                self.__data_API.add_stochastic_oscillator(DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH)
+            # ======== value based (rsi limit)=========
+            # _value = self.__strategy['sell'][key]
+            _nums = re.findall(r'\d+', _value)
+            if len(_nums) == 1:
+                _trigger = float(_nums[0])
+                self.__data_API.add_upper_stochastic(_trigger)
+
         # buy keys
         for key in self.__strategy['buy'].keys():
             if 'RSI' in key:
                 rsi_buy(key, self.__strategy['buy'][key])
             elif 'SMA' in key:
                 sma_buy(key)
+            elif 'stochastic' in key:
+                stochastic_buy(key, self.__strategy['buy'][key])
             elif 'color' in key:
                 self.__data_API.add_candle_colors()
             elif 'and' in key:
@@ -569,6 +618,8 @@ class Simulator:
                         rsi_buy(inner_key, self.__strategy['buy'][key][inner_key])
                     elif 'SMA' in inner_key:
                         sma_buy(inner_key)
+                    elif 'stochastic' in inner_key:
+                        stochastic_buy(inner_key, self.__strategy['buy'][key][inner_key])
 
         # sell keys
         for key in self.__strategy['sell'].keys():
@@ -576,6 +627,8 @@ class Simulator:
                 rsi_sell(key, self.__strategy['sell'][key])
             elif 'SMA' in key:
                 sma_sell(key)
+            elif 'stochastic' in key:
+                stochastic_sell(key, self.__strategy['sell'][key])
             elif 'color' in key:
                 self.__data_API.add_candle_colors()
             elif 'and' in key:
@@ -584,6 +637,8 @@ class Simulator:
                         rsi_sell(inner_key, self.__strategy['sell'][key][inner_key])
                     elif 'SMA' in inner_key:
                         sma_sell(inner_key)
+                    elif 'stochastic' in inner_key:
+                        stochastic_sell(inner_key, self.__strategy['sell'][key][inner_key])
 
     def __add_buys_sells(self):
         """Adds the buy and sell lists to the DataFrame."""

@@ -51,11 +51,11 @@ class Indicators:
 
     @staticmethod
     @performance_timer
-    def SMA(sma_length: int, price_data: list) -> list:
+    def SMA(length: int, price_data: list) -> list:
         """Calculate the RSI values for a list of price values.
 
         Args:
-            sma_length (int): The length of the SMA to calculate.
+            length (int): The length of the SMA to calculate.
             price_data (list): The price data to calculate the RSI from.
 
         return:
@@ -65,27 +65,24 @@ class Indicators:
         sma_values = list()
         all_sma_values = list()
         for element in price_data:
-            if len(price_values) < sma_length:
+            if len(price_values) < length:
                 price_values.append(float(element))
-                avg = round(statistics.mean(price_values), 3)
-                sma_values.append(avg)
-                all_sma_values.append(avg)
             else:
                 price_values.pop(0)
                 sma_values.pop(0)
                 price_values.append(float(element))
-                avg = round(statistics.mean(price_values), 3)
-                sma_values.append(avg)
-                all_sma_values.append(avg)
+            avg = round(statistics.mean(price_values), 3)
+            sma_values.append(avg)
+            all_sma_values.append(avg)
         return all_sma_values
 
     @staticmethod
     @performance_timer
-    def RSI(rsi_length: int, price_data: list) -> list:
+    def RSI(length: int, price_data: list) -> list:
         """Calculate the RSI values for a list of price values.
 
         Args:
-            rsi_length (int): The length of the RSI to calculate.
+            length (int): The length of the RSI to calculate.
             price_data (list): The price data to calculate the RSI from.
 
         return:
@@ -99,13 +96,13 @@ class Indicators:
         for i in range(1, len(price_data)):
             dif = float(price_data[i]) - float(price_data[i - 1])
             if dif > 0:
-                if len(gain) == rsi_length:
+                if len(gain) == length:
                     gain.pop(0)
                     gain.append(dif)
                 else:
                     gain.append(dif)
             elif dif < 0:
-                if len(loss) == rsi_length:
+                if len(loss) == length:
                     loss.pop(0)
                     loss.append(abs(dif))
                 else:
@@ -137,3 +134,39 @@ class Indicators:
                 all_rsi.insert(0, first_day_value)
 
         return all_rsi
+
+    @staticmethod
+    @performance_timer
+    def stochastic_oscillator(length: int, high_data: list, low_data: list, close_data: list) -> list:
+        """Calculate the RSI values for a list of price values.
+
+        Args:
+            length (int): The length of the stochastic oscillator to calculate.
+            high_data (list): The high price data to calculate the stochastic oscillator from.
+            low_data (list): The high price data to calculate the stochastic oscillator from.
+            close_data (list): The close price data to calculate the stochastic oscillator from.
+
+        return:
+            list: The list of calculated RSI values.
+        """
+        past_length_days_high = list()
+        past_length_days_low = list()
+        past_length_days_close = list()
+        stochastic_oscillator = list()
+        for i in range(len(close_data)):
+            if i < length:
+                past_length_days_high.append(float(high_data[i]))
+                past_length_days_low.append(float(low_data[i]))
+                past_length_days_close.append(float(close_data[i]))
+            else:
+                past_length_days_high.pop(0)
+                past_length_days_low.pop(0)
+                past_length_days_close.pop(0)
+                past_length_days_high.append(float(high_data[i]))
+                past_length_days_low.append(float(low_data[i]))
+                past_length_days_close.append(float(close_data[i]))
+
+            stochastic_oscillator.append(((float(close_data[i]) - min(past_length_days_low)) /
+                                          (max(past_length_days_high) - min(past_length_days_low))) * 100.0)
+
+        return stochastic_oscillator

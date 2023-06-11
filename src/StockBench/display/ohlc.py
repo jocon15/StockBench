@@ -45,7 +45,7 @@ class OHLC(Subplot):
             list: A list of traces to add to the subplot defined in this class.
         """
         traces = list()
-        for (column_name, column_data) in df.iteritems():
+        for (column_name, column_data) in df.items():
             if 'SMA' in column_name:
                 nums = re.findall(r'\d+', column_name)
                 length = nums[0]

@@ -13,7 +13,7 @@ class CandlestickColorTrigger(Trigger):
 
         Args:
             key (str): The key value of the trigger.
-            value (str): The value of the trigger.
+            value (dict): The value of the trigger.
             data_obj (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.

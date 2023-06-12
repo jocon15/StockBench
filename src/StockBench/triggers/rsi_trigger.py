@@ -1,4 +1,3 @@
-import re
 import logging
 from StockBench.triggers.trigger import Trigger
 from StockBench.constants import *

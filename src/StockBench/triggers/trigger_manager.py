@@ -104,6 +104,12 @@ class TriggerManager:
         self.__current_day_index = None
 
     def __handle_triggers(self, key, side):
+        """Handle all triggers.
+
+        Args:
+            key (str): The key of the current context in the strategy.
+            side (str): 'buy' or 'sell'
+        """
         if side == 'buy':
             triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
         else:

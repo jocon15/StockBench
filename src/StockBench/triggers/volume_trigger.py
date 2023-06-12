@@ -11,7 +11,18 @@ class VolumeTrigger(Trigger):
         super().__init__(strategy_symbol)
 
     def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
-        """"""
+        """Trigger logic for volume.
+
+        Args:
+            key (str): The key value of the trigger.
+            value (str): The value of the trigger.
+            data_obj (any): The data API object.
+            position_obj (any): The position object.
+            current_day_index (int): The index of the current day.
+
+        return:
+            bool: True if the trigger was hit.
+        """
         volume = data_obj.get_data_point(data_obj.VOLUME, current_day_index)
 
         if CURRENT_PRICE_SYMBOL in value:

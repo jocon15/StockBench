@@ -9,21 +9,17 @@ class CandlestickColorTrigger(Trigger):
         super().__init__(strategy_symbol)
 
     def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
-        """Abstracted logic for candle stick triggers.
+        """Trigger logic for candlestick color.
 
         Args:
             key (str): The key value of the trigger.
-            value (dict): The value of the trigger.
+            value (str): The value of the trigger.
             data_obj (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
 
         return:
             bool: True if the trigger was hit.
-
-        Notes:
-            This functions is internal (fxn inside fxn) which means everything in the outer
-            function run() is global here.
         """
         log.debug('Checking candle stick triggers...')
 

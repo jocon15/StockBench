@@ -10,7 +10,7 @@ class PriceTrigger(Trigger):
         super().__init__(strategy_symbol)
 
     def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
-        """Abstracted logic for stochastic oscillator triggers.
+        """Trigger logic for price.
 
         Args:
             key (str): The key value of the trigger.
@@ -21,10 +21,6 @@ class PriceTrigger(Trigger):
 
         return:
             bool: True if the trigger was hit.
-
-        Notes:
-            This functions is internal (fxn inside fxn) which means everything in the outer
-            function run() is global here
         """
         log.debug('Checking price triggers...')
 

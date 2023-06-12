@@ -44,6 +44,17 @@ class Trigger:
 
     @staticmethod
     def find_numeric_in_str(value) -> float:
+        """Find the numeric trigger in a string.
+
+        Args:
+            value (str): Any value of the strategy.
+
+        return:
+            float: The trigger value in the string.
+
+        raises:
+            ValueError: If the passed value is not in the correct format.
+        """
         nums = re.findall(r'\d+', value)
         if len(nums) == 1:
             return float(nums[0])
@@ -55,6 +66,17 @@ class Trigger:
 
     @staticmethod
     def find_operator_in_str(value) -> str:
+        """Find the logic operator in a string.
+
+        Args:
+            value (str): Any value of the strategy.
+
+        return:
+            str: The operator in the string.
+
+        raises:
+            ValueError: If the passed value is not in the correct format.
+        """
         nums = re.findall(r'\d+', value)
         if len(nums) == 1:
             return value.replace(str(nums[0]), '')

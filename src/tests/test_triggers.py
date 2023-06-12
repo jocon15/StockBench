@@ -1,10 +1,10 @@
-from StockBench.triggers.triggering_api import TriggerAPI
+from StockBench.triggers.trigger_manager import TriggerManager
 import pytest
 
 
 @pytest.fixture
 def trigger_api():
-    return TriggerAPI({
+    return TriggerManager({
         # FIXME: strategy goes here
     })
 

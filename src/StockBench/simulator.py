@@ -15,7 +15,7 @@ from .display.multiple import MultipleDisplay
 from .accounting.user_account import UserAccount
 from .exporting.exporting_api import ExportingAPI
 from .position.position_obj import Position
-from .triggers.triggering_api import TriggerAPI
+from .triggers.trigger_manager import TriggerManager
 from .simulation_data.data_api import DataAPI
 from .analysis.analysis_api import SimulationAnalyzer
 from .function_tools.nonce import datetime_nonce
@@ -160,7 +160,7 @@ class Simulator:
         # initialize the member variable
         self.__strategy = strategy
         # initialize the member object
-        self.__trigger_API = TriggerAPI(strategy)
+        self.__trigger_API = TriggerManager(strategy)
 
     def run(self, symbol: str, show_chart=True, save_chart=False, dark_mode=True) -> dict:
         """Run a simulation on an asset.

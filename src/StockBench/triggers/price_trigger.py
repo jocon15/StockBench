@@ -32,17 +32,17 @@ class PriceTrigger(Trigger):
 
         # check that the value from {key: value} has a number in it
         # this is the trigger value
-        _nums = re.findall(r'\d+', _value)
-        if len(_nums) == 1:
-            trigger = float(_nums[0])
-            operator = _value.replace(str(_nums[0]), '')
-        else:
-            print('Found invalid format price (invalid number found in trigger value)')
-            # if no trigger value available, exit
+        # check that the value from {key: value} has a number in it
+        try:
+            trigger_value = Trigger.find_numeric_in_str(_value)
+            operator = Trigger.find_operator_in_str(_value)
+        except ValueError:
+            # an exception occurred trying to parse trigger value or operator
+            # return false (skip trigger)
             return False
 
         # trigger checks
-        result = Trigger.basic_triggers_check(price, operator, trigger)
+        result = Trigger.basic_triggers_check(price, operator, trigger_value)
 
         log.debug('All Price triggers checked')
 

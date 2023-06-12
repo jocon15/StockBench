@@ -1,4 +1,8 @@
+import re
+import logging
 from abc import abstractmethod
+
+log = logging.getLogger()
 
 
 class Trigger:
@@ -37,3 +41,25 @@ class Trigger:
             if (indicator_value - trigger_value) <= 0.001:  # DOUBLE_COMPARISON_EPSILON:
                 return True
         return False
+
+    @staticmethod
+    def find_numeric_in_str(value) -> float:
+        nums = re.findall(r'\d+', value)
+        if len(nums) == 1:
+            return float(nums[0])
+        else:
+            log.error(f'Invalid number found in trigger value: {value}')
+            print(f'Invalid number found in trigger value: {value}')
+            # if no trigger value available, exit
+            raise ValueError(f'Invalid number found in trigger value: {value}')
+
+    @staticmethod
+    def find_operator_in_str(value) -> str:
+        nums = re.findall(r'\d+', value)
+        if len(nums) == 1:
+            return value.replace(str(nums[0]), '')
+        else:
+            log.error(f'Invalid number found in trigger value: {value}')
+            print(f'Invalid number found in trigger value: {value}')
+            # if no trigger value available, exit
+            raise ValueError(f'Invalid number found in trigger value: {value}')

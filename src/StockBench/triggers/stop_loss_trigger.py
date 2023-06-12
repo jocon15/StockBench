@@ -28,7 +28,7 @@ class StopLossTrigger(Trigger):
         log.debug('Checking stop loss triggers...')
 
         # get the trigger from the strategy
-        _trigger = float(_value)
+        trigger_value = float(_value)
 
         # get the current price
         price = data_obj.get_data_point(data_obj.CLOSE, current_day_index)
@@ -39,11 +39,11 @@ class StopLossTrigger(Trigger):
         # check for a loss
         if p_l < 0:
             # check trigger
-            if abs(p_l) >= abs(_trigger):
+            if abs(p_l) >= abs(trigger_value):
                 log.info('Stop loss trigger hit!')
                 return True
 
         log.debug('Stop loss triggers checked')
 
-        # catch all case if nothing was hit (which is ok!)
+        # trigger was not hit
         return False

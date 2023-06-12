@@ -30,7 +30,7 @@ class StopProfitTrigger(Trigger):
         log.debug('Checking stop profit triggers...')
 
         # get the trigger from the strategy
-        _trigger = float(_value)
+        trigger_value = float(_value)
 
         # get the current price
         price = data_obj.get_data_point(data_obj.CLOSE, current_day_index)
@@ -41,11 +41,11 @@ class StopProfitTrigger(Trigger):
         # check for profit
         if p_l > 0:
             # check for trigger
-            if p_l >= _trigger:
+            if p_l >= trigger_value:
                 log.info('Stop profit trigger hit!')
                 return True
 
         log.debug('Stop profit triggers checked')
 
-        # catch all case if nothing was hit (which is ok!)
+        # trigger was not hit
         return False

@@ -1,4 +1,3 @@
-import re
 import logging
 from StockBench.triggers.trigger import Trigger
 from StockBench.constants import *
@@ -28,13 +27,6 @@ class StochasticTrigger(Trigger):
             function run() is global here
         """
         log.debug('Checking stochastic oscillator triggers...')
-
-        # find the value of the RSI else default
-        _num = DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH
-        _nums = re.findall(r'\d+', _key)
-        if len(_nums) == 1:
-            _num = float(_nums[0])
-
         # get the RSI value for current day
         # old way where we calculate it on the spot (deprecated)
         # rsi = self.__indicators_API.RSI(_num, current_day_index)
@@ -42,23 +34,20 @@ class StochasticTrigger(Trigger):
         stochastic = data_obj.get_data_point('stochastic_oscillator', current_day_index)
 
         if CURRENT_PRICE_SYMBOL in _value:
-            trigger = float(data_obj.get_data_point(data_obj.CLOSE, current_day_index))
+            trigger_value = float(data_obj.get_data_point(data_obj.CLOSE, current_day_index))
             operator = _value.replace(CURRENT_PRICE_SYMBOL, '')
         else:
             # check that the value from {key: value} has a number in it
-            # this is the trigger value
-            _nums = re.findall(r'\d+', _value)
-            if len(_nums) == 1:
-                trigger = float(_nums[0])
-                operator = _value.replace(str(_nums[0]), '')
-            else:
-                log.warning('Found invalid format stochastic (invalid number found in trigger value)')
-                print('Found invalid format stochastic (invalid number found in trigger value)')
-                # if no trigger value available, exit
+            try:
+                trigger_value = Trigger.find_numeric_in_str(_value)
+                operator = Trigger.find_operator_in_str(_value)
+            except ValueError:
+                # an exception occurred trying to parse trigger value or operator
+                # return false (skip trigger)
                 return False
 
         # trigger checks
-        result = Trigger.basic_triggers_check(stochastic, operator, trigger)
+        result = Trigger.basic_triggers_check(stochastic, operator, trigger_value)
 
         log.debug('All stochastic triggers checked')
 

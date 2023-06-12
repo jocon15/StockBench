@@ -28,17 +28,26 @@ class TriggerManager:
         self.__data_object = None
         self.__position_object = None
         self.__current_day_index = None
-        # Add new triggers to check here
-        self.__triggers = (
+        # ===== Add new triggers to check here =====
+        # triggers that can result in a buy or sell
+        self.__side_agnostic_triggers = [
             StochasticTrigger('stochastic'),
             RSITrigger('RSI'),
             SMATrigger('SMA'),
             VolumeTrigger('volume'),
             CandlestickColorTrigger('color'),
             PriceTrigger('price'),
+
+        ]
+        # only triggers that will result in a position buy
+        self.__buy_only_triggers = [
+
+        ]
+        # only triggers that will result in a position sell
+        self.__sell_only_triggers = [
             StopLossTrigger('stop_loss'),
             StopProfitTrigger('stop_profit')
-        )
+        ]
 
     def check_buy_triggers(self, data_obj, current_day_index) -> bool:
         """Check all buy triggers.
@@ -95,6 +104,11 @@ class TriggerManager:
         self.__current_day_index = None
 
     def __handle_triggers(self, _key, side):
+        if side == 'buy':
+            triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
+        else:
+            triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
+
         if _key == 'and':
             # ===== AND Triggers =====
 
@@ -103,7 +117,7 @@ class TriggerManager:
                 trigger_hit = False
 
                 # check all triggers
-                for trigger in self.__triggers:
+                for trigger in triggers:
                     if trigger.strategy_symbol in inner_key:
                         trigger_hit = trigger.check_trigger(
                             inner_key,
@@ -124,7 +138,7 @@ class TriggerManager:
             trigger_hit = False
 
             # check all triggers
-            for trigger in self.__triggers:
+            for trigger in triggers:
                 if trigger.strategy_symbol in _key:
                     trigger_hit = trigger.check_trigger(
                         _key,

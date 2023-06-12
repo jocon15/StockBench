@@ -21,7 +21,15 @@ class SingularDisplay:
     def __init__(self):
         self.__df = None
 
-        self.__subplot_objects = list()
+        # DO NOT ADD ANY to this list
+        self.__subplot_objects = [OHLC()]
+        # Add subplots here
+        self.__potential_subplot_objects = [
+            RSI(),
+            Volume(),
+            Stochastic()
+        ]
+
         self.__subplot_types = list()
 
     def chart(self, df, symbol, show=True, save=False, dark_mode=True):
@@ -36,17 +44,12 @@ class SingularDisplay:
         """
         self.__df = df
 
-        # add the ohlc because that's always there
-        self.__subplot_objects.append(OHLC())
-
         # activate the subplot objects if evidence is found in the df
         for (column_name, column_data) in self.__df.items():
-            if column_name == 'RSI':
-                self.__subplot_objects.append(RSI())
-            if column_name == 'volume':
-                self.__subplot_objects.append(Volume())
-            if column_name == 'stochastic_oscillator':
-                self.__subplot_objects.append(Stochastic())
+            for subplot in self.__potential_subplot_objects:
+                if column_name == subplot.data_symbol:
+                    # concatenate the 2 lists
+                    self.__subplot_objects = [x for n in (self.__subplot_objects, [subplot]) for x in n]
 
         # get the subplot types
         for subplot in self.__subplot_objects:

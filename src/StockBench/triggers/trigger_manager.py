@@ -111,8 +111,10 @@ class TriggerManager:
             side (str): 'buy' or 'sell'
         """
         if side == 'buy':
+            # concatenate the 2 lists
             triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
         else:
+            # concatenate the 2 lists
             triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
 
         if key == 'and':

@@ -13,7 +13,7 @@ class Stochastic(Subplot):
         - RSI lower trigger
     """
     def __init__(self):
-        super().__init__([{"type": "scatter"}])
+        super().__init__('stochastic', [{"type": "scatter"}])
 
     @staticmethod
     def get_subplot(df):

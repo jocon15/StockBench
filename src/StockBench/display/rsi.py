@@ -13,7 +13,7 @@ class RSI(Subplot):
         - RSI lower trigger
     """
     def __init__(self):
-        super().__init__([{"type": "scatter"}])
+        super().__init__('RSI', [{"type": "scatter"}])
 
     @staticmethod
     def get_subplot(df):

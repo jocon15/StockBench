@@ -15,7 +15,7 @@ class OHLC(Subplot):
         - Sell points
     """
     def __init__(self):
-        super().__init__([{"type": "ohlc"}])
+        super().__init__('OHLC', [{"type": "ohlc"}])
 
     @staticmethod
     def get_subplot(df):

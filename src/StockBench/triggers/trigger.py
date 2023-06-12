@@ -10,7 +10,7 @@ class Trigger:
         self.strategy_symbol = strategy_symbol
 
     @abstractmethod
-    def check_trigger(self, _key, _value, data_obj, position_obj, current_day_index) -> bool:
+    def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
         raise NotImplementedError('check trigger not implemented!')
 
     @staticmethod

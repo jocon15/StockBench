@@ -8,12 +8,12 @@ class CandlestickColorTrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol)
 
-    def check_trigger(self, _key, _value, data_obj, position_obj, current_day_index) -> bool:
+    def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
         """Abstracted logic for candle stick triggers.
 
         Args:
-            _key (str): The key value of the trigger.
-            _value (dict): The value of the trigger.
+            key (str): The key value of the trigger.
+            value (dict): The value of the trigger.
             data_obj (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
@@ -28,15 +28,15 @@ class CandlestickColorTrigger(Trigger):
         log.debug('Checking candle stick triggers...')
 
         # find out how many keys there are (_value is a dict)
-        num_keys = len(_value)
+        num_keys = len(value)
 
         # these will both need to be in ascending order [today, yesterday...]
         trigger_colors = list()
         actual_colors = list()
 
         # build the trigger list
-        for _key in sorted(_value.keys()):
-            candle_color = _value[_key]
+        for _key in sorted(value.keys()):
+            candle_color = value[_key]
             if candle_color == 'green':
                 trigger_colors.append(1)
             else:

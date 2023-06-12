@@ -103,16 +103,16 @@ class TriggerManager:
         self.__position_object = None
         self.__current_day_index = None
 
-    def __handle_triggers(self, _key, side):
+    def __handle_triggers(self, key, side):
         if side == 'buy':
             triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
         else:
             triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
 
-        if _key == 'and':
+        if key == 'and':
             # ===== AND Triggers =====
 
-            for inner_key in self.__strategy[side][_key].keys():
+            for inner_key in self.__strategy[side][key].keys():
                 # reset trigger indicator
                 trigger_hit = False
 
@@ -121,7 +121,7 @@ class TriggerManager:
                     if trigger.strategy_symbol in inner_key:
                         trigger_hit = trigger.check_trigger(
                             inner_key,
-                            self.__strategy[side][_key][inner_key],
+                            self.__strategy[side][key][inner_key],
                             self.__data_object,
                             self.__position_object,
                             self.__current_day_index)
@@ -139,10 +139,10 @@ class TriggerManager:
 
             # check all triggers
             for trigger in triggers:
-                if trigger.strategy_symbol in _key:
+                if trigger.strategy_symbol in key:
                     trigger_hit = trigger.check_trigger(
-                        _key,
-                        self.__strategy[side][_key],
+                        key,
+                        self.__strategy[side][key],
                         self.__data_object,
                         self.__position_object,
                         self.__current_day_index)

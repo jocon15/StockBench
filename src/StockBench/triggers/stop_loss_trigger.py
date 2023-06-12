@@ -8,12 +8,12 @@ class StopLossTrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol)
 
-    def check_trigger(self, _key, _value, data_obj, position_obj, current_day_index) -> bool:
+    def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
         """Abstracted logic for stochastic oscillator triggers.
 
         Args:
-            _key (str): The key value of the trigger.
-            _value (str): The value of the trigger.
+            key (str): The key value of the trigger.
+            value (str): The value of the trigger.
             data_obj (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
@@ -28,7 +28,7 @@ class StopLossTrigger(Trigger):
         log.debug('Checking stop loss triggers...')
 
         # get the trigger from the strategy
-        trigger_value = float(_value)
+        trigger_value = float(value)
 
         # get the current price
         price = data_obj.get_data_point(data_obj.CLOSE, current_day_index)

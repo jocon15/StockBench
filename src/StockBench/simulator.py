@@ -302,11 +302,12 @@ class Simulator:
             # create the display object
             charting_API = SingularDisplay()
             # chart the data on a separate process
-            # charting_process = Process(target=charting_API.chart,
-            #                            args=(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode))
-            # charting_process.start()
+            charting_process = Process(target=charting_API.chart,
+                                       args=(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode))
+            charting_process.start()
 
-            charting_API.chart(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode)
+            # DEBUG: synchronous charting
+            # charting_API.chart(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode)
 
         return {
             'symbol': self.__symbol,

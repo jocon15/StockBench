@@ -22,7 +22,8 @@ class DataAPI:
             raise Exception('Input data type must be a string!')
         for col_name in self.get_column_names():
             if name == col_name:
-                raise Exception('A column with that name already exists!')
+                # a column with that name already exists, skip
+                return
 
         self.__df[name] = data
 

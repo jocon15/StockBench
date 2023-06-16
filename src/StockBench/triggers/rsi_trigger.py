@@ -11,12 +11,11 @@ class RSITrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol)
 
-    def additional_days(self, key, data_obj) -> int:
+    def additional_days(self, key) -> int:
         """Calculate the additional days required.
 
         Args:
             key (any): The key value from the strategy.
-            data_obj (any): The data object.
         """
         additional_days = 0
         nums = re.findall(r'\d+', key)
@@ -24,8 +23,6 @@ class RSITrigger(Trigger):
             num = int(nums[0])
             if additional_days < num:
                 additional_days = num
-            # add the RSI data to the df
-            self.__add_rsi(num, data_obj)
         else:
             additional_days = DEFAULT_RSI_LENGTH
         return additional_days

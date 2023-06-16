@@ -52,18 +52,18 @@ class Indicators:
     @staticmethod
     @performance_timer
     def SMA(length: int, price_data: list) -> list:
-        """Calculate the RSI values for a list of price values.
+        """Calculates the SMA values for a list of price values.
 
         Args:
             length (int): The length of the SMA to calculate.
-            price_data (list): The price data to calculate the RSI from.
+            price_data (list): The price data to calculate the SMA from.
 
         return:
             list: The list of calculated SMA values.
         """
-        price_values = list()
-        sma_values = list()
-        all_sma_values = list()
+        price_values = []
+        sma_values = []
+        all_sma_values = []
         for element in price_data:
             if len(price_values) < length:
                 price_values.append(float(element))
@@ -75,6 +75,34 @@ class Indicators:
             sma_values.append(avg)
             all_sma_values.append(avg)
         return all_sma_values
+
+    @staticmethod
+    @performance_timer
+    def EMA(length: int, price_data: list) -> list:
+        """Calculates the EMA values for a list of price values.
+
+        Args:
+            length (int): The length of the EMA to calculate.
+            price_data (list): The price data to calculate the EMA from.
+
+        return:
+            list: The list of calculated EMA values.
+        """
+        # calculate k
+        k = 2 / (length + 1)
+
+        # get the initial ema value (uses sma of length days)
+        previous_ema = Indicators.SMA(length, price_data[0:length])[-1]
+
+        ema_values = []
+        for i in range(len(price_data)):
+            if i < length:
+                ema_values.append(None)
+            else:
+                ema = (k * (float(price_data[i]) - previous_ema)) + previous_ema
+                ema_values.append(ema)
+                previous_ema = ema
+        return ema_values
 
     @staticmethod
     @performance_timer

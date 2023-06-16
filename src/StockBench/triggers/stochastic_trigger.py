@@ -11,12 +11,11 @@ class StochasticTrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol)
 
-    def additional_days(self, key, data_obj) -> int:
+    def additional_days(self, key) -> int:
         """Calculate the additional days required.
 
         Args:
             key (any): The key value from the strategy.
-            data_obj (any): The data object.
         """
         # ======== key based =========
         additional_days = 0
@@ -25,8 +24,6 @@ class StochasticTrigger(Trigger):
             num = int(nums[0])
             if additional_days < num:
                 additional_days = num
-            # add the stochastic data to the df
-            self.__add_stochastic_oscillator(num, data_obj)
         else:
             additional_days = DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH
         return additional_days

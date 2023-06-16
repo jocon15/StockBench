@@ -10,7 +10,7 @@ class Trigger:
         self.strategy_symbol = strategy_symbol
 
     @abstractmethod
-    def additional_days(self, key, data_obj) -> int:
+    def additional_days(self, key) -> int:
         raise NotImplementedError('Additional days not implemented!')
 
     @abstractmethod

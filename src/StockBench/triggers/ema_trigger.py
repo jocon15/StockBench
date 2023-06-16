@@ -7,7 +7,7 @@ from StockBench.indicators.indicators import Indicators
 log = logging.getLogger()
 
 
-class SMATrigger(Trigger):
+class EMATrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol)
 
@@ -37,11 +37,11 @@ class SMATrigger(Trigger):
         nums = re.findall(r'\d+', key)
         if len(nums) == 1:
             num = int(nums[0])
-            # add the SMA data to the df
-            self.__add_sma(num, data_obj)
+            # add the EMA data to the df
+            self.__add_ema(num, data_obj)
 
     def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
-        """Trigger logic for SMA.
+        """Trigger logic for EMA.
 
         Args:
             key (str): The key value of the trigger.
@@ -53,17 +53,17 @@ class SMATrigger(Trigger):
         return:
             bool: True if the trigger was hit.
         """
-        log.debug('Checking SMA triggers...')
+        log.debug('Checking EMA triggers...')
 
-        # find the SMA length, else exit
+        # find the EMA length, else exit
         _nums = re.findall(r'\d+', key)
-        # since we have no default SMA, there must be a value provided, else exit
+        # since we have no default EMA, there must be a value provided, else exit
         if len(_nums) == 1:
             _num = int(_nums[0])
 
-            # get the sma value for the current day
-            title = f'SMA{_num}'
-            sma = data_obj.get_data_point(title, current_day_index)
+            # get the ema value for the current day
+            title = f'EMA{_num}'
+            ema = data_obj.get_data_point(title, current_day_index)
 
             if CURRENT_PRICE_SYMBOL in value:
                 trigger_value = float(data_obj.get_data_point(data_obj.CLOSE, current_day_index))
@@ -79,9 +79,9 @@ class SMATrigger(Trigger):
                     return False
 
             # trigger checks
-            result = Trigger.basic_triggers_check(sma, operator, trigger_value)
+            result = Trigger.basic_triggers_check(ema, operator, trigger_value)
 
-            log.debug('All SMA triggers checked')
+            log.debug('All EMA triggers checked')
 
             return result
 
@@ -90,17 +90,17 @@ class SMATrigger(Trigger):
         return False
 
     @staticmethod
-    def __add_sma(length, data_obj):
-        """Pre-calculate the SMA values and add them to the df.
+    def __add_ema(length, data_obj):
+        """Pre-calculate the EMA values and add them to the df.
 
         Args:
-            length (int): The length of the SMA to use.
+            length (int): The length of the EMA to use.
             data_obj (any): The data object.
         """
         # get a list of close price values
-        column_title = f'SMA{length}'
+        column_title = f'EMA{length}'
 
-        # if we already have SMA values in the df, we don't need to add them again
+        # if we already have EMA values in the df, we don't need to add them again
         for col_name in data_obj.get_column_names():
             if column_title in col_name:
                 return
@@ -108,8 +108,8 @@ class SMATrigger(Trigger):
         # get a list of price values as a list
         price_data = data_obj.get_column_data(data_obj.CLOSE)
 
-        # calculate the SMA values from the indicator API
-        sma_values = Indicators.SMA(length, price_data)
+        # calculate the EMA values from the indicator API
+        ema_values = Indicators.EMA(length, price_data)
 
         # add the calculated values to the df
-        data_obj.add_column(column_title, sma_values)
+        data_obj.add_column(column_title, ema_values)

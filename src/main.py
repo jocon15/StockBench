@@ -10,6 +10,7 @@ strategy = {
     'buy': {
         'RSI': '<30',
         'stochastic': '<20',
+        'EMA20': '<30',
         'and1': {
             'SMA20': '>50',
             'color': {

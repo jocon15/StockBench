@@ -1,6 +1,7 @@
 import logging
 from StockBench.triggers.rsi_trigger import RSITrigger
 from StockBench.triggers.sma_trigger import SMATrigger
+from StockBench.triggers.ema_trigger import EMATrigger
 from StockBench.triggers.price_trigger import PriceTrigger
 from StockBench.triggers.volume_trigger import VolumeTrigger
 from StockBench.triggers.stop_loss_trigger import StopLossTrigger
@@ -33,6 +34,7 @@ class TriggerManager:
         self.__side_agnostic_triggers = [
             StochasticTrigger('stochastic'),
             RSITrigger('RSI'),
+            EMATrigger('EMA'),
             SMATrigger('SMA'),
             VolumeTrigger('volume'),
             CandlestickColorTrigger('color'),
@@ -49,7 +51,7 @@ class TriggerManager:
             StopProfitTrigger('stop_profit')
         ]
 
-    def parse_strategy_timestamps(self, data_obj) -> int:
+    def parse_strategy_timestamps(self) -> int:
         """"""
         additional_days = 0
 
@@ -69,7 +71,7 @@ class TriggerManager:
         for key in keys:
             for trigger in triggers:
                 if trigger.strategy_symbol in key:
-                    num = trigger.additional_days(key, data_obj)
+                    num = trigger.additional_days(key)
                     if additional_days < num:
                         additional_days = num
 
@@ -88,7 +90,7 @@ class TriggerManager:
                 elif 'and' in key:
                     for inner_key in self.__strategy['buy'][key].keys():
                         if trigger.strategy_symbol in inner_key:
-                            trigger.add_to_data(key, self.__strategy['buy'][key][inner_key], 'buy', data_obj)
+                            trigger.add_to_data(inner_key, self.__strategy['buy'][key][inner_key], 'buy', data_obj)
 
         # create a list of all triggers except sell triggers
         triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]

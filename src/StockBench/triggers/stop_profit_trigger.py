@@ -8,6 +8,29 @@ class StopProfitTrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol)
 
+    def additional_days(self, key, data_obj) -> int:
+        """Calculate the additional days required.
+
+        Args:
+            key (any): The key value from the strategy.
+            data_obj (any): The data object.
+        """
+        # note stop profit does not require additional days
+        return 0
+
+    def add_to_data(self, key, value, side, data_obj):
+        """Add data to the dataframe.
+
+        Args:
+            key (any): The key value from the strategy.
+            value (any): The value from thr strategy.
+            side (str): The side (buy/sell).
+            data_obj (any): The data object.
+        """
+        # note stop profit trigger is not an additional indicator and does not
+        # require any additional data to be added to the data
+        return
+
     def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
         """Trigger logic for stop profit.
 

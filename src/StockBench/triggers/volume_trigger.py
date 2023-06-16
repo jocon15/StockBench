@@ -1,7 +1,6 @@
-import re
 import logging
-from StockBench.triggers.trigger import Trigger
 from StockBench.constants import *
+from StockBench.triggers.trigger import Trigger
 
 log = logging.getLogger()
 
@@ -9,6 +8,29 @@ log = logging.getLogger()
 class VolumeTrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol)
+
+    def additional_days(self, key, data_obj) -> int:
+        """Calculate the additional days required.
+
+        Args:
+            key (any): The key value from the strategy.
+            data_obj (any): The data object.
+        """
+        # note volume does not require additional days
+        return 0
+
+    def add_to_data(self, key, value, side, data_obj):
+        """Add data to the dataframe.
+
+        Args:
+            key (any): The key value from the strategy.
+            value (any): The value from thr strategy.
+            side (str): The side (buy/sell).
+            data_obj (any): The data object.
+        """
+        # note that volume is a default parameter and thus already
+        # included in the OHLC data so no need to add it
+        return
 
     def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
         """Trigger logic for volume.

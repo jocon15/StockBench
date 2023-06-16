@@ -10,8 +10,16 @@ class Trigger:
         self.strategy_symbol = strategy_symbol
 
     @abstractmethod
+    def additional_days(self, key, data_obj) -> int:
+        raise NotImplementedError('Additional days not implemented!')
+
+    @abstractmethod
+    def add_to_data(self, key, value, side, data_obj):
+        raise NotImplementedError('Add to data not implemented!')
+
+    @abstractmethod
     def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
-        raise NotImplementedError('check trigger not implemented!')
+        raise NotImplementedError('Check trigger not implemented!')
 
     @staticmethod
     def basic_triggers_check(indicator_value, operator_value, trigger_value) -> bool:

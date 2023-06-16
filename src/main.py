@@ -3,7 +3,6 @@ from StockBench.composites.snp500 import snp500_tickers
 from StockBench.constants import *
 from StockBench.simulator import Simulator
 
-
 strategy = {
     'start': int(time.time()) - SECONDS_5_YEAR,
     'end': int(time.time()),

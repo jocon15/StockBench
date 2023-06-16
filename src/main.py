@@ -9,6 +9,7 @@ strategy = {
     'end': int(time.time()),
     'buy': {
         'RSI': '<30',
+        'stochastic': '<20',
         'and1': {
             'SMA20': '>50',
             'color': {
@@ -25,7 +26,8 @@ strategy = {
     },
     'sell': {
         'price': '<200',
-        'RSI': '>60'
+        'RSI': '>60',
+        'stochastic': '>80'
     }
 }
 
@@ -40,18 +42,18 @@ def main():
 
     stock_sim.load_strategy(strategy)
 
-    stock_sim.run('AAPL', show_chart=True, save_chart=False, dark_mode=True)
+    stock_sim.run('MSFT', show_chart=True, save_chart=False, dark_mode=True)
 
     # print(stock_sim.run_multiple(['AAPL', 'MSFT', 'TSLA']))
 
-    result = stock_sim.run_multiple(snp500_tickers[:20], show_individual_charts=False, save_individual_charts=False,
-                                    show_chart=True, save_chart=False, dark_mode=True)
+    # result = stock_sim.run_multiple(snp500_tickers[:20], show_individual_charts=False, save_individual_charts=False,
+    #                                 show_chart=True, save_chart=False, dark_mode=True)
 
     # stock_sim.save_results('example_file_name')
 
     # stock_sim.display_results_from_save('example_file_name')
 
-    print(result)
+    # print(result)
 
 
 if __name__ == '__main__':

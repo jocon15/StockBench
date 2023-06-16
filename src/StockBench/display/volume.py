@@ -12,7 +12,7 @@ class Volume(Subplot):
     Additional traces include:
     """
     def __init__(self):
-        super().__init__([{"type": "bar"}])
+        super().__init__('volume', [{"type": "bar"}])
 
     @staticmethod
     def get_subplot(df):

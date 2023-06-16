@@ -1,19 +1,19 @@
 from .subplot import Subplot
 import plotly.graph_objects as fplt
-from StockBench.display.display_constants import *
+from .display_constants import *
 
 
-class RSI(Subplot):
+class Stochastic(Subplot):
     """This class is a subclass of the Subplot class.
 
-    An RSI object contains the subplot with RSI data.
+    A Stochastic object contains the subplot with stochastic oscillator data.
 
     Additional traces include:
         - RSI upper trigger
         - RSI lower trigger
     """
     def __init__(self):
-        super().__init__('RSI', [{"type": "scatter"}])
+        super().__init__('stochastic', [{"type": "scatter"}])
 
     @staticmethod
     def get_subplot(df):
@@ -26,10 +26,10 @@ class RSI(Subplot):
             A plotly subplot.
         """
         return fplt.Scatter(
-                    x=df['Date'],
-                    y=df['RSI'],
-                    line=dict(color=WHITE),
-                    name='RSI')
+            x=df['Date'],
+            y=df['stochastic_oscillator'],
+            line=dict(color=WHITE),
+            name='Stochastic')
 
     @staticmethod
     def get_traces(df) -> list:
@@ -47,14 +47,14 @@ class RSI(Subplot):
             if column_name == 'RSI_upper':
                 traces.append(fplt.Scatter(
                     x=df['Date'],
-                    y=df['RSI_upper'],
+                    y=df['stochastic_upper'],
                     line=dict(color=HORIZONTAL_TRIGGER_YELLOW),
-                    name='RSI Upper'))
-            if column_name == 'RSI_lower':
+                    name='Stochastic Upper'))
+            if column_name == 'stochastic_lower':
                 traces.append(fplt.Scatter(
                     x=df['Date'],
-                    y=df['RSI_lower'],
+                    y=df['stochastic_lower'],
                     line=dict(color=HORIZONTAL_TRIGGER_YELLOW),
-                    name='RSI Lower'))
-                
+                    name='Stochastic Lower'))
+
         return traces

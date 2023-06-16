@@ -1,5 +1,4 @@
 import os
-import re
 import json
 import time
 import math
@@ -15,7 +14,7 @@ from .display.multiple import MultipleDisplay
 from .accounting.user_account import UserAccount
 from .exporting.exporting_api import ExportingAPI
 from .position.position_obj import Position
-from .triggers.triggering_api import TriggerAPI
+from .triggers.trigger_manager import TriggerManager
 from .simulation_data.data_api import DataAPI
 from .analysis.analysis_api import SimulationAnalyzer
 from .function_tools.nonce import datetime_nonce
@@ -160,7 +159,7 @@ class Simulator:
         # initialize the member variable
         self.__strategy = strategy
         # initialize the member object
-        self.__trigger_API = TriggerAPI(strategy)
+        self.__trigger_API = TriggerManager(strategy)
 
     def run(self, symbol: str, show_chart=True, save_chart=False, dark_mode=True) -> dict:
         """Run a simulation on an asset.
@@ -306,6 +305,9 @@ class Simulator:
                                        args=(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode))
             charting_process.start()
 
+            # DEBUG: synchronous charting
+            # charting_API.chart(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode)
+
         return {
             'symbol': self.__symbol,
             'trades_made': len(self.__position_archive),
@@ -445,44 +447,7 @@ class Simulator:
         if 'end' in self.__strategy.keys():
             self.__end_date_unix = int(self.__strategy['end'])
 
-        additional_days = 0
-
-        # build a list of sub keys from the buy and sell sections
-        keys = list()
-        if 'buy' in self.__strategy.keys():
-            for key in self.__strategy['buy'].keys():
-                keys.append(key)
-        if 'sell' in self.__strategy.keys():
-            for key in self.__strategy['sell'].keys():
-                keys.append(key)
-
-        for key in keys:
-            if 'RSI' in key:
-                # ======== key based =========
-                nums = re.findall(r'\d+', key)
-                if len(nums) == 1:
-                    num = int(nums[0])
-                    if additional_days < num:
-                        additional_days = num
-                    # add the RSI data to the df
-                    self.__data_API.add_rsi(num)
-                else:
-                    additional_days = DEFAULT_RSI_LENGTH
-            elif 'SMA' in key:
-                nums = re.findall(r'\d+', key)
-                if len(nums) == 1:
-                    num = int(nums[0])
-                    if additional_days < num:
-                        additional_days = num
-            elif 'color' in key:
-                try:
-                    num = len(self.__strategy['buy']['color'])
-                    if type(self.__strategy['buy']['color']) != dict:
-                        raise Exception('Candle stick signals must be a dict')
-                except KeyError:
-                    num = len(self.__strategy['sell']['color'])
-                if additional_days < num:
-                    additional_days = num
+        additional_days = self.__trigger_API.parse_strategy_timestamps(self.__data_API)
 
         # add a buffer
         if additional_days != 0:
@@ -498,92 +463,7 @@ class Simulator:
         """Parse the strategy for relevant information needed to make the API request."""
         log.debug('Parsing strategy for indicators and rules...')
 
-        # build a list of sub keys from the buy and sell sections
-        keys = list()
-        if 'buy' in self.__strategy.keys():
-            for key in self.__strategy['buy'].keys():
-                keys.append(key)
-        if 'sell' in self.__strategy.keys():
-            for key in self.__strategy['sell'].keys():
-                keys.append(key)
-
-        def rsi_buy(_key, _value):
-            # ======== key based =========
-            nums = re.findall(r'\d+', _key)
-            if len(nums) == 1:
-                num = int(nums[0])
-                # add the RSI data to the df
-                self.__data_API.add_rsi(num)
-            else:
-                # add the RSI data to the df
-                self.__data_API.add_rsi(DEFAULT_RSI_LENGTH)
-            # ======== value based (rsi limit)=========
-            # _value = self.__strategy['buy'][key]
-            _nums = re.findall(r'\d+', _value)
-            if len(_nums) == 1:
-                _trigger = float(_nums[0])
-                self.__data_API.add_lower_rsi(_trigger)
-
-        def sma_buy(_key):
-            nums = re.findall(r'\d+', _key)
-            if len(nums) == 1:
-                num = int(nums[0])
-                # add the SMA data to the df
-                self.__data_API.add_sma(num)
-
-        def rsi_sell(_key, _value):
-            # ======== key based =========
-            nums = re.findall(r'\d+', _key)
-            if len(nums) == 1:
-                num = int(nums[0])
-                # add the RSI data to the df
-                self.__data_API.add_rsi(num)
-            else:
-                # add the RSI data to the df
-                self.__data_API.add_rsi(DEFAULT_RSI_LENGTH)
-            # ======== value based (rsi limit)=========
-            # _value = self.__strategy['sell'][key]
-            _nums = re.findall(r'\d+', _value)
-            if len(_nums) == 1:
-                _trigger = float(_nums[0])
-                self.__data_API.add_upper_rsi(_trigger)
-
-        def sma_sell(_key):
-            nums = re.findall(r'\d+', _key)
-            if len(nums) == 1:
-                num = int(nums[0])
-                # add the SMA data to the df
-                self.__data_API.add_sma(num)
-
-        # buy keys
-        for key in self.__strategy['buy'].keys():
-            if 'RSI' in key:
-                rsi_buy(key, self.__strategy['buy'][key])
-            elif 'SMA' in key:
-                sma_buy(key)
-            elif 'color' in key:
-                self.__data_API.add_candle_colors()
-            elif 'and' in key:
-                for inner_key in self.__strategy['buy'][key].keys():
-                    if 'RSI' in inner_key:
-                        rsi_buy(inner_key, self.__strategy['buy'][key][inner_key])
-                    elif 'SMA' in inner_key:
-                        sma_buy(inner_key)
-
-        # sell keys
-        for key in self.__strategy['sell'].keys():
-            if 'RSI' in key:
-                rsi_sell(key, self.__strategy['sell'][key])
-            elif 'SMA' in key:
-                sma_sell(key)
-            elif 'color' in key:
-                self.__data_API.add_candle_colors()
-            elif 'and' in key:
-                for inner_key in self.__strategy['sell'][key].keys():
-                    if 'RSI' in inner_key:
-                        rsi_sell(inner_key, self.__strategy['sell'][key][inner_key])
-                    elif 'SMA' in inner_key:
-                        sma_sell(inner_key)
+        self.__trigger_API.parse_strategy_rules(self.__data_API)
 
     def __add_buys_sells(self):
         """Adds the buy and sell lists to the DataFrame."""

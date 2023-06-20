@@ -68,14 +68,14 @@ class OHLC(Subplot):
                     y=df['Buy'],
                     name='Buy',
                     mode='markers',
-                    marker=dict(color=BUY_COLOR)))
+                    marker=dict(color=BUY_COLOR, size=BUY_SELL_DOTS_WIDTH)))
             if column_name == 'Sell':
                 traces.append(fplt.Scatter(
                     x=df['Date'],
                     y=df['Sell'],
                     name='Sell',
                     mode='markers',
-                    marker=dict(color=SELL_COLOR)))
+                    marker=dict(color=SELL_COLOR, size=BUY_SELL_DOTS_WIDTH)))
 
         return traces
 

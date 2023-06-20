@@ -10,6 +10,7 @@ EMA_COLOR = '#a6f3f5'
 
 # ============ Generic Sizes =================
 MOVING_AVERAGE_LINE_WIDTH = 1.2
+BUY_SELL_DOTS_WIDTH = 4
 
 # ======= Application Specific ===============
 HORIZONTAL_TRIGGER_YELLOW = "#fcc203"

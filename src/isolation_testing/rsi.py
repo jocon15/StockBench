@@ -1,5 +1,4 @@
 import time
-from StockBench.composites.snp500 import snp500_tickers
 from StockBench.constants import *
 from StockBench.simulator import Simulator
 

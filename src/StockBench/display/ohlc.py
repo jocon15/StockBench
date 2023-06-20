@@ -52,7 +52,7 @@ class OHLC(Subplot):
                 traces.append(fplt.Scatter(
                     x=df['Date'],
                     y=df[column_name],
-                    line=dict(color=SMA_COLOR),
+                    line=dict(color=SMA_COLOR, width=MOVING_AVERAGE_LINE_WIDTH),
                     name=f'SMA{length}'))
             if 'EMA' in column_name:
                 nums = re.findall(r'\d+', column_name)
@@ -60,7 +60,7 @@ class OHLC(Subplot):
                 traces.append(fplt.Scatter(
                     x=df['Date'],
                     y=df[column_name],
-                    line=dict(color=EMA_COLOR),
+                    line=dict(color=EMA_COLOR, width=MOVING_AVERAGE_LINE_WIDTH),
                     name=f'EMA{length}'))
             if column_name == 'Buy':
                 traces.append(fplt.Scatter(

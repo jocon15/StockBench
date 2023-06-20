@@ -5,8 +5,11 @@ WHITE = "#e0e0e0"
 BULL_GREEN = '#185e01'
 BEAR_RED = '#de1b1b'
 OFF_BLUE = '#5a77fa'
-SMA_COLOR = '#a6f3f5'
-EMA_COLOR = '#f5e1a6'
+SMA_COLOR = '#f2eeed'
+EMA_COLOR = '#a6f3f5'
+
+# ============ Generic Sizes =================
+MOVING_AVERAGE_LINE_WIDTH = 1.2
 
 # ======= Application Specific ===============
 HORIZONTAL_TRIGGER_YELLOW = "#fcc203"

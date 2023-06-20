@@ -1,6 +1,7 @@
 import logging
 from StockBench.constants import *
 from StockBench.triggers.trigger import Trigger
+from StockBench.indicators.indicators import Indicators
 
 log = logging.getLogger()
 
@@ -27,8 +28,7 @@ class VolumeTrigger(Trigger):
             side (str): The side (buy/sell).
             data_obj (any): The data object.
         """
-        # note that volume is a default parameter and thus already
-        # included in the OHLC data so no need to add it
+        # candle colors are added by default so just return
         return
 
     def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:

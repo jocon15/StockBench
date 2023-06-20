@@ -44,7 +44,7 @@ class Stochastic(Subplot):
         # builds and returns a list of traces to add to the subplot
         traces = list()
         for (column_name, column_data) in df.items():
-            if column_name == 'RSI_upper':
+            if column_name == 'stochastic_upper':
                 traces.append(fplt.Scatter(
                     x=df['Date'],
                     y=df['stochastic_upper'],

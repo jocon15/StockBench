@@ -4,8 +4,6 @@ from StockBench.indicators.indicators import Indicators
 class DataAPI:
     """"""
     def __init__(self, data):
-        self.__df = data
-
         # constants (public so outside can use them)
         self.CLOSE = 'Close'
         self.OPEN = 'Open'
@@ -13,6 +11,10 @@ class DataAPI:
         self.LOW = 'Low'
         self.VOLUME = 'volume'
         self.COLOR = 'color'
+
+        self.__df = data
+        # add candle colors to the data
+        self.__add_candle_colors()
 
     def add_column(self, name: str, data: any):
         """Adds a list of data as a column in the DataFrame."""
@@ -77,3 +79,16 @@ class DataAPI:
         self.__df.drop(index=range(0, window_start_day), inplace=True)
         self.__df.reset_index(inplace=True)
         return self.__df
+
+    def __add_candle_colors(self):
+        """Adds the candle colors to the DataFrame."""
+
+        # get the 2 data lists
+        open_values = self.get_column_data(self.OPEN)
+        close_values = self.get_column_data(self.CLOSE)
+
+        # calculate the colors
+        color_values = Indicators.candle_color(open_values, close_values)
+
+        # add the colors to the df
+        self.add_column('color', color_values)

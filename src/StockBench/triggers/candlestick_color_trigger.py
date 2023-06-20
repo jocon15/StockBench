@@ -1,6 +1,5 @@
 import logging
 from StockBench.triggers.trigger import Trigger
-from StockBench.indicators.indicators import Indicators
 
 log = logging.getLogger()
 
@@ -27,7 +26,8 @@ class CandlestickColorTrigger(Trigger):
             side (str): The side (buy/sell).
             data_obj (any): The data object.
         """
-        self.__add_candle_colors(data_obj)
+        # candle colors are included by default
+        return
 
     def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
         """Trigger logic for candlestick color.
@@ -72,25 +72,3 @@ class CandlestickColorTrigger(Trigger):
 
         # catch all case if nothing was hit (which is ok!)
         return False
-
-    @staticmethod
-    def __add_candle_colors(data_obj):
-        """Adds the candle colors to the DataFrame.
-
-        Args:
-            data_obj (any): The data object.
-        """
-        # if we already have SMA values in the df, we don't need to add them again
-        for col_name in data_obj.get_column_names():
-            if 'Color' in col_name:
-                return
-
-        # get the 2 data lists
-        open_values = data_obj.get_column_data(data_obj.OPEN)
-        close_values = data_obj.get_column_data(data_obj.CLOSE)
-
-        # calculate the colors
-        color_values = Indicators.candle_color(open_values, close_values)
-
-        # add the colors to the df
-        data_obj.add_column('color', color_values)

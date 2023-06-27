@@ -1,19 +1,20 @@
-from .subplot import Subplot
+from StockBench.display.subplot import Subplot
 import plotly.graph_objects as fplt
-from .display_constants import *
+from StockBench.display.display_constants import *
 
 
-class Stochastic(Subplot):
+class RSISubplot(Subplot):
     """This class is a subclass of the Subplot class.
 
-    A Stochastic object contains the subplot with stochastic oscillator data.
+    An RSI object contains the subplot with RSI data.
 
     Additional traces include:
         - RSI upper trigger
         - RSI lower trigger
     """
+
     def __init__(self):
-        super().__init__('stochastic_oscillator', [{"type": "scatter"}])
+        super().__init__('RSI', [{"type": "scatter"}], False)
 
     @staticmethod
     def get_subplot(df):
@@ -27,9 +28,9 @@ class Stochastic(Subplot):
         """
         return fplt.Scatter(
             x=df['Date'],
-            y=df['stochastic_oscillator'],
+            y=df['RSI'],
             line=dict(color=WHITE),
-            name='Stochastic')
+            name='RSI')
 
     @staticmethod
     def get_traces(df) -> list:
@@ -44,17 +45,17 @@ class Stochastic(Subplot):
         # builds and returns a list of traces to add to the subplot
         traces = list()
         for (column_name, column_data) in df.items():
-            if column_name == 'stochastic_upper':
+            if column_name == 'RSI_upper':
                 traces.append(fplt.Scatter(
                     x=df['Date'],
-                    y=df['stochastic_upper'],
+                    y=df['RSI_upper'],
                     line=dict(color=HORIZONTAL_TRIGGER_YELLOW),
-                    name='Stochastic Upper'))
-            if column_name == 'stochastic_lower':
+                    name='RSI Upper'))
+            if column_name == 'RSI_lower':
                 traces.append(fplt.Scatter(
                     x=df['Date'],
-                    y=df['stochastic_lower'],
+                    y=df['RSI_lower'],
                     line=dict(color=HORIZONTAL_TRIGGER_YELLOW),
-                    name='Stochastic Lower'))
+                    name='RSI Lower'))
 
         return traces

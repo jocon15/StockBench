@@ -17,6 +17,7 @@ from .position.position_obj import Position
 from .triggers.trigger_manager import TriggerManager
 from .simulation_data.data_api import DataAPI
 from .analysis.analysis_api import SimulationAnalyzer
+from .plugin.plugin import PluginManager
 from .function_tools.nonce import datetime_nonce
 
 log = logging.getLogger()
@@ -72,6 +73,9 @@ class Simulator:
         self.__running_multiple = False
 
         self.__elapsed_time = None
+
+        # FIXME: check this filepath, it may need to be ../plugins
+        self.__plugins = PluginManager.load_plugins('plugins')
 
         self.__stored_results = None
 
@@ -159,7 +163,7 @@ class Simulator:
         # initialize the member variable
         self.__strategy = strategy
         # initialize the member object
-        self.__trigger_API = TriggerManager(strategy)
+        self.__trigger_API = TriggerManager(strategy, self.__plugins.values())
 
     def run(self, symbol: str, show_chart=True, save_chart=False, dark_mode=True) -> dict:
         """Run a simulation on an asset.
@@ -299,14 +303,14 @@ class Simulator:
 
         if show_chart or save_chart:
             # create the display object
-            charting_API = SingularDisplay()
+            charting_API = SingularDisplay(self.__plugins.values())
             # chart the data on a separate process
-            charting_process = Process(target=charting_API.chart,
-                                       args=(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode))
-            charting_process.start()
+            # charting_process = Process(target=charting_API.chart,
+            #                           args=(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode))
+            # charting_process.start()
 
             # DEBUG: synchronous charting
-            # charting_API.chart(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode)
+            charting_API.chart(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode)
 
         return {
             'symbol': self.__symbol,

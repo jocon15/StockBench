@@ -35,27 +35,18 @@ class PluginInterface:
 plugin_initialization_funcs: dict[str, Callable[..., PluginInterface]] = {}
 
 
-# FIXME: simulator should be the class that calls the pluginmanager and keeps a list of plugins
+# FIXME: register and unregister is deprecated (here and in __init__.py files)
 class PluginManager:
+    # FIXME: register and unregister is deprecated (here and in __init__.py files)
     @staticmethod
     def register(name: str, creation_func: Callable[..., PluginInterface]):
         plugin_initialization_funcs[name] = creation_func
 
+    # FIXME: register and unregister is deprecated (here and in __init__.py files)
     @staticmethod
     def unregister(name: str):
         # None is for: do nothing if there is nothing to pop - don't throw error
         plugin_initialization_funcs.pop(name, None)
-
-    # @staticmethod
-    # def create(arguments: dict[str: Any]) -> PluginInterface:
-    #     # FIXME: in the video, the create method uses characters dicts from the second JSON object
-    #     plugin_name = arguments["name"]
-    #     try:
-    #         creation_func = plugin_initialization_funcs[plugin_name]
-    #         # if we wanted to return the thing returned by the plugin
-    #         return creation_func()
-    #     except KeyError:
-    #         raise ValueError(f'Unknown plugin {plugin_name}')
 
     @staticmethod
     def import_module(filepath: str):

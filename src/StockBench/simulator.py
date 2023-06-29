@@ -17,7 +17,7 @@ from .position.position_obj import Position
 from .triggers.trigger_manager import TriggerManager
 from .simulation_data.data_api import DataAPI
 from .analysis.analysis_api import SimulationAnalyzer
-from .plugin.plugin import PluginManager
+from .plugin.plugin_manager import PluginManager
 from .function_tools.nonce import datetime_nonce
 
 log = logging.getLogger()
@@ -74,7 +74,6 @@ class Simulator:
 
         self.__elapsed_time = None
 
-        # FIXME: check this filepath, it may need to be ../plugins
         self.__plugins = PluginManager.load_plugins('plugins')
 
         self.__stored_results = None

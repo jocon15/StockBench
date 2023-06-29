@@ -1,6 +1,6 @@
-from StockBench.plugin.plugin import PluginInterface
-from .trigger import PriceTrigger
 from .subplot import OHLCSubplot
+from .trigger import PriceTrigger
+from StockBench.plugin.plugin import PluginInterface
 
 
 class PricePlugin(PluginInterface):

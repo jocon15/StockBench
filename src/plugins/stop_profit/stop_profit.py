@@ -1,5 +1,5 @@
-from StockBench.plugin.plugin import PluginInterface
 from .trigger import StopProfitTrigger
+from StockBench.plugin.plugin import PluginInterface
 
 
 class StopProfitPlugin(PluginInterface):

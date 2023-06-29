@@ -1,5 +1,5 @@
-from StockBench.plugin.plugin import PluginInterface
 from .trigger import CandlestickColorTrigger
+from StockBench.plugin.plugin import PluginInterface
 
 
 class CandlestickColorPlugin(PluginInterface):

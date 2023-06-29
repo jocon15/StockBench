@@ -1,6 +1,6 @@
 import os
-import importlib
 import logging
+import importlib
 from typing import Any
 
 log = logging.getLogger()
@@ -10,6 +10,8 @@ class PluginManager:
 
     @staticmethod
     def import_module(filepath: str):
+        # importlib uses .'s for delimiter
+        # this is a path independent way of converting the os filepath to the importlib filepath
         if '\\' in filepath:
             filepath = filepath.replace('\\', '.')
         if '/' in filepath:

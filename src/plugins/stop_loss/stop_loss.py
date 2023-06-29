@@ -1,5 +1,5 @@
-from StockBench.plugin.plugin import PluginInterface
 from .trigger import StopLossTrigger
+from StockBench.plugin.plugin import PluginInterface
 
 
 class StopLossPlugin(PluginInterface):

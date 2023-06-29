@@ -1,6 +1,6 @@
-from StockBench.plugin.plugin import PluginInterface
 from .trigger import VolumeTrigger
 from .subplot import VolumeSubplot
+from StockBench.plugin.plugin import PluginInterface
 
 
 class VolumePlugin(PluginInterface):

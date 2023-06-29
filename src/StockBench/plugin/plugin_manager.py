@@ -22,9 +22,12 @@ class PluginManager:
     def load_plugins(plugin_dir: str) -> dict[str: Any]:
         # build the plugin paths
         plugin_paths = []
+        if not os.path.isdir(plugin_dir):
+            # try backing out a directory
+            new_plugin_dir = os.path.join('..', plugin_dir)
+            if not os.path.isdir(new_plugin_dir):
+                raise ValueError('Path or directory up path is not a folder!')
         try:
-            if not os.path.isdir(plugin_dir):
-                raise Exception('Path passed is not a folder!')
             for folder in os.listdir(plugin_dir):
                 folder_path = os.path.join(plugin_dir, folder)
                 if os.path.isdir(folder_path):

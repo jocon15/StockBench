@@ -14,7 +14,7 @@ strategy = {
 }
 
 
-def main():
+def run_ema():
     stock_sim = Simulator(1000.00)
 
     # stock_sim.enable_logging()
@@ -36,7 +36,3 @@ def main():
     # stock_sim.display_results_from_save('example_file_name')
 
     # print(result)
-
-
-if __name__ == '__main__':
-    main()

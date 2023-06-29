@@ -1,9 +1,9 @@
-from .subplot import Subplot
 import plotly.graph_objects as fplt
-from .display_constants import *
+from StockBench.display.subplot import Subplot
+from StockBench.display.display_constants import *
 
 
-class Stochastic(Subplot):
+class StochasticSubplot(Subplot):
     """This class is a subclass of the Subplot class.
 
     A Stochastic object contains the subplot with stochastic oscillator data.
@@ -13,7 +13,7 @@ class Stochastic(Subplot):
         - RSI lower trigger
     """
     def __init__(self):
-        super().__init__('stochastic_oscillator', [{"type": "scatter"}])
+        super().__init__('stochastic_oscillator', [{"type": "scatter"}], False)
 
     @staticmethod
     def get_subplot(df):

@@ -1,10 +1,9 @@
-import re
-from .subplot import Subplot
 import plotly.graph_objects as fplt
+from StockBench.display.subplot import Subplot
 from StockBench.display.display_constants import *
 
 
-class OHLC(Subplot):
+class OHLCSubplot(Subplot):
     """This class is a subclass of the Subplot class.
 
     A OHLC object contains the subplot with candlestick price data.
@@ -15,7 +14,7 @@ class OHLC(Subplot):
         - Sell points
     """
     def __init__(self):
-        super().__init__('OHLC', [{"type": "ohlc"}])
+        super().__init__('OHLC', [{"type": "ohlc"}], False)
 
     @staticmethod
     def get_subplot(df):
@@ -46,22 +45,6 @@ class OHLC(Subplot):
         """
         traces = list()
         for (column_name, column_data) in df.items():
-            if 'SMA' in column_name:
-                nums = re.findall(r'\d+', column_name)
-                length = nums[0]
-                traces.append(fplt.Scatter(
-                    x=df['Date'],
-                    y=df[column_name],
-                    line=dict(color=SMA_COLOR, width=MOVING_AVERAGE_LINE_WIDTH),
-                    name=f'SMA{length}'))
-            if 'EMA' in column_name:
-                nums = re.findall(r'\d+', column_name)
-                length = nums[0]
-                traces.append(fplt.Scatter(
-                    x=df['Date'],
-                    y=df[column_name],
-                    line=dict(color=EMA_COLOR, width=MOVING_AVERAGE_LINE_WIDTH),
-                    name=f'EMA{length}'))
             if column_name == 'Buy':
                 traces.append(fplt.Scatter(
                     x=df['Date'],
@@ -78,6 +61,3 @@ class OHLC(Subplot):
                     marker=dict(color=SELL_COLOR, size=BUY_SELL_DOTS_WIDTH)))
 
         return traces
-
-
-

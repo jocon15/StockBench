@@ -1,11 +1,8 @@
 import os
 import logging
-from .rsi import RSI
-from .ohlc import OHLC
-from .volume import Volume
-from .stochastic import Stochastic
 from plotly.subplots import make_subplots
 from StockBench.function_tools.nonce import datetime_nonce
+from StockBench.plugin.plugin import PluginInterface
 
 log = logging.getLogger()
 
@@ -18,19 +15,14 @@ class SingularDisplay:
     specific subplots details to make it easier to edit. This API simply aggregates the subplot objects and
     assembles the final parent plot that gets displayed to the user.
     """
-    def __init__(self):
+    def __init__(self, plugins: list[PluginInterface]):
         self.__df = None
 
-        # DO NOT ADD ANY to this list
-        self.__subplot_objects = [OHLC()]
-        # Add subplots here
-        self.__potential_subplot_objects = [
-            RSI(),
-            Volume(),
-            Stochastic()
-        ]
+        self.__plugins = plugins
 
-        self.__subplot_types = list()
+        # DO NOT ADD ANY to this list
+        self.__subplot_objects = []
+        self.__subplot_types = []
 
     def chart(self, df, symbol, show=True, save=False, dark_mode=True):
         """Chart the data.
@@ -44,14 +36,35 @@ class SingularDisplay:
         """
         self.__df = df
 
+        # find the OHLC plugin
+        ohlc_plugin = None
+        for plugin in self.__plugins:
+            plugin_subplot = plugin.get_subplot()
+            if plugin_subplot is not None:
+                try:
+                    if plugin_subplot.get_type()[0]['type'] == 'ohlc':
+                        ohlc_plugin = plugin
+                        break
+                except KeyError:
+                    continue
+
+        if not ohlc_plugin:
+            raise Exception('No OHLC plugin found, cannot chart!')
+
+        # add ohlc to list
+        self.__subplot_objects.append(ohlc_plugin.get_subplot())
+
         # activate the subplot objects if evidence is found in the df
         for (column_name, column_data) in self.__df.items():
-            for subplot in self.__potential_subplot_objects:
-                if column_name == subplot.data_symbol:
-                    # concatenate the 2 lists
-                    self.__subplot_objects = [x for n in (self.__subplot_objects, [subplot]) for x in n]
+            for plugin in self.__plugins:
+                plugin_subplot = plugin.get_subplot()
+                if plugin_subplot is not None:
+                    if column_name == plugin.get_data_name():  # FIXME: might make this a static var an change name
+                        if not plugin_subplot.is_OHLC_trace():
+                            # concatenate the 2 lists (add element to list)
+                            self.__subplot_objects = [x for n in (self.__subplot_objects, [plugin_subplot]) for x in n]
 
-        # get the subplot types
+        # get the subplot types after all subplot objects have been established
         for subplot in self.__subplot_objects:
             self.__subplot_types.append(subplot.get_type())
 
@@ -63,9 +76,29 @@ class SingularDisplay:
         # add subplots and traces from the objects to the parent plot
         for enum_row, subplot in enumerate(self.__subplot_objects):
             row = enum_row + 1
+            # add the subplot
             fig.add_trace(subplot.get_subplot(self.__df), row=row, col=col)
-            for trace in subplot.get_traces(self.__df):
-                fig.add_trace(trace, row=row, col=col)
+            if subplot.get_type()[0]['type'] == 'ohlc':
+                # special case for OHLC subplot
+                traces = []
+                # get the traces from the subplot
+                for trace in subplot.get_traces(self.__df):
+                    traces.append(trace)
+                # get the traces from all aux OHLC trace plugins
+                for plugin in self.__plugins:
+                    plugin_subplot = plugin.get_subplot()
+                    if plugin_subplot is not None:
+                        if plugin_subplot.is_OHLC_trace():
+                            for trace in plugin_subplot.get_traces(self.__df):
+                                traces.append(trace)
+                # now add all traces to the subplot on the figure
+                for trace in traces:
+                    fig.add_trace(trace, row=row, col=col)
+            else:
+                # non-ohlc subplots
+                # add the subplots traces to the subplot on the figure
+                for trace in subplot.get_traces(self.__df):
+                    fig.add_trace(trace, row=row, col=col)
 
         # if we need to add any color changes, do it here
         # for (column_name, column_data) in self.__df.iteritems():

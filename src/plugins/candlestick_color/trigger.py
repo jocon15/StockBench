@@ -6,7 +6,7 @@ log = logging.getLogger()
 
 class CandlestickColorTrigger(Trigger):
     def __init__(self, strategy_symbol):
-        super().__init__(strategy_symbol)
+        super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
 
     def additional_days(self, key) -> int:
         """Calculate the additional days required.

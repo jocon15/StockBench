@@ -1,13 +1,5 @@
 import logging
-from StockBench.triggers.rsi_trigger import RSITrigger
-from StockBench.triggers.sma_trigger import SMATrigger
-from StockBench.triggers.ema_trigger import EMATrigger
-from StockBench.triggers.price_trigger import PriceTrigger
-from StockBench.triggers.volume_trigger import VolumeTrigger
-from StockBench.triggers.stop_loss_trigger import StopLossTrigger
-from StockBench.triggers.stochastic_trigger import StochasticTrigger
-from StockBench.triggers.stop_profit_trigger import StopProfitTrigger
-from StockBench.triggers.candlestick_color_trigger import CandlestickColorTrigger
+from StockBench.triggers.trigger import Trigger
 
 log = logging.getLogger()
 
@@ -22,7 +14,7 @@ class TriggerManager:
     The goal of the 2 API functions is to return a boolean. True = trigger hit. False = trigger not hit. Both of these
     return values hold for buy or sell.
     """
-    def __init__(self, strategy):
+    def __init__(self, strategy, plugins: list):
         # strategy does not get cleared
         self.__strategy = strategy
         # All below attributes get cleared after trigger call
@@ -31,25 +23,14 @@ class TriggerManager:
         self.__current_day_index = None
         # ===== Add new triggers to check here =====
         # triggers that can result in a buy or sell
-        self.__side_agnostic_triggers = [
-            StochasticTrigger('stochastic'),
-            RSITrigger('RSI'),
-            EMATrigger('EMA'),
-            SMATrigger('SMA'),
-            VolumeTrigger('volume'),
-            CandlestickColorTrigger('color'),
-            PriceTrigger('price'),
 
-        ]
-        # only triggers that will result in a position buy
-        self.__buy_only_triggers = [
+        self.__plugins = plugins
 
-        ]
-        # only triggers that will result in a position sell
-        self.__sell_only_triggers = [
-            StopLossTrigger('stop_loss'),
-            StopProfitTrigger('stop_profit')
-        ]
+        self.__side_agnostic_triggers = []
+        self.__buy_only_triggers = []
+        self.__sell_only_triggers = []
+        # sort the plugin triggers into their respective list
+        self.__sort_plugin_sides()
 
     def parse_strategy_timestamps(self) -> int:
         """"""
@@ -153,6 +134,15 @@ class TriggerManager:
                 break
         self.__clear_attributes()
         return was_triggered
+
+    def __sort_plugin_sides(self):
+        for plugin in self.__plugins:
+            if plugin.get_trigger().get_side() == Trigger.AGNOSTIC:
+                self.__side_agnostic_triggers.append(plugin.get_trigger())
+            elif plugin.get_trigger().get_side() == Trigger.SELL:
+                self.__sell_only_triggers.append(plugin.get_trigger())
+            else:
+                self.__buy_only_triggers.append(plugin.get_trigger())
 
     def __clear_attributes(self):
         self.__data_object = None

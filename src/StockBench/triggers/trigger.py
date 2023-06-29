@@ -6,8 +6,16 @@ log = logging.getLogger()
 
 
 class Trigger:
-    def __init__(self, strategy_symbol):
+    BUY = 1
+    SELL = 2
+    AGNOSTIC = 3
+
+    def __init__(self, strategy_symbol, side):
         self.strategy_symbol = strategy_symbol
+        self.__side = side
+
+    def get_side(self):
+        return self.__side
 
     @abstractmethod
     def additional_days(self, key) -> int:

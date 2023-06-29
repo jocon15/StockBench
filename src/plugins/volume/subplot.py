@@ -1,10 +1,10 @@
 import numpy as np
-from .subplot import Subplot
+from StockBench.display.subplot import Subplot
 import plotly.graph_objects as fplt
-from .display_constants import *
+from StockBench.display.display_constants import *
 
 
-class Volume(Subplot):
+class VolumeSubplot(Subplot):
     """This class is a subclass of the Subplot class.
 
     A Volume object contains the subplot with volume data.
@@ -12,7 +12,7 @@ class Volume(Subplot):
     Additional traces include:
     """
     def __init__(self):
-        super().__init__('volume', [{"type": "bar"}])
+        super().__init__('volume', [{"type": "bar"}], False)
 
     @staticmethod
     def get_subplot(df):

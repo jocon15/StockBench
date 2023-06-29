@@ -309,6 +309,7 @@ class Simulator:
             # charting_process.start()
 
             # DEBUG: synchronous charting
+            # the plugins list may not be able to be multiprocessed
             charting_API.chart(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode)
 
         return {

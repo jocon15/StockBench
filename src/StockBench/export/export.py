@@ -7,13 +7,13 @@ from StockBench.function_tools.nonce import datetime_nonce
 log = logging.getLogger()
 
 
-class ExportingAPI:
-    """This class defines an exporting object.
+class ExportAPI:
+    """This class defines an export object.
 
-    This exporting object is used as an API for the simulator to export data to excel.
+    This export object is used as an API for the simulator to export data to excel.
 
     The user may want to see the physical data used during the simulation. (This can also help us debug)
-    The exporting feature allows us to export the entire simulation (simulation window) data to an Excel file.
+    The export feature allows us to export the entire simulation (simulation window) data to an Excel file.
     The rendered Excel file looks exactly like the Pandas DataFrame."""
     def __init__(self):
         self.__symbol = None

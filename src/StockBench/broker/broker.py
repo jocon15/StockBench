@@ -10,7 +10,7 @@ log = logging.getLogger()
 DELAY_SECONDS_15MIN = 960
 
 
-class BrokerAPI:
+class Broker:
     """This class defines a BrokerAPI object.
 
     The BrokerAPI object is an API used by the simulator to interact with the broker. The broker is the data supplier.
@@ -157,7 +157,7 @@ if __name__ == '__main__':
     end = int(time.time())
     start = end - 8640000
 
-    api = BrokerAPI()
+    api = Broker()
 
     data = api.get_daily_data(sym, start, end)
 

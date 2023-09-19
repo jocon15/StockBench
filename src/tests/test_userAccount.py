@@ -1,4 +1,4 @@
-from StockBench.accounting.user_account import UserAccount
+from StockBench.account.user_account import UserAccount
 from StockBench.constants import FLOAT_COMPARISON_EPSILON
 import pytest
 

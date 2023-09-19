@@ -8,17 +8,17 @@ from .constants import *
 from time import perf_counter
 from datetime import datetime
 from multiprocessing import Process
-from .broker.broker_api import BrokerAPI
-from .position.position_obj import Position
+from .broker.broker import Broker
+from .position.position import Position
 from .display.singular import SingularDisplay
 from .display.multiple import MultipleDisplay
 from .simulation_data.data_api import DataAPI
-from .accounting.user_account import UserAccount
+from .account.user_account import UserAccount
 from .function_tools.nonce import datetime_nonce
 from .plugin.plugin_manager import PluginManager
-from .exporting.exporting_api import ExportingAPI
+from .export.export import ExportAPI
 from .triggers.trigger_manager import TriggerManager
-from .analysis.analysis_api import SimulationAnalyzer
+from .analysis.analyzer import SimulationAnalyzer
 
 log = logging.getLogger()
 
@@ -52,7 +52,7 @@ class Simulator:
             balance (float): The initial balance for the account.
         """
         self.__account = UserAccount(balance)
-        self.__broker_API = BrokerAPI()
+        self.__broker_API = Broker()
         self.__data_API = None  # gets constructed once we request the data
         self.__trigger_API = None  # gets constructed once we have the strategy
         self.__analyzer_API = None  # gets constructed once we have the completed simulation data
@@ -294,8 +294,8 @@ class Simulator:
             self.__print_results()
 
         if self.__reporting_on:
-            # create an exporting object
-            exporting_API = ExportingAPI()
+            # create an export object
+            exporting_API = ExportAPI()
             # export the data on a separate process
             exporting_process = Process(target=exporting_API.export, args=(chopped_temp_df, self.__symbol))
             exporting_process.start()

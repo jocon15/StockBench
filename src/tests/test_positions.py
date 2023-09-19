@@ -1,4 +1,4 @@
-from StockBench.position.position_obj import Position
+from StockBench.position.position import Position
 import pytest
 
 MACHINE_EPSILON = 0.01

@@ -1,4 +1,4 @@
-from StockBench.analysis.analysis_api import SimulationAnalyzer
+from StockBench.analysis.analyzer import SimulationAnalyzer
 import pytest
 
 

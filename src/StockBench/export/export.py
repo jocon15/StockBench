@@ -7,7 +7,7 @@ from StockBench.function_tools.nonce import datetime_nonce
 log = logging.getLogger()
 
 
-class ExportAPI:
+class Exporter:
     """This class defines an export object.
 
     This export object is used as an API for the simulator to export data to excel.

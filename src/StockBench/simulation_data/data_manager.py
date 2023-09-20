@@ -1,4 +1,4 @@
-class DataAPI:
+class DataManager:
     """"""
     def __init__(self, data):
         # constants (public so outside can use them)

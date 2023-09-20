@@ -15,7 +15,7 @@ class VolumeTrigger(Trigger):
         Args:
             key (any): The key value from the strategy.
         """
-        # note volume does not require additional days
+        # volume does not require additional days
         return 0
 
     def add_to_data(self, key, value, side, data_obj):

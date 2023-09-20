@@ -1,8 +1,8 @@
 import re
 import logging
+import statistics
 from StockBench.constants import *
 from StockBench.triggers.trigger import Trigger
-from StockBench.indicators.indicators import Indicators
 
 log = logging.getLogger()
 
@@ -109,7 +109,60 @@ class EMATrigger(Trigger):
         price_data = data_obj.get_column_data(data_obj.CLOSE)
 
         # calculate the EMA values from the indicator API
-        ema_values = Indicators.EMA(length, price_data)
+        ema_values = EMATrigger.__calculate_ema(length, price_data)
 
         # add the calculated values to the df
         data_obj.add_column(column_title, ema_values)
+
+    @staticmethod
+    def __calculate_ema(length: int, price_data: list) -> list:
+        """Calculates the EMA values for a list of price values.
+
+        Args:
+            length (int): The length of the EMA to calculate.
+            price_data (list): The price data to calculate the EMA from.
+
+        return:
+            list: The list of calculated EMA values.
+        """
+        # calculate k
+        k = 2 / (length + 1)
+
+        # get the initial ema value (uses sma of length days)
+        previous_ema = EMATrigger.__calculate_sma(length, price_data[0:length])[-1]
+
+        ema_values = []
+        for i in range(len(price_data)):
+            if i < length:
+                ema_values.append(None)
+            else:
+                ema = (k * (float(price_data[i]) - previous_ema)) + previous_ema
+                ema_values.append(ema)
+                previous_ema = ema
+        return ema_values
+
+    @staticmethod
+    def __calculate_sma(length: int, price_data: list) -> list:
+        """Calculates the SMA values for a list of price values.
+
+        Args:
+            length (int): The length of the SMA to calculate.
+            price_data (list): The price data to calculate the SMA from.
+
+        return:
+            list: The list of calculated SMA values.
+        """
+        price_values = []
+        sma_values = []
+        all_sma_values = []
+        for element in price_data:
+            if len(price_values) < length:
+                price_values.append(float(element))
+            else:
+                price_values.pop(0)
+                sma_values.pop(0)
+                price_values.append(float(element))
+            avg = round(statistics.mean(price_values), 3)
+            sma_values.append(avg)
+            all_sma_values.append(avg)
+        return all_sma_values

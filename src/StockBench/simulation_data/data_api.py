@@ -1,6 +1,3 @@
-from StockBench.indicators.indicators import Indicators
-
-
 class DataAPI:
     """"""
     def __init__(self, data):
@@ -88,7 +85,15 @@ class DataAPI:
         close_values = self.get_column_data(self.CLOSE)
 
         # calculate the colors
-        color_values = Indicators.candle_color(open_values, close_values)
+        if len(open_values) != len(close_values):
+            raise Exception('Data list lengths must match!')
+
+        color_values = []
+        for i in range(len(open_values)):
+            if float(close_values[i]) > float(open_values[i]):
+                color_values.append('green')
+            else:
+                color_values.append('red')
 
         # add the colors to the df
         self.add_column('color', color_values)

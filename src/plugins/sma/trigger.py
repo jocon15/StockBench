@@ -10,9 +10,9 @@ aspects of the plugin are added later on.
 
 import re
 import logging
+import statistics
 from StockBench.constants import *
 from StockBench.triggers.trigger import Trigger
-from StockBench.indicators.indicators import Indicators
 
 log = logging.getLogger()
 
@@ -119,7 +119,33 @@ class SMATrigger(Trigger):
         price_data = data_obj.get_column_data(data_obj.CLOSE)
 
         # calculate the SMA values from the indicator API
-        sma_values = Indicators.SMA(length, price_data)
+        sma_values = SMATrigger.__calculate_sma(length, price_data)
 
         # add the calculated values to the df
         data_obj.add_column(column_title, sma_values)
+
+    @staticmethod
+    def __calculate_sma(length: int, price_data: list) -> list:
+        """Calculates the SMA values for a list of price values.
+
+        Args:
+            length (int): The length of the SMA to calculate.
+            price_data (list): The price data to calculate the SMA from.
+
+        return:
+            list: The list of calculated SMA values.
+        """
+        price_values = []
+        sma_values = []
+        all_sma_values = []
+        for element in price_data:
+            if len(price_values) < length:
+                price_values.append(float(element))
+            else:
+                price_values.pop(0)
+                sma_values.pop(0)
+                price_values.append(float(element))
+            avg = round(statistics.mean(price_values), 3)
+            sma_values.append(avg)
+            all_sma_values.append(avg)
+        return all_sma_values

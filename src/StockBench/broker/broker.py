@@ -1,19 +1,18 @@
-import logging
 import os
+import logging
 import requests
 import pandas as pd
 from datetime import datetime
+from StockBench.constants import DELAY_SECONDS_15MIN
 from StockBench.function_tools.function_wrappers import performance_timer
 
 log = logging.getLogger()
-
-DELAY_SECONDS_15MIN = 960
 
 
 class Broker:
     """This class defines a BrokerAPI object.
 
-    The BrokerAPI object is an API used by the simulator to interact with the broker. The broker is the data supplier.
+    The Broker object is an API used by the simulator to interact with the broker. The broker is the data supplier.
     The simulator calculates the correct range of data to request. Then, this API handles the physical interaction
     by requesting and formatting the relevant data.
     """
@@ -64,42 +63,6 @@ class Broker:
         pass
 
     @staticmethod
-    @performance_timer
-    def json_to_df(json_data):
-        """Convert JSON to Pandas.DataFrame.
-
-        Args:
-            json_data (JSON): The JSON data to convert.
-
-        return
-            Pandas.DataFrame: The converted data as a DateFrame
-        """
-        log.debug('Converting JSON to DF...')
-        _time = []
-        _open = []
-        _high = []
-        _low = []
-        _close = []
-        _volume = []
-        for data_point in json_data:
-            _time.append(str(data_point['t']))
-            _open.append(float(data_point['o']))
-            _high.append(float(data_point['h']))
-            _low.append(float(data_point['l']))
-            _close.append(float(data_point['c']))
-
-            _volume.append(float(data_point['v']))
-        df = pd.DataFrame()
-        df.insert(0, 'Date', _time)
-        df.insert(1, 'Open', _open)
-        df.insert(2, 'High', _high)
-        df.insert(3, 'Low', _low)
-        df.insert(4, 'Close', _close)
-        df.insert(5, 'volume', _volume)
-        log.debug('Conversion complete')
-        return df
-
-    @staticmethod
     def __unix_to_utc_date(start_date_unix: int, end_date_unix: int) -> tuple:
         """Convert 2 dates from unix to UTC-date.
 
@@ -141,25 +104,49 @@ class Broker:
         """
         log.debug('Attempting request...')
         try:
-            response = requests.get(uri, headers=self.__HEADERS, timeout=self.__timeout).json()
+            response = requests.get(uri, headers=self.__HEADERS, timeout=self.__timeout)
+            if response.status_code != 200:
+                log.critical('Request unsuccessful!')
+            response_data = response.json()
             log.debug('Request made successfully')
-            return self.json_to_df(response['bars'][self.__symbol])
+            return self.__json_to_df(response_data['bars'][self.__symbol])
         except requests.exceptions.ConnectionError:
             # do something if the request fails
             log.critical('Connection error during request')
             print('Connection error trying to connect to brokerage servers!')
 
+    @staticmethod
+    @performance_timer
+    def __json_to_df(json_data):
+        """Convert JSON to Pandas.DataFrame.
 
-if __name__ == '__main__':
-    import time
+        Args:
+            json_data (JSON): The JSON data to convert.
 
-    sym = 'MSFT'
-    end = int(time.time())
-    start = end - 8640000
+        return
+            Pandas.DataFrame: The converted data as a DateFrame
+        """
+        log.debug('Converting JSON to DF...')
+        time_values = []
+        open_values = []
+        high_values = []
+        low_values = []
+        close_values = []
+        volume_values = []
+        for data_point in json_data:
+            time_values.append(str(data_point['t']))
+            open_values.append(float(data_point['o']))
+            high_values.append(float(data_point['h']))
+            low_values.append(float(data_point['l']))
+            close_values.append(float(data_point['c']))
 
-    api = Broker()
-
-    data = api.get_daily_data(sym, start, end)
-
-    # print(json.dumps(data, indent=4))
-    print(len(data))
+            volume_values.append(float(data_point['v']))
+        df = pd.DataFrame()
+        df.insert(0, 'Date', time_values)  # noqa
+        df.insert(1, 'Open', open_values)  # noqa
+        df.insert(2, 'High', high_values)  # noqa
+        df.insert(3, 'Low', low_values)  # noqa
+        df.insert(4, 'Close', close_values)  # noqa
+        df.insert(5, 'volume', volume_values)  # noqa
+        log.debug('Conversion complete')
+        return df

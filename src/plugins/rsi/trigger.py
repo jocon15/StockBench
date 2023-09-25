@@ -46,7 +46,6 @@ class RSITrigger(Trigger):
             # add the RSI data to the df
             self.__add_rsi(DEFAULT_RSI_LENGTH, data_obj)
         # ======== value based (rsi limit)=========
-        # _value = self.__strategy['buy'][key]
         nums = re.findall(r'\d+', value)
         if side == 'buy':
             if len(nums) == 1:

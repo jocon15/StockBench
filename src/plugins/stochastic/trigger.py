@@ -46,7 +46,6 @@ class StochasticTrigger(Trigger):
             # add the RSI data to the df
             self.__add_stochastic_oscillator(DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH, data_obj)
         # ======== value based (rsi limit)=========
-        # _value = self.__strategy['buy'][key]
         nums = re.findall(r'\d+', value)
         if side == 'buy':
             if len(nums) == 1:

@@ -66,10 +66,10 @@ class SMATrigger(Trigger):
         log.debug('Checking SMA triggers...')
 
         # find the SMA length, else exit
-        _nums = re.findall(r'\d+', key)
+        nums = re.findall(r'\d+', key)
         # since we have no default SMA, there must be a value provided, else exit
-        if len(_nums) == 1:
-            _num = int(_nums[0])
+        if len(nums) == 1:
+            _num = int(nums[0])
 
             # get the sma value for the current day
             title = f'SMA{_num}'

@@ -47,14 +47,14 @@ class RSITrigger(Trigger):
             self.__add_rsi(DEFAULT_RSI_LENGTH, data_obj)
         # ======== value based (rsi limit)=========
         # _value = self.__strategy['buy'][key]
-        _nums = re.findall(r'\d+', value)
+        nums = re.findall(r'\d+', value)
         if side == 'buy':
-            if len(_nums) == 1:
-                _trigger = float(_nums[0])
+            if len(nums) == 1:
+                _trigger = float(nums[0])
                 self.__add_lower_rsi(_trigger, data_obj)
         else:
-            if len(_nums) == 1:
-                _trigger = float(_nums[0])
+            if len(nums) == 1:
+                _trigger = float(nums[0])
                 self.__add_upper_rsi(_trigger, data_obj)
 
     def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:

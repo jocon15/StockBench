@@ -56,10 +56,10 @@ class EMATrigger(Trigger):
         log.debug('Checking EMA triggers...')
 
         # find the EMA length, else exit
-        _nums = re.findall(r'\d+', key)
+        nums = re.findall(r'\d+', key)
         # since we have no default EMA, there must be a value provided, else exit
-        if len(_nums) == 1:
-            _num = int(_nums[0])
+        if len(nums) == 1:
+            _num = int(nums[0])
 
             # get the ema value for the current day
             title = f'EMA{_num}'

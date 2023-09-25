@@ -109,7 +109,7 @@ class SMATrigger(Trigger):
         # get a list of close price values
         column_title = f'SMA{length}'
 
-        # if we already have SMA values in the df, we don't need to add them again
+        # if SMA values ar already in the df, we don't need to add them again
         for col_name in data_obj.get_column_names():
             if column_title in col_name:
                 return

@@ -168,10 +168,10 @@ class StochasticTrigger(Trigger):
         return:
             list: The list of calculated RSI values.
         """
-        past_length_days_high = list()
-        past_length_days_low = list()
-        past_length_days_close = list()
-        stochastic_oscillator = list()
+        past_length_days_high = []
+        past_length_days_low = []
+        past_length_days_close = []
+        stochastic_oscillator = []
         for i in range(len(close_data)):
             if i < length:
                 past_length_days_high.append(float(high_data[i]))

@@ -167,7 +167,7 @@ class RSITrigger(Trigger):
         gain = []
         loss = []
         rsi = []
-        all_rsi = list()  # archive to return
+        all_rsi = []  # archive to return
         for i in range(1, len(price_data)):
             dif = float(price_data[i]) - float(price_data[i - 1])
             if dif > 0:

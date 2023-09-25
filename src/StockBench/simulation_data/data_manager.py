@@ -32,7 +32,7 @@ class DataManager:
 
     def get_column_names(self) -> list:
         """Get the names of the columns in the DataFrame."""
-        col_names = list()
+        col_names = []
         for (col_name, col_vals) in self.__df.items():
             col_names.append(col_name)
         return col_names
@@ -52,7 +52,7 @@ class DataManager:
 
     def get_multiple_data_points(self, name: str, current_day_index: int, num_points: int):
         """Gets multiple data points from the DataFrame"""
-        return_values = list()
+        return_values = []
         for i in range(num_points):
             return_values.append(self.get_data_point(name, current_day_index - i))
 

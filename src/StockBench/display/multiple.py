@@ -65,7 +65,7 @@ class MultipleDisplay:
 
     def __profit_loss_bar(self):
         color_df = pd.DataFrame()
-        bar_colors = list()
+        bar_colors = []
         for value in self.__get_total_pl_per_symbol():
             if value > 0:
                 bar_colors.append(BULL_GREEN)

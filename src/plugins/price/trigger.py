@@ -45,17 +45,15 @@ class PriceTrigger(Trigger):
         """
         log.debug('Checking price triggers...')
 
+        # get the price data point
         price = data_obj.get_data_point(data_obj.CLOSE, current_day_index)
 
-        # check that the value from {key: value} has a number in it
-        # this is the trigger value
         # check that the value from {key: value} has a number in it
         try:
             trigger_value = Trigger.find_numeric_in_str(value)
             operator = Trigger.find_operator_in_str(value)
         except ValueError:
-            # an exception occurred trying to parse trigger value or operator
-            # return false (skip trigger)
+            # an exception occurred trying to parse trigger value or operator - skip trigger
             return False
 
         # trigger checks

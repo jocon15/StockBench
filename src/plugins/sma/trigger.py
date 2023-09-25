@@ -67,7 +67,7 @@ class SMATrigger(Trigger):
 
         # find the SMA length, else exit
         nums = re.findall(r'\d+', key)
-        # since we have no default SMA, there must be a value provided, else exit
+        # since there is no default SMA, there must be a value provided, else exit
         if len(nums) == 1:
             _num = int(nums[0])
 
@@ -84,8 +84,7 @@ class SMATrigger(Trigger):
                     trigger_value = Trigger.find_numeric_in_str(value)
                     operator = Trigger.find_operator_in_str(value)
                 except ValueError:
-                    # an exception occurred trying to parse trigger value or operator
-                    # return false (skip trigger)
+                    # an exception occurred trying to parse trigger value or operator - skip trigger
                     return False
 
             # trigger checks

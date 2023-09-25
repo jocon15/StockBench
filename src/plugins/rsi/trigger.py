@@ -71,9 +71,6 @@ class RSITrigger(Trigger):
         """
         log.debug('Checking stochastic oscillator triggers...')
         # get the RSI value for current day
-        # old way where we calculate it on the spot (deprecated)
-        # rsi = self.__indicators_API.RSI(_num, current_day_index)
-        # new way where we just pull the pre-calculated value from the col in the df
         rsi = data_obj.get_data_point('RSI', current_day_index)
 
         if CURRENT_PRICE_SYMBOL in value:
@@ -85,8 +82,7 @@ class RSITrigger(Trigger):
                 trigger_value = Trigger.find_numeric_in_str(value)
                 operator = Trigger.find_operator_in_str(value)
             except ValueError:
-                # an exception occurred trying to parse trigger value or operator
-                # return false (skip trigger)
+                # an exception occurred trying to parse trigger value or operator - skip trigger
                 return False
 
         # trigger checks

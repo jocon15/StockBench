@@ -54,8 +54,7 @@ class VolumeTrigger(Trigger):
                 trigger_value = Trigger.find_numeric_in_str(value)
                 operator = Trigger.find_operator_in_str(value)
             except ValueError:
-                # an exception occurred trying to parse trigger value or operator
-                # return false (skip trigger)
+                # an exception occurred trying to parse trigger value or operator - skip trigger
                 return False
 
         # trigger checks

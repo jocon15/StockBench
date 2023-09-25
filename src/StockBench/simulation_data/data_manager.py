@@ -1,7 +1,4 @@
-from StockBench.indicators.indicators import Indicators
-
-
-class DataAPI:
+class DataManager:
     """"""
     def __init__(self, data):
         # constants (public so outside can use them)
@@ -35,7 +32,7 @@ class DataAPI:
 
     def get_column_names(self) -> list:
         """Get the names of the columns in the DataFrame."""
-        col_names = list()
+        col_names = []
         for (col_name, col_vals) in self.__df.items():
             col_names.append(col_name)
         return col_names
@@ -55,7 +52,7 @@ class DataAPI:
 
     def get_multiple_data_points(self, name: str, current_day_index: int, num_points: int):
         """Gets multiple data points from the DataFrame"""
-        return_values = list()
+        return_values = []
         for i in range(num_points):
             return_values.append(self.get_data_point(name, current_day_index - i))
 
@@ -88,7 +85,15 @@ class DataAPI:
         close_values = self.get_column_data(self.CLOSE)
 
         # calculate the colors
-        color_values = Indicators.candle_color(open_values, close_values)
+        if len(open_values) != len(close_values):
+            raise Exception('Data list lengths must match!')
+
+        color_values = []
+        for i in range(len(open_values)):
+            if float(close_values[i]) > float(open_values[i]):
+                color_values.append('green')
+            else:
+                color_values.append('red')
 
         # add the colors to the df
         self.add_column('color', color_values)

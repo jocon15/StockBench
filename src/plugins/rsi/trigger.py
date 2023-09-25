@@ -1,8 +1,8 @@
 import re
 import logging
+import statistics
 from StockBench.constants import *
 from StockBench.triggers.trigger import Trigger
-from StockBench.indicators.indicators import Indicators
 
 log = logging.getLogger()
 
@@ -46,15 +46,14 @@ class RSITrigger(Trigger):
             # add the RSI data to the df
             self.__add_rsi(DEFAULT_RSI_LENGTH, data_obj)
         # ======== value based (rsi limit)=========
-        # _value = self.__strategy['buy'][key]
-        _nums = re.findall(r'\d+', value)
+        nums = re.findall(r'\d+', value)
         if side == 'buy':
-            if len(_nums) == 1:
-                _trigger = float(_nums[0])
+            if len(nums) == 1:
+                _trigger = float(nums[0])
                 self.__add_lower_rsi(_trigger, data_obj)
         else:
-            if len(_nums) == 1:
-                _trigger = float(_nums[0])
+            if len(nums) == 1:
+                _trigger = float(nums[0])
                 self.__add_upper_rsi(_trigger, data_obj)
 
     def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
@@ -72,9 +71,6 @@ class RSITrigger(Trigger):
         """
         log.debug('Checking stochastic oscillator triggers...')
         # get the RSI value for current day
-        # old way where we calculate it on the spot (deprecated)
-        # rsi = self.__indicators_API.RSI(_num, current_day_index)
-        # new way where we just pull the pre-calculated value from the col in the df
         rsi = data_obj.get_data_point('RSI', current_day_index)
 
         if CURRENT_PRICE_SYMBOL in value:
@@ -86,8 +82,7 @@ class RSITrigger(Trigger):
                 trigger_value = Trigger.find_numeric_in_str(value)
                 operator = Trigger.find_operator_in_str(value)
             except ValueError:
-                # an exception occurred trying to parse trigger value or operator
-                # return false (skip trigger)
+                # an exception occurred trying to parse trigger value or operator - skip trigger
                 return False
 
         # trigger checks
@@ -114,7 +109,7 @@ class RSITrigger(Trigger):
         price_data = data_obj.get_column_data(data_obj.CLOSE)
 
         # calculate the RSI values from the indicator API
-        rsi_values = Indicators.RSI(length, price_data)
+        rsi_values = RSITrigger.__calculate_rsi(length, price_data)
 
         # add the calculated values to the df
         data_obj.add_column('RSI', rsi_values)
@@ -156,3 +151,61 @@ class RSITrigger(Trigger):
 
         # add the list to the data
         data_obj.add_column('RSI_lower', list_values)
+
+    @staticmethod
+    def __calculate_rsi(length: int, price_data: list) -> list:
+        """Calculate the RSI values for a list of price values.
+
+        Args:
+            length (int): The length of the RSI to calculate.
+            price_data (list): The price data to calculate the RSI from.
+
+        return:
+            list: The list of calculated RSI values.
+        """
+        first_day_value = 0
+        gain = []
+        loss = []
+        rsi = []
+        all_rsi = []  # archive to return
+        for i in range(1, len(price_data)):
+            dif = float(price_data[i]) - float(price_data[i - 1])
+            if dif > 0:
+                if len(gain) == length:
+                    gain.pop(0)
+                    gain.append(dif)
+                else:
+                    gain.append(dif)
+            elif dif < 0:
+                if len(loss) == length:
+                    loss.pop(0)
+                    loss.append(abs(dif))
+                else:
+                    loss.append(abs(dif))
+            if len(gain) > 0 and len(loss) > 0:
+                avg_gain = statistics.mean(gain)
+                avg_loss = statistics.mean(loss)
+                rs = avg_gain / avg_loss
+                rs_index = round(100 - (100 / (1 + rs)), 3)
+                if len(rsi) == 6:
+                    rsi.pop(0)
+                    rsi.append(rs_index)
+                else:
+                    rsi.append(rs_index)
+                if i == 1:
+                    first_day_value = rs_index
+                all_rsi.append(rs_index)
+
+        # ensure that the data returned is the same size
+        # **
+        # Note: Given that the simulation has additional days,
+        # the days that these values are assigned to will not be seen
+        # by the simulation
+        # **
+        if len(all_rsi) != len(price_data):
+            dif = len(price_data) - len(all_rsi)
+            for _ in range(dif):
+                # append initial values to the front of the list
+                all_rsi.insert(0, first_day_value)
+
+        return all_rsi

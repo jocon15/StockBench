@@ -48,8 +48,8 @@ class CandlestickColorTrigger(Trigger):
         num_keys = len(value)
 
         # these will both need to be in ascending order [today, yesterday...]
-        trigger_colors = list()
-        actual_colors = list()
+        trigger_colors = []
+        actual_colors = []
 
         # build the trigger list
         for _key in sorted(value.keys()):

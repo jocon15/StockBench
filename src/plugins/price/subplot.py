@@ -43,7 +43,7 @@ class OHLCSubplot(Subplot):
         return:
             list: A list of traces to add to the subplot defined in this class.
         """
-        traces = list()
+        traces = []
         for (column_name, column_data) in df.items():
             if column_name == 'Buy':
                 traces.append(fplt.Scatter(

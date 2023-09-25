@@ -2,7 +2,6 @@ import re
 import logging
 from StockBench.constants import *
 from StockBench.triggers.trigger import Trigger
-from StockBench.indicators.indicators import Indicators
 
 log = logging.getLogger()
 
@@ -47,7 +46,6 @@ class StochasticTrigger(Trigger):
             # add the RSI data to the df
             self.__add_stochastic_oscillator(DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH, data_obj)
         # ======== value based (rsi limit)=========
-        # _value = self.__strategy['buy'][key]
         nums = re.findall(r'\d+', value)
         if side == 'buy':
             if len(nums) == 1:
@@ -85,8 +83,7 @@ class StochasticTrigger(Trigger):
                 trigger_value = Trigger.find_numeric_in_str(value)
                 operator = Trigger.find_operator_in_str(value)
             except ValueError:
-                # an exception occurred trying to parse trigger value or operator
-                # return false (skip trigger)
+                # an exception occurred trying to parse trigger value or operator - skip trigger
                 return False
 
         # trigger checks
@@ -115,7 +112,7 @@ class StochasticTrigger(Trigger):
         close_data = data_obj.get_column_data(data_obj.CLOSE)
 
         # calculate SO
-        stochastic_values = Indicators.stochastic_oscillator(length, high_data, low_data, close_data)
+        stochastic_values = StochasticTrigger.__stochastic_oscillator(length, high_data, low_data, close_data)
 
         # add the calculated values to the df
         data_obj.add_column('stochastic_oscillator', stochastic_values)
@@ -157,3 +154,38 @@ class StochasticTrigger(Trigger):
 
         # add the list to the data
         data_obj.add_column('stochastic_lower', list_values)
+
+    @staticmethod
+    def __stochastic_oscillator(length: int, high_data: list, low_data: list, close_data: list) -> list:
+        """Calculate the RSI values for a list of price values.
+
+        Args:
+            length (int): The length of the stochastic oscillator to calculate.
+            high_data (list): The high price data to calculate the stochastic oscillator from.
+            low_data (list): The high price data to calculate the stochastic oscillator from.
+            close_data (list): The close price data to calculate the stochastic oscillator from.
+
+        return:
+            list: The list of calculated RSI values.
+        """
+        past_length_days_high = []
+        past_length_days_low = []
+        past_length_days_close = []
+        stochastic_oscillator = []
+        for i in range(len(close_data)):
+            if i < length:
+                past_length_days_high.append(float(high_data[i]))
+                past_length_days_low.append(float(low_data[i]))
+                past_length_days_close.append(float(close_data[i]))
+            else:
+                past_length_days_high.pop(0)
+                past_length_days_low.pop(0)
+                past_length_days_close.pop(0)
+                past_length_days_high.append(float(high_data[i]))
+                past_length_days_low.append(float(low_data[i]))
+                past_length_days_close.append(float(close_data[i]))
+
+            stochastic_oscillator.append(((float(close_data[i]) - min(past_length_days_low)) /
+                                          (max(past_length_days_high) - min(past_length_days_low))) * 100.0)
+
+        return stochastic_oscillator

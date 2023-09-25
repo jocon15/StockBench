@@ -10,9 +10,9 @@ aspects of the plugin are added later on.
 
 import re
 import logging
+import statistics
 from StockBench.constants import *
 from StockBench.triggers.trigger import Trigger
-from StockBench.indicators.indicators import Indicators
 
 log = logging.getLogger()
 
@@ -66,10 +66,10 @@ class SMATrigger(Trigger):
         log.debug('Checking SMA triggers...')
 
         # find the SMA length, else exit
-        _nums = re.findall(r'\d+', key)
-        # since we have no default SMA, there must be a value provided, else exit
-        if len(_nums) == 1:
-            _num = int(_nums[0])
+        nums = re.findall(r'\d+', key)
+        # since there is no default SMA, there must be a value provided, else exit
+        if len(nums) == 1:
+            _num = int(nums[0])
 
             # get the sma value for the current day
             title = f'SMA{_num}'
@@ -84,8 +84,7 @@ class SMATrigger(Trigger):
                     trigger_value = Trigger.find_numeric_in_str(value)
                     operator = Trigger.find_operator_in_str(value)
                 except ValueError:
-                    # an exception occurred trying to parse trigger value or operator
-                    # return false (skip trigger)
+                    # an exception occurred trying to parse trigger value or operator - skip trigger
                     return False
 
             # trigger checks
@@ -110,7 +109,7 @@ class SMATrigger(Trigger):
         # get a list of close price values
         column_title = f'SMA{length}'
 
-        # if we already have SMA values in the df, we don't need to add them again
+        # if SMA values ar already in the df, we don't need to add them again
         for col_name in data_obj.get_column_names():
             if column_title in col_name:
                 return
@@ -119,7 +118,33 @@ class SMATrigger(Trigger):
         price_data = data_obj.get_column_data(data_obj.CLOSE)
 
         # calculate the SMA values from the indicator API
-        sma_values = Indicators.SMA(length, price_data)
+        sma_values = SMATrigger.__calculate_sma(length, price_data)
 
         # add the calculated values to the df
         data_obj.add_column(column_title, sma_values)
+
+    @staticmethod
+    def __calculate_sma(length: int, price_data: list) -> list:
+        """Calculates the SMA values for a list of price values.
+
+        Args:
+            length (int): The length of the SMA to calculate.
+            price_data (list): The price data to calculate the SMA from.
+
+        return:
+            list: The list of calculated SMA values.
+        """
+        price_values = []
+        sma_values = []
+        all_sma_values = []
+        for element in price_data:
+            if len(price_values) < length:
+                price_values.append(float(element))
+            else:
+                price_values.pop(0)
+                sma_values.pop(0)
+                price_values.append(float(element))
+            avg = round(statistics.mean(price_values), 3)
+            sma_values.append(avg)
+            all_sma_values.append(avg)
+        return all_sma_values

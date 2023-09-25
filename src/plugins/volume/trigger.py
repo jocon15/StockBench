@@ -1,7 +1,6 @@
 import logging
 from StockBench.constants import *
 from StockBench.triggers.trigger import Trigger
-from StockBench.indicators.indicators import Indicators
 
 log = logging.getLogger()
 
@@ -16,7 +15,7 @@ class VolumeTrigger(Trigger):
         Args:
             key (any): The key value from the strategy.
         """
-        # note volume does not require additional days
+        # volume does not require additional days
         return 0
 
     def add_to_data(self, key, value, side, data_obj):
@@ -55,8 +54,7 @@ class VolumeTrigger(Trigger):
                 trigger_value = Trigger.find_numeric_in_str(value)
                 operator = Trigger.find_operator_in_str(value)
             except ValueError:
-                # an exception occurred trying to parse trigger value or operator
-                # return false (skip trigger)
+                # an exception occurred trying to parse trigger value or operator - skip trigger
                 return False
 
         # trigger checks

@@ -1,4 +1,4 @@
-from StockBench.simulation_data.data_api import DataAPI
+from StockBench.simulation_data.data_manager import DataManager
 import pytest
 import pandas as pd
 

@@ -43,7 +43,7 @@ class RSISubplot(Subplot):
             list: A list of traces to add to the subplot defined in this class.
         """
         # builds and returns a list of traces to add to the subplot
-        traces = list()
+        traces = []
         for (column_name, column_data) in df.items():
             if column_name == 'RSI_upper':
                 traces.append(fplt.Scatter(

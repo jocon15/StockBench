@@ -37,7 +37,7 @@ class TriggerManager:
         additional_days = 0
 
         # build a list of sub keys from the buy and sell sections
-        keys = list()
+        keys = []
         if 'buy' in self.__strategy.keys():
             for key in self.__strategy['buy'].keys():
                 keys.append(key)

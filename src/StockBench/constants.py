@@ -14,6 +14,7 @@ DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH = 14
 
 # ========== Strategy Constants ==========
 CURRENT_PRICE_SYMBOL = '$price'
+SLOPE_SYMBOL = '$slope'
 
 
 # ========== System Constants ============

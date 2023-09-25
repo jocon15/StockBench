@@ -59,10 +59,10 @@ class EMATrigger(Trigger):
         nums = re.findall(r'\d+', key)
         # since we have no default EMA, there must be a value provided, else exit
         if len(nums) == 1:
-            _num = int(nums[0])
+            num = int(nums[0])
 
             # get the ema value for the current day
-            title = f'EMA{_num}'
+            title = f'EMA{num}'
             ema = data_obj.get_data_point(title, current_day_index)
 
             if CURRENT_PRICE_SYMBOL in value:

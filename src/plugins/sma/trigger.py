@@ -69,11 +69,12 @@ class SMATrigger(Trigger):
         nums = re.findall(r'\d+', key)
         # since there is no default SMA, there must be a value provided, else exit
         if len(nums) == 1:
-            _num = int(nums[0])
+            # ensure that num is the correct type
+            indicator_length = int(nums[0])
 
             # get the sma value for the current day
-            title = f'SMA{_num}'
-            sma = data_obj.get_data_point(title, current_day_index)
+            title = f'SMA{indicator_length}'
+            sma = float(data_obj.get_data_point(title, current_day_index))
 
             if CURRENT_PRICE_SYMBOL in value:
                 trigger_value = float(data_obj.get_data_point(data_obj.CLOSE, current_day_index))
@@ -93,6 +94,42 @@ class SMATrigger(Trigger):
             log.debug('All SMA triggers checked')
 
             return result
+        elif len(nums) == 2:
+            # likely that the $slope indicator is being used
+            if SLOPE_SYMBOL in key:
+                # ensure that num is the correct type
+                indicator_length = int(nums[0])
+
+                # get the sma value for the current day
+                title = f'SMA{indicator_length}'
+
+                # get the length of the slope window
+                slope_window_length = int(nums[1])
+
+                # get data for slope calculation
+                y2 = float(data_obj.get_data_point(title, current_day_index))
+                y1 = float(data_obj.get_data_point(title, current_day_index - slope_window_length))
+
+                # calculate slope
+                slope = (y2 - y1) / float(slope_window_length)
+
+                # check that the value from {key: value} has a number in it
+                try:
+                    trigger_value = Trigger.find_numeric_in_str(value)
+                    operator = Trigger.find_operator_in_str(value)
+                except ValueError:
+                    # an exception occurred trying to parse trigger value or operator - skip trigger
+                    return False
+
+                # trigger checks
+                result = Trigger.basic_triggers_check(slope, operator, trigger_value)
+
+                log.debug('All SMA triggers checked')
+
+                return result
+            else:
+                # an exception occurred trying to parse trigger value or operator - skip trigger
+                return False
 
         log.warning(f'Warning: {key} is in incorrect format and will be ignored')
         print(f'Warning: {key} is in incorrect format and will be ignored')

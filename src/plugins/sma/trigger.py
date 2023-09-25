@@ -111,7 +111,7 @@ class SMATrigger(Trigger):
                 y1 = float(data_obj.get_data_point(title, current_day_index - slope_window_length))
 
                 # calculate slope
-                slope = (y2 - y1) / float(slope_window_length)
+                slope = round((y2 - y1) / float(slope_window_length), 4)
 
                 # check that the value from {key: value} has a number in it
                 try:

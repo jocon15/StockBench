@@ -7,6 +7,7 @@ strategy = {
     'start': int(time.time()) - SECONDS_5_YEAR,
     'end': int(time.time()),
     'buy': {
+        'SMA20$slope4': '<10',
         'RSI': '<30',
         'stochastic': '<20',
         'EMA20': '<30',

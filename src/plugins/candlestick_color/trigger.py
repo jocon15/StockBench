@@ -52,16 +52,12 @@ class CandlestickColorTrigger(Trigger):
         actual_colors = []
 
         # build the trigger list
-        for _key in sorted(value.keys()):
-            candle_color = value[_key]
-            if candle_color == 'green':
-                trigger_colors.append(1)
-            else:
-                trigger_colors.append(0)
+        for value_key in sorted(value.keys()):
+            trigger_colors.append(value[value_key])
 
         # build the actual list
         for i in range(num_keys):
-            actual_colors.append(data_obj.get_data_point(data_obj.COLOR, current_day_index))
+            actual_colors.append(data_obj.get_data_point(data_obj.COLOR, current_day_index-i))
 
         # check for trigger
         if actual_colors == trigger_colors:

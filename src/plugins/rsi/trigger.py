@@ -69,7 +69,7 @@ class RSITrigger(Trigger):
         return:
             bool: True if the trigger was hit.
         """
-        log.debug('Checking stochastic oscillator triggers...')
+        log.debug('Checking RSI triggers...')
         # get the RSI value for current day
         rsi = data_obj.get_data_point('RSI', current_day_index)
 

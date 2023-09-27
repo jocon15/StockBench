@@ -45,10 +45,10 @@ class SMATrigger(Trigger):
             data_obj (any): The data object.
         """
         nums = re.findall(r'\d+', key)
-        if len(nums) == 1:
-            num = int(nums[0])
-            # add the SMA data to the df
-            self.__add_sma(num, data_obj)
+        # element 0 will be the indicator length
+        num = int(nums[0])
+        # add the SMA data to the df
+        self.__add_sma(num, data_obj)
 
     def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
         """Trigger logic for SMA.

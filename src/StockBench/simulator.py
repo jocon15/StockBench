@@ -275,7 +275,7 @@ class Simulator:
         self.__analyzer = SimulationAnalyzer(self.__position_archive)
 
         end_time = perf_counter()
-        self.__elapsed_time = end_time - start_time
+        self.__elapsed_time = round(end_time - start_time, 4)
 
         log.info('====== Simulation Results ======')
         log.info(f'Elapsed time  : {self.__elapsed_time} seconds')

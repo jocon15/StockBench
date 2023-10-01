@@ -7,6 +7,7 @@ strategy = {
     'start': int(time.time()) - SECONDS_5_YEAR,
     'end': int(time.time()),
     'buy': {
+        'SMA20$slope4': '<10',
         'RSI': '<30',
         'stochastic': '<20',
         'EMA20': '<30',
@@ -38,7 +39,7 @@ def main():
     # stock_sim.enable_logging()
     # stock_sim.enable_developer_logging(1)
 
-    # stock_sim.enable_reporting()
+    stock_sim.enable_reporting()
 
     stock_sim.load_strategy(strategy)
 

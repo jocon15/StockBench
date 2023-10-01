@@ -163,7 +163,7 @@ class TriggerManager:
             # concatenate the 2 lists
             triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
 
-        if key == 'and':
+        if 'and' in key:
             # ===== AND Triggers =====
 
             for inner_key in self.__strategy[side][key].keys():

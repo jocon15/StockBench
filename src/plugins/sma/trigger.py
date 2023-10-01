@@ -27,15 +27,14 @@ class SMATrigger(Trigger):
         Args:
             key (any): The key value from the strategy.
         """
-        additional_days = 0
+        highest_num = 0
         nums = re.findall(r'\d+', key)
-        if len(nums) == 1:
-            num = int(nums[0])
-            if additional_days < num:
-                additional_days = num
-        return additional_days
+        for num in nums:
+            if num > highest_num:
+                highest_num = num
+        return highest_num
 
-    def add_to_data(self, key, side, value, data_obj):
+    def add_to_data(self, key, value, side, data_obj):
         """Add data to the dataframe.
 
         Args:

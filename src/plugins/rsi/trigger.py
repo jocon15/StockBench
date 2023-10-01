@@ -17,15 +17,15 @@ class RSITrigger(Trigger):
         Args:
             key (any): The key value from the strategy.
         """
-        additional_days = 0
+        highest_num = 0
         nums = re.findall(r'\d+', key)
-        if len(nums) == 1:
-            num = int(nums[0])
-            if additional_days < num:
-                additional_days = num
+        if len(nums) > 0:
+            for num in nums:
+                if num > highest_num:
+                    highest_num = num
+            return highest_num
         else:
-            additional_days = DEFAULT_RSI_LENGTH
-        return additional_days
+            return DEFAULT_RSI_LENGTH
 
     def add_to_data(self, key, value, side, data_obj):
         """Add data to the dataframe.
@@ -70,27 +70,67 @@ class RSITrigger(Trigger):
             bool: True if the trigger was hit.
         """
         log.debug('Checking RSI triggers...')
-        # get the RSI value for current day
-        rsi = data_obj.get_data_point('RSI', current_day_index)
 
-        if CURRENT_PRICE_SYMBOL in value:
-            trigger_value = float(data_obj.get_data_point(data_obj.CLOSE, current_day_index))
-            operator = value.replace(CURRENT_PRICE_SYMBOL, '')
-        else:
-            # check that the value from {key: value} has a number in it
-            try:
-                trigger_value = Trigger.find_numeric_in_str(value)
-                operator = Trigger.find_operator_in_str(value)
-            except ValueError:
+        # find nums for potential slope usage
+        nums = re.findall(r'\d+', key)
+
+        if len(nums) == 1:
+            # get the RSI value for the current day
+            rsi = data_obj.get_data_point('RSI', current_day_index)
+
+            if CURRENT_PRICE_SYMBOL in value:
+                trigger_value = float(data_obj.get_data_point(data_obj.CLOSE, current_day_index))
+                operator = value.replace(CURRENT_PRICE_SYMBOL, '')
+            else:
+                # check that the value from {key: value} has a number in it
+                try:
+                    trigger_value = Trigger.find_numeric_in_str(value)
+                    operator = Trigger.find_operator_in_str(value)
+                except ValueError:
+                    # an exception occurred trying to parse trigger value or operator - skip trigger
+                    return False
+
+            # trigger checks
+            result = Trigger.basic_triggers_check(rsi, operator, trigger_value)
+
+            log.debug('All stochastic triggers checked')
+
+            return result
+        elif len(nums) == 2:
+            # likely that the $slope indicator is being used
+            if SLOPE_SYMBOL in key:
+
+                # get the length of the slope window
+                slope_window_length = int(nums[1])
+
+                # get data for slope calculation
+                y2 = float(data_obj.get_data_point('RSI', current_day_index))
+                y1 = float(data_obj.get_data_point('RSI', current_day_index - slope_window_length))
+
+                # calculate slope
+                slope = round((y2 - y1) / float(slope_window_length), 4)
+
+                # check that the value from {key: value} has a number in it
+                try:
+                    trigger_value = Trigger.find_numeric_in_str(value)
+                    operator = Trigger.find_operator_in_str(value)
+                except ValueError:
+                    # an exception occurred trying to parse trigger value or operator - skip trigger
+                    return False
+
+                # trigger checks
+                result = Trigger.basic_triggers_check(slope, operator, trigger_value)
+
+                log.debug('All RSI triggers checked')
+
+                return result
+            else:
                 # an exception occurred trying to parse trigger value or operator - skip trigger
                 return False
 
-        # trigger checks
-        result = Trigger.basic_triggers_check(rsi, operator, trigger_value)
-
-        log.debug('All RSI triggers checked')
-
-        return result
+        log.warning(f'Warning: {key} is in incorrect format and will be ignored')
+        print(f'Warning: {key} is in incorrect format and will be ignored')
+        return False
 
     @staticmethod
     def __add_rsi(length, data_obj):

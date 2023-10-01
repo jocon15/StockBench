@@ -5,7 +5,7 @@ class SimulationAnalyzer:
     def __init__(self, positions: list):
         self.__positions = positions
         self.__sum_cache = None
-        self._effectiveness_cache = None
+        self.__effectiveness_cache = None
         self.__average_profit_loss_cache = None
 
     def effectiveness(self) -> float:
@@ -15,7 +15,7 @@ class SimulationAnalyzer:
             float: The effectiveness percentage.
         """
         # check for cached effectiveness value
-        if not self._effectiveness_cache:
+        if not self.__effectiveness_cache:
             profitable_trade_count = 0
             for _position in self.__positions:
                 if _position.lifetime_profit_loss() >= 0:
@@ -27,8 +27,8 @@ class SimulationAnalyzer:
                 effectiveness = 0.0
 
             # update the cached value
-            self._effectiveness_cache = round(effectiveness, 3)
-        return self._effectiveness_cache
+            self.__effectiveness_cache = round(effectiveness, 3)
+        return self.__effectiveness_cache
 
     def total_profit_loss(self) -> float:
         """Calculates the total profit/loss of the simulation.

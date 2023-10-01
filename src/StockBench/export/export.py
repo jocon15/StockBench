@@ -73,7 +73,7 @@ class Exporter:
         if self.__df.empty:
             raise Exception('Data needs to be uploaded first')
         col = self.__DATA_COLUMN_HEADER_COL
-        for (column_name, column_data) in self.__df.iteritems():
+        for (column_name, column_data) in self.__df.items():
             self.__data_worksheet.write_string(self.__DATA_COLUMN_HEADER_ROW, col, column_name)
             row = self.__DATA_COLUMN_HEADER_ROW + 1
             for element in column_data:

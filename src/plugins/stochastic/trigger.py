@@ -1,3 +1,13 @@
+"""
+This file will hold an SMATrigger subclass that inherits from the trigger class and implements abstract methods.
+
+The sma plugin class will instantiate an instance of this class as an attribute (member variable).
+
+Remember, this architecture allows both the subplot and the trigger functionality to be contained by the plugin
+without forcing a complex [multiple] inheritance scheme. The currently used approach can be applied if new
+aspects of the plugin are added later on.
+"""
+
 import re
 import logging
 from StockBench.constants import *
@@ -16,16 +26,12 @@ class StochasticTrigger(Trigger):
         Args:
             key (any): The key value from the strategy.
         """
-        # ======== key based =========
-        additional_days = 0
+        highest_num = 0
         nums = re.findall(r'\d+', key)
-        if len(nums) == 1:
-            num = int(nums[0])
-            if additional_days < num:
-                additional_days = num
-        else:
-            additional_days = DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH
-        return additional_days
+        for num in nums:
+            if num > highest_num:
+                highest_num = num
+        return highest_num
 
     def add_to_data(self, key, value, side, data_obj):
         """Add data to the dataframe.
@@ -40,12 +46,12 @@ class StochasticTrigger(Trigger):
         nums = re.findall(r'\d+', key)
         if len(nums) == 1:
             num = int(nums[0])
-            # add the RSI data to the df
+            # add the stochastic data to the df
             self.__add_stochastic_oscillator(num, data_obj)
         else:
-            # add the RSI data to the df
+            # add the stochastic data to the df
             self.__add_stochastic_oscillator(DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH, data_obj)
-        # ======== value based (rsi limit)=========
+        # ======== value based (stochastic limit)=========
         nums = re.findall(r'\d+', value)
         if side == 'buy':
             if len(nums) == 1:
@@ -71,34 +77,73 @@ class StochasticTrigger(Trigger):
         """
         log.debug('Checking stochastic oscillator triggers...')
 
-        # get the stochastic value for the current day
-        stochastic = data_obj.get_data_point('stochastic_oscillator', current_day_index)
+        # find nums for potential slope usage
+        nums = re.findall(r'\d+', key)
 
-        if CURRENT_PRICE_SYMBOL in value:
-            trigger_value = float(data_obj.get_data_point(data_obj.CLOSE, current_day_index))
-            operator = value.replace(CURRENT_PRICE_SYMBOL, '')
-        else:
-            # check that the value from {key: value} has a number in it
-            try:
-                trigger_value = Trigger.find_numeric_in_str(value)
-                operator = Trigger.find_operator_in_str(value)
-            except ValueError:
+        if len(nums) == 1:
+            # get the stochastic value for the current day
+            stochastic = data_obj.get_data_point('stochastic_oscillator', current_day_index)
+
+            if CURRENT_PRICE_SYMBOL in value:
+                trigger_value = float(data_obj.get_data_point(data_obj.CLOSE, current_day_index))
+                operator = value.replace(CURRENT_PRICE_SYMBOL, '')
+            else:
+                # check that the value from {key: value} has a number in it
+                try:
+                    trigger_value = Trigger.find_numeric_in_str(value)
+                    operator = Trigger.find_operator_in_str(value)
+                except ValueError:
+                    # an exception occurred trying to parse trigger value or operator - skip trigger
+                    return False
+
+            # trigger checks
+            result = Trigger.basic_triggers_check(stochastic, operator, trigger_value)
+
+            log.debug('All stochastic triggers checked')
+
+            return result
+        elif len(nums) == 2:
+            # likely that the $slope indicator is being used
+            if SLOPE_SYMBOL in key:
+
+                # get the length of the slope window
+                slope_window_length = int(nums[1])
+
+                # get data for slope calculation
+                y2 = float(data_obj.get_data_point('stochastic_oscillator', current_day_index))
+                y1 = float(data_obj.get_data_point('stochastic_oscillator', current_day_index - slope_window_length))
+
+                # calculate slope
+                slope = round((y2 - y1) / float(slope_window_length), 4)
+
+                # check that the value from {key: value} has a number in it
+                try:
+                    trigger_value = Trigger.find_numeric_in_str(value)
+                    operator = Trigger.find_operator_in_str(value)
+                except ValueError:
+                    # an exception occurred trying to parse trigger value or operator - skip trigger
+                    return False
+
+                # trigger checks
+                result = Trigger.basic_triggers_check(slope, operator, trigger_value)
+
+                log.debug('All SMA triggers checked')
+
+                return result
+            else:
                 # an exception occurred trying to parse trigger value or operator - skip trigger
                 return False
 
-        # trigger checks
-        result = Trigger.basic_triggers_check(stochastic, operator, trigger_value)
-
-        log.debug('All stochastic triggers checked')
-
-        return result
+        log.warning(f'Warning: {key} is in incorrect format and will be ignored')
+        print(f'Warning: {key} is in incorrect format and will be ignored')
+        return False
 
     @staticmethod
     def __add_stochastic_oscillator(length, data_obj):
-        """Pre-calculate the RSI values and add them to the df.
+        """Pre-calculate the stochastic values and add them to the df.
 
         Args:
-            length (int): The length of the RSI to use.
+            length (int): The length of the stochastic to use.
             data_obj (any): The data object.
         """
         # if we already have SO values in the df, we don't need to add them again
@@ -157,7 +202,7 @@ class StochasticTrigger(Trigger):
 
     @staticmethod
     def __stochastic_oscillator(length: int, high_data: list, low_data: list, close_data: list) -> list:
-        """Calculate the RSI values for a list of price values.
+        """Calculate the stochastic values for a list of price values.
 
         Args:
             length (int): The length of the stochastic oscillator to calculate.
@@ -166,7 +211,7 @@ class StochasticTrigger(Trigger):
             close_data (list): The close price data to calculate the stochastic oscillator from.
 
         return:
-            list: The list of calculated RSI values.
+            list: The list of calculated stochastic values.
         """
         past_length_days_high = []
         past_length_days_low = []

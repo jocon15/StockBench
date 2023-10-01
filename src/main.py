@@ -39,7 +39,7 @@ def main():
     # stock_sim.enable_logging()
     # stock_sim.enable_developer_logging(1)
 
-    # stock_sim.enable_reporting()
+    stock_sim.enable_reporting()
 
     stock_sim.load_strategy(strategy)
 

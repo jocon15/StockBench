@@ -14,21 +14,21 @@ def user_account():
 
 
 def test_deposit(user_account):
-    # test deposit $100.0 as a float
+    # tests deposit $100.0 as a float
     user_account.deposit(100.0)
     assert (user_account.get_balance() - 1100.0) < FLOAT_COMPARISON_EPSILON
 
-    # test deposit $100 as an integer
+    # tests deposit $100 as an integer
     user_account.deposit(100)
     assert (user_account.get_balance() - 1200.0) < FLOAT_COMPARISON_EPSILON
 
 
 def test_withdraw(user_account):
-    # test deposit $100.0 as a float
+    # tests deposit $100.0 as a float
     user_account.withdraw(100.0)
     assert (user_account.get_balance() - 1100.0) < FLOAT_COMPARISON_EPSILON
 
-    # test deposit $100 as an integer
+    # tests deposit $100 as an integer
     user_account.withdraw(100)
     assert (user_account.get_balance() - 1000.0) < FLOAT_COMPARISON_EPSILON
 

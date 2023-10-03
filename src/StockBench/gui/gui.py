@@ -84,7 +84,7 @@ class GraphWindow(QWidget):
         main_layout.addWidget(self.button)
         self.setLayout(main_layout)
 
-        self.setWindowTitle("Plotly test")
+        self.setWindowTitle("Plotly tests")
 
     def __del__(self):
         self.W = None

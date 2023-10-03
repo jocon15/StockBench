@@ -29,6 +29,7 @@ class StochasticTrigger(Trigger):
         highest_num = 0
         nums = re.findall(r'\d+', key)
         for num in nums:
+            num = int(num)
             if num > highest_num:
                 highest_num = num
         return highest_num

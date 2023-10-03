@@ -1,6 +1,6 @@
 
 '''
-To test the export functionality we need to call the export function.
+To tests the export functionality we need to call the export function.
 
 The export function will create a .xlsx file.
 

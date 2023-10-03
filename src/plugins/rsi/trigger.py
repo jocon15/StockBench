@@ -21,6 +21,7 @@ class RSITrigger(Trigger):
         nums = re.findall(r'\d+', key)
         if len(nums) > 0:
             for num in nums:
+                num = int(num)
                 if num > highest_num:
                     highest_num = num
             return highest_num

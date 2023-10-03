@@ -15,12 +15,22 @@ def test_additional_days():
     assert test_obj.additional_days('') == 0
 
 
+def test_add_to_data():
+    # add data for candlestick trigger should just return
+    try:
+        test_obj.add_to_data('', '', '', None)
+        assert True
+    except Exception as e:
+        print(e)
+        assert False
+
+
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger(data_mocker):
     current_day_index = 0
 
     data_mocker.COLOR = "color"
-    data_mocker.get_data_point.side_effect = mock_side_effect
+    data_mocker.get_data_point.side_effect = mock_colors_even
 
     assert test_obj.check_trigger('color',
                                   {'0': 'green', '1': 'red'},
@@ -28,8 +38,14 @@ def test_check_trigger(data_mocker):
                                   None,
                                   current_day_index) is True
 
+    assert test_obj.check_trigger('color',
+                                  {'0': 'red', '1': 'green'},
+                                  data_mocker,
+                                  None,
+                                  current_day_index) is False
 
-def mock_side_effect(*args):
+
+def mock_colors_even(*args):
     if args[1] % 2 == 0:
         return 'green'
     else:

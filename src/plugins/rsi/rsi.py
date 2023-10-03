@@ -1,4 +1,4 @@
-from StockBench.plugin.plugin import PluginInterface
+from StockBench.plugin.plugin_interface import PluginInterface
 from .trigger import RSITrigger
 from .subplot import RSISubplot
 

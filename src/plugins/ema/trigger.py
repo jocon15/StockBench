@@ -25,7 +25,7 @@ class EMATrigger(Trigger):
                 highest_num = num
         return highest_num
 
-    def add_to_data(self, key, side, value, data_obj):
+    def add_to_data(self, key, value, side, data_obj):
         """Add data to the dataframe.
 
         Args:
@@ -39,6 +39,9 @@ class EMATrigger(Trigger):
             num = int(nums[0])
             # add the EMA data to the df
             self.__add_ema(num, data_obj)
+        else:
+            log.warning(f'Warning: {key} is in incorrect format and will be ignored')
+            print(f'Warning: {key} is in incorrect format and will be ignored')
 
     def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
         """Trigger logic for EMA.
@@ -144,7 +147,7 @@ class EMATrigger(Trigger):
         # get a list of price values as a list
         price_data = data_obj.get_column_data(data_obj.CLOSE)
 
-        # calculate the EMA values from the indicator API
+        # calculate the EMA values
         ema_values = EMATrigger.__calculate_ema(length, price_data)
 
         # add the calculated values to the df
@@ -172,7 +175,7 @@ class EMATrigger(Trigger):
             if i < length:
                 ema_values.append(None)
             else:
-                ema = (k * (float(price_data[i]) - previous_ema)) + previous_ema
+                ema = round((k * (float(price_data[i]) - previous_ema)) + previous_ema, 3)
                 ema_values.append(ema)
                 previous_ema = ema
         return ema_values

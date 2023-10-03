@@ -81,7 +81,7 @@ class StochasticTrigger(Trigger):
         # find nums for potential slope usage
         nums = re.findall(r'\d+', key)
 
-        if len(nums) == 1:
+        if len(nums) < 2:
             # get the stochastic value for the current day
             stochastic = data_obj.get_data_point('stochastic_oscillator', current_day_index)
 

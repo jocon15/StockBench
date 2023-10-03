@@ -75,7 +75,7 @@ class RSITrigger(Trigger):
         # find nums for potential slope usage
         nums = re.findall(r'\d+', key)
 
-        if len(nums) == 1:
+        if len(nums) < 1:
             # get the RSI value for the current day
             rsi = data_obj.get_data_point('RSI', current_day_index)
 

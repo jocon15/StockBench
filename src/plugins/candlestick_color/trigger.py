@@ -44,7 +44,7 @@ class CandlestickColorTrigger(Trigger):
         """
         log.debug('Checking candle stick triggers...')
 
-        # find out how many keys there are (_value is a dict)
+        # find out how many keys there are (value is a dict)
         num_keys = len(value)
 
         # these will both need to be in ascending order [today, yesterday...]

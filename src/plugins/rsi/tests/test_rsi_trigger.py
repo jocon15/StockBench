@@ -9,7 +9,7 @@ from plugins.rsi.trigger import RSITrigger
 
 
 # create test object
-test_obj = RSITrigger('MSFT')
+test_obj = RSITrigger('RSI')
 
 
 def test_additional_days():

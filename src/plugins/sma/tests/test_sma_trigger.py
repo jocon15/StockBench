@@ -9,7 +9,7 @@ from plugins.sma.trigger import SMATrigger
 
 
 # create test object
-test_obj = SMATrigger('MSFT')
+test_obj = SMATrigger('SMA')
 
 
 def test_additional_days():

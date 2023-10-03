@@ -9,7 +9,7 @@ from plugins.ema.trigger import EMATrigger
 
 
 # create test object
-test_obj = EMATrigger('MSFT')
+test_obj = EMATrigger('EMA')
 
 
 def test_additional_days():

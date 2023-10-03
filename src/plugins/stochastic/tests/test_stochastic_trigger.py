@@ -9,7 +9,7 @@ from plugins.stochastic.trigger import StochasticTrigger
 
 
 # create test object
-test_obj = StochasticTrigger('MSFT')
+test_obj = StochasticTrigger('stochastic')
 
 
 def test_additional_days():

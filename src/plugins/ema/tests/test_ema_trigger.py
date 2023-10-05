@@ -2,7 +2,7 @@ import os
 import sys
 from unittest.mock import patch
 
-# allows import out a directory
+# allows import from src directory
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from plugins.ema.trigger import EMATrigger
@@ -109,7 +109,7 @@ def test_check_trigger_value_error(data_mocker, numeric_mocker):
     assert test_obj.check_trigger('EMA20', '>60', data_mocker, None, 0) is False
 
 
-def value_error_side_effect(*args):
+def value_error_side_effect(*args):  # noqa
     raise ValueError()
 
 

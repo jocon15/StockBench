@@ -1,0 +1,42 @@
+import os
+import sys
+from unittest.mock import patch
+
+# allows import from src directory
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+
+from plugins.price.trigger import PriceTrigger
+
+test_object = PriceTrigger('price')
+
+
+def test_additional_days():
+    assert test_object.additional_days('none') == 0
+
+
+def test_add_to_data():
+    try:
+        test_object.add_to_data('', '', '', None)
+        assert True
+    except Exception as e:
+        assert False
+
+
+@patch('StockBench.triggers.trigger.Trigger.find_numeric_in_str')
+@patch('StockBench.triggers.trigger.Trigger.find_operator_in_str')
+@patch('StockBench.triggers.trigger.Trigger.basic_triggers_check')
+@patch('StockBench.simulation_data.data_manager.DataManager')
+def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker):
+    data_mocker.get_data_point.side_effect = None
+    basic_trigger_mocker.return_value = False
+    operator_mocker.return_value = None
+    numeric_mocker.return_value = None
+
+    # trigger not hit
+    assert (test_object.check_trigger('$price', '>350', data_mocker, None, 2)
+            is False)
+
+    # trigger hit
+    basic_trigger_mocker.return_value = True
+    assert (test_object.check_trigger('$price', '>350', data_mocker, None, 2)
+            is True)

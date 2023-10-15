@@ -40,3 +40,16 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
     basic_trigger_mocker.return_value = True
     assert (test_object.check_trigger('$price', '>350', data_mocker, None, 2)
             is True)
+
+
+@patch('StockBench.triggers.trigger.Trigger.find_numeric_in_str')
+@patch('StockBench.simulation_data.data_manager.DataManager')
+def test_check_trigger_value_error(data_mocker, numeric_mocker):
+    data_mocker.get_data_point.return_value = 90
+    numeric_mocker.side_effect = value_error_side_effect
+
+    # simple trigger not hit case
+    assert test_object.check_trigger('EMA20$slope', '>60', data_mocker, None, 0) is False
+
+def value_error_side_effect(*args):  # noqa
+    raise ValueError()

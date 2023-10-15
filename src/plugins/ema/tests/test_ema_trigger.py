@@ -1,12 +1,12 @@
 import os
 import sys
 from unittest.mock import patch
+from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
 
 # allows import from src directory
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from plugins.ema.trigger import EMATrigger
-from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
 
 # create test object
 test_obj = EMATrigger('EMA')
@@ -26,7 +26,7 @@ def test_additional_days():
 
 @patch('logging.getLogger')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_check_additional_days(data_mocker, logger_mocker):
+def test_add_to_data(data_mocker, logger_mocker):
     logger_mocker.return_value = logger_mocker
     logger_mocker.warning.side_effect = logger_side_effect
 

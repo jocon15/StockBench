@@ -45,7 +45,7 @@ class StochasticTrigger(Trigger):
         """
         # ======== key based =========
         nums = re.findall(r'\d+', key)
-        if len(nums) == 1:
+        if len(nums) > 0:
             num = int(nums[0])
             # add the stochastic data to the df
             self.__add_stochastic_oscillator(num, data_obj)
@@ -55,11 +55,11 @@ class StochasticTrigger(Trigger):
         # ======== value based (stochastic limit)=========
         nums = re.findall(r'\d+', value)
         if side == 'buy':
-            if len(nums) == 1:
+            if len(nums) > 0:
                 trigger = float(nums[0])
                 self.__add_lower_stochastic(trigger, data_obj)
         else:
-            if len(nums) == 1:
+            if len(nums) > 0:
                 trigger = float(nums[0])
                 self.__add_upper_stochastic(trigger, data_obj)
 

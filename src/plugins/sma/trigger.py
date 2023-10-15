@@ -45,7 +45,7 @@ class SMATrigger(Trigger):
             data_obj (any): The data object.
         """
         nums = re.findall(r'\d+', key)
-        if len(nums) == 1:
+        if len(nums) > 0:
             # element 0 will be the indicator length
             num = int(nums[0])
             # add the SMA data to the df

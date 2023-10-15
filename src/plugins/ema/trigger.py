@@ -35,7 +35,7 @@ class EMATrigger(Trigger):
             data_obj (any): The data object.
         """
         nums = re.findall(r'\d+', key)
-        if len(nums) == 1:
+        if len(nums) > 0:
             num = int(nums[0])
             # add the EMA data to the df
             self.__add_ema(num, data_obj)

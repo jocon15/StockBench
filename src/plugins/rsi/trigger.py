@@ -39,7 +39,7 @@ class RSITrigger(Trigger):
         """
         # ======== key based =========
         nums = re.findall(r'\d+', key)
-        if len(nums) == 1:
+        if len(nums) > 0:
             num = int(nums[0])
             # add the RSI data to the df
             self.__add_rsi(num, data_obj)
@@ -49,11 +49,11 @@ class RSITrigger(Trigger):
         # ======== value based (rsi limit)=========
         nums = re.findall(r'\d+', value)
         if side == 'buy':
-            if len(nums) == 1:
+            if len(nums) > 0:
                 _trigger = float(nums[0])
                 self.__add_lower_rsi(_trigger, data_obj)
         else:
-            if len(nums) == 1:
+            if len(nums) > 0:
                 _trigger = float(nums[0])
                 self.__add_upper_rsi(_trigger, data_obj)
 

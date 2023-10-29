@@ -100,13 +100,16 @@ class RSITrigger(Trigger):
         elif len(nums) == 2:
             # likely that the $slope indicator is being used
             if SLOPE_SYMBOL in key:
+                title = 'RSI'
 
                 # get the length of the slope window
                 slope_window_length = int(nums[1])
+                # data request length is window - 1 to account for the current day index being a part of the window
+                slope_data_request_length = slope_window_length - 1
 
                 # get data for slope calculation
-                y2 = float(data_obj.get_data_point('RSI', current_day_index))
-                y1 = float(data_obj.get_data_point('RSI', current_day_index - slope_window_length))
+                y2 = float(data_obj.get_data_point(title, current_day_index))
+                y1 = float(data_obj.get_data_point(title, current_day_index - slope_data_request_length))
 
                 # calculate slope
                 slope = round((y2 - y1) / float(slope_window_length), 4)

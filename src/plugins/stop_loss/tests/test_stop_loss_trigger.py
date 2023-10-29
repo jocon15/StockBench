@@ -13,4 +13,4 @@ test_obj = StopLossTrigger('stop_loss')
 
 
 def test_additional_days():
-    assert test_obj.additional_days('') == 0
+    assert test_obj.additional_days('', '') == 0

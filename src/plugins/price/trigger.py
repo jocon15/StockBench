@@ -8,11 +8,12 @@ class PriceTrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days(self, key) -> int:
+    def additional_days(self, key, value) -> int:
         """Calculate the additional days required.
 
         Args:
             key (any): The key value from the strategy.
+            value (any): The value from the strategy.
         """
         # note price does not require any additional days
         return 0

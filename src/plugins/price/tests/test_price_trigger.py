@@ -11,7 +11,7 @@ test_object = PriceTrigger('price')
 
 
 def test_additional_days():
-    assert test_object.additional_days('none') == 0
+    assert test_object.additional_days('none', '') == 0
 
 
 def test_add_to_data():

@@ -18,7 +18,7 @@ class Trigger:
         return self.__side
 
     @abstractmethod
-    def additional_days(self, key) -> int:
+    def additional_days(self, key, value) -> int:
         raise NotImplementedError('Additional days not implemented!')
 
     @abstractmethod

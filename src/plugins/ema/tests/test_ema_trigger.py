@@ -13,15 +13,15 @@ test_obj = EMATrigger('EMA')
 
 
 def test_additional_days():
-    assert test_obj.additional_days('EMA20') == 20
+    assert test_obj.additional_days('EMA20', '>20') == 20
 
-    assert test_obj.additional_days('EMA50$price') == 50
+    assert test_obj.additional_days('EMA50$price', '>20') == 50
 
-    assert test_obj.additional_days('EMA50$price') == 50
+    assert test_obj.additional_days('EMA50$price', '>20') == 50
 
-    assert test_obj.additional_days('EMA20$slope10') == 20
+    assert test_obj.additional_days('EMA20$slope10', '>20') == 20
 
-    assert test_obj.additional_days('EMA20$slope30') == 30
+    assert test_obj.additional_days('EMA20$slope30', '>20') == 30
 
 
 @patch('logging.getLogger')

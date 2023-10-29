@@ -15,15 +15,15 @@ test_obj = RSITrigger('RSI')
 
 
 def test_additional_days():
-    assert test_obj.additional_days('RSI') == 14
+    assert test_obj.additional_days('RSI', '>20') == 14
 
-    assert test_obj.additional_days('RSI50') == 50
+    assert test_obj.additional_days('RSI50', '>20') == 50
 
-    assert test_obj.additional_days('RSI50$price') == 50
+    assert test_obj.additional_days('RSI50$price', '>20') == 50
 
-    assert test_obj.additional_days('RSI20$slope10') == 20
+    assert test_obj.additional_days('RSI20$slope10', '>20') == 20
 
-    assert test_obj.additional_days('RSI20$slope30') == 30
+    assert test_obj.additional_days('RSI20$slope30', '>20') == 30
 
 
 @patch('logging.getLogger')

@@ -12,7 +12,8 @@ test_obj = CandlestickColorTrigger('color')
 
 
 def test_additional_days():
-    assert test_obj.additional_days('') == 0
+    assert test_obj.additional_days('', '') == 0
+    # FIXME: needs additional testing now that candlestick has the ability to use value to calculate additonal days
 
 
 def test_add_to_data():

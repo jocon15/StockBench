@@ -8,14 +8,18 @@ class CandlestickColorTrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days(self, key) -> int:
+    def additional_days(self, key, value) -> int:
         """Calculate the additional days required.
 
         Args:
             key (any): The key value from the strategy.
+            value (any): The value from the strategy.
         """
-        # note candle colors does not require any additional days
-        return 0
+        additional_days = 0
+        for sub_key in value.keys():
+            if int(sub_key) > additional_days:
+                additional_days = int(sub_key)
+        return additional_days
 
     def add_to_data(self, key, value, side, data_obj):
         """Add data to the dataframe.

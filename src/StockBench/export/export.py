@@ -78,13 +78,13 @@ class Exporter:
             row = self.__DATA_COLUMN_HEADER_ROW + 1
             for element in column_data:
                 if element:
-                    if type(element) == float:
+                    if type(element) is float:
                         if math.isnan(element):
                             # print nothing for nan elements
                             self.__data_worksheet.write_string(row, col, '')
                         else:
                             self.__data_worksheet.write(row, col, element)
-                    elif type(element) == str:
+                    elif type(element) is str:
                         self.__data_worksheet.write_string(row, col, element)
                     else:
                         self.__data_worksheet.write(row, col, element)

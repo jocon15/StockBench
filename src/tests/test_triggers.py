@@ -4,9 +4,7 @@ import pytest
 
 @pytest.fixture
 def trigger_api():
-    return TriggerManager({
-        # FIXME: strategy goes here
-    })
+    pass
 
 
 def test_check_buy_triggers(trigger_api):

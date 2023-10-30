@@ -11,11 +11,12 @@ class EMATrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days(self, key) -> int:
+    def additional_days(self, key, value) -> int:
         """Calculate the additional days required.
 
         Args:
             key (any): The key value from the strategy.
+            value (any): The value from the strategy.
         """
         highest_num = 0
         nums = re.findall(r'\d+', key)
@@ -25,7 +26,7 @@ class EMATrigger(Trigger):
                 highest_num = num
         return highest_num
 
-    def add_to_data(self, key, side, value, data_obj):
+    def add_to_data(self, key, value, side, data_obj):
         """Add data to the dataframe.
 
         Args:
@@ -35,10 +36,13 @@ class EMATrigger(Trigger):
             data_obj (any): The data object.
         """
         nums = re.findall(r'\d+', key)
-        if len(nums) == 1:
+        if len(nums) > 0:
             num = int(nums[0])
             # add the EMA data to the df
             self.__add_ema(num, data_obj)
+        else:
+            log.warning(f'Warning: {key} is in incorrect format and will be ignored')
+            print(f'Warning: {key} is in incorrect format and will be ignored')
 
     def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
         """Trigger logic for EMA.
@@ -95,10 +99,12 @@ class EMATrigger(Trigger):
 
                 # get the length of the slope window
                 slope_window_length = int(nums[1])
+                # data request length is window - 1 to account for the current day index being a part of the window
+                slope_data_request_length = slope_window_length - 1
 
                 # get data for slope calculation
                 y2 = float(data_obj.get_data_point(title, current_day_index))
-                y1 = float(data_obj.get_data_point(title, current_day_index - slope_window_length))
+                y1 = float(data_obj.get_data_point(title, current_day_index - slope_data_request_length))
 
                 # calculate slope
                 slope = round((y2 - y1) / float(slope_window_length), 4)
@@ -144,7 +150,7 @@ class EMATrigger(Trigger):
         # get a list of price values as a list
         price_data = data_obj.get_column_data(data_obj.CLOSE)
 
-        # calculate the EMA values from the indicator API
+        # calculate the EMA values
         ema_values = EMATrigger.__calculate_ema(length, price_data)
 
         # add the calculated values to the df
@@ -172,7 +178,7 @@ class EMATrigger(Trigger):
             if i < length:
                 ema_values.append(None)
             else:
-                ema = (k * (float(price_data[i]) - previous_ema)) + previous_ema
+                ema = round((k * (float(price_data[i]) - previous_ema)) + previous_ema, 3)
                 ema_values.append(ema)
                 previous_ema = ema
         return ema_values

@@ -1,4 +1,4 @@
-from StockBench.plugin.plugin import PluginInterface
+from StockBench.plugin.plugin_interface import PluginInterface
 from .subplot import StochasticSubplot
 from .trigger import StochasticTrigger
 

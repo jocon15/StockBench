@@ -52,7 +52,7 @@ class Broker:
                        f'T{start_time_utc}Z' \
                        f'&end={end_date_utc}' \
                        f'T{end_time_utc}Z' \
-                       f'&timeframe=24Hour'
+                       f'&timeframe=1D'
         log.debug(f'Completed URI: {day_bars_url}')
         return self.__make_request(day_bars_url)
 

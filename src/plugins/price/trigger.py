@@ -1,4 +1,6 @@
+import re
 import logging
+from StockBench.constants import *
 from StockBench.triggers.trigger import Trigger
 
 log = logging.getLogger()
@@ -8,11 +10,12 @@ class PriceTrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days(self, key) -> int:
+    def additional_days(self, key, value) -> int:
         """Calculate the additional days required.
 
         Args:
             key (any): The key value from the strategy.
+            value (any): The value from the strategy.
         """
         # note price does not require any additional days
         return 0
@@ -45,19 +48,53 @@ class PriceTrigger(Trigger):
         """
         log.debug('Checking price triggers...')
 
-        # get the price data point
-        price = data_obj.get_data_point(data_obj.CLOSE, current_day_index)
+        title = data_obj.CLOSE
 
-        # check that the value from {key: value} has a number in it
-        try:
-            trigger_value = Trigger.find_numeric_in_str(value)
-            operator = Trigger.find_operator_in_str(value)
-        except ValueError:
-            # an exception occurred trying to parse trigger value or operator - skip trigger
-            return False
+        if SLOPE_SYMBOL in key:
 
-        # trigger checks
-        result = Trigger.basic_triggers_check(price, operator, trigger_value)
+            # find nums for potential slope usage
+            nums = re.findall(r'\d+', key)
+
+            # ensure that the nums list only has 1 number 'price$slope2' where the number is the slope length
+            if len(nums) != 1:
+                raise Exception('Price key with slope keyword is not in correct format!')
+
+            # get the length of the slope window
+            slope_window_length = int(nums[0])
+            # data request length is window - 1 to account for the current day index being a part of the window
+            slope_data_request_length = slope_window_length - 1
+
+            # get data for slope calculation
+            y2 = float(data_obj.get_data_point(title, current_day_index))
+            y1 = float(data_obj.get_data_point(title, current_day_index - slope_data_request_length))
+
+            # calculate slope
+            slope = round((y2 - y1) / float(slope_window_length), 4)
+
+            # check that the value from {key: value} has a number in it
+            try:
+                trigger_value = Trigger.find_numeric_in_str(value)
+                operator = Trigger.find_operator_in_str(value)
+            except ValueError:
+                # an exception occurred trying to parse trigger value or operator - skip trigger
+                return False
+
+            # trigger checks
+            result = Trigger.basic_triggers_check(slope, operator, trigger_value)
+        else:
+            # get the price data point
+            price = data_obj.get_data_point(title, current_day_index)
+
+            # check that the value from {key: value} has a number in it
+            try:
+                trigger_value = Trigger.find_numeric_in_str(value)
+                operator = Trigger.find_operator_in_str(value)
+            except ValueError:
+                # an exception occurred trying to parse trigger value or operator - skip trigger
+                return False
+
+            # trigger checks
+            result = Trigger.basic_triggers_check(price, operator, trigger_value)
 
         log.debug('All Price triggers checked')
 

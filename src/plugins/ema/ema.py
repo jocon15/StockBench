@@ -1,6 +1,6 @@
 from .trigger import EMATrigger
 from .subplot import DummySubplot
-from StockBench.plugin.plugin import PluginInterface
+from StockBench.plugin.plugin_interface import PluginInterface
 
 
 class EMAPlugin(PluginInterface):

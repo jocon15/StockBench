@@ -102,6 +102,7 @@ class TriggerManager:
         was_triggered = False
         buy_keys = self.__strategy['buy'].keys()
         for key in buy_keys:
+            print(key)
             # handle triggers
             was_triggered = self.__handle_triggers(key, side='buy')
             if was_triggered:
@@ -200,10 +201,9 @@ class TriggerManager:
                         self.__data_object,
                         self.__position_object,
                         self.__current_day_index)
-
-            if trigger_hit:
-                # any 'OR' trigger was hit
-                return True
+                    if trigger_hit:
+                        # any 'OR' trigger was hit
+                        return True
 
             # no 'OR' triggers were hit
             return False

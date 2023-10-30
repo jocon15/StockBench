@@ -20,11 +20,12 @@ class StochasticTrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days(self, key) -> int:
+    def additional_days(self, key, value) -> int:
         """Calculate the additional days required.
 
         Args:
             key (any): The key value from the strategy.
+            value (any): The value from the strategy.
         """
         highest_num = 0
         nums = re.findall(r'\d+', key)
@@ -45,7 +46,7 @@ class StochasticTrigger(Trigger):
         """
         # ======== key based =========
         nums = re.findall(r'\d+', key)
-        if len(nums) == 1:
+        if len(nums) > 0:
             num = int(nums[0])
             # add the stochastic data to the df
             self.__add_stochastic_oscillator(num, data_obj)
@@ -55,11 +56,11 @@ class StochasticTrigger(Trigger):
         # ======== value based (stochastic limit)=========
         nums = re.findall(r'\d+', value)
         if side == 'buy':
-            if len(nums) == 1:
+            if len(nums) > 0:
                 trigger = float(nums[0])
                 self.__add_lower_stochastic(trigger, data_obj)
         else:
-            if len(nums) == 1:
+            if len(nums) > 0:
                 trigger = float(nums[0])
                 self.__add_upper_stochastic(trigger, data_obj)
 
@@ -81,7 +82,7 @@ class StochasticTrigger(Trigger):
         # find nums for potential slope usage
         nums = re.findall(r'\d+', key)
 
-        if len(nums) == 1:
+        if len(nums) < 2:
             # get the stochastic value for the current day
             stochastic = data_obj.get_data_point('stochastic_oscillator', current_day_index)
 
@@ -106,13 +107,16 @@ class StochasticTrigger(Trigger):
         elif len(nums) == 2:
             # likely that the $slope indicator is being used
             if SLOPE_SYMBOL in key:
+                title = 'stochastic_oscillator'
 
                 # get the length of the slope window
                 slope_window_length = int(nums[1])
+                # data request length is window - 1 to account for the current day index being a part of the window
+                slope_data_request_length = slope_window_length - 1
 
                 # get data for slope calculation
-                y2 = float(data_obj.get_data_point('stochastic_oscillator', current_day_index))
-                y1 = float(data_obj.get_data_point('stochastic_oscillator', current_day_index - slope_window_length))
+                y2 = float(data_obj.get_data_point(title, current_day_index))
+                y1 = float(data_obj.get_data_point(title, current_day_index - slope_data_request_length))
 
                 # calculate slope
                 slope = round((y2 - y1) / float(slope_window_length), 4)
@@ -128,7 +132,7 @@ class StochasticTrigger(Trigger):
                 # trigger checks
                 result = Trigger.basic_triggers_check(slope, operator, trigger_value)
 
-                log.debug('All SMA triggers checked')
+                log.debug('All stochastic triggers checked')
 
                 return result
             else:

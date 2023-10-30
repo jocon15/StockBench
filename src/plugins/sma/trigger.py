@@ -21,11 +21,12 @@ class SMATrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days(self, key) -> int:
+    def additional_days(self, key, value) -> int:
         """Calculate the additional days required.
 
         Args:
             key (any): The key value from the strategy.
+            value (any): The value from the strategy.
         """
         highest_num = 0
         nums = re.findall(r'\d+', key)
@@ -45,10 +46,14 @@ class SMATrigger(Trigger):
             data_obj (any): The data object.
         """
         nums = re.findall(r'\d+', key)
-        # element 0 will be the indicator length
-        num = int(nums[0])
-        # add the SMA data to the df
-        self.__add_sma(num, data_obj)
+        if len(nums) > 0:
+            # element 0 will be the indicator length
+            num = int(nums[0])
+            # add the SMA data to the df
+            self.__add_sma(num, data_obj)
+        else:
+            log.warning(f'Warning: {key} is in incorrect format and will be ignored')
+            print(f'Warning: {key} is in incorrect format and will be ignored')
 
     def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
         """Trigger logic for SMA.
@@ -105,10 +110,12 @@ class SMATrigger(Trigger):
 
                 # get the length of the slope window
                 slope_window_length = int(nums[1])
+                # data request length is window - 1 to account for the current day index being a part of the window
+                slope_data_request_length = slope_window_length - 1
 
                 # get data for slope calculation
                 y2 = float(data_obj.get_data_point(title, current_day_index))
-                y1 = float(data_obj.get_data_point(title, current_day_index - slope_window_length))
+                y1 = float(data_obj.get_data_point(title, current_day_index - slope_data_request_length))
 
                 # calculate slope
                 slope = round((y2 - y1) / float(slope_window_length), 4)

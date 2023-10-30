@@ -15,9 +15,9 @@ class DataManager:
 
     def add_column(self, name: str, data: any):
         """Adds a list of data as a column in the DataFrame."""
-        if type(name) != str:
+        if type(name) is not str:
             raise Exception('Input data type must be a string!')
-        if type(data) != list:
+        if type(data) is not list:
             raise Exception('Input data type must be a string!')
         for col_name in self.get_column_names():
             if name == col_name:
@@ -39,9 +39,9 @@ class DataManager:
 
     def get_data_point(self, column_name: str, current_day_index: int):
         """Gets a single data point from the DataFrame."""
-        if type(column_name) != str:
+        if type(column_name) is not str:
             raise Exception('Input name type must be a string!')
-        if type(current_day_index) != int:
+        if type(current_day_index) is not int:
             raise Exception('Input day index must be an integer!')
 
         # The return is type agnostic, as the outside could request data from a column
@@ -60,7 +60,7 @@ class DataManager:
 
     def get_column_data(self, name: str):
         """Gets a column of data from the DataFrame."""
-        if type(name) != str:
+        if type(name) is not str:
             raise Exception('Input name type must be a string!')
         # FIXME: check that the column is actually in the dataframe
         return self.__df[name].values.tolist()
@@ -70,7 +70,7 @@ class DataManager:
 
         NOTE: The df is no longer usable for a simulation once this function is called!
         """
-        if type(window_start_day) != int:
+        if type(window_start_day) is not int:
             raise Exception('Input window start day must be an integer!')
 
         self.__df.drop(index=range(0, window_start_day), inplace=True)

@@ -2,7 +2,7 @@ import os
 import logging
 from plotly.subplots import make_subplots
 from StockBench.function_tools.nonce import datetime_nonce
-from StockBench.plugin.plugin import PluginInterface
+from StockBench.plugin.plugin_interface import PluginInterface
 
 log = logging.getLogger()
 

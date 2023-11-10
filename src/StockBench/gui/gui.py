@@ -1,110 +1,53 @@
-# coding: utf-8
-# SOURCE: https://gist.github.com/sergeyfarin/c689fd0171f95865055fad857579bc94
-
-import sys
 import os
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QGridLayout, QVBoxLayout, QWidget, QTabWidget, \
-    QLineEdit, QLabel, QListWidget, QComboBox, QHBoxLayout
-from PyQt6 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
+import sys
+
+from PyQt6 import QtCore
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QTableWidget, QProgressBar
+from PyQt6.QtWidgets import QTableWidgetItem
+from PyQt6.QtCore import QTimer, QThreadPool
+from PyQt6.QtGui import QBrush
+
+# current directory (peripherals)
+current = os.path.dirname(os.path.realpath(__file__))
+
+# parent filepath (src)
+parent = os.path.dirname(current)
+
+# add the parent (src) to path
+sys.path.append(parent)
+
+from worker.worker import Worker
+from StockBench.observers.progress_observer import ProgressObserver
+from StockBench.simulator import Simulator
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.w = None
+        # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
+        self.threadpool = QThreadPool()
 
-        layout = QHBoxLayout()
+        # FIXME: since sim results window calls run(), this has to be passed to the sim results window to avoid
+        #   circular import error (maybe just pass class reference to window and let the window instantiate?)
+        self.progress_bar_observer = ProgressObserver
+        # pass an uninitialized reference of the worker object to the windows
+        self.worker = Worker
+        # pass an uninitialized reference of the simulator object to the windows
+        self.simulator = Simulator
 
-        # build the elements
-        self.trigger_combo_box = TriggerComboBox()
-        self.trigger_combo_box.addItems(['SMA', 'EMA', 'RSI', 'Stochastic'])
+        self.layout = QVBoxLayout()
 
-        self.add_trigger_button = QPushButton("Add Trigger")
-        self.add_trigger_button.clicked.connect(self.add_to_list) # noqa - disables false warning for connect function
-
-        self.button = QPushButton("Push for Window")
-        self.button.clicked.connect(self.show_new_window)  # noqa - disables false warning for connect function
-
-        self.strategy_list = StrategyList()
-
-        # add the elements to the layout
-        layout.addWidget(self.trigger_combo_box)
-        layout.addWidget(self.add_trigger_button)
-        layout.addWidget(self.button)
-        layout.addWidget(self.strategy_list)
+        # FIXME add the widgets to the layout
 
         widget = QWidget()
-        widget.setLayout(layout)
+        widget.setLayout(self.layout)
+
+        # Set the central widget of the Window. Widget will expand
+        # to take up all the space in the window by default.
         self.setCentralWidget(widget)
 
-    def __del__(self):
-        self.graph_window = None
+        # build palette object into the windows
+        # self.palette = Palette()
 
-    def show_new_window(self):
-        if self.w is None:
-            self.w = GraphWindow()
-            self.w.showMaximized()
-
-        else:
-            self.w.close()  # Close window.
-            self.w = None  # Discard reference.
-
-    def add_to_list(self):
-        self.strategy_list.addItem(self.trigger_combo_box.currentText())
-
-
-class TriggerComboBox(QComboBox):
-    def __init__(self):
-        super().__init__()
-
-
-class StrategyList(QListWidget):
-    def __init__(self):
-        super().__init__()
-        self.setMaximumWidth(800)
-        self.setMinimumWidth(300)
-
-
-# Subclass QMainWindow to customize your application's main window
-class GraphWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-
-        self.w = None
-        main_layout = QGridLayout()
-
-        self.webEview = QtWebEngineWidgets.QWebEngineView()
-        self.webEview.load(QtCore.QUrl().fromLocalFile(
-            os.path.split(os.path.abspath(__file__))[0] + r'\ema_ex.html'))
-
-        self.button = QPushButton("Press Me!")
-        self.button.clicked.connect(self.show_new_window)  # noqa - disables false warning for connect function
-
-        main_layout.addWidget(self.webEview)
-        main_layout.addWidget(self.button)
-        self.setLayout(main_layout)
-
-        self.setWindowTitle("Plotly tests")
-
-    def __del__(self):
-        self.W = None
-
-    def show_new_window(self):
-        self.w = AuxWindow()
-        self.w.showMaximized()
-
-
-class AuxWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        layout = QVBoxLayout()
-        self.label = QLabel("Another Window")
-        layout.addWidget(self.label)
-        self.setLayout(layout)
-
-
-app = QApplication(sys.argv)
-demo = MainWindow()
-demo.showMaximized()
-
-sys.exit(app.exec())
+        # render the window
+        self.show()

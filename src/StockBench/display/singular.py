@@ -24,7 +24,7 @@ class SingularDisplay:
         self.__subplot_objects = []
         self.__subplot_types = []
 
-    def chart(self, df, symbol, show=True, save=False, dark_mode=True):
+    def chart(self, df, symbol, show=True, save=False, dark_mode=True) -> str:
         """Chart the data.
 
         Args:
@@ -33,6 +33,9 @@ class SingularDisplay:
             show (bool): Show the chart.
             save (bool): Save the chart.
             dark_mode (bool): Build chart in dark mode.
+
+        Return:
+            (str): The filepath of the chart
         """
         self.__df = df
 
@@ -125,3 +128,5 @@ class SingularDisplay:
             fig.write_html(chart_filepath, auto_open=False)
         if show and save:
             fig.write_html(chart_filepath, auto_open=True)
+
+        return chart_filepath

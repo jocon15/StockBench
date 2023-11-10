@@ -164,7 +164,7 @@ class Simulator:
         # initialize the member object
         self.__trigger_manager = TriggerManager(strategy, self.__plugins.values())
 
-    def run(self, symbol: str, show_chart=True, save_chart=False, dark_mode=True) -> dict:
+    def run(self, symbol: str, show_chart=True, save_chart=False, dark_mode=True, progress_observer=None) -> dict:
         """Run a simulation on an asset.
 
         Args:
@@ -172,6 +172,7 @@ class Simulator:
             show_chart (bool): Show the chart when finished.
             save_chart (bool): Save the chart when finished.
             dark_mode (bool): Build chart in dark mode.
+            progress_observer (any): Observer object to update progress to.
         """
         # set the objects symbol to the passed value, so we can use it everywhere
         log.info(f'Setting up simulation for symbol: {symbol}...')
@@ -228,6 +229,11 @@ class Simulator:
 
         log.info(f'Beginning simulation...')
 
+        # calculate the increment for the progress bar
+        increment = 1.0  # must supply default value
+        if progress_observer is not None:
+            increment = 100.0 / (self.__data_manager.get_data_length() - sim_window_start_day)
+
         # ===================== Simulation Loop ======================
         for current_day_index in range(sim_window_start_day, self.__data_manager.get_data_length()):
             # Loop from the focus start day (ex. 200) to the total amount of days in the set (ex. 400).
@@ -263,6 +269,10 @@ class Simulator:
                     # exit the loop as a precaution
                     break
 
+            # update the progress
+            if progress_observer is not None:
+                progress_observer.update_progress(increment)
+
         # add the buys and sells to the df
         self.__add_buys_sells()
 
@@ -296,6 +306,8 @@ class Simulator:
             exporting_process = Process(target=exporter.export, args=(chopped_temp_df, self.__symbol))
             exporting_process.start()
 
+        chart_filepath = ''
+
         if show_chart or save_chart:
             # create the display object
             display = SingularDisplay(self.__plugins.values())
@@ -306,15 +318,17 @@ class Simulator:
 
             # DEBUG: synchronous charting
             # the plugins list may not be able to be multiprocessed
-            display.chart(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode)
+            chart_filepath = display.chart(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode)
 
         return {
             'symbol': self.__symbol,
+            'elapsed_time': self.__elapsed_time,
             'trades_made': len(self.__position_archive),
             'effectiveness': self.__analyzer.effectiveness(),
             'average_profit_loss': self.__analyzer.avg_profit_loss(),
             'total_profit_loss': self.__account.get_profit_loss(),
-            'account_value': self.__account.get_balance()
+            'account_value': self.__account.get_balance(),
+            'chart_filepath': chart_filepath
         }
 
     def run_multiple(self,

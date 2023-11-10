@@ -12,7 +12,7 @@ class MultipleDisplay:
     def __init__(self):
         self.__data = None
 
-    def chart(self, data, show=True, save=False, dark_mode=True):
+    def chart(self, data, show=True, save=False, dark_mode=True) -> str:
         self.__data = data
 
         rows = 2
@@ -62,6 +62,8 @@ class MultipleDisplay:
             fig.write_html(chart_filepath, auto_open=False)
         if show and save:
             fig.write_html(chart_filepath, auto_open=True)
+
+        return chart_filepath
 
     def __profit_loss_bar(self):
         color_df = pd.DataFrame()

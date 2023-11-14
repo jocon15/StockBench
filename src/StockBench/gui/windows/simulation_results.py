@@ -3,9 +3,7 @@ import sys
 
 from PyQt6 import QtCore, QtWebEngineWidgets
 from PyQt6.QtWidgets import QVBoxLayout, QGridLayout, QHBoxLayout, QWidget, QLabel, QProgressBar, QFrame
-from PyQt6.QtWidgets import QTableWidgetItem
 from PyQt6.QtCore import QTimer, QThreadPool
-from PyQt6.QtGui import QBrush
 
 # current directory (peripherals)
 current = os.path.dirname(os.path.realpath(__file__))
@@ -18,19 +16,22 @@ sys.path.append(parent)
 
 
 class SimulationResultsWindow(QWidget):
-    def __init__(self, worker, simulator, progress_observer):
+    def __init__(self, worker, simulator, progress_observer, initial_balance):
         super().__init__()
         # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
         self.threadpool = QThreadPool()
 
         # parameters
         self.worker = worker
-        self.simulator = simulator()  # instantiate the class reference
+        self.simulator = simulator(initial_balance)  # instantiate the class reference
         self.progress_observer = progress_observer()  # instantiate the class reference
 
         # get set by caller (MainWindow) after construction but before .show()
         self.strategy = None
         self.symbol = None
+        self.logging = False
+        self.reporting = False
+        self.charting = False
 
         self.layout = QVBoxLayout()
 
@@ -49,11 +50,13 @@ class SimulationResultsWindow(QWidget):
         # apply the layout to the window
         self.setLayout(self.layout)
 
+        # timer to periodically read from the progress observer and update the progress bar
+        self.timer = QTimer()
+
+    def begin(self):
         # the simulation runs 1 time - so no timer, the update data just gets called once
         self.update_data()
 
-        # timer to periodically read from the progress observer and update the progress bar
-        self.timer = QTimer()
         self.timer.setInterval(100)
         self.timer.timeout.connect(self.update_progress_bar)  # noqa
         self.timer.start()
@@ -63,7 +66,7 @@ class SimulationResultsWindow(QWidget):
             # the progress is complete, stop the timer
             self.timer.stop()
         # update the progress bar
-        self.progress_bar.setValue(self.progress_observer.get_progress())
+        self.progress_bar.setValue(int(self.progress_observer.get_progress()))
 
     def run_simulation(self) -> dict:
         # load the strategy into the simulator
@@ -76,7 +79,7 @@ class SimulationResultsWindow(QWidget):
 
     def update_data(self):
         # create the worker object
-        worker = self.worker(self.run_simulation())  # Any other args, kwargs are passed to the run function
+        worker = self.worker(self.run_simulation)  # Any other args, kwargs are passed to the run function
         # connect the result (return data) of the qt_worker to the render function to handle the returned data
         worker.signals.result.connect(self.render_updated_data)  # noqa
         # run the qt_worker thread

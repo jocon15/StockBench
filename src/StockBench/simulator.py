@@ -461,7 +461,7 @@ class Simulator:
         if 'end' in self.__strategy.keys():
             self.__end_date_unix = int(self.__strategy['end'])
 
-        additional_days = self.__trigger_manager.parse_strategy_timestamps()
+        additional_days = self.__trigger_manager.calculate_strategy_timestamps()
 
         # add a buffer
         if additional_days != 0:

@@ -1,5 +1,6 @@
 import sys
-from StockBench.gui.gui import MainWindow, QApplication
+from PyQt6.QtWidgets import QApplication
+from StockBench.gui.gui import MainWindow
 
 
 app = QApplication(sys.argv)

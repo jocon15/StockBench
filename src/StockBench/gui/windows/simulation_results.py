@@ -2,7 +2,7 @@ import os
 import sys
 
 from PyQt6 import QtCore, QtWebEngineWidgets
-from PyQt6.QtWidgets import QVBoxLayout, QGridLayout, QHBoxLayout, QWidget, QLabel, QProgressBar, QFrame
+from PyQt6.QtWidgets import QVBoxLayout, QGridLayout, QHBoxLayout, QWidget, QLabel, QProgressBar, QFrame, QPushButton
 from PyQt6.QtCore import QTimer, QThreadPool
 
 # current directory (peripherals)
@@ -35,7 +35,6 @@ class SimulationResultsWindow(QWidget):
 
         self.layout = QVBoxLayout()
 
-        # FIXME: add elements to layout
         self.progress_bar = QProgressBar()
         self.progress_bar.setRange(0, 100)
         self.progress_bar.setFixedHeight(5)
@@ -45,7 +44,9 @@ class SimulationResultsWindow(QWidget):
         self.simulation_results_box = SimulationResultsBox()
         self.layout.addWidget(self.simulation_results_box)
 
-        # FIXME: still need the done button at the bottom
+        self.done_btn = QPushButton()
+        self.done_btn.setText('Done')
+        self.layout.addWidget(self.done_btn)
 
         # apply the layout to the window
         self.setLayout(self.layout)
@@ -63,10 +64,14 @@ class SimulationResultsWindow(QWidget):
 
     def update_progress_bar(self):
         if self.progress_observer.is_completed():
-            # the progress is complete, stop the timer
+            # mark the progress bar as completed
+            self.progress_bar.setValue(100)
+
+            # stop the timer
             self.timer.stop()
-        # update the progress bar
-        self.progress_bar.setValue(int(self.progress_observer.get_progress()))
+        else:
+            # update the progress bar
+            self.progress_bar.setValue(int(self.progress_observer.get_progress()))
 
     def run_simulation(self) -> dict:
         # load the strategy into the simulator

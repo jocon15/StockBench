@@ -107,7 +107,6 @@ class TriggerManager:
         was_triggered = False
         buy_keys = self.__strategy['buy'].keys()
         for key in buy_keys:
-            print(key)
             # handle triggers
             was_triggered = self.__handle_triggers(key, side='buy')
             if was_triggered:

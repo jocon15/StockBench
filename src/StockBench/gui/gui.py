@@ -173,6 +173,10 @@ class MainWindow(QMainWindow):
     def on_simulation_length_cbox_index_changed(self, index):
         if index == 0:
             self.simulation_length = SECONDS_1_YEAR
+        elif index == 1:
+            self.simulation_length = SECONDS_2_YEAR
+        elif index == 2:
+            self.simulation_length = SECONDS_5_YEAR
 
         # FIXME: implement the rest of the options
 

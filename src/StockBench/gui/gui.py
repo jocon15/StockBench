@@ -25,6 +25,38 @@ from StockBench.constants import *
 
 
 class MainWindow(QMainWindow):
+
+    text_box_stylesheet = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
+    text-indent:3px;"""
+
+    select_file_btn_stylesheet = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;
+    height:25px;"""
+
+    combobox_stylesheet = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
+    text-indent:3px;"""
+
+    line_edit_stylesheet = """background-color:#303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
+    text-indent:5px;"""
+
+    toggle_btn_enabled_stylesheet = """background-color:#04ba5f;display:block;margin-left:auto;margin-right:auto;
+    width:40%;height:25px;border-radius:10px;"""
+
+    toggle_btn_disabled_stylesheet = """background-color: #303134;display: block;margin-left: auto;
+        margin-right:auto;width: 40%;height:25px;border-radius: 10px;"""
+
+    run_btn_stylesheet = """
+        QPushButton
+        {
+            background-color: #04ba5f;
+            color: #FFF;
+            border-radius: 10px;
+        }
+        QPushButton:hover
+        {
+            background-color: #04ba50;
+        }
+        """
+
     def __init__(self):
         super().__init__()
         # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
@@ -45,7 +77,7 @@ class MainWindow(QMainWindow):
         self.simulation_length = None
         self.simulation_logging = False
         self.simulation_reporting = False
-        self.simulation_charting = False
+        self.simulation_charting = True
 
         self.layout = QVBoxLayout()
 
@@ -55,6 +87,7 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(label)
 
         self.strategy_selection_box = StrategySelection()
+        self.strategy_selection_box.setStyleSheet(self.select_file_btn_stylesheet)
         self.layout.addWidget(self.strategy_selection_box)
 
         label = QLabel()
@@ -67,7 +100,7 @@ class MainWindow(QMainWindow):
         self.simulation_length_cbox.addItem('2 Year')
         self.simulation_length_cbox.addItem('5 Year')
         self.simulation_length_cbox.setCurrentIndex(-1)
-        self.simulation_length_cbox.setStyleSheet("""background-color: #303134;""")
+        self.simulation_length_cbox.setStyleSheet(self.combobox_stylesheet)
         self.simulation_length_cbox.currentIndexChanged.connect(self.on_simulation_length_cbox_index_changed)  # noqa
         self.layout.addWidget(self.simulation_length_cbox)
 
@@ -77,7 +110,7 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(label)
 
         self.symbol_tbox = QLineEdit()
-        self.symbol_tbox.setStyleSheet("""background-color: #303134;""")
+        self.symbol_tbox.setStyleSheet(self.line_edit_stylesheet)
         self.layout.addWidget(self.symbol_tbox)
 
         label = QLabel()
@@ -88,7 +121,7 @@ class MainWindow(QMainWindow):
         self.balance_tbox = QLineEdit()
         self.onlyFloat = QDoubleValidator()
         self.balance_tbox.setValidator(self.onlyFloat)
-        self.balance_tbox.setStyleSheet("""background-color: #303134;""")
+        self.balance_tbox.setStyleSheet(self.line_edit_stylesheet)
         self.layout.addWidget(self.balance_tbox)
 
         label = QLabel()
@@ -99,7 +132,7 @@ class MainWindow(QMainWindow):
         self.logging_btn = QPushButton()
         self.logging_btn.setCheckable(True)
         self.logging_btn.setText('OFF')
-        self.logging_btn.setStyleSheet("""background-color: #303134;""")  # default SS
+        self.logging_btn.setStyleSheet(self.toggle_btn_disabled_stylesheet)
         self.logging_btn.clicked.connect(self.on_logging_btn_clicked)  # noqa
         self.layout.addWidget(self.logging_btn)
 
@@ -109,7 +142,10 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(label)
 
         self.reporting_btn = QPushButton()
-        self.reporting_btn.setStyleSheet("""background-color: #303134;""")
+        self.reporting_btn.setCheckable(True)
+        self.reporting_btn.setText('OFF')
+        self.reporting_btn.setStyleSheet(self.toggle_btn_disabled_stylesheet)
+        self.reporting_btn.clicked.connect(self.on_reporting_btn_clicked)  # noqa
         self.layout.addWidget(self.reporting_btn)
 
         label = QLabel()
@@ -118,25 +154,17 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(label)
 
         self.charting_btn = QPushButton()
-        self.charting_btn.setStyleSheet("""background-color: #303134;""")
+        self.charting_btn.setCheckable(True)
+        self.charting_btn.setText('ON')
+        self.charting_btn.setStyleSheet(self.toggle_btn_enabled_stylesheet)
+        self.charting_btn.clicked.connect(self.on_charting_btn_clicked)  # noqa
         self.layout.addWidget(self.charting_btn)
 
         self.run_btn = QPushButton()
         self.run_btn.setFixedSize(60, 30)
         self.run_btn.setText('RUN')
         self.run_btn.clicked.connect(self.on_run_btn_clicked)  # noqa
-        self.run_btn.setStyleSheet("""
-        QPushButton
-        {
-            background-color: #04ba5f;
-            color: #FFF;
-            border-radius: 10px;
-        }
-        QPushButton:hover
-        {
-            background-color: #04ba50;
-        }
-        """)
+        self.run_btn.setStyleSheet(self.run_btn_stylesheet)
         self.layout.addWidget(self.run_btn, alignment=Qt.AlignmentFlag.AlignRight)
 
         # main window styling
@@ -164,11 +192,31 @@ class MainWindow(QMainWindow):
         if self.logging_btn.isChecked():
             self.simulation_logging = True
             self.logging_btn.setText('ON')
-            self.logging_btn.setStyleSheet("""background-color: #04ba5f;""")
+            self.logging_btn.setStyleSheet(self.toggle_btn_enabled_stylesheet)
         else:
             self.simulation_logging = False
             self.logging_btn.setText('OFF')
-            self.logging_btn.setStyleSheet("""background-color: #303134;""")
+            self.logging_btn.setStyleSheet(self.toggle_btn_disabled_stylesheet)
+
+    def on_reporting_btn_clicked(self):
+        if self.reporting_btn.isChecked():
+            self.simulation_reporting = True
+            self.reporting_btn.setText('ON')
+            self.reporting_btn.setStyleSheet(self.toggle_btn_enabled_stylesheet)
+        else:
+            self.simulation_reporting = False
+            self.reporting_btn.setText('OFF')
+            self.reporting_btn.setStyleSheet(self.toggle_btn_disabled_stylesheet)
+
+    def on_charting_btn_clicked(self):
+        if self.charting_btn.isChecked():
+            self.simulation_charting = True
+            self.charting_btn.setText('ON')
+            self.charting_btn.setStyleSheet(self.toggle_btn_enabled_stylesheet)
+        else:
+            self.simulation_charting = False
+            self.charting_btn.setText('OFF')
+            self.charting_btn.setStyleSheet(self.toggle_btn_disabled_stylesheet)
 
     def on_simulation_length_cbox_index_changed(self, index):
         if index == 0:
@@ -177,8 +225,6 @@ class MainWindow(QMainWindow):
             self.simulation_length = SECONDS_2_YEAR
         elif index == 2:
             self.simulation_length = SECONDS_5_YEAR
-
-        # FIXME: implement the rest of the options
 
     def on_run_btn_clicked(self):
         # load the strategy from the JSON file into a strategy python dict
@@ -203,8 +249,9 @@ class MainWindow(QMainWindow):
         # begin the simulation and progress checking timer
         self.simulation_result_window.begin()
 
-        # show the results window
-        self.simulation_result_window.show()
+        if self.simulation_charting:
+            # show the results window if options is checked
+            self.simulation_result_window.show()
 
 
 class StrategySelection(QWidget):
@@ -216,15 +263,13 @@ class StrategySelection(QWidget):
         self.layout = QHBoxLayout()
 
         self.filepath_box = QLabel()
-        self.filepath_box.setStyleSheet("""background-color: #303134;
-        color: #FFF;""")
+        self.filepath_box.setStyleSheet("""background-color: #303134;color: #FFF;""")
         self.layout.addWidget(self.filepath_box)
 
         self.select_file_btn = QPushButton()
         self.select_file_btn.setText('Select File')
         self.select_file_btn.clicked.connect(self.on_select_file_btn_click)  # noqa
-        self.select_file_btn.setStyleSheet("""background-color: #303134;
-        color: #FFF;""")
+        self.select_file_btn.setStyleSheet("""background-color: #303134;color: #FFF;""")
         self.layout.addWidget(self.select_file_btn)
 
         self.setLayout(self.layout)

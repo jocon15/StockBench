@@ -2,6 +2,7 @@ import os
 import sys
 
 from PyQt6 import QtCore, QtWebEngineWidgets
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QVBoxLayout, QGridLayout, QHBoxLayout, QWidget, QLabel, QProgressBar, QFrame, QPushButton
 from PyQt6.QtCore import QTimer, QThreadPool
 
@@ -16,6 +17,10 @@ sys.path.append(parent)
 
 
 class SimulationResultsWindow(QWidget):
+    window_stylesheet = """background-color:#202124;"""
+
+    btn_stylesheet = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;"""
+
     def __init__(self, worker, simulator, progress_observer, initial_balance):
         super().__init__()
         # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
@@ -46,7 +51,15 @@ class SimulationResultsWindow(QWidget):
 
         self.done_btn = QPushButton()
         self.done_btn.setText('Done')
-        self.layout.addWidget(self.done_btn)
+        self.done_btn.setFixedSize(60, 30)
+        self.done_btn.setStyleSheet(self.btn_stylesheet)
+        self.done_btn.clicked.connect(self.on_done_btn_clicked)  # noqa
+        self.layout.addWidget(self.done_btn, alignment=Qt.AlignmentFlag.AlignRight)
+
+        self.setWindowTitle('Simulation Results')
+        # self.setGeometry(0, 0, 1920, 1080)
+        # self.setFixedSize(400, 500)
+        self.setStyleSheet(self.window_stylesheet)
 
         # apply the layout to the window
         self.setLayout(self.layout)
@@ -90,6 +103,10 @@ class SimulationResultsWindow(QWidget):
         # run the qt_worker thread
         self.threadpool.start(worker)
 
+    def on_done_btn_clicked(self):
+        # close the window
+        self.close()
+
 
 class SimulationResultsBox(QFrame):
     def __init__(self):
@@ -99,6 +116,8 @@ class SimulationResultsBox(QFrame):
 
         self.simulation_results_text_box = SimulationResultsTextBox()
         self.layout.addWidget(self.simulation_results_text_box)
+        self.simulation_results_text_box.setMaximumWidth(300)
+        self.simulation_results_text_box.setMaximumHeight(800)
 
         self.webView = QtWebEngineWidgets.QWebEngineView()
         self.layout.addWidget(self.webView)
@@ -111,6 +130,8 @@ class SimulationResultsBox(QFrame):
 
 
 class SimulationResultsTextBox(QFrame):
+    numeric_results_stylesheet = """color:#FFF;"""
+
     def __init__(self):
         super().__init__()
 
@@ -118,64 +139,67 @@ class SimulationResultsTextBox(QFrame):
 
         label = QLabel()
         label.setText('Simulation Results')
-        # label.setStyleSheet("""""")
+        label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, 1, 1)
 
         # nothing goes in 1, 2 because label 1 is title
 
         label = QLabel()
         label.setText('Elapsed Time:')
-        # label.setStyleSheet("""""")
+        label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, 2, 1)
 
         self.data_label1 = QLabel()
-        # label.setStyleSheet("""""")
+        self.data_label1.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.data_label1, 2, 2)
 
         label = QLabel()
         label.setText('Trades Made:')
-        # label.setStyleSheet("""""")
+        label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, 3, 1)
 
         self.data_label2 = QLabel()
-        # label.setStyleSheet("""""")
+        self.data_label2.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.data_label2, 3, 2)
 
         label = QLabel()
         label.setText('Effectiveness:')
-        # label.setStyleSheet("""""")
+        label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, 4, 1)
 
         self.data_label3 = QLabel()
-        # label.setStyleSheet("""""")
+        self.data_label3.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.data_label3, 4, 2)
 
         label = QLabel()
         label.setText('Avg. P/L:')
-        # label.setStyleSheet("""""")
+        label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, 5, 1)
 
         self.data_label4 = QLabel()
-        # label.setStyleSheet("""""")
+        self.data_label4.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.data_label4, 5, 2)
 
         label = QLabel()
         label.setText('Total P/L:')
-        # label.setStyleSheet("""""")
+        label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, 6, 1)
 
         self.data_label5 = QLabel()
-        # label.setStyleSheet("""""")
+        self.data_label5.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.data_label5, 6, 2)
 
         label = QLabel()
         label.setText('Account Value:')
-        # label.setStyleSheet("""""")
+        label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, 7, 1)
 
         self.data_label6 = QLabel()
-        # label.setStyleSheet("""""")
+        self.data_label6.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.data_label6, 7, 2)
+
+        self.layout.setRowStretch(self.layout.rowCount(), 1)
+        self.layout.setColumnStretch(self.layout.columnCount(), 1)
 
         # apply the layout to the frame
         self.setLayout(self.layout)

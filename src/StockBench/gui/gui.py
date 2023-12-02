@@ -26,6 +26,8 @@ from StockBench.constants import *
 
 class MainWindow(QMainWindow):
 
+    window_stylesheet = """background-color: #202124;"""
+
     text_box_stylesheet = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
     text-indent:3px;"""
 
@@ -171,9 +173,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('Configuration')
         self.setGeometry(200, 200, 400, 500)
         self.setFixedSize(400, 500)
-        self.setStyleSheet("""
-        background-color: #202124;
-        """)
+        self.setStyleSheet(self.window_stylesheet)
 
         widget = QWidget()
         widget.setLayout(self.layout)
@@ -251,7 +251,7 @@ class MainWindow(QMainWindow):
 
         if self.simulation_charting:
             # show the results window if options is checked
-            self.simulation_result_window.show()
+            self.simulation_result_window.showFullScreen()
 
 
 class StrategySelection(QWidget):

@@ -19,6 +19,16 @@ sys.path.append(parent)
 class SimulationResultsWindow(QWidget):
     window_stylesheet = """background-color:#202124;"""
 
+    progress_bar_stylesheet = """
+    QProgressBar{
+        border-radius: 2px;
+    }
+    
+    QProgressBar::chunk{
+        border-radius: 2px;
+        background-color: #7532a8;
+    }"""
+
     btn_stylesheet = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;"""
 
     def __init__(self, worker, simulator, progress_observer, initial_balance):
@@ -44,6 +54,7 @@ class SimulationResultsWindow(QWidget):
         self.progress_bar.setRange(0, 100)
         self.progress_bar.setFixedHeight(5)
         self.progress_bar.setTextVisible(False)
+        self.progress_bar.setStyleSheet(self.progress_bar_stylesheet)
         self.layout.addWidget(self.progress_bar)
 
         self.simulation_results_box = SimulationResultsBox()

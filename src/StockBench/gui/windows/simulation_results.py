@@ -60,13 +60,6 @@ class SimulationResultsWindow(QWidget):
         self.simulation_results_box = SimulationResultsBox()
         self.layout.addWidget(self.simulation_results_box)
 
-        self.done_btn = QPushButton()
-        self.done_btn.setText('Done')
-        self.done_btn.setFixedSize(60, 30)
-        self.done_btn.setStyleSheet(self.btn_stylesheet)
-        self.done_btn.clicked.connect(self.on_done_btn_clicked)  # noqa
-        self.layout.addWidget(self.done_btn, alignment=Qt.AlignmentFlag.AlignRight)
-
         self.setWindowTitle('Simulation Results')
         # self.setGeometry(0, 0, 1920, 1080)
         # self.setFixedSize(400, 500)
@@ -113,10 +106,6 @@ class SimulationResultsWindow(QWidget):
         worker.signals.result.connect(self.render_updated_data)  # noqa
         # run the qt_worker thread
         self.threadpool.start(worker)
-
-    def on_done_btn_clicked(self):
-        # close the window
-        self.close()
 
 
 class SimulationResultsBox(QFrame):

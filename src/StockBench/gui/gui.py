@@ -101,7 +101,10 @@ class MainWindow(QMainWindow):
         self.simulation_length_cbox.addItem('1 Year')
         self.simulation_length_cbox.addItem('2 Year')
         self.simulation_length_cbox.addItem('5 Year')
-        self.simulation_length_cbox.setCurrentIndex(-1)
+        # set simulation length default to 2 years (must set attribute as well)
+        self.simulation_length_cbox.setCurrentIndex(1)
+        self.simulation_length = SECONDS_2_YEAR
+
         self.simulation_length_cbox.setStyleSheet(self.combobox_stylesheet)
         self.simulation_length_cbox.currentIndexChanged.connect(self.on_simulation_length_cbox_index_changed)  # noqa
         self.layout.addWidget(self.simulation_length_cbox)
@@ -112,6 +115,7 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(label)
 
         self.symbol_tbox = QLineEdit()
+        self.symbol_tbox.setText("MSFT")
         self.symbol_tbox.setStyleSheet(self.line_edit_stylesheet)
         self.layout.addWidget(self.symbol_tbox)
 
@@ -121,6 +125,7 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(label)
 
         self.balance_tbox = QLineEdit()
+        self.balance_tbox.setText('1000.0')
         self.onlyFloat = QDoubleValidator()
         self.balance_tbox.setValidator(self.onlyFloat)
         self.balance_tbox.setStyleSheet(self.line_edit_stylesheet)

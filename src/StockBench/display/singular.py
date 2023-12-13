@@ -1,5 +1,6 @@
 import os
 import logging
+import plotly.offline as offline
 from plotly.subplots import make_subplots
 from StockBench.function_tools.nonce import datetime_nonce
 from StockBench.plugin.plugin_interface import PluginInterface
@@ -24,7 +25,7 @@ class SingularDisplay:
         self.__subplot_objects = []
         self.__subplot_types = []
 
-    def chart(self, df, symbol, show=True, save=False, dark_mode=True):
+    def chart(self, df, symbol, show=True, save=False, dark_mode=True) -> str:
         """Chart the data.
 
         Args:
@@ -33,6 +34,9 @@ class SingularDisplay:
             show (bool): Show the chart.
             save (bool): Save the chart.
             dark_mode (bool): Build chart in dark mode.
+
+        Return:
+            (str): The filepath of the chart
         """
         self.__df = df
 
@@ -119,9 +123,31 @@ class SingularDisplay:
         # make the directories if they don't already exist
         os.makedirs(os.path.dirname(chart_filepath), exist_ok=True)
 
+        config = dict({
+            'scrollZoom': False,
+            'displayModeBar': False,
+            'editable': False
+        })
+
+        plot_div = offline.plot(fig, config=config, output_type='div')
+
+        new_fig = """
+                    <head>
+                    <body style="background-color:#202124;">
+                    </head>
+                    <body>
+                    {plot_div:s}
+                    </body>""".format(plot_div=plot_div)
+
         if show and not save:
             fig.show()
         if save and not show:
             fig.write_html(chart_filepath, auto_open=False)
+            with open(chart_filepath, 'w', encoding="utf-8") as file:
+                file.write(new_fig)
         if show and save:
-            fig.write_html(chart_filepath, auto_open=True)
+            with open(chart_filepath, 'w', encoding="utf-8") as file:
+                file.write(new_fig)
+            os.startfile(chart_filepath)
+
+        return chart_filepath

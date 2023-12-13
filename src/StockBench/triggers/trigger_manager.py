@@ -32,27 +32,32 @@ class TriggerManager:
         # sort the plugin triggers into their respective list
         self.__sort_plugin_sides()
 
-    def parse_strategy_timestamps(self) -> int:
+    def calculate_strategy_timestamps(self) -> int:
         """"""
         additional_days = 0
 
         # build a list of sub keys from the buy and sell sections
         keys = []
+        values = []
         if 'buy' in self.__strategy.keys():
             for key in self.__strategy['buy'].keys():
                 keys.append(key)
+                values.append(self.__strategy['buy'][key])
         if 'sell' in self.__strategy.keys():
             for key in self.__strategy['sell'].keys():
                 keys.append(key)
+                values.append(self.__strategy['sell'][key])
 
         # assemble a list of all triggers
         triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
         triggers = [x for n in (triggers, self.__sell_only_triggers) for x in n]
 
-        for key in keys:
+        for i in range(len(keys)):
+            key = keys[i]
+            value = values[i]
             for trigger in triggers:
                 if trigger.strategy_symbol in key:
-                    num = trigger.additional_days(key)
+                    num = trigger.additional_days(key, value)
                     if additional_days < num:
                         additional_days = num
 
@@ -102,7 +107,6 @@ class TriggerManager:
         was_triggered = False
         buy_keys = self.__strategy['buy'].keys()
         for key in buy_keys:
-            print(key)
             # handle triggers
             was_triggered = self.__handle_triggers(key, side='buy')
             if was_triggered:

@@ -6,9 +6,9 @@
 
 ### A back-tester for testing stock trading strategies with historical data.
 
-One Symbol                 |  Many Symbols
+Setup                      |  Results
 :-------------------------:|:-------------------------:
-![single](https://github.com/jocon15/StockBench/blob/master/images/TSLA.png)  |  ![multi](https://github.com/jocon15/StockBench/blob/master/images/multi_display.png)
+![single](https://github.com/jocon15/StockBench/blob/master/images/configuration_screen.png)  |  ![multi](https://github.com/jocon15/StockBench/blob/master/images/results_screen.png)
 
 
 

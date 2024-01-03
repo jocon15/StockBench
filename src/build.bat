@@ -1,0 +1,1 @@
+pyinstaller main.py --name StockBench --onefile --noconfirm --icon=icon\candle.ico

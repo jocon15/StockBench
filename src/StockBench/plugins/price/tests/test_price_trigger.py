@@ -5,7 +5,7 @@ from unittest.mock import patch
 # allows import from src directory
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
-from plugins.price.trigger import PriceTrigger
+from StockBench.plugins.price import PriceTrigger
 
 test_object = PriceTrigger('price')
 

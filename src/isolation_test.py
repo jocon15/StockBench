@@ -8,7 +8,7 @@ This file is the solution to the issue where the plugin system could not access 
 the application was run from the context of a single file in the /isolation_testing folder.
 
 Mangling the pathname did not work. The workaround is to call the individual method defined 
-in a singular method here to get the same application context as main.py. 
+in a singular method here to get the same application context as main_headless.py. 
 '''
 
 

@@ -24,7 +24,7 @@ from StockBench.gui.windows.simulation_results import SimulationResultsWindow
 from StockBench.constants import *
 
 
-class MainWindow(QMainWindow):
+class ConfigMainWindow(QMainWindow):
 
     window_stylesheet = """background-color: #202124;"""
 

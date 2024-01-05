@@ -20,9 +20,6 @@ class PluginManager:
 
     @staticmethod
     def load_plugins() -> dict:
-
-        # FIXME: plugin dir parameter is deprecated with removal of plugin system
-
         """Register the plugins here"""
 
         return {

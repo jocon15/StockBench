@@ -59,6 +59,8 @@ class ConfigMainWindow(QMainWindow):
         }
         """
 
+    error_label_style_sheet = """color:#dc143c;"""
+
     def __init__(self):
         super().__init__()
         # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
@@ -174,6 +176,10 @@ class ConfigMainWindow(QMainWindow):
         self.run_btn.setStyleSheet(self.run_btn_stylesheet)
         self.layout.addWidget(self.run_btn, alignment=Qt.AlignmentFlag.AlignRight)
 
+        self.error_message_box = QLabel()
+        self.error_message_box.setStyleSheet(self.error_label_style_sheet)
+        self.layout.addWidget(self.error_message_box)
+
         # main window styling
         self.setWindowTitle('Configuration')
         self.setGeometry(200, 200, 400, 500)
@@ -233,30 +239,53 @@ class ConfigMainWindow(QMainWindow):
 
     def on_run_btn_clicked(self):
         # load the strategy from the JSON file into a strategy python dict
-        with open(self.strategy_selection_box.strategy_filepath, 'r') as file:
-            strategy = json.load(file)
+
+        strategy_filepath = self.strategy_selection_box.strategy_filepath
+
+        if not os.path.isfile(strategy_filepath):
+            self.error_message_box.setText('You must select a strategy file!')
+            return
+        try:
+            with open(strategy_filepath, 'r') as file:
+                strategy = json.load(file)
+        except FileNotFoundError:
+            self.error_message_box.setText('Strategy file not found!')
+            return
+        except Exception as e:
+            self.error_message_box.setText(f'Uncaught error parsing strategy file: {e}')
 
         # inject the unix equivalent dates from the combobox to the dict
         strategy['start'] = int(time.time()) - self.simulation_length
         strategy['end'] = int(time.time())
 
+        # gather other data from UI components
+        simulation_symbol = self.symbol_tbox.text().upper().strip()
+        simulation_balance = float(self.balance_tbox.text())
+
+        if simulation_balance <= 0:
+            self.error_message_box.setText('Initial account balance must be a positive number!')
+            return
+
         # create a new simulations results window
         self.simulation_result_window = SimulationResultsWindow(self.worker, self.simulator, self.progress_bar_observer,
-                                                                float(self.balance_tbox.text()))
+                                                                simulation_balance)
 
         # pass the relevant information to the results window by setting its attributes
         self.simulation_result_window.strategy = strategy
-        self.simulation_result_window.symbol = self.symbol_tbox.text().upper().strip()
+        self.simulation_result_window.symbol = simulation_symbol
         self.simulation_result_window.logging = self.simulation_logging
         self.simulation_result_window.reporting = self.simulation_reporting
         self.simulation_result_window.charting = self.simulation_charting
+
+        # all error checks have passed, can now clear the error message box
+        self.error_message_box.setText('')
 
         # begin the simulation and progress checking timer
         self.simulation_result_window.begin()
 
         if self.simulation_charting:
             # show the results window if options is checked
-            self.simulation_result_window.showFullScreen()
+            self.simulation_result_window.showMaximized()
 
 
 class StrategySelection(QWidget):
@@ -281,8 +310,8 @@ class StrategySelection(QWidget):
 
     def on_select_file_btn_click(self):
         dlg = QFileDialog()
-        # dlg.setFileMode(QFileDialog.)
-        # dlg.setFilter("Text files (*.json)")
+        dlg.setFileMode(QFileDialog.FileMode.ExistingFiles)
+        dlg.setNameFilter("JSON (*.json)")
         if dlg.exec():
             filenames = dlg.selectedFiles()
             self.strategy_filepath = filenames[0]

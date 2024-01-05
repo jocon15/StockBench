@@ -74,7 +74,7 @@ class Simulator:
 
         self.__elapsed_time = None
 
-        self.__plugins = PluginManager.load_plugins('plugins')
+        self.__plugins = PluginManager.load_plugins()
 
         self.__stored_results = None
 

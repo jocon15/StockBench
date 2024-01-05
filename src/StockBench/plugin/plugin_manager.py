@@ -19,7 +19,7 @@ log = logging.getLogger()
 class PluginManager:
 
     @staticmethod
-    def load_plugins(plugin_dir: str) -> dict:
+    def load_plugins() -> dict:
 
         # FIXME: plugin dir parameter is deprecated with removal of plugin system
 

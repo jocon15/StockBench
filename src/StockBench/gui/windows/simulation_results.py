@@ -2,8 +2,7 @@ import os
 import sys
 
 from PyQt6 import QtCore, QtWebEngineWidgets
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QVBoxLayout, QGridLayout, QHBoxLayout, QWidget, QLabel, QProgressBar, QFrame, QPushButton
+from PyQt6.QtWidgets import QVBoxLayout, QGridLayout, QHBoxLayout, QWidget, QLabel, QProgressBar, QFrame
 from PyQt6.QtCore import QTimer, QThreadPool
 
 # current directory (peripherals)

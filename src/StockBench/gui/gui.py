@@ -242,7 +242,7 @@ class ConfigMainWindow(QMainWindow):
 
         strategy_filepath = self.strategy_selection_box.strategy_filepath
 
-        if not os.path.isfile(strategy_filepath):
+        if strategy_filepath is None or strategy_filepath == '':
             self.error_message_box.setText('You must select a strategy file!')
             return
         try:

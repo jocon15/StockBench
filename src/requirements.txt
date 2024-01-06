@@ -1,3 +1,4 @@
+# Use Python 3.8 - versions below are not compatible with PyQt6 and 3.9+ has distutils issues that crash pyinstaller
 pytest~=7.1.2
 setuptools~=65.6.3
 requests~=2.31.0

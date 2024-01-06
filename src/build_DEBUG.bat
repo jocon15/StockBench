@@ -1,1 +1,1 @@
-pyinstaller main.py --name StockBench --onefile --noconfirm --icon=icon\candle.ico
+pyinstaller main.py --name StockBench --onefile --noconfirm --icon=icon\candle.ico --version-file=version.YAML

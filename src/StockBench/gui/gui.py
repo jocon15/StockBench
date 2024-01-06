@@ -40,10 +40,10 @@ class ConfigMainWindow(QMainWindow):
     line_edit_stylesheet = """background-color:#303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
     text-indent:5px;"""
 
-    toggle_btn_enabled_stylesheet = """background-color:#04ba5f;display:block;margin-left:auto;margin-right:auto;
+    toggle_btn_enabled_stylesheet = """background-color:#04ba5f;margin-left:auto;margin-right:auto;
     width:40%;height:25px;border-radius:10px;"""
 
-    toggle_btn_disabled_stylesheet = """background-color: #303134;display: block;margin-left: auto;
+    toggle_btn_disabled_stylesheet = """background-color: #303134;margin-left: auto;
         margin-right:auto;width: 40%;height:25px;border-radius: 10px;"""
 
     run_btn_stylesheet = """

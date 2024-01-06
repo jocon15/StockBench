@@ -6,8 +6,8 @@ VSVersionInfo(
   ffi=FixedFileInfo(
 # filevers and prodvers should be always a tuple with four items: (1, 2, 3, 4)
 # Set not needed items to zero 0.
-filevers=(1, 9, 7, 30920),
-prodvers=(1, 9, 7, 30920),
+filevers=(0, 0, 0, 0),
+prodvers=(0, 0, 0, 0),
 # Contains a bitmask that specifies the valid bits 'flags'r
 mask=0x3f,
 # Contains a bitmask that specifies the Boolean attributes of the file.
@@ -29,14 +29,12 @@ StringFileInfo(
   [
   StringTable(
     u'040904B0',
-    [StringStruct(u'CompanyName', u'Apache Software Foundation'),
-    StringStruct(u'FileDescription', u'svn'),
-    StringStruct(u'FileVersion', u'1.9.7'),
-    StringStruct(u'InternalName', u'SVN'),
+    [StringStruct(u'FileDescription', u'StockBench Application'),
+    StringStruct(u'InternalName', u'StockBench'),
     StringStruct(u'LegalCopyright', u'Copyright (c) The Apache Software Foundation'),
-    StringStruct(u'OriginalFilename', u'svn.exe'),
-    StringStruct(u'ProductName', u'Subversion'),
-    StringStruct(u'ProductVersion', u'1.9.7 (r1800392)')])
+    StringStruct(u'OriginalFilename', u'StockBench.exe'),
+    StringStruct(u'ProductName', u'StockBench'),
+    StringStruct(u'ProductVersion', u'1.0.0')])
   ]), 
 VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
   ]

@@ -303,8 +303,10 @@ class Simulator:
             # create an export object
             exporter = Exporter()
             # export the data on a separate process
-            exporting_process = Process(target=exporter.export, args=(chopped_temp_df, self.__symbol))
-            exporting_process.start()
+            # exporting_process = Process(target=exporter.export, args=(chopped_temp_df, self.__symbol))
+            # exporting_process.start()
+            # synchronous charting
+            exporter.export(chopped_temp_df, self.__symbol)
 
         chart_filepath = ''
 

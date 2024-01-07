@@ -1,10 +1,10 @@
 # StockBench
 
 <p align="center">
-    <img src ="https://img.shields.io/badge/version-0.0.1-blueviolet.svg"/> <img src ="https://img.shields.io/badge/platform-windows-yellow.svg"/> <img src ="https://img.shields.io/badge/python-^3-blue.svg" /> <img src ="https://img.shields.io/github/license/jocon15/StockBench.svg?color=orange"/>
+    <img src ="https://img.shields.io/badge/version-1.0.0-blueviolet.svg"/> <img src ="https://img.shields.io/badge/platform-windows-yellow.svg"/> <img src ="https://img.shields.io/badge/python-^3-blue.svg" /> <img src ="https://img.shields.io/github/license/jocon15/StockBench.svg?color=orange"/>
 </p>
 
-### A back-tester for testing stock trading strategies with historical data.
+### A back-testing app for testing stock trading strategies with historical data.
 
 ![multi](https://github.com/jocon15/StockBench/blob/master/images/results_screen.png)
 
@@ -26,7 +26,7 @@ And just like that, you have simulated a strategy on historical data. Have fun!
 
 4. Build your strategy .JSON file. See [Building a Strategy](https://github.com/jocon15/StockBench/wiki/Building-a-Strategy)
 
-5. Run the executable.
+5. Run the StockBench.exe.
 
 6. Set your simuation parameters.
 

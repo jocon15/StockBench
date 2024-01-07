@@ -91,6 +91,10 @@ class SimulationResultsWindow(QWidget):
 
     def run_simulation(self) -> dict:
         # load the strategy into the simulator
+        if self.logging:
+            self.simulator.enable_logging()
+        if self.reporting:
+            self.simulator.enable_reporting()
         self.simulator.load_strategy(self.strategy)
         return self.simulator.run(self.symbol, show_chart=False, save_chart=True,
                                   progress_observer=self.progress_observer)

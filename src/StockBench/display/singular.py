@@ -15,7 +15,7 @@ class SingularDisplay:
     specific subplots details to make it easier to edit. This API simply aggregates the subplot objects and
     assembles the final parent plot that gets displayed to the user.
     """
-    def __init__(self, plugins: list):
+    def __init__(self, plugins):
         self.__df = None
 
         self.__plugins = plugins

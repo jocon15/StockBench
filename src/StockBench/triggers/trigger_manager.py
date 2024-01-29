@@ -14,7 +14,7 @@ class TriggerManager:
     The goal of the 2 API functions is to return a boolean. True = trigger hit. False = trigger not hit. Both of these
     return values hold for buy or sell.
     """
-    def __init__(self, strategy, plugins: list):
+    def __init__(self, strategy, plugins):
         # strategy does not get cleared
         self.__strategy = strategy
         # All below attributes get cleared after trigger call

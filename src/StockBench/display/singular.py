@@ -3,7 +3,6 @@ import logging
 import plotly.offline as offline
 from plotly.subplots import make_subplots
 from StockBench.function_tools.nonce import datetime_nonce
-from StockBench.plugin.plugin_interface import PluginInterface
 
 log = logging.getLogger()
 

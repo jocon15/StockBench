@@ -5,7 +5,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 
-from plugins.sma.trigger import SMATrigger
+from StockBench.plugins.sma.trigger import SMATrigger
 
 
 # create test object

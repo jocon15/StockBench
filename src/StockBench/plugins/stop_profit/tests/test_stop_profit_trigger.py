@@ -5,7 +5,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 
-from plugins.stop_profit.trigger import StopProfitTrigger
+from StockBench.plugins.stop_profit.trigger import StopProfitTrigger
 
 
 # create test object

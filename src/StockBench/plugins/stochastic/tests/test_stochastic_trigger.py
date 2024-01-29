@@ -5,7 +5,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 
-from plugins.stochastic.trigger import StochasticTrigger
+from StockBench.plugins.stochastic.trigger import StochasticTrigger
 
 
 # create test object

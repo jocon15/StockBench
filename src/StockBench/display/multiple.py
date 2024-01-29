@@ -2,7 +2,7 @@ import os
 import statistics
 import pandas as pd
 from .display_constants import *
-import plotly.graph_objects as fplt
+import plotly.graph_objects as plotter
 from plotly.subplots import make_subplots
 from StockBench.function_tools.nonce import datetime_nonce
 
@@ -75,7 +75,7 @@ class MultipleDisplay:
                 bar_colors.append(BEAR_RED)
         color_df['colors'] = bar_colors
 
-        return fplt.Bar(
+        return plotter.Bar(
             x=self.__get_symbols(),
             y=self.__get_total_pl_per_symbol(),
             marker_color=color_df['colors'])
@@ -87,7 +87,7 @@ class MultipleDisplay:
         else:
             bar_color = 'red'
 
-        return fplt.Indicator(
+        return plotter.Indicator(
             domain={'x': [0, 1], 'y': [0, 1]},
             value=indicator_value,
             mode="gauge+number+delta",
@@ -107,7 +107,7 @@ class MultipleDisplay:
         else:
             bar_color = 'red'
 
-        return fplt.Indicator(
+        return plotter.Indicator(
             domain={'x': [0, 1], 'y': [0, 1]},
             value=indicator_value,
             mode="gauge+number+delta",
@@ -120,7 +120,7 @@ class MultipleDisplay:
                        {'range': [0, 1000], 'color': "darkgrey"}]})
 
     def __trades_made_bar(self):
-        return fplt.Bar(
+        return plotter.Bar(
             x=self.__get_symbols(),
             y=self.__get_trades_per_symbol(),
             marker=dict(color=OFF_BLUE))

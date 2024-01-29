@@ -8,7 +8,6 @@ from .constants import *
 from time import perf_counter
 from datetime import datetime
 from .broker.broker import Broker
-from multiprocessing import Process
 from .export.export import Exporter
 from .position.position import Position
 from .display.singular import SingularDisplay

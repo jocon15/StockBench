@@ -5,7 +5,7 @@ from unittest.mock import patch
 # allows import out a directory
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
-from plugins.candlestick_color.trigger import CandlestickColorTrigger
+from StockBench.plugins.candlestick_color.trigger import CandlestickColorTrigger
 
 # create test object
 test_obj = CandlestickColorTrigger('color')

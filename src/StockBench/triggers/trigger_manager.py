@@ -192,10 +192,6 @@ class TriggerManager:
             return True
         else:
             # ===== OR Triggers =====
-
-            # the triggers are buy
-            trigger_hit = False
-
             # check all triggers
             for trigger in triggers:
                 if trigger.strategy_symbol in key:

@@ -7,7 +7,7 @@ from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 
-from plugins.rsi.trigger import RSITrigger
+from StockBench.plugins.rsi.trigger import RSITrigger
 
 
 # create test object

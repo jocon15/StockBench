@@ -8,7 +8,6 @@ from .constants import *
 from time import perf_counter
 from datetime import datetime
 from .broker.broker import Broker
-from multiprocessing import Process
 from .export.export import Exporter
 from .position.position import Position
 from .display.singular import SingularDisplay
@@ -319,7 +318,7 @@ class Simulator:
             # charting_process.start()
 
             # DEBUG: synchronous charting
-            # the plugins list may not be able to be multiprocessed
+            # the plugins list may not be able to be multi-processed
             chart_filepath = display.chart(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode)
 
         return {

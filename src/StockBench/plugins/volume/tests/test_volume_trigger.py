@@ -5,7 +5,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 
-from plugins.volume.trigger import VolumeTrigger
+from StockBench.plugins.volume.trigger import VolumeTrigger
 
 
 # create test object

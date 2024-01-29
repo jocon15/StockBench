@@ -3,7 +3,6 @@ import logging
 import plotly.offline as offline
 from plotly.subplots import make_subplots
 from StockBench.function_tools.nonce import datetime_nonce
-from StockBench.plugin.plugin_interface import PluginInterface
 
 log = logging.getLogger()
 
@@ -16,7 +15,7 @@ class SingularDisplay:
     specific subplots details to make it easier to edit. This API simply aggregates the subplot objects and
     assembles the final parent plot that gets displayed to the user.
     """
-    def __init__(self, plugins: list):
+    def __init__(self, plugins):
         self.__df = None
 
         self.__plugins = plugins
@@ -64,7 +63,7 @@ class SingularDisplay:
                 plugin_subplot = plugin.get_subplot()
                 if plugin_subplot is not None:
                     if column_name == plugin.get_data_name():  # FIXME: might make this a static var an change name
-                        if not plugin_subplot.is_OHLC_trace():
+                        if not plugin_subplot.is_ohlc_trace():
                             # concatenate the 2 lists (add element to list)
                             self.__subplot_objects = [x for n in (self.__subplot_objects, [plugin_subplot]) for x in n]
 
@@ -92,7 +91,7 @@ class SingularDisplay:
                 for plugin in self.__plugins:
                     plugin_subplot = plugin.get_subplot()
                     if plugin_subplot is not None:
-                        if plugin_subplot.is_OHLC_trace():
+                        if plugin_subplot.is_ohlc_trace():
                             for trace in plugin_subplot.get_traces(self.__df):
                                 traces.append(trace)
                 # now add all traces to the subplot on the figure

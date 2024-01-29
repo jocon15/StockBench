@@ -5,7 +5,7 @@ from unittest.mock import patch
 # allows import from src directory
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
-from StockBench.plugins.price import PriceTrigger
+from StockBench.plugins.price.price import PriceTrigger
 
 test_object = PriceTrigger('price')
 
@@ -19,6 +19,7 @@ def test_add_to_data():
         test_object.add_to_data('', '', '', None)
         assert True
     except Exception as e:
+        print(f'Unexpected exception {e}')
         assert False
 
 

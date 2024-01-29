@@ -6,7 +6,7 @@ from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
 # allows import from src directory
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
-from plugins.ema.trigger import EMATrigger
+from StockBench.plugins.ema.trigger import EMATrigger
 
 # create test object
 test_obj = EMATrigger('EMA')

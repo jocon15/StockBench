@@ -10,7 +10,7 @@ class Subplot:
     def get_type(self):
         return self._TYPE
 
-    def is_OHLC_trace(self):
+    def is_ohlc_trace(self):
         return self.__is_ohlc_trace
 
     @staticmethod

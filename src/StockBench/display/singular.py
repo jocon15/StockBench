@@ -63,7 +63,7 @@ class SingularDisplay:
                 plugin_subplot = plugin.get_subplot()
                 if plugin_subplot is not None:
                     if column_name == plugin.get_data_name():  # FIXME: might make this a static var an change name
-                        if not plugin_subplot.is_OHLC_trace():
+                        if not plugin_subplot.is_ohlc_trace():
                             # concatenate the 2 lists (add element to list)
                             self.__subplot_objects = [x for n in (self.__subplot_objects, [plugin_subplot]) for x in n]
 
@@ -91,7 +91,7 @@ class SingularDisplay:
                 for plugin in self.__plugins:
                     plugin_subplot = plugin.get_subplot()
                     if plugin_subplot is not None:
-                        if plugin_subplot.is_OHLC_trace():
+                        if plugin_subplot.is_ohlc_trace():
                             for trace in plugin_subplot.get_traces(self.__df):
                                 traces.append(trace)
                 # now add all traces to the subplot on the figure

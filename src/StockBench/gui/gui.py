@@ -21,6 +21,7 @@ from StockBench.gui.worker.worker import Worker
 from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.simulator import Simulator
 from StockBench.gui.windows.singular_results import SingularResultsWindow
+from StockBench.gui.windows.multi_results import MultiResultsWindow
 from StockBench.constants import *
 
 
@@ -404,7 +405,7 @@ class MultiConfigTab(QWidget):
         self.layout.addWidget(label)
 
         self.symbol_tbox = QLineEdit()
-        self.symbol_tbox.setText("MSFT")
+        self.symbol_tbox.setText("MSFT, AAPL")
         self.symbol_tbox.setStyleSheet(self.line_edit_stylesheet)
         self.layout.addWidget(self.symbol_tbox)
 
@@ -512,9 +513,7 @@ class MultiConfigTab(QWidget):
 
     def on_run_btn_clicked(self):
         # load the strategy from the JSON file into a strategy python dict
-
         strategy_filepath = self.strategy_selection_box.strategy_filepath
-
         if strategy_filepath is None or strategy_filepath == '':
             self.error_message_box.setText('You must select a strategy file!')
             return
@@ -532,20 +531,24 @@ class MultiConfigTab(QWidget):
         strategy['end'] = int(time.time())
 
         # gather other data from UI components
-        simulation_symbol = self.symbol_tbox.text().upper().strip()
+        raw_simulation_symbols = self.symbol_tbox.text().split(',')
+        simulation_symbols = []
+        for symbol in raw_simulation_symbols:
+            simulation_symbols.append(symbol.upper().strip())
         simulation_balance = float(self.balance_tbox.text())
 
+        # check the balance for negative numbers
         if simulation_balance <= 0:
             self.error_message_box.setText('Initial account balance must be a positive number!')
             return
 
         # create a new simulations results window
-        self.simulation_result_window = SingularResultsWindow(self.worker, self.simulator, self.progress_bar_observer,
-                                                              simulation_balance)
+        self.simulation_result_window = MultiResultsWindow(self.worker, self.simulator, self.progress_bar_observer,
+                                                           simulation_balance)
 
         # pass the relevant information to the results window by setting its attributes
         self.simulation_result_window.strategy = strategy
-        self.simulation_result_window.symbol = simulation_symbol
+        self.simulation_result_window.symbols = simulation_symbols
         self.simulation_result_window.logging = self.simulation_logging
         self.simulation_result_window.reporting = self.simulation_reporting
         self.simulation_result_window.charting = self.simulation_charting

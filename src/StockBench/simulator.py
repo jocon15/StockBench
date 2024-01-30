@@ -338,7 +338,8 @@ class Simulator:
                      save_individual_charts=False,
                      show_chart=True,
                      save_chart=False,
-                     dark_mode=True) -> list:
+                     dark_mode=True,
+                     progress_observer=None) -> dict:
         """Simulate a list of assets.
 
         Args:
@@ -348,9 +349,15 @@ class Simulator:
             show_chart (bool): Show the chart when finished.
             save_chart (bool): Save the chart when finished.
             dark_mode (bool): Build chart in dark mode.
+            progress_observer (any): Observer object to update progress to.
         """
         # disable printing for TQDM
         self.__running_multiple = True
+
+        # calculate the increment for the progress bar
+        increment = 1.0  # must supply default value
+        if progress_observer is not None:
+            increment = 100.0 / float(len(symbols))
 
         # simulate each symbol
         results = []
@@ -362,15 +369,31 @@ class Simulator:
                 result = self.run(symbol)
             results.append(result)
 
+            # update the progress
+            if progress_observer is not None:
+                progress_observer.update_progress(increment)
+
         # re-enable printing for TQDM
         self.__running_multiple = False
         # save the results in case the user wants to write them to file
         self.__stored_results = results
 
-        # create the display object
-        display = MultipleDisplay()
-        display.chart(results, show_chart, save_chart, dark_mode)
-        return results
+        chart_filepath = ''
+
+        if show_chart or save_chart:
+            # create the display object
+            display = MultipleDisplay()
+            chart_filepath = display.chart(results, show_chart, save_chart, dark_mode)
+
+        return {
+            'elapsed_time': self.__elapsed_time,
+            'trades_made': len(self.__position_archive),
+            'effectiveness': self.__analyzer.effectiveness(),
+            'average_profit_loss': self.__analyzer.avg_profit_loss(),
+            'total_profit_loss': self.__account.get_profit_loss(),
+            'account_value': self.__account.get_balance(),
+            'chart_filepath': chart_filepath
+        }
 
     def save_results_json(self, file_name=None):
         """Save results of a multiple simulation to a JSON file.

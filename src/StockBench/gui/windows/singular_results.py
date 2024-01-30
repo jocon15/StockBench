@@ -15,7 +15,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 
-class SimulationResultsWindow(QWidget):
+class SingularResultsWindow(QWidget):
     window_stylesheet = """background-color:#202124;"""
 
     progress_bar_stylesheet = """

@@ -15,7 +15,7 @@ from .display.multiple import MultipleDisplay
 from .simulation_data.data_manager import DataManager
 from .account.user_account import UserAccount
 from .function_tools.nonce import datetime_nonce
-from .plugin.plugin_manager import PluginManager
+from .indicator.indicator_manager import IndicatorManager
 from .analysis.analyzer import SimulationAnalyzer
 from .triggers.trigger_manager import TriggerManager
 
@@ -73,7 +73,7 @@ class Simulator:
 
         self.__elapsed_time = None
 
-        self.__plugins = PluginManager.load_plugins()
+        self.__indicators = IndicatorManager.load_indicators()
 
         self.__stored_results = None
 
@@ -161,7 +161,7 @@ class Simulator:
         # initialize the member variable
         self.__strategy = strategy
         # initialize the member object
-        self.__trigger_manager = TriggerManager(strategy, self.__plugins.values())
+        self.__trigger_manager = TriggerManager(strategy, self.__indicators.values())
 
     def run(self, symbol: str, show_chart=True, save_chart=False, dark_mode=True, progress_observer=None) -> dict:
         """Run a simulation on an asset.
@@ -311,14 +311,14 @@ class Simulator:
 
         if show_chart or save_chart:
             # create the display object
-            display = SingularDisplay(self.__plugins.values())
+            display = SingularDisplay(self.__indicators.values())
             # chart the data on a separate process
             # charting_process = Process(target=charting_API.chart,
             #                           args=(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode))
             # charting_process.start()
 
             # DEBUG: synchronous charting
-            # the plugins list may not be able to be multi-processed
+            # the indicators list may not be able to be multi-processed
             chart_filepath = display.chart(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode)
 
         return {

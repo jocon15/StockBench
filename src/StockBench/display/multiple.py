@@ -20,7 +20,7 @@ class MultipleDisplay:
         cols = 2
 
         chart_list = [[{"type": "bar"}, {"type": "indicator"}], [{"type": "bar"}, {"type": "indicator"}]]
-        chart_titles = ('Profit/Loss($)', '', 'Trades Made', '')
+        chart_titles = ('Profit/Loss per Symbol', '', 'Trades Made per Symbol', '')
 
         # Parent Plot
         fig = make_subplots(rows=rows,

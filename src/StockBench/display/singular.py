@@ -15,10 +15,10 @@ class SingularDisplay:
     specific subplots details to make it easier to edit. This API simply aggregates the subplot objects and
     assembles the final parent plot that gets displayed to the user.
     """
-    def __init__(self, plugins):
+    def __init__(self, indicators):
         self.__df = None
 
-        self.__plugins = plugins
+        self.__indicators = indicators
 
         # DO NOT ADD ANY to this list
         self.__subplot_objects = []
@@ -39,33 +39,33 @@ class SingularDisplay:
         """
         self.__df = df
 
-        # find the OHLC plugin
-        ohlc_plugin = None
-        for plugin in self.__plugins:
-            plugin_subplot = plugin.get_subplot()
-            if plugin_subplot is not None:
+        # find the OHLC indicator
+        ohlc_indicator = None
+        for indicator in self.__indicators:
+            indicator_subplot = indicator.get_subplot()
+            if indicator_subplot is not None:
                 try:
-                    if plugin_subplot.get_type()[0]['type'] == 'ohlc':
-                        ohlc_plugin = plugin
+                    if indicator_subplot.get_type()[0]['type'] == 'ohlc':
+                        ohlc_indicator = indicator
                         break
                 except KeyError:
                     continue
 
-        if not ohlc_plugin:
-            raise Exception('No OHLC plugin found, cannot chart!')
+        if not ohlc_indicator:
+            raise Exception('No OHLC indicator found, cannot chart!')
 
         # add ohlc to list
-        self.__subplot_objects.append(ohlc_plugin.get_subplot())
+        self.__subplot_objects.append(ohlc_indicator.get_subplot())
 
         # activate the subplot objects if evidence is found in the df
         for (column_name, column_data) in self.__df.items():
-            for plugin in self.__plugins:
-                plugin_subplot = plugin.get_subplot()
-                if plugin_subplot is not None:
-                    if column_name == plugin.get_data_name():  # FIXME: might make this a static var an change name
-                        if not plugin_subplot.is_ohlc_trace():
+            for indicator in self.__indicators:
+                indicator_subplot = indicator.get_subplot()
+                if indicator_subplot is not None:
+                    if column_name == indicator.get_data_name():
+                        if not indicator_subplot.is_ohlc_trace():
                             # concatenate the 2 lists (add element to list)
-                            self.__subplot_objects = [x for n in (self.__subplot_objects, [plugin_subplot]) for x in n]
+                            self.__subplot_objects = [x for n in (self.__subplot_objects, [indicator_subplot]) for x in n]
 
         # get the subplot types after all subplot objects have been established
         for subplot in self.__subplot_objects:
@@ -87,12 +87,12 @@ class SingularDisplay:
                 # get the traces from the subplot
                 for trace in subplot.get_traces(self.__df):
                     traces.append(trace)
-                # get the traces from all aux OHLC trace plugins
-                for plugin in self.__plugins:
-                    plugin_subplot = plugin.get_subplot()
-                    if plugin_subplot is not None:
-                        if plugin_subplot.is_ohlc_trace():
-                            for trace in plugin_subplot.get_traces(self.__df):
+                # get the traces from all aux OHLC trace indicators
+                for indicator in self.__indicators:
+                    indicator_subplot = indicator.get_subplot()
+                    if indicator_subplot is not None:
+                        if indicator_subplot.is_ohlc_trace():
+                            for trace in indicator_subplot.get_traces(self.__df):
                                 traces.append(trace)
                 # now add all traces to the subplot on the figure
                 for trace in traces:

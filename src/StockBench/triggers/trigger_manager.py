@@ -14,7 +14,7 @@ class TriggerManager:
     The goal of the 2 API functions is to return a boolean. True = trigger hit. False = trigger not hit. Both of these
     return values hold for buy or sell.
     """
-    def __init__(self, strategy, plugins):
+    def __init__(self, strategy, indicators):
         # strategy does not get cleared
         self.__strategy = strategy
         # All below attributes get cleared after trigger call
@@ -24,13 +24,13 @@ class TriggerManager:
         # ===== Add new triggers to check here =====
         # triggers that can result in a buy or sell
 
-        self.__plugins = plugins
+        self.__indicators = indicators
 
         self.__side_agnostic_triggers = []
         self.__buy_only_triggers = []
         self.__sell_only_triggers = []
-        # sort the plugin triggers into their respective list
-        self.__sort_plugin_sides()
+        # sort the indicator triggers into their respective list
+        self.__sort_indicator_sides()
 
     def calculate_strategy_timestamps(self) -> int:
         """"""
@@ -140,14 +140,14 @@ class TriggerManager:
         self.__clear_attributes()
         return was_triggered
 
-    def __sort_plugin_sides(self):
-        for plugin in self.__plugins:
-            if plugin.get_trigger().get_side() == Trigger.AGNOSTIC:
-                self.__side_agnostic_triggers.append(plugin.get_trigger())
-            elif plugin.get_trigger().get_side() == Trigger.SELL:
-                self.__sell_only_triggers.append(plugin.get_trigger())
+    def __sort_indicator_sides(self):
+        for indicator in self.__indicators:
+            if indicator.get_trigger().get_side() == Trigger.AGNOSTIC:
+                self.__side_agnostic_triggers.append(indicator.get_trigger())
+            elif indicator.get_trigger().get_side() == Trigger.SELL:
+                self.__sell_only_triggers.append(indicator.get_trigger())
             else:
-                self.__buy_only_triggers.append(plugin.get_trigger())
+                self.__buy_only_triggers.append(indicator.get_trigger())
 
     def __clear_attributes(self):
         self.__data_object = None

@@ -4,7 +4,7 @@ from isolation_testing.sma import run_sma
 from isolation_testing.stochastic import run_stochastic
 
 '''
-This file is the solution to the issue where the plugin system could not access /plugins when
+This file is the solution to the issue where the indicator system could not access /indicators when
 the application was run from the context of a single file in the /isolation_testing folder.
 
 Mangling the pathname did not work. The workaround is to call the individual method defined 

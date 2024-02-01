@@ -2,6 +2,7 @@ import os
 import statistics
 import pandas as pd
 from .display_constants import *
+import plotly.offline as offline
 import plotly.graph_objects as plotter
 from plotly.subplots import make_subplots
 from StockBench.function_tools.nonce import datetime_nonce
@@ -25,8 +26,8 @@ class MultipleDisplay:
         fig = make_subplots(rows=rows,
                             cols=cols,
                             shared_xaxes=True,
-                            vertical_spacing=0.1,
-                            horizontal_spacing=0.01,
+                            vertical_spacing=0.15,
+                            horizontal_spacing=0.05,
                             specs=chart_list,
                             subplot_titles=chart_titles)
 
@@ -56,12 +57,32 @@ class MultipleDisplay:
         # make the directories if they don't already exist
         os.makedirs(os.path.dirname(chart_filepath), exist_ok=True)
 
+        config = dict({
+            'scrollZoom': False,
+            'displayModeBar': False,
+            'editable': False
+        })
+
+        plot_div = offline.plot(fig, config=config, output_type='div')
+
+        new_fig = """
+                            <head>
+                            <body style="background-color:#202124;">
+                            </head>
+                            <body>
+                            {plot_div:s}
+                            </body>""".format(plot_div=plot_div)
+
         if show and not save:
             fig.show()
         if save and not show:
             fig.write_html(chart_filepath, auto_open=False)
+            with open(chart_filepath, 'w', encoding="utf-8") as file:
+                file.write(new_fig)
         if show and save:
-            fig.write_html(chart_filepath, auto_open=True)
+            with open(chart_filepath, 'w', encoding="utf-8") as file:
+                file.write(new_fig)
+            os.startfile(chart_filepath)
 
         return chart_filepath
 
@@ -91,7 +112,7 @@ class MultipleDisplay:
             domain={'x': [0, 1], 'y': [0, 1]},
             value=indicator_value,
             mode="gauge+number+delta",
-            title={'text': "Global Average Effectiveness(%)"},
+            title={'text': "Total Average Effectiveness(%)"},
             # delta={'reference': 0},
             gauge={'axis': {'range': [0, 100]},
                    'bar': {'color': bar_color},
@@ -111,7 +132,7 @@ class MultipleDisplay:
             domain={'x': [0, 1], 'y': [0, 1]},
             value=indicator_value,
             mode="gauge+number+delta",
-            title={'text': "Global Average Profit/Loss($)"},
+            title={'text': "Total Average Profit/Loss($)"},
             # delta={'reference': 0},
             gauge={'axis': {'range': [-1000, 1000]},
                    'bar': {'color': bar_color},

@@ -26,8 +26,8 @@ class MultipleDisplay:
         fig = make_subplots(rows=rows,
                             cols=cols,
                             shared_xaxes=True,
-                            vertical_spacing=0.1,
-                            horizontal_spacing=0.01,
+                            vertical_spacing=0.15,
+                            horizontal_spacing=0.05,
                             specs=chart_list,
                             subplot_titles=chart_titles)
 

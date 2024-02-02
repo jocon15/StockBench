@@ -17,6 +17,7 @@ from .account.user_account import UserAccount
 from .function_tools.nonce import datetime_nonce
 from .indicator.indicator_manager import IndicatorManager
 from .analysis.analyzer import SimulationAnalyzer
+from .analysis.multi_analyzer import MultiAnalyzer
 from .triggers.trigger_manager import TriggerManager
 
 log = logging.getLogger()
@@ -55,6 +56,7 @@ class Simulator:
         self.__data_manager = None  # gets constructed once we request the data
         self.__trigger_manager = None  # gets constructed once we have the strategy
         self.__analyzer = None  # gets constructed once we have the completed simulation data
+        self.__multi_analyzer = None  # gets constructed once we have the completed simulation data
 
         self.__strategy = None
         self.__start_date_unix = None
@@ -179,7 +181,7 @@ class Simulator:
 
         self.__symbol = symbol.upper()
 
-        # reset the attributes()
+        # reset the attributes to clear any data from previous runs
         self.__reset_attributes()
 
         # check the strategy for errors
@@ -352,6 +354,8 @@ class Simulator:
         if progress_observer is not None:
             increment = 100.0 / float(len(symbols))
 
+        start_time = perf_counter()
+
         # simulate each symbol
         results = []
         for symbol in tqdm(symbols, f'Simulating {len(symbols)} symbols'):
@@ -378,13 +382,18 @@ class Simulator:
             display = MultipleDisplay()
             chart_filepath = display.chart(results, show_chart, save_chart, dark_mode)
 
+        self.__multi_analyzer = MultiAnalyzer(results)
+
+        end_time = perf_counter()
+        elapsed_time = round(end_time - start_time, 4)
+
         return {
-            'elapsed_time': self.__elapsed_time,
-            'trades_made': len(self.__position_archive),
-            'effectiveness': self.__analyzer.effectiveness(),
-            'average_profit_loss': self.__analyzer.avg_profit_loss(),
-            'total_profit_loss': self.__account.get_profit_loss(),
-            'account_value': self.__account.get_balance(),
+            'elapsed_time': elapsed_time,
+            'trades_made': self.__multi_analyzer.total_trades_made(),
+            'effectiveness': self.__multi_analyzer.total_effectiveness(),
+            # 'average_profit_loss': self.__analyzer.avg_profit_loss(),
+            'total_profit_loss': self.__multi_analyzer.total_profit_loss(),
+            # 'account_value': self.__account.get_balance(),
             'chart_filepath': chart_filepath
         }
 

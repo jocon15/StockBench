@@ -382,10 +382,10 @@ class Simulator:
             display = MultipleDisplay()
             chart_filepath = display.chart(results, show_chart, save_chart, dark_mode)
 
+        self.__multi_analyzer = MultiAnalyzer(results)
+
         end_time = perf_counter()
         elapsed_time = round(end_time - start_time, 4)
-
-        self.__multi_analyzer = MultiAnalyzer(results)
 
         return {
             'elapsed_time': elapsed_time,

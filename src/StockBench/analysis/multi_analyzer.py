@@ -12,23 +12,29 @@
 class MultiAnalyzer:
     def __init__(self, results):
         self.__results = results
+        self.__total_trades_cache = None
 
     def total_trades_made(self):
         total_trades_made = 0
         for result in self.__results:
             total_trades_made += int(result['trades_made'])
 
+        self.__total_trades_cache = total_trades_made
         return total_trades_made
 
     def total_effectiveness(self):
-        total_trades = 0.0
+        total_trades = 0
         positive_outcome_trades = 0.0
         for result in self.__results:
-            total_trades += float(result['trades_made'])
+            if self.__total_trades_cache is None:
+                total_trades += float(result['trades_made'])
             positive_outcome_trades += float(result['effectiveness']) * float(result['trades_made'])
 
+        if self.__total_trades_cache is not None:
+            total_trades = self.__total_trades_cache
+
         try:
-            return (positive_outcome_trades / total_trades) * 100
+            return round((positive_outcome_trades / total_trades) * 100, 2)
         except ZeroDivisionError:
             return 0.0
 

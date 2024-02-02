@@ -20,7 +20,7 @@ class MultipleDisplay:
         cols = 2
 
         chart_list = [[{"type": "bar"}, {"type": "indicator"}], [{"type": "bar"}, {"type": "indicator"}]]
-        chart_titles = ('Profit/Loss per Symbol', '', 'Trades Made per Symbol', '')
+        chart_titles = ('Profit/Loss per Symbol ($)', '', 'Trades Made per Symbol', '')
 
         # Parent Plot
         fig = make_subplots(rows=rows,
@@ -111,17 +111,16 @@ class MultipleDisplay:
         return plotter.Indicator(
             domain={'x': [0, 1], 'y': [0, 1]},
             value=indicator_value,
-            mode="gauge+number+delta",
-            title={'text': "Total Average Effectiveness(%)"},
-            # delta={'reference': 0},
+            number={"font": {"size": 40}},
+            mode="gauge+number",
+            title={'text': "Average Effectiveness Across all Trades (%)"},
             gauge={'axis': {'range': [0, 100]},
                    'bar': {'color': bar_color},
                    'steps': [
-                       {'range': [0, 50], 'color': "darkgrey"},
-                       {'range': [50, 100], 'color': "darkgrey"}]})
+                       {'range': [0, 50], 'color': PLOTLY_DARK_BACKGROUND},
+                       {'range': [50, 100], 'color': PLOTLY_DARK_BACKGROUND}]})
 
     def __avg_profit_loss_gauge(self):
-
         indicator_value = self.__get_avg_pl()
         if indicator_value > 0:
             bar_color = 'green'
@@ -131,14 +130,14 @@ class MultipleDisplay:
         return plotter.Indicator(
             domain={'x': [0, 1], 'y': [0, 1]},
             value=indicator_value,
-            mode="gauge+number+delta",
-            title={'text': "Total Average Profit/Loss($)"},
-            # delta={'reference': 0},
+            number={"font": {"size": 40}},
+            mode="gauge+number",
+            title={'text': "Average Total Profit/Loss per Symbol ($)"},
             gauge={'axis': {'range': [-1000, 1000]},
                    'bar': {'color': bar_color},
                    'steps': [
-                       {'range': [-1000, 0], 'color': "darkgrey"},
-                       {'range': [0, 1000], 'color': "darkgrey"}]})
+                       {'range': [-1000, 0], 'color': PLOTLY_DARK_BACKGROUND},
+                       {'range': [0, 1000], 'color': PLOTLY_DARK_BACKGROUND}]})
 
     def __trades_made_bar(self):
         return plotter.Bar(

@@ -8,6 +8,9 @@ class SimulationAnalyzer:
         self.__effectiveness_cache = None
         self.__average_profit_loss_cache = None
 
+    def total_trades(self) -> int:
+        return len(self.__positions)
+
     def effectiveness(self) -> float:
         """Calculates the effectiveness of the simulation.
 

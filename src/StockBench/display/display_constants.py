@@ -7,6 +7,7 @@ BEAR_RED = '#de1b1b'
 OFF_BLUE = '#5a77fa'
 SMA_COLOR = '#f2eeed'
 EMA_COLOR = '#a6f3f5'
+PLOTLY_DARK_BACKGROUND = '#111111'
 
 # ============ Generic Sizes =================
 MOVING_AVERAGE_LINE_WIDTH = 1.2

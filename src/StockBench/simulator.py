@@ -17,7 +17,6 @@ from .account.user_account import UserAccount
 from .function_tools.nonce import datetime_nonce
 from .indicator.indicator_manager import IndicatorManager
 from .analysis.analyzer import SimulationAnalyzer
-from .analysis.multi_analyzer import MultiAnalyzer
 from .triggers.trigger_manager import TriggerManager
 
 log = logging.getLogger()
@@ -55,8 +54,6 @@ class Simulator:
         self.__broker = Broker()
         self.__data_manager = None  # gets constructed once we request the data
         self.__trigger_manager = None  # gets constructed once we have the strategy
-        self.__analyzer = None  # gets constructed once we have the completed simulation data
-        self.__multi_analyzer = None  # gets constructed once we have the completed simulation data
 
         self.__strategy = None
         self.__start_date_unix = None
@@ -68,12 +65,11 @@ class Simulator:
         self.__buy_list = []
         self.__sell_list = []
 
-        self.__position_archive = []
+        self.__single_simulation_position_archive = []
+        self.__multiple_simulation_position_archive = []
 
         self.__reporting_on = False
         self.__running_multiple = False
-
-        self.__elapsed_time = None
 
         self.__indicators = IndicatorManager.load_indicators()
 
@@ -181,8 +177,8 @@ class Simulator:
 
         self.__symbol = symbol.upper()
 
-        # reset the attributes to clear any data from previous runs
-        self.__reset_attributes()
+        # reset the attributes()
+        self.__reset_singular_attributes()
 
         # check the strategy for errors
         self.__error_check_strategy()
@@ -282,30 +278,24 @@ class Simulator:
 
         log.info('Simulation complete!')
 
-        # initiate the analyzer with the positions data
-        self.__analyzer = SimulationAnalyzer(self.__position_archive)
+        # initiate an analyzer with the positions data
+        analyzer = SimulationAnalyzer(self.__single_simulation_position_archive)
 
         end_time = perf_counter()
-        self.__elapsed_time = round(end_time - start_time, 4)
+        elapsed_time = round(end_time - start_time, 4)
 
-        log.info('====== Simulation Results ======')
-        log.info(f'Elapsed time  : {self.__elapsed_time} seconds')
-        log.info(f'Trades made   : {len(self.__position_archive)}')
-        log.info(f'Effectiveness : {self.__analyzer.effectiveness()}')
-        log.info(f'Avg. P/L      : {self.__analyzer.avg_profit_loss()}')
-        log.info(f'Total P/L     : {self.__account.get_profit_loss()}')
-        log.info(f'Account Value : {self.__account.get_balance()}')
-        log.info('================================')
+        # elapsed_time, trade_count, effectiveness, avg_pl, total_pl
+        self.__log_results(elapsed_time, analyzer.total_trades(), analyzer.effectiveness(), analyzer.avg_profit_loss(),
+                           analyzer.total_profit_loss(), 'N/A')
 
         if not self.__running_multiple:
-            self.__print_results()
+            self.__print_results(elapsed_time, analyzer.total_trades(), analyzer.effectiveness(),
+                                 analyzer.avg_profit_loss(),
+                                 analyzer.total_profit_loss(), 'N/A')
 
         if self.__reporting_on:
             # create an export object
             exporter = Exporter()
-            # export the data on a separate process
-            # exporting_process = Process(target=exporter.export, args=(chopped_temp_df, self.__symbol))
-            # exporting_process.start()
             # synchronous charting
             exporter.export(chopped_temp_df, self.__symbol)
 
@@ -318,10 +308,10 @@ class Simulator:
 
         return {
             'symbol': self.__symbol,
-            'elapsed_time': self.__elapsed_time,
-            'trades_made': len(self.__position_archive),
-            'effectiveness': self.__analyzer.effectiveness(),
-            'average_profit_loss': self.__analyzer.avg_profit_loss(),
+            'elapsed_time': elapsed_time,
+            'trades_made': len(self.__single_simulation_position_archive),
+            'effectiveness': analyzer.effectiveness(),
+            'average_profit_loss': analyzer.avg_profit_loss(),
             'total_profit_loss': self.__account.get_profit_loss(),
             'account_value': self.__account.get_balance(),
             'chart_filepath': chart_filepath
@@ -346,24 +336,30 @@ class Simulator:
             dark_mode (bool): Build chart in dark mode.
             progress_observer (any): Observer object to update progress to.
         """
+        start_time = perf_counter()
+
         # disable printing for TQDM
         self.__running_multiple = True
+
+        # reset the multiple simulation archived symbols to clear any data from previous multiple simulations
+        self.__multiple_simulation_position_archive = []
 
         # calculate the increment for the progress bar
         increment = 1.0  # must supply default value
         if progress_observer is not None:
             increment = 100.0 / float(len(symbols))
 
-        start_time = perf_counter()
-
         # simulate each symbol
         results = []
         for symbol in tqdm(symbols, f'Simulating {len(symbols)} symbols'):
             try:
+                # run the simulation for that symbol
                 result = self.run(symbol, show_individual_charts, save_individual_charts)
+                # capture the archived positions from the symbol run in the multiple positions list
+                self.__multiple_simulation_position_archive += self.__single_simulation_position_archive
             except Exception as e:
-                print(f'\nException {type(e)} caught, retrying...')
-                result = self.run(symbol)
+                print(f'\nException {e} caught trying to simulate symbol: {symbol}, skipping...')
+                continue
             results.append(result)
 
             # update the progress
@@ -375,25 +371,24 @@ class Simulator:
         # save the results in case the user wants to write them to file
         self.__stored_results = results
 
-        chart_filepath = ''
+        # initiate an analyzer with the positions data
+        analyzer = SimulationAnalyzer(self.__multiple_simulation_position_archive)
 
+        chart_filepath = ''
         if show_chart or save_chart:
             # create the display object
             display = MultipleDisplay()
             chart_filepath = display.chart(results, show_chart, save_chart, dark_mode)
-
-        self.__multi_analyzer = MultiAnalyzer(results)
 
         end_time = perf_counter()
         elapsed_time = round(end_time - start_time, 4)
 
         return {
             'elapsed_time': elapsed_time,
-            'trades_made': self.__multi_analyzer.total_trades_made(),
-            'effectiveness': self.__multi_analyzer.total_effectiveness(),
-            # 'average_profit_loss': self.__analyzer.avg_profit_loss(),
-            'total_profit_loss': self.__multi_analyzer.total_profit_loss(),
-            # 'account_value': self.__account.get_balance(),
+            'trades_made': analyzer.total_trades(),
+            'effectiveness': analyzer.effectiveness(),
+            'average_profit_loss': analyzer.avg_profit_loss(),
+            'total_profit_loss': analyzer.total_profit_loss(),
             'chart_filepath': chart_filepath
         }
 
@@ -453,11 +448,11 @@ class Simulator:
         display.chart(results, True, save_chart, dark_mode)
         return results
 
-    def __reset_attributes(self):
+    def __reset_singular_attributes(self):
         self.__account.reset()
         self.__buy_list = []
         self.__sell_list = []
-        self.__position_archive = []
+        self.__single_simulation_position_archive = []
 
     def __error_check_strategy(self):
         """Check the strategy for errors"""
@@ -558,7 +553,7 @@ class Simulator:
         position.close_position(_sell_price)
 
         # add the position to the archive
-        self.__position_archive.append(position)
+        self.__single_simulation_position_archive.append(position)
 
         # calculate the deposit amount
         deposit_amount = round(_sell_price * position.get_share_count(), 3)
@@ -577,15 +572,27 @@ class Simulator:
         print(f'Running simulation on {self.__symbol}...')
         print('================================')
 
-    def __print_results(self):
+    @staticmethod
+    def __log_results(elapsed_time, trade_count, effectiveness, avg_pl, total_pl, account_value):
+        log.info('====== Simulation Results ======')
+        log.info(f'Elapsed time  : {elapsed_time} seconds')
+        log.info(f'Trades made   : {trade_count}')
+        log.info(f'Effectiveness : {effectiveness}')
+        log.info(f'Avg. P/L      : {avg_pl}')
+        log.info(f'Total P/L     : {total_pl}')
+        log.info(f'Account Value : {account_value}')
+        log.info('================================')
+
+    @staticmethod
+    def __print_results(elapsed_time, trade_count, effectiveness, avg_pl, total_pl, account_value):
         """Prints the simulation results."""
         print('====== Simulation Results ======')
-        print(f'Elapsed time  : {self.__elapsed_time} seconds')
-        print(f'Trades made   : {len(self.__position_archive)}')
-        print(f'Effectiveness : {self.__analyzer.effectiveness()}%')
-        print(f'Avg. P/L      : ${self.__analyzer.avg_profit_loss()}')
-        print(f'Total P/L     : ${self.__account.get_profit_loss()}')
-        print(f'Account Value : ${self.__account.get_balance()}')
+        print(f'Elapsed time  : {elapsed_time} seconds')
+        print(f'Trades made   : {trade_count}')
+        print(f'Effectiveness : {effectiveness}%')
+        print(f'Avg. P/L      : ${avg_pl}')
+        print(f'Total P/L     : ${total_pl}')
+        print(f'Account Value : ${account_value}')
         print('================================')
 
     @staticmethod

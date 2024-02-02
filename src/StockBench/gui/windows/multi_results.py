@@ -174,32 +174,32 @@ class SimulationResultsTextBox(QFrame):
         self.data_label3.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.data_label3, 4, 2)
 
-        label = QLabel()
-        label.setText('Avg. P/L:')
-        label.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(label, 5, 1)
-
-        self.data_label4 = QLabel()
-        self.data_label4.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(self.data_label4, 5, 2)
+        # label = QLabel()
+        # label.setText('Avg. P/L:')
+        # label.setStyleSheet(self.numeric_results_stylesheet)
+        # self.layout.addWidget(label, 5, 1)
+        #
+        # self.data_label4 = QLabel()
+        # self.data_label4.setStyleSheet(self.numeric_results_stylesheet)
+        # self.layout.addWidget(self.data_label4, 5, 2)
 
         label = QLabel()
         label.setText('Total P/L:')
         label.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(label, 6, 1)
+        self.layout.addWidget(label, 5, 1)
 
         self.data_label5 = QLabel()
         self.data_label5.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(self.data_label5, 6, 2)
+        self.layout.addWidget(self.data_label5, 5, 2)
 
-        label = QLabel()
-        label.setText('Account Value:')
-        label.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(label, 7, 1)
-
-        self.data_label6 = QLabel()
-        self.data_label6.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(self.data_label6, 7, 2)
+        # label = QLabel()
+        # label.setText('Account Value:')
+        # label.setStyleSheet(self.numeric_results_stylesheet)
+        # self.layout.addWidget(label, 7, 1)
+        #
+        # self.data_label6 = QLabel()
+        # self.data_label6.setStyleSheet(self.numeric_results_stylesheet)
+        # self.layout.addWidget(self.data_label6, 7, 2)
 
         self.layout.setRowStretch(self.layout.rowCount(), 1)
         self.layout.setColumnStretch(self.layout.columnCount(), 1)
@@ -214,8 +214,8 @@ class SimulationResultsTextBox(QFrame):
 
         self.data_label3.setText(f'{simulation_results["effectiveness"]}')
 
-        self.data_label4.setText(f'{simulation_results["average_profit_loss"]}')
+        # self.data_label4.setText(f'{simulation_results["average_profit_loss"]}')
 
         self.data_label5.setText(f'{simulation_results["total_profit_loss"]}')
 
-        self.data_label6.setText(f'{simulation_results["account_value"]}')
+        # self.data_label6.setText(f'{simulation_results["account_value"]}')

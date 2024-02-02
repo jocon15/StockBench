@@ -312,13 +312,6 @@ class Simulator:
         if show_chart or save_chart:
             # create the display object
             display = SingularDisplay(self.__indicators.values())
-            # chart the data on a separate process
-            # charting_process = Process(target=charting_API.chart,
-            #                           args=(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode))
-            # charting_process.start()
-
-            # DEBUG: synchronous charting
-            # the indicators list may not be able to be multi-processed
             chart_filepath = display.chart(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode)
 
         return {

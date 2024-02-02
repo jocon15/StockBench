@@ -181,7 +181,7 @@ class Simulator:
 
         self.__symbol = symbol.upper()
 
-        # reset the attributes()
+        # reset the attributes to clear any data from previous runs
         self.__reset_attributes()
 
         # check the strategy for errors

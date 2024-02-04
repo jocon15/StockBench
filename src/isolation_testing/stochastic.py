@@ -24,7 +24,7 @@ def run_stochastic():
 
     stock_sim.load_strategy(strategy)
 
-    stock_sim.run('MSFT', show_chart=True, save_chart=False, dark_mode=True)
+    stock_sim.run('MSFT', show_chart=True, save_option=False, dark_mode=True)
 
     # print(stock_sim.run_multiple(['AAPL', 'MSFT', 'TSLA']))
 

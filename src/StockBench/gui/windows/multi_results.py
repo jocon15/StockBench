@@ -14,6 +14,8 @@ parent = os.path.dirname(current)
 # add the parent (src) to path
 sys.path.append(parent)
 
+from StockBench.display.display import Display
+
 
 class MultiResultsWindow(QWidget):
     window_stylesheet = """background-color:#202124;"""
@@ -45,7 +47,7 @@ class MultiResultsWindow(QWidget):
         self.symbols = None
         self.logging = False
         self.reporting = False
-        self.charting = False
+        self.unique_chart_saving = False
 
         self.layout = QVBoxLayout()
 
@@ -96,7 +98,11 @@ class MultiResultsWindow(QWidget):
         if self.reporting:
             self.simulator.enable_reporting()
         self.simulator.load_strategy(self.strategy)
-        return self.simulator.run_multiple(self.symbols, show_chart=False, save_chart=True,
+        if self.unique_chart_saving:
+            save_option = Display.UNIQUE_SAVE
+        else:
+            save_option = Display.TEMP_SAVE
+        return self.simulator.run_multiple(self.symbols, show_chart=False, save_option=save_option,
                                            progress_observer=self.progress_observer)
 
     def render_updated_data(self, simulation_results: dict):

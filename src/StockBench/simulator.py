@@ -1,5 +1,4 @@
 import os
-import json
 import time
 import math
 import logging
@@ -389,6 +388,7 @@ class Simulator:
             'total_profit_loss': analyzer.total_profit_loss(),
             'chart_filepath': chart_filepath
         }
+
     def __reset_singular_attributes(self):
         self.__account.reset()
         self.__buy_list = []

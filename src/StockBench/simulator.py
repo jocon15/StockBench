@@ -278,14 +278,10 @@ class Simulator:
         end_time = perf_counter()
         elapsed_time = round(end_time - start_time, 4)
 
-        # elapsed_time, trade_count, effectiveness, avg_pl, total_pl
-        self.__log_results(elapsed_time, analyzer.total_trades(), analyzer.effectiveness(), analyzer.avg_profit_loss(),
-                           analyzer.total_profit_loss(), 'N/A')
+        self.__log_results(elapsed_time, analyzer, self.__account.get_balance())
 
         if not self.__running_multiple:
-            self.__print_singular_results(elapsed_time, analyzer.total_trades(), analyzer.effectiveness(),
-                                          analyzer.avg_profit_loss(),
-                                          analyzer.total_profit_loss(), 'N/A')
+            self.__print_singular_results(elapsed_time, analyzer, self.__account.get_balance())
 
         if self.__reporting_on:
             # create an export object
@@ -305,7 +301,7 @@ class Simulator:
             'elapsed_time': elapsed_time,
             'trades_made': len(self.__single_simulation_position_archive),
             'effectiveness': analyzer.effectiveness(),
-            'average_profit_loss': analyzer.avg_profit_loss(),
+            'average_profit_loss': analyzer.average_profit_loss(),
             'total_profit_loss': self.__account.get_profit_loss(),
             'account_value': self.__account.get_balance(),
             'chart_filepath': chart_filepath
@@ -379,7 +375,7 @@ class Simulator:
             'elapsed_time': elapsed_time,
             'trades_made': analyzer.total_trades(),
             'effectiveness': analyzer.effectiveness(),
-            'average_profit_loss': analyzer.avg_profit_loss(),
+            'average_profit_loss': analyzer.average_profit_loss(),
             'total_profit_loss': analyzer.total_profit_loss(),
             'chart_filepath': chart_filepath
         }
@@ -520,25 +516,25 @@ class Simulator:
         log.info('=============================')
 
     @staticmethod
-    def __log_results(elapsed_time, trade_count, effectiveness, avg_pl, total_pl, account_value):
+    def __log_results(elapsed_time, analyzer: SimulationAnalyzer, account_value):
         log.info('====== Simulation Results ======')
         log.info(f'Elapsed time  : {elapsed_time} seconds')
-        log.info(f'Trades made   : {trade_count}')
-        log.info(f'Effectiveness : {effectiveness}%')
-        log.info(f'Avg. P/L      : ${avg_pl}')
-        log.info(f'Total P/L     : ${total_pl}')
+        log.info(f'Trades made   : {analyzer.total_trades()}')
+        log.info(f'Effectiveness : {analyzer.effectiveness()}%')
+        log.info(f'Avg. P/L      : ${analyzer.average_profit_loss()}')
+        log.info(f'Total P/L     : ${analyzer.total_profit_loss()}')
         log.info(f'Account Value : ${account_value}')
         log.info('================================')
 
     @staticmethod
-    def __print_singular_results(elapsed_time, trade_count, effectiveness, avg_pl, total_pl, account_value):
+    def __print_singular_results(elapsed_time, analyzer: SimulationAnalyzer, account_value):
         """Prints the simulation results."""
         print('====== Simulation Results ======')
         print(f'Elapsed time  : {elapsed_time} seconds')
-        print(f'Trades made   : {trade_count}')
-        print(f'Effectiveness : {effectiveness}%')
-        print(f'Avg. P/L      : ${avg_pl}')
-        print(f'Total P/L     : ${total_pl}')
+        print(f'Trades made   : {analyzer.total_trades()}')
+        print(f'Effectiveness : {analyzer.effectiveness()}%')
+        print(f'Avg. P/L      : ${analyzer.average_profit_loss()}')
+        print(f'Total P/L     : ${analyzer.total_profit_loss()}')
         print(f'Account Value : ${account_value}')
         print('================================')
 

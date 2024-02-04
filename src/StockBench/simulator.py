@@ -514,32 +514,32 @@ class Simulator:
         log.info(f'End Date        : {end}')
         log.info(f'Window Size     : {focus_days}')
         log.info(f'Trade-able Days : {tradable_days}')
-        log.info(f'Account Value   : ${balance}')
+        log.info(f'Account Value   : $ {balance}')
         log.info('=============================')
 
     @staticmethod
-    def __log_results(elapsed_time, analyzer: SimulationAnalyzer, account_value):
+    def __log_results(elapsed_time, analyzer: SimulationAnalyzer, balance):
         log.info('====== Simulation Results ======')
-        log.info(f'Elapsed time  : {elapsed_time} seconds')
-        log.info(f'Trades made   : {analyzer.total_trades()}')
+        log.info(f'Elapsed Time  : {elapsed_time} seconds')
+        log.info(f'Trades Made   : {analyzer.total_trades()}')
         log.info(f'Effectiveness : {analyzer.effectiveness()}%')
-        log.info(f'Total P/L     : ${analyzer.total_profit_loss()}')
-        log.info(f'Avg. P/L      : ${analyzer.average_profit_loss()}')
-        log.info(f'Stddev P/L    : ${analyzer.standard_profit_loss_deviation()}')
-        log.info(f'Account Value : ${account_value}')
+        log.info(f'Total P/L     : $ {analyzer.total_profit_loss()}')
+        log.info(f'Avg. P/L      : $ {analyzer.average_profit_loss()}')
+        log.info(f'Stddev P/L    : $ {analyzer.standard_profit_loss_deviation()}')
+        log.info(f'Account Value : $ {balance}')
         log.info('================================')
 
     @staticmethod
-    def __print_singular_results(elapsed_time, analyzer: SimulationAnalyzer, account_value):
+    def __print_singular_results(elapsed_time, analyzer: SimulationAnalyzer, balance):
         """Prints the simulation results."""
         print('====== Simulation Results ======')
-        print(f'Elapsed time  : {elapsed_time} seconds')
-        print(f'Trades made   : {analyzer.total_trades()}')
+        print(f'Elapsed Time  : {elapsed_time} seconds')
+        print(f'Trades Made   : {analyzer.total_trades()}')
         print(f'Effectiveness : {analyzer.effectiveness()}%')
-        print(f'Total P/L     : ${analyzer.total_profit_loss()}')
-        print(f'Avg. P/L      : ${analyzer.average_profit_loss()}')
-        print(f'Stddev P/L    : ${analyzer.standard_profit_loss_deviation()}')
-        print(f'Account Value : ${account_value}')
+        print(f'Total P/L     : $ {analyzer.total_profit_loss()}')
+        print(f'Avg. P/L      : $ {analyzer.average_profit_loss()}')
+        print(f'Stddev P/L    : $ {analyzer.standard_profit_loss_deviation()}')
+        print(f'Account Value : $ {balance}')
         print('================================')
 
     @staticmethod

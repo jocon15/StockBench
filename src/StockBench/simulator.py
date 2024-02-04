@@ -389,63 +389,6 @@ class Simulator:
             'total_profit_loss': analyzer.total_profit_loss(),
             'chart_filepath': chart_filepath
         }
-
-    def save_results_json(self, file_name=None):
-        """Save results of a multiple simulation to a JSON file.
-
-        Args:
-            file_name (str): The desired name of the JSON file.
-        """
-        # validate file name
-        if not file_name:
-            log.debug('No filename entered, using nonce')
-            file_name = f'save_{datetime_nonce()}'
-        else:
-            file_name = file_name.replace('.json', '')
-
-        # check for stored results
-        if self.__stored_results:
-            filepath = os.path.join(self.__save_folder, f'{file_name}.json')
-            os.makedirs(os.path.dirname(filepath), exist_ok=True)
-
-            # write the results to the file
-            with open(filepath, 'w') as file:
-                json.dump(self.__stored_results, file, indent=4)
-        else:
-            log.debug('No stored data available to write! Run a multi-sim first using run_multiple()')
-
-    def display_results_from_json(self, file_name: str, save_chart=False):
-        """Load and display the results from a JSON file.
-
-        Args:
-            file_name (str): The name of the file to load.
-            save_chart (bool): Save the chart that was displayed.
-        """
-        # validate file name
-        if file_name == '':
-            log.error('Save file name cannot be empty string')
-            raise Exception('Save file name cannot be empty string')
-        else:
-            file_name = file_name.replace('.json', '')
-
-        # build the path of the JSON file
-        filepath = os.path.join(self.__save_folder, f'{file_name}.json')
-
-        # make sure that the JSON file actually exists
-        if not os.path.exists(filepath):
-            log.error('Specified save file does not exist!')
-            raise Exception('Specified save file does not exist!')
-
-        # load the data from the file
-        with open(filepath, 'r') as file:
-            results = json.load(file)
-
-        # display the loaded data
-        display = MultipleDisplay()
-        # FIXME: take a look at this (outer fxn variables) does this fxn even get use???
-        display.chart(results, True, save_chart)
-        return results
-
     def __reset_singular_attributes(self):
         self.__account.reset()
         self.__buy_list = []

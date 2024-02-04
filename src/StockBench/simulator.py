@@ -299,10 +299,11 @@ class Simulator:
         return {
             'symbol': self.__symbol,
             'elapsed_time': elapsed_time,
-            'trades_made': len(self.__single_simulation_position_archive),
+            'trades_made': analyzer.total_trades(),
             'effectiveness': analyzer.effectiveness(),
+            'total_profit_loss': analyzer.total_profit_loss(),
             'average_profit_loss': analyzer.average_profit_loss(),
-            'total_profit_loss': self.__account.get_profit_loss(),
+            'standard_profit_loss_deviation': analyzer.standard_profit_loss_deviation(),
             'account_value': self.__account.get_balance(),
             'chart_filepath': chart_filepath
         }
@@ -375,8 +376,9 @@ class Simulator:
             'elapsed_time': elapsed_time,
             'trades_made': analyzer.total_trades(),
             'effectiveness': analyzer.effectiveness(),
-            'average_profit_loss': analyzer.average_profit_loss(),
             'total_profit_loss': analyzer.total_profit_loss(),
+            'average_profit_loss': analyzer.average_profit_loss(),
+            'standard_profit_loss_deviation': analyzer.standard_profit_loss_deviation(),
             'chart_filepath': chart_filepath
         }
 
@@ -521,8 +523,9 @@ class Simulator:
         log.info(f'Elapsed time  : {elapsed_time} seconds')
         log.info(f'Trades made   : {analyzer.total_trades()}')
         log.info(f'Effectiveness : {analyzer.effectiveness()}%')
-        log.info(f'Avg. P/L      : ${analyzer.average_profit_loss()}')
         log.info(f'Total P/L     : ${analyzer.total_profit_loss()}')
+        log.info(f'Avg. P/L      : ${analyzer.average_profit_loss()}')
+        log.info(f'Stddev P/L    : ${analyzer.standard_profit_loss_deviation()}')
         log.info(f'Account Value : ${account_value}')
         log.info('================================')
 
@@ -533,8 +536,9 @@ class Simulator:
         print(f'Elapsed time  : {elapsed_time} seconds')
         print(f'Trades made   : {analyzer.total_trades()}')
         print(f'Effectiveness : {analyzer.effectiveness()}%')
-        print(f'Avg. P/L      : ${analyzer.average_profit_loss()}')
         print(f'Total P/L     : ${analyzer.total_profit_loss()}')
+        print(f'Avg. P/L      : ${analyzer.average_profit_loss()}')
+        print(f'Stddev P/L    : ${analyzer.standard_profit_loss_deviation()}')
         print(f'Account Value : ${account_value}')
         print('================================')
 

@@ -20,7 +20,7 @@ class MultipleDisplay(Display):
         cols = 2
 
         chart_list = [[{"type": "bar"}, {"type": "indicator"}], [{"type": "bar"}, {"type": "indicator"}]]
-        chart_titles = ('Profit/Loss per Symbol ($)', '', 'Trades Made per Symbol', '')
+        chart_titles = ('Total Profit/Loss per Symbol ($)', '', 'Trades Made per Symbol', '')
 
         # Parent Plot
         fig = make_subplots(rows=rows,
@@ -105,7 +105,7 @@ class MultipleDisplay(Display):
         return plotter.Indicator(
             domain={'x': [0, 1], 'y': [0, 1]},
             value=indicator_value,
-            number={"font": {"size": 40}},
+            number={"font": {"size": 55}},
             mode="gauge+number",
             title={'text': "Average Effectiveness Across all Trades (%)"},
             gauge={'axis': {'range': [0, 100]},
@@ -124,7 +124,7 @@ class MultipleDisplay(Display):
         return plotter.Indicator(
             domain={'x': [0, 1], 'y': [0, 1]},
             value=indicator_value,
-            number={"font": {"size": 40}},
+            number={"font": {"size": 55}},
             mode="gauge+number",
             title={'text': "Average Total Profit/Loss per Symbol ($)"},
             gauge={'axis': {'range': [-1000, 1000]},

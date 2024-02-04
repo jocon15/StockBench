@@ -10,6 +10,7 @@ from datetime import datetime
 from .broker.broker import Broker
 from .export.export import Exporter
 from .position.position import Position
+from .display.display import Display
 from .display.singular import SingularDisplay
 from .display.multiple import MultipleDisplay
 from .simulation_data.data_manager import DataManager
@@ -161,14 +162,13 @@ class Simulator:
         # initialize the member object
         self.__trigger_manager = TriggerManager(strategy, self.__indicators.values())
 
-    def run(self, symbol: str, show_chart=True, save_chart=False, dark_mode=True, progress_observer=None) -> dict:
+    def run(self, symbol: str, show_chart=True, save_option=Display.TEMP_SAVE, progress_observer=None) -> dict:
         """Run a simulation on an asset.
 
         Args:
             symbol (str): The symbol to run the simulation on.
             show_chart (bool): Show the chart when finished.
-            save_chart (bool): Save the chart when finished.
-            dark_mode (bool): Build chart in dark mode.
+            save_option (int): Save the chart when finished.
             progress_observer (any): Observer object to update progress to.
         """
         # set the objects symbol to the passed value, so we can use it everywhere
@@ -301,10 +301,10 @@ class Simulator:
 
         chart_filepath = ''
 
-        if show_chart or save_chart:
+        if show_chart or save_option:
             # create the display object
             display = SingularDisplay(self.__indicators.values())
-            chart_filepath = display.chart(chopped_temp_df, self.__symbol, show_chart, save_chart, dark_mode)
+            chart_filepath = display.chart(chopped_temp_df, self.__symbol, show_chart, save_option)
 
         return {
             'symbol': self.__symbol,
@@ -322,8 +322,7 @@ class Simulator:
                      show_individual_charts=False,
                      save_individual_charts=False,
                      show_chart=True,
-                     save_chart=False,
-                     dark_mode=True,
+                     save_option=Display.TEMP_SAVE,
                      progress_observer=None) -> dict:
         """Simulate a list of assets.
 
@@ -332,8 +331,7 @@ class Simulator:
             show_individual_charts (bool): Show a chart for each symbol.
             save_individual_charts (bool): Save the chart for each symbol.
             show_chart (bool): Show the chart when finished.
-            save_chart (bool): Save the chart when finished.
-            dark_mode (bool): Build chart in dark mode.
+            save_option (int): Save the chart when finished.
             progress_observer (any): Observer object to update progress to.
         """
         start_time = perf_counter()
@@ -375,10 +373,10 @@ class Simulator:
         analyzer = SimulationAnalyzer(self.__multiple_simulation_position_archive)
 
         chart_filepath = ''
-        if show_chart or save_chart:
+        if show_chart or save_option:
             # create the display object
             display = MultipleDisplay()
-            chart_filepath = display.chart(results, show_chart, save_chart, dark_mode)
+            chart_filepath = display.chart(results, show_chart, save_option)
 
         end_time = perf_counter()
         elapsed_time = round(end_time - start_time, 4)
@@ -416,13 +414,12 @@ class Simulator:
         else:
             log.debug('No stored data available to write! Run a multi-sim first using run_multiple()')
 
-    def display_results_from_json(self, file_name: str, save_chart=False, dark_mode=True):
+    def display_results_from_json(self, file_name: str, save_chart=False):
         """Load and display the results from a JSON file.
 
         Args:
             file_name (str): The name of the file to load.
             save_chart (bool): Save the chart that was displayed.
-            dark_mode (bool): Build chart in dark mode.
         """
         # validate file name
         if file_name == '':
@@ -445,7 +442,8 @@ class Simulator:
 
         # display the loaded data
         display = MultipleDisplay()
-        display.chart(results, True, save_chart, dark_mode)
+        # FIXME: take a look at this (outer fxn variables) does this fxn even get use???
+        display.chart(results, True, save_chart)
         return results
 
     def __reset_singular_attributes(self):

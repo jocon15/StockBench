@@ -1,4 +1,3 @@
-import os
 import statistics
 import pandas as pd
 from .display_constants import *
@@ -6,14 +5,15 @@ import plotly.offline as offline
 import plotly.graph_objects as plotter
 from plotly.subplots import make_subplots
 from StockBench.function_tools.nonce import datetime_nonce
+from StockBench.display.display import Display
 
 
-class MultipleDisplay:
+class MultipleDisplay(Display):
 
     def __init__(self):
         self.__data = None
 
-    def chart(self, data, show=True, save=False, dark_mode=True) -> str:
+    def chart(self, data, show=True, save_option=Display.TEMP_SAVE) -> str:
         self.__data = data
 
         rows = 2
@@ -44,18 +44,8 @@ class MultipleDisplay:
         fig.add_trace(self.__avg_profit_loss_gauge(), row=2, col=2)
 
         # set the layout
-        if dark_mode:
-            fig.update_layout(template='plotly_dark', title=f'Simulation Results for {len(self.__data)} Symbols',
-                              xaxis_rangeslider_visible=False, showlegend=False)
-        else:
-            fig.update_layout(title=f'Simulation Results for {len(self.__data)} Symbols',
-                              xaxis_rangeslider_visible=False, showlegend=False)
-
-        # build the filepath
-        chart_filepath = os.path.join('display', f'display_{datetime_nonce()}.html')
-
-        # make the directories if they don't already exist
-        os.makedirs(os.path.dirname(chart_filepath), exist_ok=True)
+        fig.update_layout(template='plotly_dark', title=f'Simulation Results for {len(self.__data)} Symbols',
+                          xaxis_rangeslider_visible=False, showlegend=False)
 
         config = dict({
             'scrollZoom': False,
@@ -65,7 +55,7 @@ class MultipleDisplay:
 
         plot_div = offline.plot(fig, config=config, output_type='div')
 
-        new_fig = """
+        formatted_fig = """
                             <head>
                             <body style="background-color:#202124;">
                             </head>
@@ -73,16 +63,20 @@ class MultipleDisplay:
                             {plot_div:s}
                             </body>""".format(plot_div=plot_div)
 
-        if show and not save:
+        if save_option == Display.TEMP_SAVE:
+            # save chart as temporary file - will be overwritten by any new chart
+            filename = 'temp_chart.html'
+            chart_filepath = self.save_chart(formatted_fig, filename)
+        elif save_option == Display.UNIQUE_SAVE:
+            # save chart as unique file for persistent saving
+            filename = f'multi_{datetime_nonce()}.html'
+            chart_filepath = self.save_chart(formatted_fig, filename)
+        else:
+            # no chart was saved
+            chart_filepath = ''
+
+        if show:
             fig.show()
-        if save and not show:
-            fig.write_html(chart_filepath, auto_open=False)
-            with open(chart_filepath, 'w', encoding="utf-8") as file:
-                file.write(new_fig)
-        if show and save:
-            with open(chart_filepath, 'w', encoding="utf-8") as file:
-                file.write(new_fig)
-            os.startfile(chart_filepath)
 
         return chart_filepath
 

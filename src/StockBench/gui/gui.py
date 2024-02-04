@@ -47,8 +47,8 @@ class ConfigMainWindow(QMainWindow):
 
         # main window styling (do it first to prevent window shifting)
         self.setWindowTitle('Configuration')
-        self.setGeometry(200, 200, 400, 500)
-        self.setFixedSize(400, 500)
+        self.setGeometry(200, 100, 400, 600)
+        self.setFixedSize(400, 600)
 
         self.layout = QVBoxLayout()
 
@@ -122,7 +122,8 @@ class SingularConfigTab(QWidget):
         self.simulation_length = None
         self.simulation_logging = False
         self.simulation_reporting = False
-        self.simulation_charting = True
+        self.simulation_unique_chart_saving = False
+        self.simulation_show_results_window = True
 
         self.layout = QVBoxLayout()
 
@@ -199,16 +200,28 @@ class SingularConfigTab(QWidget):
         self.layout.addWidget(self.reporting_btn)
 
         label = QLabel()
-        label.setText('Charting:')
+        label.setText('Save Unique Chart:')
         label.setStyleSheet("""color: #FFF;""")
         self.layout.addWidget(label)
 
-        self.charting_btn = QPushButton()
-        self.charting_btn.setCheckable(True)
-        self.charting_btn.setText('ON')
-        self.charting_btn.setStyleSheet(self.toggle_btn_enabled_stylesheet)
-        self.charting_btn.clicked.connect(self.on_charting_btn_clicked)  # noqa
-        self.layout.addWidget(self.charting_btn)
+        self.unique_chart_save_btn = QPushButton()
+        self.unique_chart_save_btn.setCheckable(True)
+        self.unique_chart_save_btn.setText('OFF')
+        self.unique_chart_save_btn.setStyleSheet(self.toggle_btn_disabled_stylesheet)
+        self.unique_chart_save_btn.clicked.connect(self.on_chart_saving_btn_clicked)  # noqa
+        self.layout.addWidget(self.unique_chart_save_btn)
+
+        label = QLabel()
+        label.setText('Show Results:')
+        label.setStyleSheet("""color: #FFF;""")
+        self.layout.addWidget(label)
+
+        self.show_sim_results_btn = QPushButton()
+        self.show_sim_results_btn.setCheckable(True)
+        self.show_sim_results_btn.setText('ON')
+        self.show_sim_results_btn.setStyleSheet(self.toggle_btn_enabled_stylesheet)
+        self.show_sim_results_btn.clicked.connect(self.on_show_results_btn_clicked)  # noqa
+        self.layout.addWidget(self.show_sim_results_btn)
 
         self.run_btn = QPushButton()
         self.run_btn.setFixedSize(60, 30)
@@ -246,15 +259,25 @@ class SingularConfigTab(QWidget):
             self.reporting_btn.setText('OFF')
             self.reporting_btn.setStyleSheet(self.toggle_btn_disabled_stylesheet)
 
-    def on_charting_btn_clicked(self):
-        if self.charting_btn.isChecked():
-            self.simulation_charting = True
-            self.charting_btn.setText('ON')
-            self.charting_btn.setStyleSheet(self.toggle_btn_enabled_stylesheet)
+    def on_chart_saving_btn_clicked(self):
+        if self.unique_chart_save_btn.isChecked():
+            self.simulation_unique_chart_saving = True
+            self.unique_chart_save_btn.setText('ON')
+            self.unique_chart_save_btn.setStyleSheet(self.toggle_btn_enabled_stylesheet)
         else:
-            self.simulation_charting = False
-            self.charting_btn.setText('OFF')
-            self.charting_btn.setStyleSheet(self.toggle_btn_disabled_stylesheet)
+            self.simulation_unique_chart_saving = False
+            self.unique_chart_save_btn.setText('OFF')
+            self.unique_chart_save_btn.setStyleSheet(self.toggle_btn_disabled_stylesheet)
+
+    def on_show_results_btn_clicked(self):
+        if self.show_sim_results_btn.isChecked():
+            self.simulation_show_results_window = True
+            self.show_sim_results_btn.setText('ON')
+            self.show_sim_results_btn.setStyleSheet(self.toggle_btn_enabled_stylesheet)
+        else:
+            self.simulation_show_results_window = False
+            self.show_sim_results_btn.setText('OFF')
+            self.show_sim_results_btn.setStyleSheet(self.toggle_btn_disabled_stylesheet)
 
     def on_simulation_length_cbox_index_changed(self, index):
         if index == 0:
@@ -302,7 +325,7 @@ class SingularConfigTab(QWidget):
         self.simulation_result_window.symbol = simulation_symbol
         self.simulation_result_window.logging = self.simulation_logging
         self.simulation_result_window.reporting = self.simulation_reporting
-        self.simulation_result_window.charting = self.simulation_charting
+        self.simulation_result_window.unique_chart_saving = self.simulation_unique_chart_saving
 
         # all error checks have passed, can now clear the error message box
         self.error_message_box.setText('')
@@ -310,8 +333,8 @@ class SingularConfigTab(QWidget):
         # begin the simulation and progress checking timer
         self.simulation_result_window.begin()
 
-        if self.simulation_charting:
-            # show the results window if options is checked
+        if self.simulation_show_results_window:
+            # show the results window if option is checked
             self.simulation_result_window.showMaximized()
 
 
@@ -369,7 +392,8 @@ class MultiConfigTab(QWidget):
         self.simulation_length = None
         self.simulation_logging = False
         self.simulation_reporting = False
-        self.simulation_charting = True
+        self.simulation_unique_chart_saving = False
+        self.simulation_show_results_window = True
 
         self.layout = QVBoxLayout()
 
@@ -446,16 +470,28 @@ class MultiConfigTab(QWidget):
         self.layout.addWidget(self.reporting_btn)
 
         label = QLabel()
-        label.setText('Charting:')
+        label.setText('Save Unique Charts:')
         label.setStyleSheet("""color: #FFF;""")
         self.layout.addWidget(label)
 
-        self.charting_btn = QPushButton()
-        self.charting_btn.setCheckable(True)
-        self.charting_btn.setText('ON')
-        self.charting_btn.setStyleSheet(self.toggle_btn_enabled_stylesheet)
-        self.charting_btn.clicked.connect(self.on_charting_btn_clicked)  # noqa
-        self.layout.addWidget(self.charting_btn)
+        self.unique_chart_save_btn = QPushButton()
+        self.unique_chart_save_btn.setCheckable(True)
+        self.unique_chart_save_btn.setText('OFF')
+        self.unique_chart_save_btn.setStyleSheet(self.toggle_btn_disabled_stylesheet)
+        self.unique_chart_save_btn.clicked.connect(self.on_chart_saving_btn_clicked)  # noqa
+        self.layout.addWidget(self.unique_chart_save_btn)
+
+        label = QLabel()
+        label.setText('Show Results:')
+        label.setStyleSheet("""color: #FFF;""")
+        self.layout.addWidget(label)
+
+        self.show_sim_results_btn = QPushButton()
+        self.show_sim_results_btn.setCheckable(True)
+        self.show_sim_results_btn.setText('ON')
+        self.show_sim_results_btn.setStyleSheet(self.toggle_btn_enabled_stylesheet)
+        self.show_sim_results_btn.clicked.connect(self.on_show_results_btn_clicked)  # noqa
+        self.layout.addWidget(self.show_sim_results_btn)
 
         self.run_btn = QPushButton()
         self.run_btn.setFixedSize(60, 30)
@@ -493,15 +529,25 @@ class MultiConfigTab(QWidget):
             self.reporting_btn.setText('OFF')
             self.reporting_btn.setStyleSheet(self.toggle_btn_disabled_stylesheet)
 
-    def on_charting_btn_clicked(self):
-        if self.charting_btn.isChecked():
-            self.simulation_charting = True
-            self.charting_btn.setText('ON')
-            self.charting_btn.setStyleSheet(self.toggle_btn_enabled_stylesheet)
+    def on_chart_saving_btn_clicked(self):
+        if self.unique_chart_save_btn.isChecked():
+            self.simulation_unique_chart_saving = True
+            self.unique_chart_save_btn.setText('ON')
+            self.unique_chart_save_btn.setStyleSheet(self.toggle_btn_enabled_stylesheet)
         else:
-            self.simulation_charting = False
-            self.charting_btn.setText('OFF')
-            self.charting_btn.setStyleSheet(self.toggle_btn_disabled_stylesheet)
+            self.simulation_unique_chart_saving = False
+            self.unique_chart_save_btn.setText('OFF')
+            self.unique_chart_save_btn.setStyleSheet(self.toggle_btn_disabled_stylesheet)
+
+    def on_show_results_btn_clicked(self):
+        if self.show_sim_results_btn.isChecked():
+            self.simulation_show_results_window = True
+            self.show_sim_results_btn.setText('ON')
+            self.show_sim_results_btn.setStyleSheet(self.toggle_btn_enabled_stylesheet)
+        else:
+            self.simulation_show_results_window = False
+            self.show_sim_results_btn.setText('OFF')
+            self.show_sim_results_btn.setStyleSheet(self.toggle_btn_disabled_stylesheet)
 
     def on_simulation_length_cbox_index_changed(self, index):
         if index == 0:
@@ -551,7 +597,7 @@ class MultiConfigTab(QWidget):
         self.simulation_result_window.symbols = simulation_symbols
         self.simulation_result_window.logging = self.simulation_logging
         self.simulation_result_window.reporting = self.simulation_reporting
-        self.simulation_result_window.charting = self.simulation_charting
+        self.simulation_result_window.unique_chart_saving = self.simulation_unique_chart_saving
 
         # all error checks have passed, can now clear the error message box
         self.error_message_box.setText('')
@@ -559,8 +605,8 @@ class MultiConfigTab(QWidget):
         # begin the simulation and progress checking timer
         self.simulation_result_window.begin()
 
-        if self.simulation_charting:
-            # show the results window if options is checked
+        if self.simulation_show_results_window:
+            # show the results window if option is checked
             self.simulation_result_window.showMaximized()
 
 

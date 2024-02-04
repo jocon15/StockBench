@@ -20,7 +20,6 @@ class Broker:
         self.__API_KEY = os.environ['ALPACA_API_KEY']
         self.__SECRET_KEY = os.environ['ALPACA_SECRET_KEY']
 
-        # self.__BASE_URL = 'https://api.alpaca.markets'
         self.__BARS_URL = 'https://data.alpaca.markets/v2/stocks/bars?'
         self.__HEADERS = {'APCA-API-KEY-ID': self.__API_KEY, 'APCA-API-SECRET-KEY': self.__SECRET_KEY}
         self.__timeout = timeout

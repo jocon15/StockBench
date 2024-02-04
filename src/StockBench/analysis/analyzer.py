@@ -79,7 +79,7 @@ class SimulationAnalyzer:
         if not self.__standard_profit_loss_deviation_cache:
             # update the cached value
             if self.total_trades() > 0:
-                self.__standard_profit_loss_deviation_cache = statistics.pstdev(self.__profit_loss_list)
+                self.__standard_profit_loss_deviation_cache = round(statistics.pstdev(self.__profit_loss_list), 3)
             else:
                 self.__standard_profit_loss_deviation_cache = 0.0
         return self.__standard_profit_loss_deviation_cache

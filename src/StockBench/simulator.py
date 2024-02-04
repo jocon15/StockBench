@@ -208,14 +208,9 @@ class Simulator:
 
         log.info(f'Setup for symbol: {self.__symbol} complete')
 
-        log.info('==== Simulation Details =====')
-        log.info(f'Symbol          : {self.__symbol}')
-        log.info(f'Start Date      : {self.__unix_to_string(self.__start_date_unix)}')
-        log.info(f'End Date        : {self.__unix_to_string(self.__end_date_unix)}')
-        log.info(f'Window Size     : {days_in_focus}')
-        log.info(f'Trade-able Days : {trade_able_days}')
-        log.info(f'Account Value   : {self.__account.get_balance()}')
-        log.info('=============================')
+        self.__log_details(self.__symbol, self.__unix_to_string(self.__start_date_unix),
+                           self.__unix_to_string(self.__end_date_unix), days_in_focus, trade_able_days,
+                           self.__account.get_balance())
 
         if not self.__running_multiple:
             self.__print_header()
@@ -288,9 +283,9 @@ class Simulator:
                            analyzer.total_profit_loss(), 'N/A')
 
         if not self.__running_multiple:
-            self.__print_results(elapsed_time, analyzer.total_trades(), analyzer.effectiveness(),
-                                 analyzer.avg_profit_loss(),
-                                 analyzer.total_profit_loss(), 'N/A')
+            self.__print_singular_results(elapsed_time, analyzer.total_trades(), analyzer.effectiveness(),
+                                          analyzer.avg_profit_loss(),
+                                          analyzer.total_profit_loss(), 'N/A')
 
         if self.__reporting_on:
             # create an export object
@@ -514,18 +509,29 @@ class Simulator:
         print('================================')
 
     @staticmethod
+    def __log_details(symbol, start, end, focus_days, tradable_days, balance):
+        log.info('==== Simulation Details =====')
+        log.info(f'Symbol          : {symbol}')
+        log.info(f'Start Date      : {start}')
+        log.info(f'End Date        : {end}')
+        log.info(f'Window Size     : {focus_days}')
+        log.info(f'Trade-able Days : {tradable_days}')
+        log.info(f'Account Value   : ${balance}')
+        log.info('=============================')
+
+    @staticmethod
     def __log_results(elapsed_time, trade_count, effectiveness, avg_pl, total_pl, account_value):
         log.info('====== Simulation Results ======')
         log.info(f'Elapsed time  : {elapsed_time} seconds')
         log.info(f'Trades made   : {trade_count}')
-        log.info(f'Effectiveness : {effectiveness}')
-        log.info(f'Avg. P/L      : {avg_pl}')
-        log.info(f'Total P/L     : {total_pl}')
-        log.info(f'Account Value : {account_value}')
+        log.info(f'Effectiveness : {effectiveness}%')
+        log.info(f'Avg. P/L      : ${avg_pl}')
+        log.info(f'Total P/L     : ${total_pl}')
+        log.info(f'Account Value : ${account_value}')
         log.info('================================')
 
     @staticmethod
-    def __print_results(elapsed_time, trade_count, effectiveness, avg_pl, total_pl, account_value):
+    def __print_singular_results(elapsed_time, trade_count, effectiveness, avg_pl, total_pl, account_value):
         """Prints the simulation results."""
         print('====== Simulation Results ======')
         print(f'Elapsed time  : {elapsed_time} seconds')

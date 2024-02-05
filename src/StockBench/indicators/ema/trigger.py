@@ -99,6 +99,10 @@ class EMATrigger(Trigger):
 
                 # get the length of the slope window
                 slope_window_length = int(nums[1])
+
+                if slope_window_length < 2:
+                    raise Exception('Slope window lengths cannot be less than 2')
+
                 # data request length is window - 1 to account for the current day index being a part of the window
                 slope_data_request_length = slope_window_length - 1
 

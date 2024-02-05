@@ -14,7 +14,7 @@ from .display.singular import SingularDisplay
 from .display.multiple import MultipleDisplay
 from .simulation_data.data_manager import DataManager
 from .account.user_account import UserAccount
-from .function_tools.nonce import datetime_nonce
+from .function_tools.nonce import datetime_timestamp
 from .indicator.indicator_manager import IndicatorManager
 from .analysis.analyzer import SimulationAnalyzer
 from .triggers.trigger_manager import TriggerManager
@@ -86,7 +86,7 @@ class Simulator:
         log.setLevel(logging.INFO)
 
         # build the filepath
-        user_logging_filepath = os.path.join(self.__logs_folder, f'RunLog_{datetime_nonce()}')
+        user_logging_filepath = os.path.join(self.__logs_folder, f'RunLog_{datetime_timestamp()}')
 
         # build the formatters
         user_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
@@ -132,7 +132,7 @@ class Simulator:
             developer_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
 
         # build the filepath
-        developer_logging_filepath = os.path.join(self.__dev_folder, f'DevLog_{datetime_nonce()}')
+        developer_logging_filepath = os.path.join(self.__dev_folder, f'DevLog_{datetime_timestamp()}')
 
         # make the directories if they don't already exist
         os.makedirs(os.path.dirname(developer_logging_filepath), exist_ok=True)

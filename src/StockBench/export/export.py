@@ -2,7 +2,7 @@ import os
 import math
 import logging
 import xlsxwriter
-from StockBench.function_tools.nonce import datetime_nonce
+from StockBench.function_tools.nonce import datetime_timestamp
 
 log = logging.getLogger()
 
@@ -18,7 +18,7 @@ class Exporter:
     def __init__(self):
         self.__symbol = None
         self.__df = None
-        self.__NONCE = None
+        self.__timestamp = None
         self.__workbook = None
         self.__data_worksheet = None
 
@@ -53,8 +53,8 @@ class Exporter:
 
     def __open_workbook(self):
         log.debug('Opening workbook...')
-        self.__NONCE = datetime_nonce()
-        report_filepath = os.path.join('excel', f'simulation_{self.__symbol}_{self.__NONCE}.xlsx')
+        self.__timestamp = datetime_timestamp()
+        report_filepath = os.path.join('excel', f'simulation_{self.__symbol}_{self.__timestamp}.xlsx')
         # make the directories if they don't already exist
         os.makedirs(os.path.dirname(report_filepath), exist_ok=True)
 
@@ -65,7 +65,7 @@ class Exporter:
     def __add_titles(self):
         """Add titles to the worksheet."""
         self.__data_worksheet.write_string(0, 0, f'Simulation data for: {self.__symbol}')
-        self.__data_worksheet.write_string(1, 0, f'simulation nonce: {self.__NONCE}')
+        self.__data_worksheet.write_string(1, 0, f'simulation timestamp: {self.__timestamp}')
 
     def __write_df(self):
         """Write the DateFrame data to the worksheet."""

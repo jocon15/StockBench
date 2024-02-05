@@ -1,7 +1,7 @@
 import logging
 import plotly.offline as offline
 from plotly.subplots import make_subplots
-from StockBench.function_tools.nonce import datetime_nonce
+from StockBench.function_tools.nonce import datetime_timestamp
 from StockBench.display.display import Display
 
 log = logging.getLogger()
@@ -130,7 +130,7 @@ class SingularDisplay(Display):
             chart_filepath = self.save_chart(formatted_fig, filename)
         elif save_option == Display.UNIQUE_SAVE:
             # save chart as unique file for persistent saving
-            filename = f'figure_{symbol}_{datetime_nonce()}.html'
+            filename = f'figure_{symbol}_{datetime_timestamp()}.html'
             chart_filepath = self.save_chart(formatted_fig, filename)
         else:
             # no chart was saved

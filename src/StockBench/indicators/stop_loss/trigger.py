@@ -1,3 +1,4 @@
+import re
 import logging
 from StockBench.triggers.trigger import Trigger
 
@@ -46,21 +47,52 @@ class StopLossTrigger(Trigger):
         """
         log.debug('Checking stop loss triggers...')
 
-        # get the trigger from the strategy
-        trigger_value = float(value)
-
         # get the current price
-        price = data_obj.get_data_point(data_obj.CLOSE, current_day_index)
+        current_price = data_obj.get_data_point(data_obj.CLOSE, current_day_index)
+        open_price = data_obj.get_data_point(data_obj.OPEN, current_day_index)
 
-        # get the profit/loss from the strategy
-        p_l = position_obj.profit_loss(price)
+        # get the profit/loss values from the position
+        intraday_pl = position_obj.intraday_profit_loss(open_price, current_price)
+        lifetime_pl = position_obj.profit_loss(current_price)
 
-        # check for a loss
-        if p_l < 0:
-            # check trigger
-            if abs(p_l) >= abs(trigger_value):
-                log.info('Stop loss trigger hit!')
-                return True
+        # get the profit/loss percents from the position
+        intraday_plpc = position_obj.intraday_profit_loss_percent(open_price, current_price)
+        lifetime_plpc = position_obj.profit_loss_percent(current_price)
+
+        if 'intraday' in key:
+            # use intraday stats
+            if '%' in value:
+                # use value percent stats
+                nums = re.findall(r'\d+', value)
+                trigger_value = float(nums[0])
+                # check trigger
+                if abs(intraday_plpc) >= trigger_value:
+                    log.info('Stop loss trigger hit!')
+                    return True
+            else:
+                # use value stats
+                trigger_value = float(value)
+                # check trigger
+                if abs(intraday_pl) >= trigger_value:
+                    log.info('Stop loss trigger hit!')
+                    return True
+        else:
+            # use lifetime stats
+            if '%' in value:
+                # use value percent stats
+                nums = re.findall(r'\d+', value)
+                trigger_value = float(nums[0])
+                # check trigger
+                if abs(lifetime_plpc) >= trigger_value:
+                    log.info('Stop loss trigger hit!')
+                    return True
+            else:
+                # use value stats
+                trigger_value = float(value)
+                # check trigger
+                if abs(lifetime_pl) >= trigger_value:
+                    log.info('Stop loss trigger hit!')
+                    return True
 
         log.debug('Stop loss triggers checked')
 

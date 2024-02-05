@@ -1,65 +1,85 @@
 from StockBench.position.position import Position
-import pytest
-
-MACHINE_EPSILON = 0.01
-
-
-@pytest.fixture
-def position():
-    return Position(150.0, 2)
 
 
 def test_close_position():
-    # create a position
-    position = Position(150.0, 2)
-    # make sure the position has not been closed yet
-    assert position.get_sell_price() is None
-    # close the position (int/string
-    position.close_position(200)
-    assert (position.get_sell_price() - 200.0) < MACHINE_EPSILON
+    # ============= Arrange ==============
+    test_object = Position(150.0, 2)
+    # make sure the test_object has not been closed yet
 
-    # create a position
-    position = Position(150.0, 2)
-    # normal close
-    position.close_position(200.0)
+    # ============= Act ==================
+    # ensure sell price is None as expected
+    assert test_object.get_sell_price() is None
+    test_object.close_position(200.0)
+    
+    actual = test_object.get_sell_price()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert int(actual) == 200
 
 
 def test_profit_loss():
-    # create a position
-    position = Position(150.0, 2)
-    # ensure accurate profit/loss calculation
-    assert (position.profit_loss(200.0) - 100.0) < MACHINE_EPSILON
+    # ============= Arrange ==============
+    test_object = Position(150.0, 2)
+
+    # ============= Act ==================
+    actual = test_object.profit_loss(200.0)
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert int(actual) == 100
 
 
 def test_lifetime_profit_loss():
-    # create a position
-    position = Position(150.0, 2)
-    # liquidate the position
-    position.close_position(200.0)
-    # ensure accurate profit/loss calculation
-    assert (position.lifetime_profit_loss() - 100.0) < MACHINE_EPSILON
+    # ============= Arrange ==============
+    test_object = Position(150.0, 2)
+
+    # ============= Act ==================
+    test_object.close_position(200.0)
+
+    actual = test_object.lifetime_profit_loss()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert int(actual) == 100
 
 
 def test_get_buy_price():
-    # create a position
-    position = Position(150.0, 2)
-    # ensure accuracy of buy price
-    assert (position.get_buy_price() - 150.0) < MACHINE_EPSILON
+    # ============= Arrange ==============
+    test_object = Position(150.0, 2)
+
+    # ============= Act ==================
+    actual = test_object.get_buy_price()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert int(actual) == 150
 
 
 def test_get_share_count():
-    # create a position
-    position = Position(150.0, 2)
-    # ensure accuracy of the share count
-    assert (position.get_share_count() - 2.0) < MACHINE_EPSILON
+    # ============= Arrange ==============
+    test_object = Position(150.0, 2)
+
+    # ============= Act ==================
+    actual = test_object.get_share_count()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert int(actual) == 2
 
 
 def test_get_sell_price():
-    # create a position
-    position = Position(150.0, 2)
-    # ensure the initial sell price is None
-    assert position.get_sell_price() is None
-    # liquidate the position
-    position.close_position(200.0)
-    # ensure the accuracy of the sell price
-    assert (position.get_sell_price() - 200.0) < MACHINE_EPSILON
+    # ============= Arrange ==============
+    test_object = Position(150.0, 2)
+
+    # ============= Act ==================
+    # ensure the sell price is None as expected
+    assert test_object.get_sell_price() is None
+
+    test_object.close_position(200.0)
+
+    actual = test_object.get_sell_price()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert int(actual) == 200

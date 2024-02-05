@@ -1,5 +1,6 @@
 import os
 import sys
+import pytest
 from unittest.mock import patch
 
 # allows import from src directory
@@ -7,14 +8,29 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from StockBench.indicators.price.price import PriceTrigger
 
-test_object = PriceTrigger('price')
+
+@pytest.fixture
+def test_object():
+    return PriceTrigger('price')
 
 
-def test_additional_days():
-    assert test_object.additional_days('none', '') == 0
+def test_additional_days(test_object):
+    # ============= Arrange ==============
+
+    # ============= Act ==================
+    actual = test_object.additional_days('none', '')
+
+    # ============= Assert ===============
+    assert type(actual) is int
+    assert actual == 0
 
 
-def test_add_to_data():
+def test_add_to_data(test_object):
+    # ============= Arrange ==============
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
     try:
         test_object.add_to_data('', '', '', None)
         assert True
@@ -27,12 +43,16 @@ def test_add_to_data():
 @patch('StockBench.triggers.trigger.Trigger.find_operator_in_str')
 @patch('StockBench.triggers.trigger.Trigger.basic_triggers_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker):
+def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
+    # ============= Arrange ==============
     data_mocker.get_data_point.side_effect = None
     basic_trigger_mocker.return_value = False
     operator_mocker.return_value = None
     numeric_mocker.return_value = None
 
+    # ============= Act ==================
+
+    # ============= Assert ===============
     # trigger not hit
     assert (test_object.check_trigger('$price', '>350', data_mocker, None, 2)
             is False)
@@ -45,10 +65,14 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
 
 @patch('StockBench.triggers.trigger.Trigger.find_numeric_in_str')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_check_trigger_value_error(data_mocker, numeric_mocker):
+def test_check_trigger_value_error(data_mocker, numeric_mocker, test_object):
+    # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 90
     numeric_mocker.side_effect = value_error_side_effect
 
+    # ============= Act ==================
+
+    # ============= Assert ===============
     # simple trigger not hit case
     assert test_object.check_trigger('EMA20$slope', '>60', data_mocker, None, 0) is False
 

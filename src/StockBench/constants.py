@@ -18,5 +18,4 @@ SLOPE_SYMBOL = '$slope'
 
 
 # ========== System Constants ============
-FLOAT_COMPARISON_EPSILON = 0.001
 DELAY_SECONDS_15MIN = 960

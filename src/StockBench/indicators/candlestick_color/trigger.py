@@ -12,7 +12,7 @@ class CandlestickColorTrigger(Trigger):
         """Calculate the additional days required.
 
         Args:
-            key (any): The key value from the strategy.
+            key (any): The key value from the strategy (unused in this function).
             value (any): The value from the strategy.
         """
         additional_days = 0

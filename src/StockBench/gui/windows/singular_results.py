@@ -139,6 +139,7 @@ class SimulationResultsBox(QFrame):
 
 
 class SimulationResultsTextBox(QFrame):
+    title_stylesheet = """color:#FFF;font-size:20px;font-weight:bold;"""
     numeric_results_stylesheet = """color:#FFF;"""
 
     def __init__(self):
@@ -148,13 +149,13 @@ class SimulationResultsTextBox(QFrame):
 
         label = QLabel()
         label.setText('Simulation Results')
-        label.setStyleSheet(self.numeric_results_stylesheet)
+        label.setStyleSheet(self.title_stylesheet)
         self.layout.addWidget(label, 1, 1)
 
         # nothing goes in 1, 2 because label 1 is title
 
         label = QLabel()
-        label.setText('Elapsed Time:')
+        label.setText('Elapsed Time')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, 2, 1)
 
@@ -163,7 +164,7 @@ class SimulationResultsTextBox(QFrame):
         self.layout.addWidget(self.data_label1, 2, 2)
 
         label = QLabel()
-        label.setText('Trades Made:')
+        label.setText('Trades Made')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, 3, 1)
 
@@ -172,7 +173,7 @@ class SimulationResultsTextBox(QFrame):
         self.layout.addWidget(self.data_label2, 3, 2)
 
         label = QLabel()
-        label.setText('Effectiveness:')
+        label.setText('Effectiveness')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, 4, 1)
 
@@ -181,7 +182,7 @@ class SimulationResultsTextBox(QFrame):
         self.layout.addWidget(self.data_label3, 4, 2)
 
         label = QLabel()
-        label.setText('Avg. P/L:')
+        label.setText('Total P/L')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, 5, 1)
 
@@ -190,7 +191,7 @@ class SimulationResultsTextBox(QFrame):
         self.layout.addWidget(self.data_label4, 5, 2)
 
         label = QLabel()
-        label.setText('Total P/L:')
+        label.setText('Avg. P/L')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, 6, 1)
 
@@ -199,13 +200,22 @@ class SimulationResultsTextBox(QFrame):
         self.layout.addWidget(self.data_label5, 6, 2)
 
         label = QLabel()
-        label.setText('Account Value:')
+        label.setText('Stddev P/L')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, 7, 1)
 
         self.data_label6 = QLabel()
         self.data_label6.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.data_label6, 7, 2)
+
+        label = QLabel()
+        label.setText('Account Value')
+        label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(label, 8, 1)
+
+        self.data_label7 = QLabel()
+        self.data_label7.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(self.data_label7, 8, 2)
 
         self.layout.setRowStretch(self.layout.rowCount(), 1)
         self.layout.setColumnStretch(self.layout.columnCount(), 1)
@@ -218,10 +228,12 @@ class SimulationResultsTextBox(QFrame):
 
         self.data_label2.setText(f'{simulation_results["trades_made"]}')
 
-        self.data_label3.setText(f'{simulation_results["effectiveness"]}')
+        self.data_label3.setText(f'{simulation_results["effectiveness"]} %')
 
-        self.data_label4.setText(f'{simulation_results["average_profit_loss"]}')
+        self.data_label4.setText(f'$ {simulation_results["total_profit_loss"]}')
 
-        self.data_label5.setText(f'{simulation_results["total_profit_loss"]}')
+        self.data_label5.setText(f'$ {simulation_results["average_profit_loss"]}')
 
-        self.data_label6.setText(f'{simulation_results["account_value"]}')
+        self.data_label6.setText(f'$ {simulation_results["standard_profit_loss_deviation"]}')
+
+        self.data_label7.setText(f'$ {simulation_results["account_value"]}')

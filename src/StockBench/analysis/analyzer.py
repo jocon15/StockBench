@@ -1,12 +1,22 @@
+import statistics
+
+
 class SimulationAnalyzer:
     """This class defines an analyzer object.
 
     The analyzer object is used to evaluate the positional results of a simulation."""
     def __init__(self, positions: list):
         self.__positions = positions
+
+        # extract the profit/loss of each position into a list, so we only have to do it once
+        self.__profit_loss_list = []
+        for position in self.__positions:
+            self.__profit_loss_list.append(position.lifetime_profit_loss())
+
         self.__sum_cache = None
         self.__effectiveness_cache = None
         self.__average_profit_loss_cache = None
+        self.__standard_profit_loss_deviation_cache = None
 
     def total_trades(self) -> int:
         return len(self.__positions)
@@ -41,15 +51,11 @@ class SimulationAnalyzer:
         """
         # check for cached sum value
         if not self.__sum_cache:
-            profit_loss_sum = 0.0
-            for position in self.__positions:
-                profit_loss_sum += position.lifetime_profit_loss()
-
             # update the cached value
-            self.__sum_cache = round(profit_loss_sum, 3)
+            self.__sum_cache = round(sum(self.__profit_loss_list), 3)
         return self.__sum_cache
 
-    def avg_profit_loss(self) -> float:
+    def average_profit_loss(self) -> float:
         """Calculates the average profit/loss of the simulation.
 
         return:
@@ -57,11 +63,23 @@ class SimulationAnalyzer:
         """
         # check for cached avg pl value
         if not self.__average_profit_loss_cache:
-            try:
-                average_profit_loss = self.total_profit_loss() / float(len(self.__positions))
-            except ZeroDivisionError:
-                average_profit_loss = 0.0
-
             # update the cached value
-            self.__average_profit_loss_cache = round(average_profit_loss, 3)
+            if self.total_trades() > 0:
+                self.__average_profit_loss_cache = round(statistics.mean(self.__profit_loss_list), 3)
+            else:
+                self.__average_profit_loss_cache = 0.0
         return self.__average_profit_loss_cache
+
+    def standard_profit_loss_deviation(self) -> float:
+        """Calculates the standard deviation profit/loss of the simulation.
+
+        return:
+            float: The standard profit/loss deviation (population).
+        """
+        if not self.__standard_profit_loss_deviation_cache:
+            # update the cached value
+            if self.total_trades() > 0:
+                self.__standard_profit_loss_deviation_cache = round(statistics.pstdev(self.__profit_loss_list), 3)
+            else:
+                self.__standard_profit_loss_deviation_cache = 0.0
+        return self.__standard_profit_loss_deviation_cache

@@ -1,5 +1,6 @@
 import os
 import sys
+import pytest
 from unittest.mock import patch
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
 
@@ -8,28 +9,32 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from StockBench.indicators.ema.trigger import EMATrigger
 
-# create test object
-test_obj = EMATrigger('EMA')
+
+@pytest.fixture
+def test_object():
+    return EMATrigger('EMA')
 
 
-def test_additional_days():
-    assert test_obj.additional_days('EMA20', '>20') == 20
+def test_additional_days(test_object):
+    # ============= Arrange ==============
 
-    assert test_obj.additional_days('EMA50$price', '>20') == 50
+    # ============= Act ==================
 
-    assert test_obj.additional_days('EMA50$price', '>20') == 50
-
-    assert test_obj.additional_days('EMA20$slope10', '>20') == 20
-
-    assert test_obj.additional_days('EMA20$slope30', '>20') == 30
+    # ============= Assert ===============
+    assert test_object.additional_days('EMA20', '>20') == 20
+    assert type(test_object.additional_days('EMA20', '>20')) is int
+    assert test_object.additional_days('EMA50$price', '>20') == 50
+    assert test_object.additional_days('EMA50$price', '>20') == 50
+    assert test_object.additional_days('EMA20$slope10', '>20') == 20
+    assert test_object.additional_days('EMA20$slope30', '>20') == 30
 
 
 @patch('logging.getLogger')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_add_to_data(data_mocker, logger_mocker):
+def test_add_to_data(data_mocker, logger_mocker, test_object):
+    # ============= Arrange ==============
     logger_mocker.return_value = logger_mocker
     logger_mocker.warning.side_effect = logger_side_effect
-
     data_mocker.add_column.side_effect = add_column_side_effect
 
     # assemble a price list from the example data
@@ -40,12 +45,15 @@ def test_add_to_data(data_mocker, logger_mocker):
     data_mocker.get_column_data.return_value = price_data
     data_mocker.get_column_nmes.return_value = []
 
+    # ============= Act ==================
     # test normal case
-    test_obj.add_to_data('EMA20', '>30', 'buy', data_mocker)
+    test_object.add_to_data('EMA20', '>30', 'buy', data_mocker)
     # assertions are done in side effect function
 
     # test console output if no indicator length is provided
-    test_obj.add_to_data('EMA', '>30', 'buy', data_mocker)
+    test_object.add_to_data('EMA', '>30', 'buy', data_mocker)
+
+    # ============= Assert ===============
     # assertions are done in side effect function
 
 
@@ -84,29 +92,37 @@ def logger_side_effect(*args):
 @patch('StockBench.triggers.trigger.Trigger.find_operator_in_str')
 @patch('StockBench.triggers.trigger.Trigger.basic_triggers_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker):
+def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
+    # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 10
     basic_trigger_mocker.return_value = False
     operator_mocker.return_value = None
     numeric_mocker.return_value = None
 
+    # ============= Act ==================
+
+    # ============= Assert ===============
     # simple trigger not hit case
-    assert test_obj.check_trigger('EMA20', '>60', data_mocker, None, 0) is False
+    assert test_object.check_trigger('EMA20', '>60', data_mocker, None, 0) is False
 
     # simple trigger hit case
     basic_trigger_mocker.return_value = True
-    assert test_obj.check_trigger('EMA20', '>60', data_mocker, None, 0) is True
+    assert test_object.check_trigger('EMA20', '>60', data_mocker, None, 0) is True
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
 @patch('StockBench.triggers.trigger.Trigger.find_numeric_in_str')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_check_trigger_value_error(data_mocker, numeric_mocker):
+def test_check_trigger_value_error(data_mocker, numeric_mocker, test_object):
+    # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 90
     numeric_mocker.side_effect = value_error_side_effect
 
+    # ============= Act ==================
+
+    # ============= Assert ===============
     # simple trigger not hit case
-    assert test_obj.check_trigger('EMA20', '>60', data_mocker, None, 0) is False
+    assert test_object.check_trigger('EMA20', '>60', data_mocker, None, 0) is False
 
 
 def value_error_side_effect(*args):  # noqa
@@ -118,14 +134,19 @@ def value_error_side_effect(*args):  # noqa
 @patch('StockBench.triggers.trigger.Trigger.find_operator_in_str')
 @patch('StockBench.triggers.trigger.Trigger.basic_triggers_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker):
+def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker,
+                                                 test_object):
+    # ============= Arrange ==============
     data_mocker.get_data_point.side_effect = data_side_effect
     basic_trigger_mocker.return_value = False
     operator_mocker.return_value = None
     numeric_mocker.return_value = None
 
+    # ============= Act ==================
+
+    # ============= Assert ===============
     # simple trigger not hit case
-    assert test_obj.check_trigger('EMA20', '>$price', data_mocker, None, 0) is False
+    assert test_object.check_trigger('EMA20', '>$price', data_mocker, None, 0) is False
 
 
 def data_side_effect(*args):
@@ -135,27 +156,36 @@ def data_side_effect(*args):
         return 40.2
 
 
-def test_check_trigger_2_numbers_present_bad_format():
+def test_check_trigger_2_numbers_present_bad_format(test_object):
+    # ============= Arrange ==============
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
     # has 2 numbers but does not include slope symbol
-    assert test_obj.check_trigger('EMA20ran50', '>$price', None, None, 0) is False
+    assert test_object.check_trigger('EMA20ran50', '>$price', None, None, 0) is False
 
 
 @patch('StockBench.triggers.trigger.Trigger.find_numeric_in_str')
 @patch('StockBench.triggers.trigger.Trigger.find_operator_in_str')
 @patch('StockBench.triggers.trigger.Trigger.basic_triggers_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker):
+def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
+    # ============= Arrange ==============
     data_mocker.get_data_point.side_effect = slope_data_side_effect
     basic_trigger_mocker.return_value = False
     operator_mocker.return_value = None
     numeric_mocker.return_value = None
 
+    # ============= Act ==================
+
+    # ============= Assert ===============
     # slope used trigger not hit case
-    assert test_obj.check_trigger('EMA20$slope1', '>50', data_mocker, None, 2) is False
+    assert test_object.check_trigger('EMA20$slope1', '>50', data_mocker, None, 2) is False
 
     # slope used trigger hit case
     basic_trigger_mocker.return_value = True
-    assert test_obj.check_trigger('EMA20$slope1', '>50', data_mocker, None, 2) is True
+    assert test_object.check_trigger('EMA20$slope1', '>50', data_mocker, None, 2) is True
 
 
 def slope_data_side_effect(*args):
@@ -167,9 +197,13 @@ def slope_data_side_effect(*args):
 
 @patch('StockBench.triggers.trigger.Trigger.find_numeric_in_str')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_check_trigger_slope_value_error(data_mocker, numeric_mocker):
+def test_check_trigger_slope_value_error(data_mocker, numeric_mocker, test_object):
+    # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 90
     numeric_mocker.side_effect = value_error_side_effect
 
+    # ============= Act ==================
+
+    # ============= Assert ===============
     # simple trigger not hit case
-    assert test_obj.check_trigger('EMA20$slope', '>60', data_mocker, None, 0) is False
+    assert test_object.check_trigger('EMA20$slope', '>60', data_mocker, None, 0) is False

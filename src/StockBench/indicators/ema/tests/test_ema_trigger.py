@@ -181,11 +181,11 @@ def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mo
 
     # ============= Assert ===============
     # slope used trigger not hit case
-    assert test_object.check_trigger('EMA20$slope1', '>50', data_mocker, None, 2) is False
+    assert test_object.check_trigger('EMA20$slope2', '>50', data_mocker, None, 2) is False
 
     # slope used trigger hit case
     basic_trigger_mocker.return_value = True
-    assert test_object.check_trigger('EMA20$slope1', '>50', data_mocker, None, 2) is True
+    assert test_object.check_trigger('EMA20$slope2', '>50', data_mocker, None, 2) is True
 
 
 def slope_data_side_effect(*args):

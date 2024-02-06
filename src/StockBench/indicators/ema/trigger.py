@@ -37,6 +37,7 @@ class EMATrigger(Trigger):
         """
         nums = re.findall(r'\d+', key)
         if len(nums) > 0:
+            # element 0 will be the indicator length
             num = int(nums[0])
             # add the EMA data to the df
             self.__add_ema(num, data_obj)
@@ -61,7 +62,7 @@ class EMATrigger(Trigger):
 
         # find the EMA length, else exit
         nums = re.findall(r'\d+', key)
-        # since we have no default EMA, there must be a value provided, else exit
+        # since there is no default EMA, there must be a value provided, else exit
         if len(nums) == 1:
             # ensure that num is the correct type
             indicator_length = int(nums[0])

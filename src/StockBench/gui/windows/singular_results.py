@@ -191,7 +191,7 @@ class SimulationResultsTextBox(QFrame):
         self.layout.addWidget(self.data_label4, 5, 2)
 
         label = QLabel()
-        label.setText('Avg. P/L')
+        label.setText('Average P/L')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, 6, 1)
 
@@ -200,7 +200,7 @@ class SimulationResultsTextBox(QFrame):
         self.layout.addWidget(self.data_label5, 6, 2)
 
         label = QLabel()
-        label.setText('Stddev P/L')
+        label.setText('Median P/L')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, 7, 1)
 
@@ -209,13 +209,22 @@ class SimulationResultsTextBox(QFrame):
         self.layout.addWidget(self.data_label6, 7, 2)
 
         label = QLabel()
-        label.setText('Account Value')
+        label.setText('Stddev P/L')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, 8, 1)
 
         self.data_label7 = QLabel()
         self.data_label7.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.data_label7, 8, 2)
+
+        label = QLabel()
+        label.setText('Account Value')
+        label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(label, 9, 1)
+
+        self.data_label8 = QLabel()
+        self.data_label8.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(self.data_label8, 9, 2)
 
         self.layout.setRowStretch(self.layout.rowCount(), 1)
         self.layout.setColumnStretch(self.layout.columnCount(), 1)
@@ -225,15 +234,10 @@ class SimulationResultsTextBox(QFrame):
 
     def render_data(self, simulation_results: dict):
         self.data_label1.setText(f'{simulation_results["elapsed_time"]} seconds')
-
         self.data_label2.setText(f'{simulation_results["trades_made"]}')
-
         self.data_label3.setText(f'{simulation_results["effectiveness"]} %')
-
         self.data_label4.setText(f'$ {simulation_results["total_profit_loss"]}')
-
         self.data_label5.setText(f'$ {simulation_results["average_profit_loss"]}')
-
-        self.data_label6.setText(f'$ {simulation_results["standard_profit_loss_deviation"]}')
-
-        self.data_label7.setText(f'$ {simulation_results["account_value"]}')
+        self.data_label6.setText(f'$ {simulation_results["median_profit_loss"]}')
+        self.data_label7.setText(f'$ {simulation_results["standard_profit_loss_deviation"]}')
+        self.data_label8.setText(f'$ {simulation_results["account_value"]}')

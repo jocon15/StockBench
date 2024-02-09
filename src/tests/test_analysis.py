@@ -86,6 +86,28 @@ def test_average_profit_loss_empty():
     assert test_object.average_profit_loss() == 0.0
 
 
+def test_median_profit_loss_normal(test_positions):
+    # ============= Arrange ==============
+    test_object = SimulationAnalyzer(test_positions)
+
+    # ============= Act ==================
+    actual = test_object.median_profit_loss()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert actual == 1000.0
+
+
+def test_median_profit_loss_empty():
+    # ============= Arrange ==============
+    test_object = SimulationAnalyzer([])
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    assert test_object.median_profit_loss() == 0.0
+
+
 def test_standard_profit_loss_deviation_normal(test_positions):
     # ============= Arrange ==============
     test_object = SimulationAnalyzer(test_positions)

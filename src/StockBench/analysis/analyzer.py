@@ -5,6 +5,8 @@ class SimulationAnalyzer:
     """This class defines an analyzer object.
 
     The analyzer object is used to evaluate the positional results of a simulation."""
+    rounding_length = 3
+
     def __init__(self, positions: list):
         self.__positions = positions
 
@@ -16,6 +18,7 @@ class SimulationAnalyzer:
         self.__sum_cache = None
         self.__effectiveness_cache = None
         self.__average_profit_loss_cache = None
+        self.__median_profit_loss_cache = None
         self.__standard_profit_loss_deviation_cache = None
 
     def total_trades(self) -> int:
@@ -40,7 +43,7 @@ class SimulationAnalyzer:
                 effectiveness = 0.0
 
             # update the cached value
-            self.__effectiveness_cache = round(effectiveness, 3)
+            self.__effectiveness_cache = round(effectiveness, SimulationAnalyzer.rounding_length)
         return self.__effectiveness_cache
 
     def total_profit_loss(self) -> float:
@@ -52,7 +55,7 @@ class SimulationAnalyzer:
         # check for cached sum value
         if not self.__sum_cache:
             # update the cached value
-            self.__sum_cache = round(sum(self.__profit_loss_list), 3)
+            self.__sum_cache = round(sum(self.__profit_loss_list), SimulationAnalyzer.rounding_length)
         return self.__sum_cache
 
     def average_profit_loss(self) -> float:
@@ -65,10 +68,27 @@ class SimulationAnalyzer:
         if not self.__average_profit_loss_cache:
             # update the cached value
             if self.total_trades() > 0:
-                self.__average_profit_loss_cache = round(statistics.mean(self.__profit_loss_list), 3)
+                self.__average_profit_loss_cache = round(statistics.mean(self.__profit_loss_list),
+                                                         SimulationAnalyzer.rounding_length)
             else:
                 self.__average_profit_loss_cache = 0.0
         return self.__average_profit_loss_cache
+
+    def median_profit_loss(self) -> float:
+        """Calculates the average profit/loss of the simulation.
+
+        return:
+            float: The average profit/loss.
+        """
+        # check for cached median pl value
+        if not self.__median_profit_loss_cache:
+            # update the cached value
+            if self.total_trades() > 0:
+                self.__median_profit_loss_cache = round(statistics.median(self.__profit_loss_list),
+                                                        SimulationAnalyzer.rounding_length)
+            else:
+                self.__median_profit_loss_cache = 0.0
+        return self.__median_profit_loss_cache
 
     def standard_profit_loss_deviation(self) -> float:
         """Calculates the standard deviation profit/loss of the simulation.
@@ -79,7 +99,8 @@ class SimulationAnalyzer:
         if not self.__standard_profit_loss_deviation_cache:
             # update the cached value
             if self.total_trades() > 0:
-                self.__standard_profit_loss_deviation_cache = round(statistics.pstdev(self.__profit_loss_list), 3)
+                self.__standard_profit_loss_deviation_cache = round(statistics.pstdev(self.__profit_loss_list),
+                                                                    SimulationAnalyzer.rounding_length)
             else:
                 self.__standard_profit_loss_deviation_cache = 0.0
         return self.__standard_profit_loss_deviation_cache

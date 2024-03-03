@@ -30,6 +30,18 @@ def test_profit_loss():
     assert int(actual) == 100
 
 
+def test_intraday_profit_loss():
+    # ============= Arrange ==============
+    test_object = Position(150.0, 2)
+
+    # ============= Act ==================
+    actual = test_object.intraday_profit_loss(100, 200)
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert int(actual) == 200
+
+
 def test_lifetime_profit_loss():
     # ============= Arrange ==============
     test_object = Position(150.0, 2)
@@ -42,6 +54,47 @@ def test_lifetime_profit_loss():
     # ============= Assert ===============
     assert type(actual) is float
     assert int(actual) == 100
+
+
+def test_profit_loss_percent():
+    # ============= Arrange ==============
+    test_object = Position(150.0, 2)
+
+    # ============= Act ==================
+    test_object.close_position(200.0)
+
+    actual = test_object.profit_loss_percent(200)
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert int(actual) == 33
+
+
+def test_intraday_profit_loss_percent():
+    # ============= Arrange ==============
+    test_object = Position(150.0, 2)
+
+    # ============= Act ==================
+    actual = test_object.intraday_profit_loss_percent(100, 200)
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert int(actual) == 100
+
+
+def test_lifetime_profit_loss_percent():
+    # ============= Arrange ==============
+    test_object = Position(150.0, 2)
+
+    # ============= Act ==================
+    # ensure sell price is None as expected
+    assert test_object.get_sell_price() is None
+    test_object.close_position(200.0)
+    actual = test_object.lifetime_profit_loss_percent()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert int(actual) == 33
 
 
 def test_get_buy_price():

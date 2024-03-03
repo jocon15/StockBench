@@ -44,6 +44,7 @@ def test_add_to_data(test_object):
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger_intraday_percent_hit_case(data_mocker, position_mocker, test_object):
     # ============= Arrange ==============
+    position_mocker.intraday_profit_loss.return_value = -1500
     position_mocker.intraday_profit_loss_percent.return_value = -1.5
 
     # ============= Act ==================
@@ -58,6 +59,7 @@ def test_check_trigger_intraday_percent_hit_case(data_mocker, position_mocker, t
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger_intraday_percent_not_hit_case(data_mocker, position_mocker, test_object):
     # ============= Arrange ==============
+    position_mocker.intraday_profit_loss.return_value = -500
     position_mocker.intraday_profit_loss_percent.return_value = -0.5
 
     # ============= Act ==================
@@ -100,6 +102,7 @@ def test_check_trigger_intraday_not_hit_case(data_mocker, position_mocker, test_
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger_lifetime_percent_hit_case(data_mocker, position_mocker, test_object):
     # ============= Arrange ==============
+    position_mocker.profit_loss.return_value = -1100
     position_mocker.profit_loss_percent.return_value = -1.1
 
     # ============= Act ==================
@@ -114,6 +117,7 @@ def test_check_trigger_lifetime_percent_hit_case(data_mocker, position_mocker, t
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger_lifetime_percent_not_hit_case(data_mocker, position_mocker, test_object):
     # ============= Arrange ==============
+    position_mocker.profit_loss.return_value = -100
     position_mocker.profit_loss_percent.return_value = -0.1
 
     # ============= Act ==================

@@ -54,7 +54,7 @@ class Trigger:
             if indicator_value > trigger_value:
                 return True
         elif operator_value == '=':
-            if (indicator_value - trigger_value) <= 0.001:  # DOUBLE_COMPARISON_EPSILON:
+            if (indicator_value - trigger_value) <= 0.001:  # DOUBLE_COMPARISON_EPSILON
                 return True
         return False
 

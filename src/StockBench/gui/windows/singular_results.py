@@ -4,6 +4,7 @@ import sys
 from PyQt6 import QtCore, QtWebEngineWidgets
 from PyQt6.QtWidgets import QVBoxLayout, QGridLayout, QHBoxLayout, QWidget, QLabel, QProgressBar, QFrame
 from PyQt6.QtCore import QTimer, QThreadPool
+from PyQt6 import QtGui
 
 # current directory (peripherals)
 current = os.path.dirname(os.path.realpath(__file__))
@@ -62,6 +63,7 @@ class SingularResultsWindow(QWidget):
         self.layout.addWidget(self.simulation_results_box)
 
         self.setWindowTitle('Simulation Results')
+        self.setWindowIcon(QtGui.QIcon('icon/candle.ico'))
         # self.setGeometry(0, 0, 1920, 1080)
         # self.setFixedSize(400, 500)
         self.setStyleSheet(self.window_stylesheet)

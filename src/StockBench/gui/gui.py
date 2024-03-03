@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTabWidget, QHBox
 from PyQt6.QtWidgets import QFileDialog, QLineEdit
 from PyQt6.QtCore import QThreadPool, Qt
 from PyQt6.QtGui import QDoubleValidator
+from PyQt6 import QtGui
 
 # current directory (peripherals)
 current = os.path.dirname(os.path.realpath(__file__))
@@ -46,6 +47,7 @@ class ConfigMainWindow(QMainWindow):
         super().__init__()
 
         # main window styling (do it first to prevent window shifting)
+        self.setWindowIcon(QtGui.QIcon('icon/candle.ico'))
         self.setWindowTitle('Configuration')
         self.setGeometry(200, 100, 400, 600)
         self.setFixedSize(400, 600)

@@ -63,8 +63,6 @@ class Simulator:
         self.__end_date_unix = None
         self.__augmented_start_date_unix = None
 
-        self.__symbol = None
-
         # positions storage during simulation
         self.__single_simulation_position_archive = []
         self.__multiple_simulation_position_archive = []
@@ -174,10 +172,10 @@ class Simulator:
         start_time = perf_counter()
 
         # broker only excepts capitalized symbols
-        self.__symbol = symbol.upper()
+        symbol = symbol.upper()
 
         # perform the pre-simulation tasks
-        self.__pre_process()
+        self.__pre_process(symbol)
 
         # calculate window lengths
         total_days = int((self.__end_date_unix - self.__augmented_start_date_unix) / SECONDS_1_DAY)
@@ -190,9 +188,9 @@ class Simulator:
         if progress_observer is not None:
             increment = 100.0 / (self.__data_manager.get_data_length() - sim_window_start_day)
 
-        log.info(f'Setup for symbol: {self.__symbol} complete')
+        log.info(f'Setup for symbol: {symbol} complete')
 
-        self.__log_details(self.__symbol, self.__unix_to_string(self.__start_date_unix),
+        self.__log_details(symbol, self.__unix_to_string(self.__start_date_unix),
                            self.__unix_to_string(self.__end_date_unix), days_in_focus, trade_able_days,
                            self.__account.get_balance())
 
@@ -210,7 +208,7 @@ class Simulator:
 
         log.info('Simulation complete!')
 
-        return self.__post_process(sim_window_start_day, start_time, show_chart, save_option)
+        return self.__post_process(symbol, sim_window_start_day, start_time, show_chart, save_option)
 
     def run_multiple(self,
                      symbols: list,
@@ -259,37 +257,11 @@ class Simulator:
             if progress_observer is not None:
                 progress_observer.update_progress(increment)
 
-        # re-enable printing for TQDM
-        self.__running_multiple = False
-        # save the results in case the user wants to write them to file
-        self.__stored_results = results
+        return self.__multi_post_process(results, start_time, show_chart, save_option)
 
-        # initiate an analyzer with the positions data
-        analyzer = SimulationAnalyzer(self.__multiple_simulation_position_archive)
-
-        chart_filepath = ''
-        if show_chart or save_option:
-            # create the display object
-            display = MultipleDisplay()
-            chart_filepath = display.chart(results, show_chart, save_option)
-
-        end_time = perf_counter()
-        elapsed_time = round(end_time - start_time, 4)
-
-        return {
-            'elapsed_time': elapsed_time,
-            'trades_made': analyzer.total_trades(),
-            'effectiveness': analyzer.effectiveness(),
-            'total_profit_loss': analyzer.total_profit_loss(),
-            'average_profit_loss': analyzer.average_profit_loss(),
-            'median_profit_loss': analyzer.median_profit_loss(),
-            'standard_profit_loss_deviation': analyzer.standard_profit_loss_deviation(),
-            'chart_filepath': chart_filepath
-        }
-
-    def __pre_process(self):
+    def __pre_process(self, symbol):
         """Setup for the simulation."""
-        log.info(f'Setting up simulation for symbol: {self.__symbol}...')
+        log.info(f'Setting up simulation for symbol: {symbol}...')
 
         # reset the attributes()
         self.__reset_singular_attributes()
@@ -301,7 +273,7 @@ class Simulator:
         self.__check_strategy_timestamps()
 
         # get the data from the broker
-        temp_df = self.__broker.get_daily_data(self.__symbol,
+        temp_df = self.__broker.get_daily_data(symbol,
                                                self.__augmented_start_date_unix,
                                                self.__end_date_unix)
 
@@ -312,7 +284,7 @@ class Simulator:
         self.__add_indicator_data()
 
         if not self.__running_multiple:
-            self.__print_header()
+            self.__print_header(symbol)
 
     def __simulate_day(self, current_day_index, buy_mode, position, progress_observer, increment) -> tuple:
         """Core simulation logic for simulating 1 day."""
@@ -349,7 +321,7 @@ class Simulator:
 
         return buy_mode, position
 
-    def __post_process(self, sim_window_start_day, start_time, show_chart, save_option) -> dict:
+    def __post_process(self, symbol, sim_window_start_day, start_time, show_chart, save_option) -> dict:
         """Cleanup and analysis after the simulation."""
         # add the buys and sells to the df
         self.__add_position_data()
@@ -372,16 +344,16 @@ class Simulator:
             # create an export object
             exporter = Exporter()
             # synchronous charting
-            exporter.export(chopped_temp_df, self.__symbol)
+            exporter.export(chopped_temp_df, symbol)
 
         chart_filepath = ''
         if show_chart or save_option:
             # create the display object
             display = SingularDisplay(self.__indicators.values())
-            chart_filepath = display.chart(chopped_temp_df, self.__symbol, show_chart, save_option)
+            chart_filepath = display.chart(chopped_temp_df, symbol, show_chart, save_option)
 
         return {
-            'symbol': self.__symbol,
+            'symbol': symbol,
             'elapsed_time': elapsed_time,
             'trades_made': analyzer.total_trades(),
             'effectiveness': analyzer.effectiveness(),
@@ -390,6 +362,35 @@ class Simulator:
             'median_profit_loss': analyzer.median_profit_loss(),
             'standard_profit_loss_deviation': analyzer.standard_profit_loss_deviation(),
             'account_value': self.__account.get_balance(),
+            'chart_filepath': chart_filepath
+        }
+
+    def __multi_post_process(self, results, start_time, show_chart, save_option):
+        # re-enable printing for TQDM
+        self.__running_multiple = False
+        # save the results in case the user wants to write them to file
+        self.__stored_results = results
+
+        # initiate an analyzer with the positions data
+        analyzer = SimulationAnalyzer(self.__multiple_simulation_position_archive)
+
+        chart_filepath = ''
+        if show_chart or save_option:
+            # create the display object
+            display = MultipleDisplay()
+            chart_filepath = display.chart(results, show_chart, save_option)
+
+        end_time = perf_counter()
+        elapsed_time = round(end_time - start_time, 4)
+
+        return {
+            'elapsed_time': elapsed_time,
+            'trades_made': analyzer.total_trades(),
+            'effectiveness': analyzer.effectiveness(),
+            'total_profit_loss': analyzer.total_profit_loss(),
+            'average_profit_loss': analyzer.average_profit_loss(),
+            'median_profit_loss': analyzer.median_profit_loss(),
+            'standard_profit_loss_deviation': analyzer.standard_profit_loss_deviation(),
             'chart_filepath': chart_filepath
         }
 
@@ -514,10 +515,11 @@ class Simulator:
         # deposit the value of the position to the account
         self.__account.deposit(deposit_amount)
 
-    def __print_header(self):
+    @staticmethod
+    def __print_header(symbol):
         """Prints the simulation header."""
         print('======= Simulation Start =======')
-        print(f'Running simulation on {self.__symbol}...')
+        print(f'Running simulation on {symbol}...')
         print('================================')
 
     @staticmethod

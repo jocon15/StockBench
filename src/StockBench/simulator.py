@@ -3,21 +3,21 @@ import time
 import math
 import logging
 from tqdm import tqdm
-from .constants import *
 from time import perf_counter
 from datetime import datetime
-from .broker.broker import Broker
-from .export.export import Exporter
-from .position.position import Position
-from .display.display import Display
-from .display.singular import SingularDisplay
-from .display.multiple import MultipleDisplay
-from .simulation_data.data_manager import DataManager
-from .account.user_account import UserAccount
-from .function_tools.nonce import datetime_timestamp
-from .indicator.indicator_manager import IndicatorManager
-from .analysis.analyzer import SimulationAnalyzer
-from .triggers.trigger_manager import TriggerManager
+from StockBench.constants import *
+from StockBench.broker.broker import Broker
+from StockBench.export.export import Exporter
+from StockBench.display.display import Display
+from StockBench.position.position import Position
+from StockBench.display.singular import SingularDisplay
+from StockBench.display.multiple import MultipleDisplay
+from StockBench.account.user_account import UserAccount
+from StockBench.analysis.analyzer import SimulationAnalyzer
+from StockBench.triggers.trigger_manager import TriggerManager
+from StockBench.function_tools.nonce import datetime_timestamp
+from StockBench.simulation_data.data_manager import DataManager
+from StockBench.indicator.indicator_manager import IndicatorManager
 
 log = logging.getLogger()
 

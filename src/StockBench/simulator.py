@@ -23,13 +23,8 @@ log = logging.getLogger()
 
 
 class Simulator:
-    """This class defines a simulator object.
-
-    This class serves as the one and only API between the user and the simulation. The simulator handles
-    simulation setup and eventual run.
-
-
-    Here's the breakdown of the simulation data compared to the simulation window:
+    """
+    Breakdown of the simulation data compared to the simulation window:
 
     ------------ - Additional days needed for accurate indicators at simulation start (algorithm defined)
     |   OHLC   |
@@ -280,8 +275,8 @@ class Simulator:
         # initialize the data api with the broker data
         self.__data_manager = DataManager(temp_df)
 
-        # parse the strategy for rules (adds indicator data to the df)
-        self.__add_indicator_data()
+        # add indicators to the data based on strategy
+        self.__trigger_manager.add_indicator_data(self.__data_manager)
 
         if not self.__running_multiple:
             self.__print_header(symbol)
@@ -324,7 +319,7 @@ class Simulator:
     def __post_process(self, symbol, sim_window_start_day, start_time, show_chart, save_option) -> dict:
         """Cleanup and analysis after the simulation."""
         # add the buys and sells to the df
-        self.__add_position_data()
+        self.__add_positions_to_data()
 
         # get the chopped DataFrame
         chopped_temp_df = self.__data_manager.get_chopped_df(sim_window_start_day)
@@ -394,21 +389,6 @@ class Simulator:
             'chart_filepath': chart_filepath
         }
 
-    def __add_position_data(self):
-        """Add the position data to the simulation data."""
-        # initialize the lists to the length of the simulation (with None values)
-        acquisition_price_list = [None for _ in range(self.__data_manager.get_data_length())]
-        liquidation_price_list = [None for _ in range(self.__data_manager.get_data_length())]
-
-        # fill in the list values with the position data
-        for position in self.__single_simulation_position_archive:
-            acquisition_price_list[position.buy_day_index] = position.get_buy_price()
-            liquidation_price_list[position.sell_day_index] = position.get_sell_price()
-
-        # add the columns to the data
-        self.__data_manager.add_column('Buy', acquisition_price_list)
-        self.__data_manager.add_column('Sell', liquidation_price_list)
-
     def __reset_singular_attributes(self):
         """Clear singular simulation stored data."""
         self.__account.reset()
@@ -453,12 +433,6 @@ class Simulator:
 
         self.__error_check_timestamps(self.__start_date_unix, self.__end_date_unix)
         self.__augmented_start_date_unix = self.__start_date_unix - (additional_days * SECONDS_1_DAY)
-
-    def __add_indicator_data(self):
-        """Parse the strategy for relevant information needed to make the API request."""
-        log.debug('Parsing strategy for indicators and rules...')
-
-        self.__trigger_manager.add_indicator_data(self.__data_manager)
 
     def __create_position(self, current_day_index: int) -> Position:
         """Creates a position and updates the account.
@@ -514,6 +488,21 @@ class Simulator:
 
         # deposit the value of the position to the account
         self.__account.deposit(deposit_amount)
+
+    def __add_positions_to_data(self):
+        """Add the position data to the simulation data."""
+        # initialize the lists to the length of the simulation (with None values)
+        acquisition_price_list = [None for _ in range(self.__data_manager.get_data_length())]
+        liquidation_price_list = [None for _ in range(self.__data_manager.get_data_length())]
+
+        # fill in the list values with the position data
+        for position in self.__single_simulation_position_archive:
+            acquisition_price_list[position.buy_day_index] = position.get_buy_price()
+            liquidation_price_list[position.sell_day_index] = position.get_sell_price()
+
+        # add the columns to the data
+        self.__data_manager.add_column('Buy', acquisition_price_list)
+        self.__data_manager.add_column('Sell', liquidation_price_list)
 
     @staticmethod
     def __print_header(symbol):

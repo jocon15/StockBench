@@ -1,7 +1,7 @@
 class DataManager:
-    """"""
+    """Interface for the simulation dataframe."""
     def __init__(self, data):
-        # constants (public so outside can use them)
+        # constants
         self.CLOSE = 'Close'
         self.OPEN = 'Open'
         self.HIGH = 'High'
@@ -62,7 +62,6 @@ class DataManager:
         """Gets a column of data from the DataFrame."""
         if type(name) is not str:
             raise Exception('Input name type must be a string!')
-        # FIXME: check that the column is actually in the dataframe
         return self.__df[name].values.tolist()
 
     def get_chopped_df(self, window_start_day: int):

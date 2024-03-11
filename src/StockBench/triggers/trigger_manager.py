@@ -5,8 +5,7 @@ log = logging.getLogger()
 
 
 class TriggerManager:
-    """This class defines a TriggerAPI object.
-
+    """
     The TriggerAPI object is designed to be used as an API for the simulator to abstract the triggering methods for
     each rule. To keep it simple for the simulator, there are 2 defined entry points, check buy and check sell
     triggers. The rest of the complex triggering logic gets implemented here.
@@ -58,10 +57,11 @@ class TriggerManager:
 
     def add_indicator_data(self, data_manager):
         """Add indicator data from each trigger"""
+        log.debug('Adding indicators to data based on strategy...')
         # create a list of all triggers except sell triggers
         triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
 
-        # buy keys
+        # find all buy triggers and add their indicator to the data
         for key in self.__strategy['buy'].keys():
             for trigger in triggers:
                 if trigger.strategy_symbol in key:
@@ -74,7 +74,7 @@ class TriggerManager:
         # create a list of all triggers except sell triggers
         triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
 
-        # sell keys
+        # find all sell triggers and add their indicator to the data
         for key in self.__strategy['sell'].keys():
             for trigger in triggers:
                 if trigger.strategy_symbol in key:

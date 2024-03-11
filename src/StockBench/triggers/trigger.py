@@ -6,9 +6,9 @@ log = logging.getLogger()
 
 
 class Trigger:
-    BUY = 1
-    SELL = 2
-    AGNOSTIC = 3
+    BUY = 0
+    SELL = 1
+    AGNOSTIC = 2
 
     def __init__(self, strategy_symbol, side):
         self.strategy_symbol = strategy_symbol

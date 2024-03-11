@@ -10,12 +10,7 @@ log = logging.getLogger()
 
 
 class Broker:
-    """This class defines a BrokerAPI object.
-
-    The Broker object is an API used by the simulator to interact with the broker. The broker is the data supplier.
-    The simulator calculates the correct range of data to request. Then, this API handles the physical interaction
-    by requesting and formatting the relevant data.
-    """
+    """Interface for broker data."""
     def __init__(self, timeout=15):
         self.__API_KEY = os.environ['ALPACA_API_KEY']
         self.__SECRET_KEY = os.environ['ALPACA_SECRET_KEY']
@@ -55,11 +50,13 @@ class Broker:
         log.debug(f'Completed URI: {day_bars_url}')
         return self.__make_request(day_bars_url)
 
-    def get_hourly_data(self):
-        pass
+    @staticmethod
+    def get_hourly_data():
+        return NotImplementedError('Hourly bar data is not supported yet.')
 
-    def get_minute_data(self):
-        pass
+    @staticmethod
+    def get_minute_data():
+        return NotImplementedError('Minute bar data is not supported yet.')
 
     @staticmethod
     def __unix_to_utc_date(start_date_unix: int, end_date_unix: int) -> tuple:

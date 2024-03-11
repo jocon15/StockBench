@@ -22,11 +22,11 @@ class Trigger:
         raise NotImplementedError('Additional days not implemented!')
 
     @abstractmethod
-    def add_to_data(self, key, value, side, data_obj):
+    def add_to_data(self, key, value, side, data_manager):
         raise NotImplementedError('Add to data not implemented!')
 
     @abstractmethod
-    def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
+    def check_trigger(self, key, value, data_manager, position_obj, current_day_index) -> bool:
         raise NotImplementedError('Check trigger not implemented!')
 
     @staticmethod

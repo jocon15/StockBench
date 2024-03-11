@@ -29,42 +29,42 @@ class RSITrigger(Trigger):
         else:
             return DEFAULT_RSI_LENGTH
 
-    def add_to_data(self, key, value, side, data_obj):
+    def add_to_data(self, key, value, side, data_manager):
         """Add data to the dataframe.
 
         Args:
             key (any): The key value from the strategy.
             value (any): The value from thr strategy.
             side (str): The side (buy/sell).
-            data_obj (any): The data object.
+            data_manager (any): The data object.
         """
         # ======== key based =========
         nums = re.findall(r'\d+', key)
         if len(nums) > 0:
             num = int(nums[0])
             # add the RSI data to the df
-            self.__add_rsi(num, data_obj)
+            self.__add_rsi(num, data_manager)
         else:
             # add the RSI data to the df
-            self.__add_rsi(DEFAULT_RSI_LENGTH, data_obj)
+            self.__add_rsi(DEFAULT_RSI_LENGTH, data_manager)
         # ======== value based (rsi limit)=========
         nums = re.findall(r'\d+', value)
         if side == 'buy':
             if len(nums) > 0:
                 _trigger = float(nums[0])
-                self.__add_lower_rsi(_trigger, data_obj)
+                self.__add_lower_rsi(_trigger, data_manager)
         else:
             if len(nums) > 0:
                 _trigger = float(nums[0])
-                self.__add_upper_rsi(_trigger, data_obj)
+                self.__add_upper_rsi(_trigger, data_manager)
 
-    def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
+    def check_trigger(self, key, value, data_manager, position_obj, current_day_index) -> bool:
         """Trigger logic for RSI.
 
         Args:
             key (str): The key value of the trigger.
             value (str): The value of the trigger.
-            data_obj (any): The data API object.
+            data_manager (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
 
@@ -78,10 +78,10 @@ class RSITrigger(Trigger):
 
         if len(nums) < 1:
             # get the RSI value for the current day
-            rsi = data_obj.get_data_point('RSI', current_day_index)
+            rsi = data_manager.get_data_point('RSI', current_day_index)
 
             if CURRENT_PRICE_SYMBOL in value:
-                trigger_value = float(data_obj.get_data_point(data_obj.CLOSE, current_day_index))
+                trigger_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
                 operator = value.replace(CURRENT_PRICE_SYMBOL, '')
             else:
                 # check that the value from {key: value} has a number in it
@@ -113,8 +113,8 @@ class RSITrigger(Trigger):
                 slope_data_request_length = slope_window_length - 1
 
                 # get data for slope calculation
-                y2 = float(data_obj.get_data_point(title, current_day_index))
-                y1 = float(data_obj.get_data_point(title, current_day_index - slope_data_request_length))
+                y2 = float(data_manager.get_data_point(title, current_day_index))
+                y1 = float(data_manager.get_data_point(title, current_day_index - slope_data_request_length))
 
                 # calculate slope
                 slope = round((y2 - y1) / float(slope_window_length), 4)
@@ -142,64 +142,64 @@ class RSITrigger(Trigger):
         return False
 
     @staticmethod
-    def __add_rsi(length, data_obj):
+    def __add_rsi(length, data_manager):
         """Pre-calculate the RSI values and add them to the df.
 
         Args:
             length (int): The length of the RSI to use.
-            data_obj (any): The data object.
+            data_manager (any): The data object.
         """
         # if we already have RSI upper values in the df, we don't need to add them again
-        for col_name in data_obj.get_column_names():
+        for col_name in data_manager.get_column_names():
             if 'RSI' in col_name:
                 return
 
         # get a list of price values as a list
-        price_data = data_obj.get_column_data(data_obj.CLOSE)
+        price_data = data_manager.get_column_data(data_manager.CLOSE)
 
         # calculate the RSI values from the indicator API
         rsi_values = RSITrigger.__calculate_rsi(length, price_data)
 
         # add the calculated values to the df
-        data_obj.add_column('RSI', rsi_values)
+        data_manager.add_column('RSI', rsi_values)
 
     @staticmethod
-    def __add_upper_rsi(trigger_value, data_obj):
+    def __add_upper_rsi(trigger_value, data_manager):
         """Add upper RSI trigger to the df.
 
         Args:
             trigger_value (float): The trigger value for the upper RSI.
-            data_obj (any): The data object.
+            data_manager (any): The data object.
         """
         # if we already have RSI upper values in the df, we don't need to add them again
-        for col_name in data_obj.get_column_names():
+        for col_name in data_manager.get_column_names():
             if 'rsi_upper' in col_name:
                 return
 
         # create a list of the trigger value repeated
-        list_values = [trigger_value for _ in range(data_obj.get_data_length())]
+        list_values = [trigger_value for _ in range(data_manager.get_data_length())]
 
         # add the list to the data
-        data_obj.add_column('RSI_upper', list_values)
+        data_manager.add_column('RSI_upper', list_values)
 
     @staticmethod
-    def __add_lower_rsi(trigger_value, data_obj):
+    def __add_lower_rsi(trigger_value, data_manager):
         """Add lower RSI trigger to the df.
 
         Args:
             trigger_value (float): The trigger value for the lower RSI.
-            data_obj (any): The data object.
+            data_manager (any): The data object.
         """
         # if we already have RSI lower values in the df, we don't need to add them again
-        for col_name in data_obj.get_column_names():
+        for col_name in data_manager.get_column_names():
             if 'rsi_upper' in col_name:
                 return
 
         # create a list of the trigger value repeated
-        list_values = [trigger_value for _ in range(data_obj.get_data_length())]
+        list_values = [trigger_value for _ in range(data_manager.get_data_length())]
 
         # add the list to the data
-        data_obj.add_column('RSI_lower', list_values)
+        data_manager.add_column('RSI_lower', list_values)
 
     @staticmethod
     def __calculate_rsi(length: int, price_data: list) -> list:

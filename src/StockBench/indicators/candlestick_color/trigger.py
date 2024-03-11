@@ -21,25 +21,25 @@ class CandlestickColorTrigger(Trigger):
                 additional_days = int(sub_key)
         return additional_days
 
-    def add_to_data(self, key, value, side, data_obj):
+    def add_to_data(self, key, value, side, data_manager):
         """Add data to the dataframe.
 
         Args:
             key (any): The key value from the strategy.
             value (any): The value from thr strategy.
             side (str): The side (buy/sell).
-            data_obj (any): The data object.
+            data_manager (any): The data object.
         """
         # candle colors are included by default
         return
 
-    def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
+    def check_trigger(self, key, value, data_manager, position_obj, current_day_index) -> bool:
         """Trigger logic for candlestick color.
 
         Args:
             key (str): The key value of the trigger.
             value (dict): The value of the trigger.
-            data_obj (any): The data API object.
+            data_manager (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
 
@@ -61,7 +61,7 @@ class CandlestickColorTrigger(Trigger):
 
         # build the actual list
         for i in range(num_keys):
-            actual_colors.append(data_obj.get_data_point(data_obj.COLOR, current_day_index-i))
+            actual_colors.append(data_manager.get_data_point(data_manager.COLOR, current_day_index-i))
 
         # check for trigger
         if actual_colors == trigger_colors:

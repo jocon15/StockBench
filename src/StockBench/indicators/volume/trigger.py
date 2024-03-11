@@ -19,35 +19,35 @@ class VolumeTrigger(Trigger):
         # volume does not require additional days
         return 0
 
-    def add_to_data(self, key, value, side, data_obj):
+    def add_to_data(self, key, value, side, data_manager):
         """Add data to the dataframe.
 
         Args:
             key (any): The key value from the strategy.
             value (any): The value from thr strategy.
             side (str): The side (buy/sell).
-            data_obj (any): The data object.
+            data_manager (any): The data object.
         """
         # candle colors are added by default so just return
         return
 
-    def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
+    def check_trigger(self, key, value, data_manager, position_obj, current_day_index) -> bool:
         """Trigger logic for volume.
 
         Args:
             key (str): The key value of the trigger.
             value (str): The value of the trigger.
-            data_obj (any): The data API object.
+            data_manager (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
 
         return:
             bool: True if the trigger was hit.
         """
-        volume = data_obj.get_data_point(data_obj.VOLUME, current_day_index)
+        volume = data_manager.get_data_point(data_manager.VOLUME, current_day_index)
 
         if CURRENT_PRICE_SYMBOL in value:
-            trigger_value = float(data_obj.get_data_point(data_obj.CLOSE, current_day_index))
+            trigger_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
             operator = value.replace(CURRENT_PRICE_SYMBOL, '')
         else:
             # check that the value from {key: value} has a number in it

@@ -19,26 +19,26 @@ class StopLossTrigger(Trigger):
         # note stop loss does not require additional days
         return 0
 
-    def add_to_data(self, key, value, side, data_obj):
+    def add_to_data(self, key, value, side, data_manager):
         """Add data to the dataframe.
 
         Args:
             key (any): The key value from the strategy.
             value (any): The value from thr strategy.
             side (str): The side (buy/sell).
-            data_obj (any): The data object.
+            data_manager (any): The data object.
         """
         # note stop loss trigger is not an additional indicator and does not
         # require any additional data to be added to the data
         return
 
-    def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
+    def check_trigger(self, key, value, data_manager, position_obj, current_day_index) -> bool:
         """Trigger logic for stop loss.
 
         Args:
             key (str): The key value of the trigger.
             value (str): The value of the trigger.
-            data_obj (any): The data API object.
+            data_manager (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
 
@@ -48,8 +48,8 @@ class StopLossTrigger(Trigger):
         log.debug('Checking stop loss triggers...')
 
         # get the current price
-        current_price = data_obj.get_data_point(data_obj.CLOSE, current_day_index)
-        open_price = data_obj.get_data_point(data_obj.OPEN, current_day_index)
+        current_price = data_manager.get_data_point(data_manager.CLOSE, current_day_index)
+        open_price = data_manager.get_data_point(data_manager.OPEN, current_day_index)
 
         # get the profit/loss values from the position
         intraday_pl = position_obj.intraday_profit_loss(open_price, current_price)

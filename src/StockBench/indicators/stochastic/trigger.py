@@ -35,42 +35,42 @@ class StochasticTrigger(Trigger):
                 highest_num = num
         return highest_num
 
-    def add_to_data(self, key, value, side, data_obj):
+    def add_to_data(self, key, value, side, data_manager):
         """Add data to the dataframe.
 
         Args:
             key (any): The key value from the strategy.
             value (any): The value from thr strategy.
             side (str): The side (buy/sell).
-            data_obj (any): The data object.
+            data_manager (any): The data object.
         """
         # ======== key based =========
         nums = re.findall(r'\d+', key)
         if len(nums) > 0:
             num = int(nums[0])
             # add the stochastic data to the df
-            self.__add_stochastic_oscillator(num, data_obj)
+            self.__add_stochastic_oscillator(num, data_manager)
         else:
             # add the stochastic data to the df
-            self.__add_stochastic_oscillator(DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH, data_obj)
+            self.__add_stochastic_oscillator(DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH, data_manager)
         # ======== value based (stochastic limit)=========
         nums = re.findall(r'\d+', value)
         if side == 'buy':
             if len(nums) > 0:
                 trigger = float(nums[0])
-                self.__add_lower_stochastic(trigger, data_obj)
+                self.__add_lower_stochastic(trigger, data_manager)
         else:
             if len(nums) > 0:
                 trigger = float(nums[0])
-                self.__add_upper_stochastic(trigger, data_obj)
+                self.__add_upper_stochastic(trigger, data_manager)
 
-    def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
+    def check_trigger(self, key, value, data_manager, position_obj, current_day_index) -> bool:
         """Trigger logic for stochastic oscillator.
 
         Args:
             key (str): The key value of the trigger.
             value (str): The value of the trigger.
-            data_obj (any): The data API object.
+            data_manager (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
 
@@ -84,10 +84,10 @@ class StochasticTrigger(Trigger):
 
         if len(nums) < 2:
             # get the stochastic value for the current day
-            stochastic = data_obj.get_data_point('stochastic_oscillator', current_day_index)
+            stochastic = data_manager.get_data_point('stochastic_oscillator', current_day_index)
 
             if CURRENT_PRICE_SYMBOL in value:
-                trigger_value = float(data_obj.get_data_point(data_obj.CLOSE, current_day_index))
+                trigger_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
                 operator = value.replace(CURRENT_PRICE_SYMBOL, '')
             else:
                 # check that the value from {key: value} has a number in it
@@ -115,8 +115,8 @@ class StochasticTrigger(Trigger):
                 slope_data_request_length = slope_window_length - 1
 
                 # get data for slope calculation
-                y2 = float(data_obj.get_data_point(title, current_day_index))
-                y1 = float(data_obj.get_data_point(title, current_day_index - slope_data_request_length))
+                y2 = float(data_manager.get_data_point(title, current_day_index))
+                y1 = float(data_manager.get_data_point(title, current_day_index - slope_data_request_length))
 
                 # calculate slope
                 slope = round((y2 - y1) / float(slope_window_length), 4)
@@ -144,66 +144,66 @@ class StochasticTrigger(Trigger):
         return False
 
     @staticmethod
-    def __add_stochastic_oscillator(length, data_obj):
+    def __add_stochastic_oscillator(length, data_manager):
         """Pre-calculate the stochastic values and add them to the df.
 
         Args:
             length (int): The length of the stochastic to use.
-            data_obj (any): The data object.
+            data_manager (any): The data object.
         """
         # if we already have SO values in the df, we don't need to add them again
-        for col_name in data_obj.get_column_names():
+        for col_name in data_manager.get_column_names():
             if 'stochastic_oscillator' in col_name:
                 return
 
         # get data to calculate SO
-        high_data = data_obj.get_column_data(data_obj.HIGH)
-        low_data = data_obj.get_column_data(data_obj.LOW)
-        close_data = data_obj.get_column_data(data_obj.CLOSE)
+        high_data = data_manager.get_column_data(data_manager.HIGH)
+        low_data = data_manager.get_column_data(data_manager.LOW)
+        close_data = data_manager.get_column_data(data_manager.CLOSE)
 
         # calculate SO
         stochastic_values = StochasticTrigger.__stochastic_oscillator(length, high_data, low_data, close_data)
 
         # add the calculated values to the df
-        data_obj.add_column('stochastic_oscillator', stochastic_values)
+        data_manager.add_column('stochastic_oscillator', stochastic_values)
 
     @staticmethod
-    def __add_upper_stochastic(trigger_value, data_obj):
+    def __add_upper_stochastic(trigger_value, data_manager):
         """Add upper stochastic trigger to the df.
 
         Args:
             trigger_value (float): The trigger value for the upper stochastic.
-            data_obj (any): The data object.
+            data_manager (any): The data object.
         """
         # if we already have values in the df, we don't need to add them again
-        for col_name in data_obj.get_column_names():
+        for col_name in data_manager.get_column_names():
             if 'stochastic_upper' in col_name:
                 return
 
         # create a list of the trigger value repeated
-        list_values = [trigger_value for _ in range(data_obj.get_data_length())]
+        list_values = [trigger_value for _ in range(data_manager.get_data_length())]
 
         # add the list to the data
-        data_obj.add_column('stochastic_upper', list_values)
+        data_manager.add_column('stochastic_upper', list_values)
 
     @staticmethod
-    def __add_lower_stochastic(trigger_value, data_obj):
+    def __add_lower_stochastic(trigger_value, data_manager):
         """Add lower stochastic trigger to the df.
 
         Args:
             trigger_value (float): The trigger value for the lower stochastic.
-            data_obj (any): The data object.
+            data_manager (any): The data object.
         """
         # if we already have values in the df, we don't need to add them again
-        for col_name in data_obj.get_column_names():
+        for col_name in data_manager.get_column_names():
             if 'stochastic_lower' in col_name:
                 return
 
         # create a list of the trigger value repeated
-        list_values = [trigger_value for _ in range(data_obj.get_data_length())]
+        list_values = [trigger_value for _ in range(data_manager.get_data_length())]
 
         # add the list to the data
-        data_obj.add_column('stochastic_lower', list_values)
+        data_manager.add_column('stochastic_lower', list_values)
 
     @staticmethod
     def __stochastic_oscillator(length: int, high_data: list, low_data: list, close_data: list) -> list:

@@ -20,26 +20,26 @@ class PriceTrigger(Trigger):
         # note price does not require any additional days
         return 0
 
-    def add_to_data(self, key, value, side, data_obj):
+    def add_to_data(self, key, value, side, data_manager):
         """Add data to the dataframe.
 
         Args:
             key (any): The key value from the strategy.
             value (any): The value from thr strategy.
             side (str): The side (buy/sell).
-            data_obj (any): The data object.
+            data_manager (any): The data object.
         """
         # note price (OHLC) is in the data by default
         # no need to add it
         return
 
-    def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
+    def check_trigger(self, key, value, data_manager, position_obj, current_day_index) -> bool:
         """Trigger logic for price.
 
         Args:
             key (str): The key value of the trigger.
             value (str): The value of the trigger.
-            data_obj (any): The data API object.
+            data_manager (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
 
@@ -48,7 +48,7 @@ class PriceTrigger(Trigger):
         """
         log.debug('Checking price triggers...')
 
-        title = data_obj.CLOSE
+        title = data_manager.CLOSE
 
         if SLOPE_SYMBOL in key:
 
@@ -69,8 +69,8 @@ class PriceTrigger(Trigger):
             slope_data_request_length = slope_window_length - 1
 
             # get data for slope calculation
-            y2 = float(data_obj.get_data_point(title, current_day_index))
-            y1 = float(data_obj.get_data_point(title, current_day_index - slope_data_request_length))
+            y2 = float(data_manager.get_data_point(title, current_day_index))
+            y1 = float(data_manager.get_data_point(title, current_day_index - slope_data_request_length))
 
             # calculate slope
             slope = round((y2 - y1) / float(slope_window_length), 4)
@@ -87,7 +87,7 @@ class PriceTrigger(Trigger):
             result = Trigger.basic_triggers_check(slope, operator, trigger_value)
         else:
             # get the price data point
-            price = data_obj.get_data_point(title, current_day_index)
+            price = data_manager.get_data_point(title, current_day_index)
 
             # check that the value from {key: value} has a number in it
             try:

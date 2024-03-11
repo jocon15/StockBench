@@ -26,32 +26,32 @@ class EMATrigger(Trigger):
                 highest_num = num
         return highest_num
 
-    def add_to_data(self, key, value, side, data_obj):
+    def add_to_data(self, key, value, side, data_manager):
         """Add data to the dataframe.
 
         Args:
             key (any): The key value from the strategy.
             value (any): The value from thr strategy.
             side (str): The side (buy/sell).
-            data_obj (any): The data object.
+            data_manager (any): The data object.
         """
         nums = re.findall(r'\d+', key)
         if len(nums) > 0:
             # element 0 will be the indicator length
             num = int(nums[0])
             # add the EMA data to the df
-            self.__add_ema(num, data_obj)
+            self.__add_ema(num, data_manager)
         else:
             log.warning(f'Warning: {key} is in incorrect format and will be ignored')
             print(f'Warning: {key} is in incorrect format and will be ignored')
 
-    def check_trigger(self, key, value, data_obj, position_obj, current_day_index) -> bool:
+    def check_trigger(self, key, value, data_manager, position_obj, current_day_index) -> bool:
         """Trigger logic for EMA.
 
         Args:
             key (str): The key value of the trigger.
             value (str): The value of the trigger.
-            data_obj (any): The data API object.
+            data_manager (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
 
@@ -69,10 +69,10 @@ class EMATrigger(Trigger):
 
             # get the ema value for the current day
             title = f'EMA{indicator_length}'
-            ema = float(data_obj.get_data_point(title, current_day_index))
+            ema = float(data_manager.get_data_point(title, current_day_index))
 
             if CURRENT_PRICE_SYMBOL in value:
-                trigger_value = float(data_obj.get_data_point(data_obj.CLOSE, current_day_index))
+                trigger_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
                 operator = value.replace(CURRENT_PRICE_SYMBOL, '')
             else:
                 # check that the value from {key: value} has a number in it
@@ -108,8 +108,8 @@ class EMATrigger(Trigger):
                 slope_data_request_length = slope_window_length - 1
 
                 # get data for slope calculation
-                y2 = float(data_obj.get_data_point(title, current_day_index))
-                y1 = float(data_obj.get_data_point(title, current_day_index - slope_data_request_length))
+                y2 = float(data_manager.get_data_point(title, current_day_index))
+                y1 = float(data_manager.get_data_point(title, current_day_index - slope_data_request_length))
 
                 # calculate slope
                 slope = round((y2 - y1) / float(slope_window_length), 4)
@@ -137,29 +137,29 @@ class EMATrigger(Trigger):
         return False
 
     @staticmethod
-    def __add_ema(length, data_obj):
+    def __add_ema(length, data_manager):
         """Pre-calculate the EMA values and add them to the df.
 
         Args:
             length (int): The length of the EMA to use.
-            data_obj (any): The data object.
+            data_manager (any): The data object.
         """
         # get a list of close price values
         column_title = f'EMA{length}'
 
         # if we already have EMA values in the df, we don't need to add them again
-        for col_name in data_obj.get_column_names():
+        for col_name in data_manager.get_column_names():
             if column_title in col_name:
                 return
 
         # get a list of price values as a list
-        price_data = data_obj.get_column_data(data_obj.CLOSE)
+        price_data = data_manager.get_column_data(data_manager.CLOSE)
 
         # calculate the EMA values
         ema_values = EMATrigger.__calculate_ema(length, price_data)
 
         # add the calculated values to the df
-        data_obj.add_column(column_title, ema_values)
+        data_manager.add_column(column_title, ema_values)
 
     @staticmethod
     def __calculate_ema(length: int, price_data: list) -> list:

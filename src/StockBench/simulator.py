@@ -442,7 +442,7 @@ class Simulator:
         if 'end' in self.__strategy.keys():
             self.__end_date_unix = int(self.__strategy['end'])
 
-        additional_days = self.__trigger_manager.calculate_strategy_timestamps()
+        additional_days = self.__trigger_manager.get_additional_days()
 
         # add a buffer
         if additional_days != 0:
@@ -458,7 +458,7 @@ class Simulator:
         """Parse the strategy for relevant information needed to make the API request."""
         log.debug('Parsing strategy for indicators and rules...')
 
-        self.__trigger_manager.parse_strategy_rules(self.__data_manager)
+        self.__trigger_manager.add_indicator_data(self.__data_manager)
 
     def __create_position(self, current_day_index: int) -> Position:
         """Creates a position and updates the account.

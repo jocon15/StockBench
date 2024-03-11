@@ -16,7 +16,7 @@ class IndicatorManager:
 
     @staticmethod
     def load_indicators() -> dict:
-        """Register the indicators here"""
+        """Register the indicators here."""
 
         return {
             'candlestick_color_indicator': CandlestickColorIndicator(),

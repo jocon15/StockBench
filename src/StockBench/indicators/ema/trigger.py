@@ -67,8 +67,10 @@ class EMATrigger(Trigger):
             # ensure that num is the correct type
             indicator_length = int(nums[0])
 
-            # get the ema value for the current day
+            # column title for the simulation data
             title = f'EMA{indicator_length}'
+
+            # get the ema value for the current day
             ema = float(data_obj.get_data_point(title, current_day_index))
 
             if CURRENT_PRICE_SYMBOL in value:
@@ -84,7 +86,7 @@ class EMATrigger(Trigger):
                     return False
 
             # trigger checks
-            result = Trigger.basic_triggers_check(ema, operator, trigger_value)
+            result = Trigger.basic_trigger_check(ema, operator, trigger_value)
 
             log.debug('All EMA triggers checked')
 
@@ -123,7 +125,7 @@ class EMATrigger(Trigger):
                     return False
 
                 # trigger checks
-                result = Trigger.basic_triggers_check(slope, operator, trigger_value)
+                result = Trigger.basic_trigger_check(slope, operator, trigger_value)
 
                 log.debug('All EMA triggers checked')
 

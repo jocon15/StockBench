@@ -99,7 +99,7 @@ class StochasticTrigger(Trigger):
                     return False
 
             # trigger checks
-            result = Trigger.basic_triggers_check(stochastic, operator, trigger_value)
+            result = Trigger.basic_trigger_check(stochastic, operator, trigger_value)
 
             log.debug('All stochastic triggers checked')
 
@@ -130,7 +130,7 @@ class StochasticTrigger(Trigger):
                     return False
 
                 # trigger checks
-                result = Trigger.basic_triggers_check(slope, operator, trigger_value)
+                result = Trigger.basic_trigger_check(slope, operator, trigger_value)
 
                 log.debug('All stochastic triggers checked')
 

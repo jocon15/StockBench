@@ -93,7 +93,7 @@ class RSITrigger(Trigger):
                     return False
 
             # trigger checks
-            result = Trigger.basic_triggers_check(rsi, operator, trigger_value)
+            result = Trigger.basic_trigger_check(rsi, operator, trigger_value)
 
             log.debug('All stochastic triggers checked')
 
@@ -128,7 +128,7 @@ class RSITrigger(Trigger):
                     return False
 
                 # trigger checks
-                result = Trigger.basic_triggers_check(slope, operator, trigger_value)
+                result = Trigger.basic_trigger_check(slope, operator, trigger_value)
 
                 log.debug('All RSI triggers checked')
 

@@ -84,7 +84,7 @@ class PriceTrigger(Trigger):
                 return False
 
             # trigger checks
-            result = Trigger.basic_triggers_check(slope, operator, trigger_value)
+            result = Trigger.basic_trigger_check(slope, operator, trigger_value)
         else:
             # get the price data point
             price = data_obj.get_data_point(title, current_day_index)
@@ -98,7 +98,7 @@ class PriceTrigger(Trigger):
                 return False
 
             # trigger checks
-            result = Trigger.basic_triggers_check(price, operator, trigger_value)
+            result = Trigger.basic_trigger_check(price, operator, trigger_value)
 
         log.debug('All Price triggers checked')
 

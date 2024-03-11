@@ -50,11 +50,14 @@ class Simulator:
         Args:
             balance (float): The initial balance for the account.
         """
+        # dependencies
         self.__account = UserAccount(balance)
         self.__broker = Broker()
         self.__data_manager = None  # gets constructed once we request the data
         self.__trigger_manager = None  # gets constructed once we have the strategy
+        self.__indicators = IndicatorManager.load_indicators()
 
+        # simulation settings
         self.__strategy = None
         self.__start_date_unix = None
         self.__end_date_unix = None
@@ -62,17 +65,15 @@ class Simulator:
 
         self.__symbol = None
 
-        self.__buy_list = []
-        self.__sell_list = []
-
+        # positions storage during simulation
         self.__single_simulation_position_archive = []
         self.__multiple_simulation_position_archive = []
 
+        # post-simulation settings
         self.__reporting_on = False
         self.__running_multiple = False
 
-        self.__indicators = IndicatorManager.load_indicators()
-
+        # have not implemented stored results yet
         self.__stored_results = None
 
         # folder paths
@@ -167,34 +168,16 @@ class Simulator:
         Args:
             symbol (str): The symbol to run the simulation on.
             show_chart (bool): Show the chart when finished.
-            save_option (int): Save the chart when finished.
+            save_option (int): Selection for how to save the finished chart.
             progress_observer (any): Observer object to update progress to.
         """
-        # set the objects symbol to the passed value, so we can use it everywhere
-        log.info(f'Setting up simulation for symbol: {symbol}...')
         start_time = perf_counter()
 
+        # broker only excepts capitalized symbols
         self.__symbol = symbol.upper()
 
-        # reset the attributes()
-        self.__reset_singular_attributes()
-
-        # check the strategy for errors
-        self.__error_check_strategy()
-
-        # parse the strategy for timestamps, so we know what the user wants
-        self.__parse_strategy_timestamps()
-
-        # get the data from the servers
-        temp_df = self.__broker.get_daily_data(self.__symbol,
-                                               self.__augmented_start_date_unix,
-                                               self.__end_date_unix)
-
-        # initialize the data api with the broker data
-        self.__data_manager = DataManager(temp_df)
-
-        # parse the strategy for rules (adds indicator data to the df)
-        self.__parse_strategy_rules()
+        # perform the pre-simulation tasks
+        self.__pre_process()
 
         # calculate window lengths
         total_days = int((self.__end_date_unix - self.__augmented_start_date_unix) / SECONDS_1_DAY)
@@ -202,9 +185,10 @@ class Simulator:
         sim_window_start_day = total_days - days_in_focus
         trade_able_days = self.__data_manager.get_data_length() - sim_window_start_day
 
-        # initialize the lists to the correct size (values to None)
-        self.__buy_list = [None for _ in range(self.__data_manager.get_data_length())]
-        self.__sell_list = [None for _ in range(self.__data_manager.get_data_length())]
+        # calculate the increment for the progress bar
+        increment = 1.0  # must supply default value
+        if progress_observer is not None:
+            increment = 100.0 / (self.__data_manager.get_data_length() - sim_window_start_day)
 
         log.info(f'Setup for symbol: {self.__symbol} complete')
 
@@ -212,102 +196,21 @@ class Simulator:
                            self.__unix_to_string(self.__end_date_unix), days_in_focus, trade_able_days,
                            self.__account.get_balance())
 
-        if not self.__running_multiple:
-            self.__print_header()
-
-        buy_mode = True
-        position = None
-
         log.info(f'Beginning simulation...')
 
-        # calculate the increment for the progress bar
-        increment = 1.0  # must supply default value
-        if progress_observer is not None:
-            increment = 100.0 / (self.__data_manager.get_data_length() - sim_window_start_day)
-
         # ===================== Simulation Loop ======================
+        buy_mode = True
+        position = None
+        # Loop from the focus start day (ex. 200) to the total amount of days in the set (ex. 400).
         for current_day_index in range(sim_window_start_day, self.__data_manager.get_data_length()):
-            # Loop from the focus start day (ex. 200) to the total amount of days in the set (ex. 400).
-            # The day_index represents the index of the current day in the data set.
-
-            log.debug(f'Current day index: {current_day_index}')
-
-            if buy_mode:
-                was_triggered = self.__trigger_manager.check_buy_triggers(self.__data_manager, current_day_index)
-                if was_triggered:
-                    # create a position
-                    position = self.__create_position(current_day_index)
-                    # switch to selling
-                    buy_mode = False
-            else:
-                # sell mode
-                was_triggered = self.__trigger_manager.check_sell_triggers(self.__data_manager, position,
-                                                                           current_day_index)
-                if was_triggered:
-                    # close the position
-                    self.__liquidate_position(position, current_day_index)
-                    # clear the stored position
-                    position = None
-                    # switch to buying
-                    buy_mode = True
-                elif current_day_index == (self.__data_manager.get_data_length() - 1):
-                    # the position is still open at the end of the simulation
-                    log.info('Position closed due to end of simulation reached')
-                    # check that position still exists - if so sell
-                    if position:
-                        # close the position
-                        self.__liquidate_position(position, current_day_index)
-                    # exit the loop as a precaution
-                    break
-
-            # update the progress
-            if progress_observer is not None:
-                progress_observer.update_progress(increment)
-
-        # add the buys and sells to the df
-        self.__add_buys_sells()
-
-        # get the chopped DataFrame
-        chopped_temp_df = self.__data_manager.get_chopped_df(sim_window_start_day)
+            # simulate the current day
+            buy_mode, position = self.__simulate_day(current_day_index, buy_mode, position, progress_observer,
+                                                     increment)
+        # ============================================================
 
         log.info('Simulation complete!')
 
-        # initiate an analyzer with the positions data
-        analyzer = SimulationAnalyzer(self.__single_simulation_position_archive)
-
-        end_time = perf_counter()
-        elapsed_time = round(end_time - start_time, 4)
-
-        self.__log_results(elapsed_time, analyzer, self.__account.get_balance())
-
-        if not self.__running_multiple:
-            self.__print_singular_results(elapsed_time, analyzer, self.__account.get_balance())
-
-        if self.__reporting_on:
-            # create an export object
-            exporter = Exporter()
-            # synchronous charting
-            exporter.export(chopped_temp_df, self.__symbol)
-
-        chart_filepath = ''
-
-        if show_chart or save_option:
-            # create the display object
-            display = SingularDisplay(self.__indicators.values())
-            chart_filepath = display.chart(chopped_temp_df, self.__symbol, show_chart, save_option)
-
-        return {
-            'symbol': self.__symbol,
-            'elapsed_time': elapsed_time,
-            'trades_made': analyzer.total_trades(),
-            'effectiveness': analyzer.effectiveness(),
-            'total_profit_loss': analyzer.total_profit_loss(),
-            'average_profit_loss': analyzer.average_profit_loss(),
-            'median_profit_loss': analyzer.median_profit_loss(),
-            'standard_profit_loss_deviation': analyzer.standard_profit_loss_deviation(),
-            'account_value': self.__account.get_balance(),
-            'chart_filepath': chart_filepath
-        }
+        return self.__post_process(sim_window_start_day, start_time, show_chart, save_option)
 
     def run_multiple(self,
                      symbols: list,
@@ -384,13 +287,133 @@ class Simulator:
             'chart_filepath': chart_filepath
         }
 
+    def __pre_process(self):
+        """Setup for the simulation."""
+        log.info(f'Setting up simulation for symbol: {self.__symbol}...')
+
+        # reset the attributes()
+        self.__reset_singular_attributes()
+
+        # check the strategy for errors
+        self.__basic_error_check_strategy()
+
+        # parse the strategy for timestamps, so we know what the user wants
+        self.__check_strategy_timestamps()
+
+        # get the data from the broker
+        temp_df = self.__broker.get_daily_data(self.__symbol,
+                                               self.__augmented_start_date_unix,
+                                               self.__end_date_unix)
+
+        # initialize the data api with the broker data
+        self.__data_manager = DataManager(temp_df)
+
+        # parse the strategy for rules (adds indicator data to the df)
+        self.__add_indicator_data()
+
+        if not self.__running_multiple:
+            self.__print_header()
+
+    def __simulate_day(self, current_day_index, buy_mode, position, progress_observer, increment) -> tuple:
+        """Core simulation logic for simulating 1 day."""
+        log.debug(f'Current day index: {current_day_index}')
+        if buy_mode:
+            was_triggered = self.__trigger_manager.check_buy_triggers(self.__data_manager, current_day_index)
+            if was_triggered:
+                # create a position
+                position = self.__create_position(current_day_index)
+                # switch to selling
+                buy_mode = False
+        else:
+            # sell mode
+            was_triggered = self.__trigger_manager.check_sell_triggers(self.__data_manager, position,
+                                                                       current_day_index)
+            if was_triggered:
+                # close the position
+                self.__liquidate_position(position, current_day_index)
+                # clear the stored position
+                position = None
+                # switch to buying
+                buy_mode = True
+            elif current_day_index == (self.__data_manager.get_data_length() - 1):
+                # the position is still open at the end of the simulation
+                log.info('Position closed due to end of simulation reached')
+                # check that position still exists - if so sell
+                if position:
+                    # close the position
+                    self.__liquidate_position(position, current_day_index)
+
+        # update the progress
+        if progress_observer is not None:
+            progress_observer.update_progress(increment)
+
+        return buy_mode, position
+
+    def __post_process(self, sim_window_start_day, start_time, show_chart, save_option) -> dict:
+        """Cleanup and analysis after the simulation."""
+        # add the buys and sells to the df
+        self.__add_position_data()
+
+        # get the chopped DataFrame
+        chopped_temp_df = self.__data_manager.get_chopped_df(sim_window_start_day)
+
+        # initiate an analyzer with the positions data
+        analyzer = SimulationAnalyzer(self.__single_simulation_position_archive)
+
+        end_time = perf_counter()
+        elapsed_time = round(end_time - start_time, 4)
+
+        self.__log_results(elapsed_time, analyzer, self.__account.get_balance())
+
+        if not self.__running_multiple:
+            self.__print_singular_results(elapsed_time, analyzer, self.__account.get_balance())
+
+        if self.__reporting_on:
+            # create an export object
+            exporter = Exporter()
+            # synchronous charting
+            exporter.export(chopped_temp_df, self.__symbol)
+
+        chart_filepath = ''
+        if show_chart or save_option:
+            # create the display object
+            display = SingularDisplay(self.__indicators.values())
+            chart_filepath = display.chart(chopped_temp_df, self.__symbol, show_chart, save_option)
+
+        return {
+            'symbol': self.__symbol,
+            'elapsed_time': elapsed_time,
+            'trades_made': analyzer.total_trades(),
+            'effectiveness': analyzer.effectiveness(),
+            'total_profit_loss': analyzer.total_profit_loss(),
+            'average_profit_loss': analyzer.average_profit_loss(),
+            'median_profit_loss': analyzer.median_profit_loss(),
+            'standard_profit_loss_deviation': analyzer.standard_profit_loss_deviation(),
+            'account_value': self.__account.get_balance(),
+            'chart_filepath': chart_filepath
+        }
+
+    def __add_position_data(self):
+        """Add the position data to the simulation data."""
+        # initialize the lists to the length of the simulation (with None values)
+        acquisition_price_list = [None for _ in range(self.__data_manager.get_data_length())]
+        liquidation_price_list = [None for _ in range(self.__data_manager.get_data_length())]
+
+        # fill in the list values with the position data
+        for position in self.__single_simulation_position_archive:
+            acquisition_price_list[position.buy_day_index] = position.get_buy_price()
+            liquidation_price_list[position.sell_day_index] = position.get_sell_price()
+
+        # add the columns to the data
+        self.__data_manager.add_column('Buy', acquisition_price_list)
+        self.__data_manager.add_column('Sell', liquidation_price_list)
+
     def __reset_singular_attributes(self):
+        """Clear singular simulation stored data."""
         self.__account.reset()
-        self.__buy_list = []
-        self.__sell_list = []
         self.__single_simulation_position_archive = []
 
-    def __error_check_strategy(self):
+    def __basic_error_check_strategy(self):
         """Check the strategy for errors"""
         log.debug('Checking strategy for errors...')
         if not self.__strategy:
@@ -410,7 +433,7 @@ class Simulator:
             raise Exception("Strategy missing 'sell' key")
         log.debug('No errors found in the strategy')
 
-    def __parse_strategy_timestamps(self):
+    def __check_strategy_timestamps(self):
         """Parse the strategy for relevant information needed to make the API request."""
         log.debug('Parsing strategy for timestamps...')
         if 'start' in self.__strategy.keys():
@@ -430,16 +453,11 @@ class Simulator:
         self.__error_check_timestamps(self.__start_date_unix, self.__end_date_unix)
         self.__augmented_start_date_unix = self.__start_date_unix - (additional_days * SECONDS_1_DAY)
 
-    def __parse_strategy_rules(self):
+    def __add_indicator_data(self):
         """Parse the strategy for relevant information needed to make the API request."""
         log.debug('Parsing strategy for indicators and rules...')
 
         self.__trigger_manager.parse_strategy_rules(self.__data_manager)
-
-    def __add_buys_sells(self):
-        """Adds the buy and sell lists to the DataFrame."""
-        self.__data_manager.add_column('Buy', self.__buy_list)
-        self.__data_manager.add_column('Sell', self.__sell_list)
 
     def __create_position(self, current_day_index: int) -> Position:
         """Creates a position and updates the account.
@@ -465,13 +483,10 @@ class Simulator:
         # withdraw the money from the account
         self.__account.withdraw(withdraw_amount)
 
-        # Adding the buy price to the buy list
-        self.__buy_list[current_day_index] = _buy_price
-
         log.info('Position created successfully')
 
         # build and return the new position
-        return Position(_buy_price, share_count)
+        return Position(_buy_price, share_count, current_day_index)
 
     def __liquidate_position(self, position: Position, current_day_index: int):
         """Closes the position and updates the account.
@@ -486,7 +501,7 @@ class Simulator:
         _sell_price = float(self.__data_manager.get_data_point(self.__data_manager.CLOSE, current_day_index))
 
         # close the position
-        position.close_position(_sell_price)
+        position.close_position(_sell_price, current_day_index)
 
         # add the position to the archive
         self.__single_simulation_position_archive.append(position)
@@ -498,9 +513,6 @@ class Simulator:
 
         # deposit the value of the position to the account
         self.__account.deposit(deposit_amount)
-
-        # Adding the sell price to the sell list
-        self.__sell_list[current_day_index] = _sell_price
 
     def __print_header(self):
         """Prints the simulation header."""

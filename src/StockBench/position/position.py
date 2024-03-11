@@ -5,18 +5,23 @@ class Position:
     needed because we need to keep tract of the purchase price of those shares. In the context of a simulation,
     the position is going to be opened on one day, likely held for some time, then liquidated. At the liquidation
     point, we want to have all the details regarding that position in one place for analytical purposes."""
-    def __init__(self, buy_price: float, share_count: float):
+    def __init__(self, buy_price: float, share_count: float, current_day_index: int):
+        self.buy_day_index = int(current_day_index)
+        self.sell_day_index = None
+
         self.__buy_price = float(buy_price)
         self.__sell_price = None
         self.__share_count = float(share_count)
 
-    def close_position(self, sell_price: float):
+    def close_position(self, sell_price: float, current_day_index: int):
         """ Close the position.
 
         Args:
             sell_price (float): The sell price of the position.
+            current_day_index (int): The index of the day that the position was closed on.
         """
         self.__sell_price = float(sell_price)
+        self.sell_day_index = int(current_day_index)
 
     def profit_loss(self, current_price: float) -> float:
         """Calculate the profit/loss for the position for a current price

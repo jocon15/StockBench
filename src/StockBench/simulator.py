@@ -40,8 +40,7 @@ class Simulator:
     """
 
     def __init__(self, balance: float):
-        """Constructor.
-
+        """
         Args:
             balance (float): The initial balance for the account.
         """

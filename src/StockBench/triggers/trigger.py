@@ -30,7 +30,7 @@ class Trigger:
         raise NotImplementedError('Check trigger not implemented!')
 
     @staticmethod
-    def basic_triggers_check(indicator_value, operator_value, trigger_value) -> bool:
+    def basic_trigger_check(indicator_value, operator_value, trigger_value) -> bool:
         """Abstraction for basic trigger comparison operators.
 
         Args:

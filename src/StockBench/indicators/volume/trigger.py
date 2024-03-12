@@ -59,7 +59,7 @@ class VolumeTrigger(Trigger):
                 return False
 
         # trigger checks
-        result = Trigger.basic_triggers_check(volume, operator, trigger_value)
+        result = Trigger.basic_trigger_check(volume, operator, trigger_value)
 
         log.debug('All volume triggers checked')
 

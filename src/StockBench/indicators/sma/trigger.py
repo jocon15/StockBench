@@ -94,7 +94,7 @@ class SMATrigger(Trigger):
                     return False
 
             # trigger checks
-            result = Trigger.basic_triggers_check(sma, operator, trigger_value)
+            result = Trigger.basic_trigger_check(sma, operator, trigger_value)
 
             log.debug('All SMA triggers checked')
 
@@ -133,7 +133,7 @@ class SMATrigger(Trigger):
                     return False
 
                 # trigger checks
-                result = Trigger.basic_triggers_check(slope, operator, trigger_value)
+                result = Trigger.basic_trigger_check(slope, operator, trigger_value)
 
                 log.debug('All SMA triggers checked')
 

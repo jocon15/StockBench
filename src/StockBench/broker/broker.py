@@ -105,6 +105,12 @@ class Broker:
                 log.critical('Request unsuccessful!')
             response_data = response.json()
             log.debug('Request made successfully')
+            if 'bars' not in response_data.keys():
+                # symbols with numeric characters are flagged by the broker
+                raise ValueError(f'Invalid symbol {self.__symbol}')
+            if response_data['bars'] == {}:
+                # misspelled symbols return blank data for bars
+                raise ValueError(f'Invalid symbol {self.__symbol}')
             return self.__json_to_df(response_data['bars'][self.__symbol])
         except requests.exceptions.ConnectionError:
             # do something if the request fails

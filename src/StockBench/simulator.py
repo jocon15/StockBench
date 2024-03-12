@@ -237,14 +237,11 @@ class Simulator:
         # simulate each symbol
         results = []
         for symbol in tqdm(symbols, f'Simulating {len(symbols)} symbols'):
-            try:
-                # run the simulation for that symbol
-                result = self.run(symbol, show_individual_charts, save_individual_charts)
-                # capture the archived positions from the symbol run in the multiple positions list
-                self.__multiple_simulation_position_archive += self.__single_simulation_position_archive
-            except Exception as e:
-                print(f'\nException {e} caught trying to simulate symbol: {symbol}, skipping...')
-                continue
+            # run the simulation for that symbol
+            result = self.run(symbol, show_individual_charts, save_individual_charts)
+            # capture the archived positions from the symbol run in the multiple positions list
+            self.__multiple_simulation_position_archive += self.__single_simulation_position_archive
+
             results.append(result)
 
             # update the progress

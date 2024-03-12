@@ -104,8 +104,13 @@ class MultiResultsWindow(QWidget):
             save_option = Display.UNIQUE_SAVE
         else:
             save_option = Display.TEMP_SAVE
-        return self.simulator.run_multiple(self.symbols, show_chart=False, save_option=save_option,
-                                           progress_observer=self.progress_observer)
+        try:
+            return self.simulator.run_multiple(self.symbols, show_chart=False, save_option=save_option,
+                                               progress_observer=self.progress_observer)
+        except ValueError as e:
+            # pass the error to the simulation results box
+            self.simulation_results_box.update_error_message(f'{e}')
+            return {}
 
     def render_updated_data(self, simulation_results: dict):
         self.simulation_results_box.render_data(simulation_results)
@@ -136,13 +141,21 @@ class SimulationResultsBox(QFrame):
         self.setLayout(self.layout)
 
     def render_data(self, simulation_results):
-        self.webView.load(QtCore.QUrl().fromLocalFile(os.path.abspath(simulation_results['chart_filepath'])))
+        if 'chart_filepath' in simulation_results:
+            self.webView.load(QtCore.QUrl().fromLocalFile(os.path.abspath(simulation_results['chart_filepath'])))
         self.simulation_results_text_box.render_data(simulation_results)
+
+    def update_error_message(self, message):
+        # pass the error down to the simulation results text box
+        self.simulation_results_text_box.update_error_message(message)
 
 
 class SimulationResultsTextBox(QFrame):
     title_stylesheet = """color:#FFF;font-size:20px;font-weight:bold;"""
+
     numeric_results_stylesheet = """color:#FFF;"""
+
+    error_label_style_sheet = """color:#dc143c;margin-top:10px;"""
 
     def __init__(self):
         super().__init__()
@@ -219,17 +232,30 @@ class SimulationResultsTextBox(QFrame):
         self.data_label7.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.data_label7, 8, 2)
 
+        self.error_message_box = QLabel()
+        self.error_message_box.setStyleSheet(self.error_label_style_sheet)
+        self.layout.addWidget(self.error_message_box, 10, 1)
+
         self.layout.setRowStretch(self.layout.rowCount(), 1)
         self.layout.setColumnStretch(self.layout.columnCount(), 1)
 
         # apply the layout to the frame
         self.setLayout(self.layout)
 
+        self.__error_message = ""
+
     def render_data(self, simulation_results: dict):
-        self.data_label1.setText(f'{simulation_results["elapsed_time"]} seconds')
-        self.data_label2.setText(f'{simulation_results["trades_made"]}')
-        self.data_label3.setText(f'$ {simulation_results["effectiveness"]}')
-        self.data_label4.setText(f'$ {simulation_results["total_profit_loss"]}')
-        self.data_label5.setText(f'$ {simulation_results["average_profit_loss"]}')
-        self.data_label6.setText(f'$ {simulation_results["median_profit_loss"]}')
-        self.data_label7.setText(f'$ {simulation_results["standard_profit_loss_deviation"]}')
+        if not self.__error_message:
+            self.data_label1.setText(f'{simulation_results["elapsed_time"]} seconds')
+            self.data_label2.setText(f'{simulation_results["trades_made"]}')
+            self.data_label3.setText(f'$ {simulation_results["effectiveness"]}')
+            self.data_label4.setText(f'$ {simulation_results["total_profit_loss"]}')
+            self.data_label5.setText(f'$ {simulation_results["average_profit_loss"]}')
+            self.data_label6.setText(f'$ {simulation_results["median_profit_loss"]}')
+            self.data_label7.setText(f'$ {simulation_results["standard_profit_loss_deviation"]}')
+        else:
+            self.error_message_box.setText(f'Error: {self.__error_message}')
+
+    def update_error_message(self, message):
+        self.__error_message = message
+

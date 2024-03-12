@@ -169,24 +169,8 @@ class Simulator:
         symbol = symbol.upper()
 
         # perform the pre-simulation tasks
-        self.__pre_process(symbol)
-
-        # calculate window lengths
-        total_days = int((self.__end_date_unix - self.__augmented_start_date_unix) / SECONDS_1_DAY)
-        days_in_focus = int((self.__end_date_unix - self.__start_date_unix) / SECONDS_1_DAY)
-        sim_window_start_day = total_days - days_in_focus
-        trade_able_days = self.__data_manager.get_data_length() - sim_window_start_day
-
-        # calculate the increment for the progress bar
-        increment = 1.0  # must supply default value
-        if progress_observer is not None:
-            increment = 100.0 / (self.__data_manager.get_data_length() - sim_window_start_day)
-
-        log.info(f'Setup for symbol: {symbol} complete')
-
-        self.__log_details(symbol, self.__unix_to_string(self.__start_date_unix),
-                           self.__unix_to_string(self.__end_date_unix), days_in_focus, trade_able_days,
-                           self.__account.get_balance())
+        (total_days, days_in_focus, sim_window_start_day,
+         trade_able_days, increment) = self.__pre_process(symbol, progress_observer)
 
         log.info(f'Beginning simulation...')
 
@@ -223,16 +207,7 @@ class Simulator:
         """
         start_time = perf_counter()
 
-        # disable printing for TQDM
-        self.__running_multiple = True
-
-        # reset the multiple simulation archived symbols to clear any data from previous multiple simulations
-        self.__multiple_simulation_position_archive = []
-
-        # calculate the increment for the progress bar
-        increment = 1.0  # must supply default value
-        if progress_observer is not None:
-            increment = 100.0 / float(len(symbols))
+        increment = self.__multi_pre_process(symbols, progress_observer)
 
         # simulate each symbol
         results = []
@@ -250,7 +225,7 @@ class Simulator:
 
         return self.__multi_post_process(results, start_time, show_chart, save_option)
 
-    def __pre_process(self, symbol):
+    def __pre_process(self, symbol, progress_observer) -> tuple:
         """Setup for the simulation."""
         log.info(f'Setting up simulation for symbol: {symbol}...')
 
@@ -274,8 +249,25 @@ class Simulator:
         # add indicators to the data based on strategy
         self.__trigger_manager.add_indicator_data(self.__data_manager)
 
+        # print the header if necessary
         if not self.__running_multiple:
             self.__print_header(symbol)
+
+        # calculate the simulation window
+        total_days, days_in_focus, sim_window_start_day, trade_able_days = self.__calculate_simulation_window()
+
+        # calculate the increment for the progress bar
+        increment = 1.0  # must supply default value
+        if progress_observer is not None:
+            increment = 100.0 / (self.__data_manager.get_data_length() - sim_window_start_day)
+
+        log.info(f'Setup for symbol: {symbol} complete')
+
+        self.__log_details(symbol, self.__unix_to_string(self.__start_date_unix),
+                           self.__unix_to_string(self.__end_date_unix), days_in_focus, trade_able_days,
+                           self.__account.get_balance())
+
+        return total_days, days_in_focus, sim_window_start_day, trade_able_days, increment
 
     def __simulate_day(self, current_day_index, buy_mode, position, progress_observer, increment) -> tuple:
         """Core simulation logic for simulating 1 day."""
@@ -356,6 +348,20 @@ class Simulator:
             'chart_filepath': chart_filepath
         }
 
+    def __multi_pre_process(self, symbols, progress_observer) -> float:
+        # disable printing for TQDM
+        self.__running_multiple = True
+
+        # reset the multiple simulation archived symbols to clear any data from previous multiple simulations
+        self.__multiple_simulation_position_archive = []
+
+        # calculate the increment for the progress bar
+        increment = 1.0  # must supply default value
+        if progress_observer is not None:
+            increment = 100.0 / float(len(symbols))
+
+        return increment
+
     def __multi_post_process(self, results, start_time, show_chart, save_option):
         # re-enable printing for TQDM
         self.__running_multiple = False
@@ -429,6 +435,15 @@ class Simulator:
 
         self.__error_check_timestamps(self.__start_date_unix, self.__end_date_unix)
         self.__augmented_start_date_unix = self.__start_date_unix - (additional_days * SECONDS_1_DAY)
+
+    def __calculate_simulation_window(self) -> tuple:
+        """Calculate window dimensions."""
+        total_days = int((self.__end_date_unix - self.__augmented_start_date_unix) / SECONDS_1_DAY)
+        days_in_focus = int((self.__end_date_unix - self.__start_date_unix) / SECONDS_1_DAY)
+        sim_window_start_day = total_days - days_in_focus
+        trade_able_days = self.__data_manager.get_data_length() - sim_window_start_day
+
+        return total_days, days_in_focus, sim_window_start_day, trade_able_days
 
     def __create_position(self, current_day_index: int) -> Position:
         """Creates a position and updates the account.

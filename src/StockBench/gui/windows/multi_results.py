@@ -258,4 +258,3 @@ class SimulationResultsTextBox(QFrame):
 
     def update_error_message(self, message):
         self.__error_message = message
-

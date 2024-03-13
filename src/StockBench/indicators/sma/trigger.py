@@ -70,8 +70,22 @@ class SMATrigger(Trigger):
         """
         log.debug('Checking SMA triggers...')
 
-        # find the SMA length, else exit
-        nums = re.findall(r'\d+', key)
+        # find the operator and trigger value (right hand side of the comparison)
+        if CURRENT_PRICE_SYMBOL in value:
+            trigger_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
+            operator = value.replace(CURRENT_PRICE_SYMBOL, '')
+        else:
+            # check that the value from {key: value} has a number in it
+            try:
+                trigger_value = self.find_single_numeric_in_str(value)
+                operator = self.find_operator_in_str(value)
+            except ValueError:
+                log.warning(f'Warning: {key} is in incorrect format and will be ignored')
+                print(f'Warning: {key} is in incorrect format and will be ignored')
+                return False
+
+        # find the indicator value (left hand side of the comparison)
+        nums = self.find_all_nums_in_str(key)
         # since there is no default SMA, there must be a value provided, else exit
         if len(nums) == 1:
             # ensure that num is the correct type
@@ -79,72 +93,39 @@ class SMATrigger(Trigger):
 
             # get the sma value for the current day
             title = f'SMA{indicator_length}'
-            sma = float(data_manager.get_data_point(title, current_day_index))
 
-            if CURRENT_PRICE_SYMBOL in value:
-                trigger_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
-                operator = value.replace(CURRENT_PRICE_SYMBOL, '')
-            else:
-                # check that the value from {key: value} has a number in it
-                try:
-                    trigger_value = Trigger.find_numeric_in_str(value)
-                    operator = Trigger.find_operator_in_str(value)
-                except ValueError:
-                    # an exception occurred trying to parse trigger value or operator - skip trigger
-                    return False
-
-            # trigger checks
-            result = Trigger.basic_trigger_check(sma, operator, trigger_value)
-
-            log.debug('All SMA triggers checked')
-
-            return result
+            indicator_value = float(data_manager.get_data_point(title, current_day_index))
         elif len(nums) == 2:
             # likely that the $slope indicator is being used
             if SLOPE_SYMBOL in key:
-                # ensure that num is the correct type
-                indicator_length = int(nums[0])
-
                 # get the sma value for the current day
-                title = f'SMA{indicator_length}'
+                title = f'SMA{int(nums[0])}'
 
                 # get the length of the slope window
                 slope_window_length = int(nums[1])
 
-                if slope_window_length < 2:
-                    raise Exception('Slope window lengths cannot be less than 2')
-
                 # data request length is window - 1 to account for the current day index being a part of the window
                 slope_data_request_length = slope_window_length - 1
 
-                # get data for slope calculation
-                y2 = float(data_manager.get_data_point(title, current_day_index))
-                y1 = float(data_manager.get_data_point(title, current_day_index - slope_data_request_length))
-
                 # calculate slope
-                slope = round((y2 - y1) / float(slope_window_length), 4)
-
-                # check that the value from {key: value} has a number in it
-                try:
-                    trigger_value = Trigger.find_numeric_in_str(value)
-                    operator = Trigger.find_operator_in_str(value)
-                except ValueError:
-                    # an exception occurred trying to parse trigger value or operator - skip trigger
-                    return False
-
-                # trigger checks
-                result = Trigger.basic_trigger_check(slope, operator, trigger_value)
-
-                log.debug('All SMA triggers checked')
-
-                return result
+                indicator_value = self.calculate_slope(
+                    float(data_manager.get_data_point(title, current_day_index)),
+                    float(data_manager.get_data_point(title, current_day_index - slope_data_request_length)),
+                    slope_window_length
+                )
             else:
-                # an exception occurred trying to parse trigger value or operator - skip trigger
+                log.warning(f'Warning: {key} is in incorrect format and will be ignored')
+                print(f'Warning: {key} is in incorrect format and will be ignored')
                 return False
+        else:
+            log.warning(f'Warning: {key} is in incorrect format and will be ignored')
+            print(f'Warning: {key} is in incorrect format and will be ignored')
+            return False
 
-        log.warning(f'Warning: {key} is in incorrect format and will be ignored')
-        print(f'Warning: {key} is in incorrect format and will be ignored')
-        return False
+        log.debug('All SMA triggers checked')
+
+        # trigger checks
+        return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
     @staticmethod
     def __add_sma(length, data_manager):

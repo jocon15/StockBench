@@ -28,13 +28,9 @@ class SMATrigger(Trigger):
             key (any): The key value from the strategy.
             value (any): The value from the strategy.
         """
-        highest_num = 0
         nums = re.findall(r'\d+', key)
-        for num in nums:
-            num = int(num)
-            if num > highest_num:
-                highest_num = num
-        return highest_num
+        # map nums to a list of ints and find maximum
+        return max(list(map(int, nums)))
 
     def add_to_data(self, key, value, side, data_manager):
         """Add data to the dataframe.
@@ -68,39 +64,38 @@ class SMATrigger(Trigger):
         return:
             bool: True if the trigger was hit.
         """
-        log.debug('Checking SMA triggers...')
+        log.debug(f'Checking SMA trigger {key}...')
 
-        # find the operator and trigger value (right hand side of the comparison)
-        if CURRENT_PRICE_SYMBOL in value:
-            trigger_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
-            operator = value.replace(CURRENT_PRICE_SYMBOL, '')
-        else:
-            # check that the value from {key: value} has a number in it
-            try:
-                trigger_value = self.find_single_numeric_in_str(value)
-                operator = self.find_operator_in_str(value)
-            except ValueError:
-                log.warning(f'Warning: {key} is in incorrect format and will be ignored')
-                print(f'Warning: {key} is in incorrect format and will be ignored')
-                return False
+        # get the indicator value from the key
+        try:
+            indicator_value = self.__parse_key(key, data_manager, current_day_index)
+        except ValueError:
+            return False
 
+        # get the operator and trigger value from the value
+        try:
+            operator, trigger_value = self.__parse_value(key, value, data_manager, current_day_index)
+        except ValueError:
+            return False
+
+        log.debug(f'SMA trigger {key} checked successfully')
+
+        # trigger checks
+        return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
+
+    def __parse_key(self, key, data_manager, current_day_index) -> float:
+        """Parser for parsing the key into the indicator value."""
         # find the indicator value (left hand side of the comparison)
         nums = self.find_all_nums_in_str(key)
-        # since there is no default SMA, there must be a value provided, else exit
+
+        # get the sma value for the current day
+        title = f'SMA{int(nums[0])}'
+
         if len(nums) == 1:
-            # ensure that num is the correct type
-            indicator_length = int(nums[0])
-
-            # get the sma value for the current day
-            title = f'SMA{indicator_length}'
-
             indicator_value = float(data_manager.get_data_point(title, current_day_index))
         elif len(nums) == 2:
             # likely that the $slope indicator is being used
             if SLOPE_SYMBOL in key:
-                # get the sma value for the current day
-                title = f'SMA{int(nums[0])}'
-
                 # get the length of the slope window
                 slope_window_length = int(nums[1])
 
@@ -116,16 +111,34 @@ class SMATrigger(Trigger):
             else:
                 log.warning(f'Warning: {key} is in incorrect format and will be ignored')
                 print(f'Warning: {key} is in incorrect format and will be ignored')
-                return False
+                # re-raise the error so check_trigger() knows the parse failed
+                raise ValueError
         else:
             log.warning(f'Warning: {key} is in incorrect format and will be ignored')
             print(f'Warning: {key} is in incorrect format and will be ignored')
-            return False
+            # re-raise the error so check_trigger() knows the parse failed
+            raise ValueError
 
-        log.debug('All SMA triggers checked')
+        return indicator_value
 
-        # trigger checks
-        return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
+    def __parse_value(self, key, value, data_manager, current_day_index) -> tuple:
+        """Parser for parsing the operator and trigger value from the value."""
+        # find the operator and trigger value (right hand side of the comparison)
+        if CURRENT_PRICE_SYMBOL in value:
+            trigger_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
+            operator = value.replace(CURRENT_PRICE_SYMBOL, '')
+        else:
+            # check that the value from {key: value} has a number in it
+            try:
+                trigger_value = self.find_single_numeric_in_str(value)
+                operator = self.find_operator_in_str(value)
+            except ValueError:
+                log.warning(f'Warning: {key} is in incorrect format and will be ignored')
+                print(f'Warning: {key} is in incorrect format and will be ignored')
+                # re-raise the error so check_trigger() knows the parse failed
+                raise ValueError
+
+        return operator, trigger_value
 
     @staticmethod
     def __add_sma(length, data_manager):

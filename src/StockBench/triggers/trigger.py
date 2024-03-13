@@ -59,8 +59,8 @@ class Trigger:
         return False
 
     @staticmethod
-    def find_numeric_in_str(value) -> float:
-        """Find the numeric trigger in a string.
+    def find_single_numeric_in_str(value) -> float:
+        """Find a single numeric trigger in a string.
 
         Args:
             value (str): Any value of the strategy.
@@ -69,7 +69,7 @@ class Trigger:
             float: The trigger value in the string.
 
         raises:
-            ValueError: If the passed value is not in the correct format.
+            ValueError: If the passed value is not in the correct format (contains >1 or no numerics).
         """
         nums = re.findall(r'\d+', value)
         if len(nums) == 1:
@@ -79,6 +79,10 @@ class Trigger:
             print(f'Invalid number found in trigger value: {value}')
             # if no trigger value available, exit
             raise ValueError(f'Invalid number found in trigger value: {value}')
+
+    @staticmethod
+    def find_all_nums_in_str(value) -> list:
+        return re.findall(r'\d+', value)
 
     @staticmethod
     def find_operator_in_str(value) -> str:
@@ -101,3 +105,11 @@ class Trigger:
             print(f'Invalid number found in trigger value: {value}')
             # if no trigger value available, exit
             raise ValueError(f'Invalid number found in trigger value: {value}')
+
+    @staticmethod
+    def calculate_slope(y2, y1, length) -> float:
+        if length < 2:
+            raise Exception('Slope window lengths cannot be less than 2')
+
+        # calculate slope
+        return round((y2 - y1) / float(length), 4)

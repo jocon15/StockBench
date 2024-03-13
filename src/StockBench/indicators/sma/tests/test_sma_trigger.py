@@ -88,9 +88,9 @@ def logger_side_effect(*args):
         assert False
 
 
-@patch('StockBench.triggers.trigger.Trigger.find_numeric_in_str')
+@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
 @patch('StockBench.triggers.trigger.Trigger.find_operator_in_str')
-@patch('StockBench.triggers.trigger.Trigger.basic_triggers_check')
+@patch('StockBench.triggers.trigger.Trigger.basic_trigger_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============
@@ -111,7 +111,7 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
-@patch('StockBench.triggers.trigger.Trigger.find_numeric_in_str')
+@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger_value_error(data_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============
@@ -130,9 +130,9 @@ def value_error_side_effect(*args):  # noqa
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
-@patch('StockBench.triggers.trigger.Trigger.find_numeric_in_str')
+@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
 @patch('StockBench.triggers.trigger.Trigger.find_operator_in_str')
-@patch('StockBench.triggers.trigger.Trigger.basic_triggers_check')
+@patch('StockBench.triggers.trigger.Trigger.basic_trigger_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker,
                                                  test_object):
@@ -156,19 +156,21 @@ def data_side_effect(*args):
         return 40.2
 
 
-def test_check_trigger_2_numbers_present_bad_format(test_object):
+@patch('StockBench.simulation_data.data_manager.DataManager')
+def test_check_trigger_2_numbers_present_bad_format(data_mocker, test_object):
     # ============= Arrange ==============
+    data_mocker.get_data_point.side_effect = data_side_effect
 
     # ============= Act ==================
 
     # ============= Assert ===============
     # has 2 numbers but does not include slope symbol
-    assert test_object.check_trigger('SMA20ran50', '>$price', None, None, 0) is False
+    assert test_object.check_trigger('SMA20ran50', '>$price', data_mocker, None, 0) is False
 
 
-@patch('StockBench.triggers.trigger.Trigger.find_numeric_in_str')
+@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
 @patch('StockBench.triggers.trigger.Trigger.find_operator_in_str')
-@patch('StockBench.triggers.trigger.Trigger.basic_triggers_check')
+@patch('StockBench.triggers.trigger.Trigger.basic_trigger_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============
@@ -195,7 +197,7 @@ def slope_data_side_effect(*args):
         return 100.0
 
 
-@patch('StockBench.triggers.trigger.Trigger.find_numeric_in_str')
+@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger_slope_value_error(data_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============

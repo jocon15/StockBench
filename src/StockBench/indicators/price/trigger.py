@@ -46,61 +46,53 @@ class PriceTrigger(Trigger):
         return:
             bool: True if the trigger was hit.
         """
-        log.debug('Checking price triggers...')
+        log.debug(f'Checking price trigger: {key}...')
 
+        # get the indicator value from the key
+        indicator_value = self.__parse_key(key, data_manager, current_day_index)
+
+        # get the operator and trigger value from the value
+        operator, trigger_value = self._parse_value(key, value, data_manager, current_day_index)
+
+        log.debug(f'Price trigger: {key} checked successfully')
+
+        # trigger checks
+        return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
+
+    def __parse_key(self, key, data_manager, current_day_index) -> float:
+        """Parser for parsing the key into the indicator value."""
+        # find the indicator value (left hand side of the comparison)
+        nums = self.find_all_nums_in_str(key)
+
+        # title of the column in the data
         title = data_manager.CLOSE
 
-        if SLOPE_SYMBOL in key:
+        if len(nums) == 0:
+            indicator_value = float(data_manager.get_data_point(title, current_day_index))
+        elif len(nums) == 1:
+            # likely that the $slope indicator is being used
+            if SLOPE_SYMBOL in key:
+                # get the length of the slope window
+                slope_window_length = int(nums[0])
 
-            # find nums for potential slope usage
-            nums = re.findall(r'\d+', key)
+                # data request length is window - 1 to account for the current day index being a part of the window
+                slope_data_request_length = slope_window_length - 1
 
-            # ensure that the nums list only has 1 number 'price$slope2' where the number is the slope length
-            if len(nums) != 1:
-                raise Exception('Price key with slope keyword is not in correct format!')
-
-            # get the length of the slope window
-            slope_window_length = int(nums[0])
-
-            if slope_window_length < 2:
-                raise Exception('Slope window lengths cannot be less than 2')
-
-            # data request length is window - 1 to account for the current day index being a part of the window
-            slope_data_request_length = slope_window_length - 1
-
-            # get data for slope calculation
-            y2 = float(data_manager.get_data_point(title, current_day_index))
-            y1 = float(data_manager.get_data_point(title, current_day_index - slope_data_request_length))
-
-            # calculate slope
-            slope = round((y2 - y1) / float(slope_window_length), 4)
-
-            # check that the value from {key: value} has a number in it
-            try:
-                trigger_value = Trigger.find_single_numeric_in_str(value)
-                operator = Trigger.find_operator_in_str(value)
-            except ValueError:
-                # an exception occurred trying to parse trigger value or operator - skip trigger
-                return False
-
-            # trigger checks
-            result = Trigger.basic_trigger_check(slope, operator, trigger_value)
+                # calculate slope
+                indicator_value = self.calculate_slope(
+                    float(data_manager.get_data_point(title, current_day_index)),
+                    float(data_manager.get_data_point(title, current_day_index - slope_data_request_length)),
+                    slope_window_length
+                )
+            else:
+                log.warning(f'Warning: {key} is in incorrect format and will be ignored')
+                print(f'Warning: {key} is in incorrect format and will be ignored')
+                # re-raise the error so check_trigger() knows the parse failed
+                raise ValueError
         else:
-            # get the price data point
-            price = data_manager.get_data_point(title, current_day_index)
+            log.warning(f'Warning: {key} is in incorrect format and will be ignored')
+            print(f'Warning: {key} is in incorrect format and will be ignored')
+            # re-raise the error so check_trigger() knows the parse failed
+            raise ValueError
 
-            # check that the value from {key: value} has a number in it
-            try:
-                trigger_value = Trigger.find_single_numeric_in_str(value)
-                operator = Trigger.find_operator_in_str(value)
-            except ValueError:
-                # an exception occurred trying to parse trigger value or operator - skip trigger
-                return False
-
-            # trigger checks
-            result = Trigger.basic_trigger_check(price, operator, trigger_value)
-
-        log.debug('All Price triggers checked')
-
-        # catch all case if nothing was hit (which is ok!)
-        return result
+        return indicator_value

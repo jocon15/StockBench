@@ -27,13 +27,9 @@ class StochasticTrigger(Trigger):
             key (any): The key value from the strategy.
             value (any): The value from the strategy.
         """
-        highest_num = 0
         nums = re.findall(r'\d+', key)
-        for num in nums:
-            num = int(num)
-            if num > highest_num:
-                highest_num = num
-        return highest_num
+        # map nums to a list of ints and find maximum
+        return max(list(map(int, nums)))
 
     def add_to_data(self, key, value, side, data_manager):
         """Add data to the dataframe.
@@ -77,71 +73,57 @@ class StochasticTrigger(Trigger):
         return:
             bool: True if the trigger was hit.
         """
-        log.debug('Checking stochastic oscillator triggers...')
+        log.debug(f'Checking stochastic oscillator trigger: {key}...')
 
-        # find nums for potential slope usage
-        nums = re.findall(r'\d+', key)
+        # get the indicator value from the key
+        indicator_value = self.__parse_key(key, data_manager, current_day_index)
 
-        if len(nums) < 2:
-            # get the stochastic value for the current day
-            stochastic = data_manager.get_data_point('stochastic_oscillator', current_day_index)
+        # get the operator and trigger value from the value
+        operator, trigger_value = self._parse_value(key, value, data_manager, current_day_index)
 
-            if CURRENT_PRICE_SYMBOL in value:
-                trigger_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
-                operator = value.replace(CURRENT_PRICE_SYMBOL, '')
-            else:
-                # check that the value from {key: value} has a number in it
-                try:
-                    trigger_value = Trigger.find_single_numeric_in_str(value)
-                    operator = Trigger.find_operator_in_str(value)
-                except ValueError:
-                    # an exception occurred trying to parse trigger value or operator - skip trigger
-                    return False
+        log.debug(f'Stochastic oscillator trigger: {key} checked successfully')
 
-            # trigger checks
-            result = Trigger.basic_trigger_check(stochastic, operator, trigger_value)
+        # trigger checks
+        return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
-            log.debug('All stochastic triggers checked')
+    def __parse_key(self, key, data_manager, current_day_index) -> float:
+        """Parser for parsing the key into the indicator value."""
+        # find the indicator value (left hand side of the comparison)
+        nums = self.find_all_nums_in_str(key)
 
-            return result
+        if len(nums) == 1:
+            # title of the column in the data
+            title = 'stochastic_oscillator'
+            indicator_value = float(data_manager.get_data_point(title, current_day_index))
         elif len(nums) == 2:
+            # title of the column in the data
+            title = f'stochastic_oscillator{int(nums[0])}'
             # likely that the $slope indicator is being used
             if SLOPE_SYMBOL in key:
-                title = 'stochastic_oscillator'
-
                 # get the length of the slope window
                 slope_window_length = int(nums[1])
+
                 # data request length is window - 1 to account for the current day index being a part of the window
                 slope_data_request_length = slope_window_length - 1
 
-                # get data for slope calculation
-                y2 = float(data_manager.get_data_point(title, current_day_index))
-                y1 = float(data_manager.get_data_point(title, current_day_index - slope_data_request_length))
-
                 # calculate slope
-                slope = round((y2 - y1) / float(slope_window_length), 4)
-
-                # check that the value from {key: value} has a number in it
-                try:
-                    trigger_value = Trigger.find_single_numeric_in_str(value)
-                    operator = Trigger.find_operator_in_str(value)
-                except ValueError:
-                    # an exception occurred trying to parse trigger value or operator - skip trigger
-                    return False
-
-                # trigger checks
-                result = Trigger.basic_trigger_check(slope, operator, trigger_value)
-
-                log.debug('All stochastic triggers checked')
-
-                return result
+                indicator_value = self.calculate_slope(
+                    float(data_manager.get_data_point(title, current_day_index)),
+                    float(data_manager.get_data_point(title, current_day_index - slope_data_request_length)),
+                    slope_window_length
+                )
             else:
-                # an exception occurred trying to parse trigger value or operator - skip trigger
-                return False
+                log.warning(f'Warning: {key} is in incorrect format and will be ignored')
+                print(f'Warning: {key} is in incorrect format and will be ignored')
+                # re-raise the error so check_trigger() knows the parse failed
+                raise ValueError
+        else:
+            log.warning(f'Warning: {key} is in incorrect format and will be ignored')
+            print(f'Warning: {key} is in incorrect format and will be ignored')
+            # re-raise the error so check_trigger() knows the parse failed
+            raise ValueError
 
-        log.warning(f'Warning: {key} is in incorrect format and will be ignored')
-        print(f'Warning: {key} is in incorrect format and will be ignored')
-        return False
+        return indicator_value
 
     @staticmethod
     def __add_stochastic_oscillator(length, data_manager):

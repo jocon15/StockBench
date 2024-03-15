@@ -64,21 +64,15 @@ class SMATrigger(Trigger):
         return:
             bool: True if the trigger was hit.
         """
-        log.debug(f'Checking SMA trigger {key}...')
+        log.debug(f'Checking SMA trigger: {key}...')
 
         # get the indicator value from the key
-        try:
-            indicator_value = self.__parse_key(key, data_manager, current_day_index)
-        except ValueError:
-            return False
+        indicator_value = self.__parse_key(key, data_manager, current_day_index)
 
         # get the operator and trigger value from the value
-        try:
-            operator, trigger_value = self.__parse_value(key, value, data_manager, current_day_index)
-        except ValueError:
-            return False
+        operator, trigger_value = self._parse_value(key, value, data_manager, current_day_index)
 
-        log.debug(f'SMA trigger {key} checked successfully')
+        log.debug(f'SMA trigger: {key} checked successfully')
 
         # trigger checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
@@ -88,7 +82,7 @@ class SMATrigger(Trigger):
         # find the indicator value (left hand side of the comparison)
         nums = self.find_all_nums_in_str(key)
 
-        # get the sma value for the current day
+        # title of the column in the data
         title = f'SMA{int(nums[0])}'
 
         if len(nums) == 1:
@@ -120,25 +114,6 @@ class SMATrigger(Trigger):
             raise ValueError
 
         return indicator_value
-
-    def __parse_value(self, key, value, data_manager, current_day_index) -> tuple:
-        """Parser for parsing the operator and trigger value from the value."""
-        # find the operator and trigger value (right hand side of the comparison)
-        if CURRENT_PRICE_SYMBOL in value:
-            trigger_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
-            operator = value.replace(CURRENT_PRICE_SYMBOL, '')
-        else:
-            # check that the value from {key: value} has a number in it
-            try:
-                trigger_value = self.find_single_numeric_in_str(value)
-                operator = self.find_operator_in_str(value)
-            except ValueError:
-                log.warning(f'Warning: {key} is in incorrect format and will be ignored')
-                print(f'Warning: {key} is in incorrect format and will be ignored')
-                # re-raise the error so check_trigger() knows the parse failed
-                raise ValueError
-
-        return operator, trigger_value
 
     @staticmethod
     def __add_sma(length, data_manager):

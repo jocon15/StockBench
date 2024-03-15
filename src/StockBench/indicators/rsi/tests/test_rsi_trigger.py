@@ -1,5 +1,6 @@
 import os
 import sys
+import pytest
 from unittest.mock import patch
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
 
@@ -8,28 +9,30 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from StockBench.indicators.rsi.trigger import RSITrigger
 
-# create test object
-test_obj = RSITrigger('RSI')
+
+@pytest.fixture
+def test_object():
+    return RSITrigger('RSI')
 
 
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_additional_days(data_mocker):
+def test_additional_days(data_mocker, test_object):
     data_mocker.get_data_length.return_value = 200
 
-    assert test_obj.additional_days('RSI', '>20') == 14
+    assert test_object.additional_days('RSI', '>20') == 14
 
-    assert test_obj.additional_days('RSI50', '>20') == 50
+    assert test_object.additional_days('RSI50', '>20') == 50
 
-    assert test_obj.additional_days('RSI50$price', '>20') == 50
+    assert test_object.additional_days('RSI50$price', '>20') == 50
 
-    assert test_obj.additional_days('RSI20$slope10', '>20') == 20
+    assert test_object.additional_days('RSI20$slope10', '>20') == 20
 
-    assert test_obj.additional_days('RSI20$slope30', '>20') == 30
+    assert test_object.additional_days('RSI20$slope30', '>20') == 30
 
 
 @patch('logging.getLogger')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_add_to_data(data_mocker, logger_mocker):
+def test_add_to_data(data_mocker, logger_mocker, test_object):
     logger_mocker.return_value = logger_mocker
     logger_mocker.warning.side_effect = logger_side_effect
 
@@ -45,15 +48,8 @@ def test_add_to_data(data_mocker, logger_mocker):
     data_mocker.get_data_length.return_value = 200
 
     # test normal case
-    test_obj.add_to_data('RSI', '>30', 'buy', data_mocker)
+    test_object.add_to_data('RSI', '>30', 'buy', data_mocker)
     # assertions are done in side effect function
-
-
-def logger_side_effect(*args):
-    if args[0] == 'Warning: RSI is in incorrect format and will be ignored':
-        assert True
-    else:
-        assert False
 
 
 def add_column_side_effect(*args):
@@ -662,3 +658,134 @@ def add_column_side_effect(*args):
  30.0]
     else:
         assert False
+
+
+def logger_side_effect(*args):
+    if args[0] == 'Warning: RSI is in incorrect format and will be ignored':
+        assert True
+    else:
+        assert False
+        
+        
+@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
+@patch('StockBench.triggers.trigger.Trigger.find_operator_in_str')
+@patch('StockBench.triggers.trigger.Trigger.basic_trigger_check')
+@patch('StockBench.simulation_data.data_manager.DataManager')
+def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
+    # ============= Arrange ==============
+    data_mocker.get_data_point.return_value = 10
+    basic_trigger_mocker.return_value = False
+    operator_mocker.return_value = None
+    numeric_mocker.return_value = None
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    assert test_object.check_trigger('RSI', '>60', data_mocker, None, 0) is False
+
+    assert test_object.check_trigger('RSI', '>60', data_mocker, None, 0) is False
+
+
+@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
+@patch('StockBench.simulation_data.data_manager.DataManager')
+def test_check_trigger_value_error(data_mocker, numeric_mocker, test_object):
+    # ============= Arrange ==============
+    data_mocker.get_data_point.return_value = 90
+    numeric_mocker.side_effect = value_error_side_effect
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    # simple trigger not hit case
+    assert test_object.check_trigger('RSI', '>60', data_mocker, None, 0) is False
+
+def value_error_side_effect(*args):  # noqa
+    raise ValueError()
+
+
+# unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
+@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
+@patch('StockBench.triggers.trigger.Trigger.find_operator_in_str')
+@patch('StockBench.triggers.trigger.Trigger.basic_trigger_check')
+@patch('StockBench.simulation_data.data_manager.DataManager')
+def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker,
+                                                 test_object):
+    # ============= Arrange ==============
+    data_mocker.get_data_point.side_effect = data_side_effect
+    data_mocker.CLOSE = 'Close'
+    basic_trigger_mocker.return_value = False
+    operator_mocker.return_value = None
+    numeric_mocker.return_value = None
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    # simple trigger not hit case
+    assert test_object.check_trigger('RSI20', '>$price', data_mocker, None, 0) is False
+
+
+def data_side_effect(*args):
+    if 'RSI' not in args[0] and 'Close' not in args[0]:
+        assert False
+    if args[0] == 'close':
+        return 100.1
+    else:
+        return 40.2
+
+
+@patch('StockBench.simulation_data.data_manager.DataManager')
+def test_check_trigger_2_numbers_present_bad_format(data_mocker, test_object):
+    # ============= Arrange ==============
+    data_mocker.get_data_point.side_effect = data_side_effect
+    data_mocker.CLOSE = 'Close'
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    # has 2 numbers but does not include slope symbol
+    assert test_object.check_trigger('RSIran50', '>$price', data_mocker, None, 0) is False
+
+
+@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
+@patch('StockBench.triggers.trigger.Trigger.find_operator_in_str')
+@patch('StockBench.triggers.trigger.Trigger.basic_trigger_check')
+@patch('StockBench.simulation_data.data_manager.DataManager')
+def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
+    # ============= Arrange ==============
+    data_mocker.get_data_point.side_effect = slope_data_side_effect
+    basic_trigger_mocker.return_value = False
+    operator_mocker.return_value = None
+    numeric_mocker.return_value = None
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    # slope used trigger not hit case
+    assert test_object.check_trigger('RSI$slope2', '>50', data_mocker, None, 2) is False
+
+    # slope used trigger hit case
+    basic_trigger_mocker.return_value = True
+    assert test_object.check_trigger('RSI$slope2', '>50', data_mocker, None, 2) is True
+
+
+def slope_data_side_effect(*args):
+    if 'RSI' not in args[0]:
+        assert False
+    if args[1] % 2 == 0:
+        return 200.0
+    else:
+        return 100.0
+
+
+@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
+@patch('StockBench.simulation_data.data_manager.DataManager')
+def test_check_trigger_slope_value_error(data_mocker, numeric_mocker, test_object):
+    # ============= Arrange ==============
+    data_mocker.get_data_point.return_value = 90
+    numeric_mocker.side_effect = value_error_side_effect
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    # simple trigger not hit case
+    assert test_object.check_trigger('RSI$slope', '>60', data_mocker, None, 0) is False

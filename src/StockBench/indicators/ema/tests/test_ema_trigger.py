@@ -138,6 +138,7 @@ def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mock
                                                  test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.side_effect = data_side_effect
+    data_mocker.CLOSE = 'Close'
     basic_trigger_mocker.return_value = False
     operator_mocker.return_value = None
     numeric_mocker.return_value = None
@@ -150,6 +151,8 @@ def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mock
 
 
 def data_side_effect(*args):
+    if 'EMA' not in args[0] and 'Close' not in args[0]:
+        assert False
     if args[0] == 'close':
         return 100.1
     else:
@@ -189,6 +192,8 @@ def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mo
 
 
 def slope_data_side_effect(*args):
+    if 'EMA' not in args[0]:
+        assert False
     if args[1] % 2 == 0:
         return 200.0
     else:

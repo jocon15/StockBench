@@ -9,7 +9,7 @@ strategy = {
     'buy': {
         'SMA20$slope4': '>10',
         'RSI': '<30',
-        'stochastic': '<20',
+        'stochastic_oscillator': '<20',
         'EMA20': '<30',
         'and1': {
             'SMA20': '>50',

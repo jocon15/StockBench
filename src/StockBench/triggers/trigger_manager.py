@@ -144,7 +144,7 @@ class TriggerManager:
                 self.__buy_only_triggers.append(indicator.get_trigger())
 
     def __handle_triggers(self, data_manager, current_day_index, position, key, side):
-        """Handle all triggers.
+        """Check all triggers for hits.
 
         Args:
             data_manager (any): DataManager housing the simulation data.
@@ -163,12 +163,12 @@ class TriggerManager:
         if 'and' in key:
             # ===== AND Triggers =====
             for inner_key in self.__strategy[side][key].keys():
-                # reset trigger indicator
                 trigger_hit = False
-
+                key_matched_with_trigger = False
                 # check all triggers
                 for trigger in triggers:
                     if trigger.strategy_symbol in inner_key:
+                        key_matched_with_trigger = True
                         trigger_hit = trigger.check_trigger(
                             inner_key,
                             self.__strategy[side][key][inner_key],
@@ -178,14 +178,18 @@ class TriggerManager:
                 if not trigger_hit:
                     # not all 'AND' triggers were hit
                     return False
+                if not key_matched_with_trigger:
+                    raise ValueError(f'Strategy key: {key} did not match any available indicators!')
 
             # all 'AND' triggers were hit
             return True
         else:
             # ===== OR Triggers =====
+            key_matched_with_trigger = False
             # check all triggers
             for trigger in triggers:
                 if trigger.strategy_symbol in key:
+                    key_matched_with_trigger = True
                     trigger_hit = trigger.check_trigger(
                         key,
                         self.__strategy[side][key],
@@ -195,6 +199,8 @@ class TriggerManager:
                     if trigger_hit:
                         # any 'OR' trigger was hit
                         return True
+            if not key_matched_with_trigger:
+                raise ValueError(f'Strategy key: {key} did not match any available indicators!')
 
             # no 'OR' triggers were hit
             return False

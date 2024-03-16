@@ -7,6 +7,7 @@ log = logging.getLogger()
 
 
 class Trigger:
+    """Base class for a trigger. Provides some of the core functionality for a trigger."""
     BUY = 0
     SELL = 1
     AGNOSTIC = 2
@@ -105,6 +106,15 @@ class Trigger:
 
     @staticmethod
     def find_all_nums_in_str(value) -> list:
+        """Finds all number groupings in a string.
+
+        Args:
+            value (str): The string to parse.
+
+        return:
+            list: A list of numbers in the string.
+
+        """
         return re.findall(r'\d+', value)
 
     @staticmethod
@@ -118,7 +128,7 @@ class Trigger:
             str: The operator in the string.
 
         raises:
-            ValueError: If the passed value is not in the correct format.
+            ValueError: If the passed value has incorrect amount of number groupings.
         """
         nums = re.findall(r'\d+', value)
         if len(nums) == 1:
@@ -131,6 +141,19 @@ class Trigger:
 
     @staticmethod
     def calculate_slope(y2, y1, length) -> float:
+        """Calculate the slope between 2 points.
+
+        Args:
+            y2(any): The y-value of the final point.
+            y1(any): The y-value of the initial point.
+            length(any): The difference between the x-values of y2 and y1.
+
+        return:
+            float: The slope between the two points.
+
+        raises:
+            ValueError: If the length is less than 2.
+        """
         if length < 2:
             log.error('Slope window length cannot be less than 2!')
             print('Slope window length cannot be less than 2!')

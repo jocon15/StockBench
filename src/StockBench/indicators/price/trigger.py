@@ -68,6 +68,10 @@ class PriceTrigger(Trigger):
         title = data_manager.CLOSE
 
         if len(nums) == 0:
+            if SLOPE_SYMBOL in key:
+                log.critical(f"Price key: {key} does not contain enough number groupings!")
+                print(f"Price key: {key} does not contain enough number groupings!")
+                raise ValueError(f"Price key: {key} does not contain enough number groupings!")
             indicator_value = float(data_manager.get_data_point(title, current_day_index))
         elif len(nums) == 1:
             # likely that the $slope indicator is being used

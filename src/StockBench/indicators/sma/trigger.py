@@ -85,12 +85,19 @@ class SMATrigger(Trigger):
         # find the indicator value (left hand side of the comparison)
         nums = self.find_all_nums_in_str(key)
 
-        # title of the column in the data
-        title = f'SMA{int(nums[0])}'
+        # do not build title outside of conditional as nums could be [] which would result in index error
 
         if len(nums) == 1:
+            if SLOPE_SYMBOL in key:
+                log.critical(f"SMA key: {key} does not contain enough number groupings!")
+                print(f"SMA key: {key} does not contain enough number groupings!")
+                raise ValueError(f"SMA key: {key} does not contain enough number groupings!")
+            # title of the column in the data
+            title = f'SMA{int(nums[0])}'
             indicator_value = float(data_manager.get_data_point(title, current_day_index))
         elif len(nums) == 2:
+            # title of the column in the data
+            title = f'SMA{int(nums[0])}'
             # likely that the $slope indicator is being used
             if SLOPE_SYMBOL in key:
                 # get the length of the slope window

@@ -78,6 +78,10 @@ class EMATrigger(Trigger):
         # do not build title outside of conditional as nums could be [] which would result in index error
 
         if len(nums) == 1:
+            if SLOPE_SYMBOL in key:
+                log.critical(f"SMA key: {key} does not contain enough number groupings!")
+                print(f"SMA key: {key} does not contain enough number groupings!")
+                raise ValueError(f"SMA key: {key} does not contain enough number groupings!")
             # title of the column in the data
             title = f'EMA{int(nums[0])}'
             indicator_value = float(data_manager.get_data_point(title, current_day_index))

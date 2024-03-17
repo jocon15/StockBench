@@ -116,9 +116,8 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
-@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_check_trigger_value_error(data_mocker, numeric_mocker, test_object):
+def test_check_trigger_value_error(data_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 90
 
@@ -131,10 +130,6 @@ def test_check_trigger_value_error(data_mocker, numeric_mocker, test_object):
         assert False
     except ValueError:
         assert True
-
-
-def value_error_side_effect(*args):  # noqa
-    raise ValueError()
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
@@ -212,12 +207,10 @@ def slope_data_side_effect(*args):
         return 100.0
 
 
-@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_check_trigger_slope_value_error(data_mocker, numeric_mocker, test_object):
+def test_check_trigger_slope_value_error(data_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 90
-    numeric_mocker.side_effect = value_error_side_effect
 
     # ============= Act ==================
 

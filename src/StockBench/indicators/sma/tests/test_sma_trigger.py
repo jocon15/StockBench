@@ -116,22 +116,20 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
-@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_check_trigger_value_error(data_mocker, numeric_mocker, test_object):
+def test_check_trigger_value_error(data_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 90
-    numeric_mocker.side_effect = value_error_side_effect
 
     # ============= Act ==================
 
     # ============= Assert ===============
     # simple trigger not hit case
-    assert test_object.check_trigger('SMA20', '>60', data_mocker, None, 0) is False
-
-
-def value_error_side_effect(*args):  # noqa
-    raise ValueError()
+    try:
+        test_object.check_trigger('SMA20', '>', data_mocker, None, 0)
+        assert False
+    except ValueError:
+        assert True
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
@@ -174,7 +172,11 @@ def test_check_trigger_2_numbers_present_bad_format(data_mocker, test_object):
 
     # ============= Assert ===============
     # has 2 numbers but does not include slope symbol
-    assert test_object.check_trigger('SMA20ran50', '>$price', data_mocker, None, 0) is False
+    try:
+        test_object.check_trigger('SMA20ran50', '>$price', data_mocker, None, 0)
+        assert False
+    except ValueError:
+        assert True
 
 
 @patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
@@ -208,15 +210,18 @@ def slope_data_side_effect(*args):
         return 100.0
 
 
-@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_check_trigger_slope_value_error(data_mocker, numeric_mocker, test_object):
+def test_check_trigger_slope_value_error(data_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 90
-    numeric_mocker.side_effect = value_error_side_effect
 
     # ============= Act ==================
 
     # ============= Assert ===============
     # simple trigger not hit case
-    assert test_object.check_trigger('SMA20$slope', '>60', data_mocker, None, 0) is False
+    try:
+        test_object.check_trigger('SMA20$slope', '>60', data_mocker, None, 0)
+        assert False
+    except ValueError:
+        assert True
+

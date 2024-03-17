@@ -27,6 +27,11 @@ def test_additional_days(test_object):
     assert test_object.additional_days('EMA50$price', '>20') == 50
     assert test_object.additional_days('EMA20$slope10', '>20') == 20
     assert test_object.additional_days('EMA20$slope30', '>20') == 30
+    try:
+        test_object.additional_days('EMA', '>20')
+        assert False
+    except ValueError:
+        assert True
 
 
 @patch('logging.getLogger')

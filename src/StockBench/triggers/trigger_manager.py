@@ -175,6 +175,7 @@ class TriggerManager:
                             data_manager,
                             position,
                             current_day_index)
+                # note: placement of this conditional can be here or inside key check (doesn't matter)
                 if not trigger_hit:
                     # not all 'AND' triggers were hit
                     return False

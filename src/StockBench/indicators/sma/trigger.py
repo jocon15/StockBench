@@ -28,9 +28,12 @@ class SMATrigger(Trigger):
             key (any): The key value from the strategy.
             value (any): The value from the strategy.
         """
-        nums = re.findall(r'\d+', key)
-        # map nums to a list of ints and find maximum
-        return max(list(map(int, nums)))
+        # map nums to a list of ints
+        nums = list(map(int, re.findall(r'\d+', key)))
+        if nums:
+            return max(nums)
+        # nums is empty
+        raise ValueError(f'SMA key: {key} must have a length.')
 
     def add_to_data(self, key, value, side, data_manager):
         """Add data to the dataframe.

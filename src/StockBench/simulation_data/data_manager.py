@@ -1,14 +1,13 @@
 class DataManager:
     """Interface for the simulation dataframe."""
-    def __init__(self, data):
-        # constants
-        self.CLOSE = 'Close'
-        self.OPEN = 'Open'
-        self.HIGH = 'High'
-        self.LOW = 'Low'
-        self.VOLUME = 'volume'
-        self.COLOR = 'color'
+    CLOSE = 'Close'
+    OPEN = 'Open'
+    HIGH = 'High'
+    LOW = 'Low'
+    VOLUME = 'volume'
+    COLOR = 'color'
 
+    def __init__(self, data):
         self.__df = data
         # add candle colors to the data
         self.__add_candle_colors()

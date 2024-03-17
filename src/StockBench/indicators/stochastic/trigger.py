@@ -234,7 +234,7 @@ class StochasticTrigger(Trigger):
                 past_length_days_low.append(float(low_data[i]))
                 past_length_days_close.append(float(close_data[i]))
 
-            stochastic_oscillator.append(((float(close_data[i]) - min(past_length_days_low)) /
-                                          (max(past_length_days_high) - min(past_length_days_low))) * 100.0)
+            stochastic_oscillator.append(round(((float(close_data[i]) - min(past_length_days_low)) /
+                                                (max(past_length_days_high) - min(past_length_days_low))) * 100.0, 3))
 
         return stochastic_oscillator

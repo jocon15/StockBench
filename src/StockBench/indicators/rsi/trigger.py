@@ -84,9 +84,25 @@ class RSITrigger(Trigger):
         # find the indicator value (left hand side of the comparison)
         nums = self.find_all_nums_in_str(key)
 
-        if len(nums) == 1:
+        if len(nums) == 0:
+            # RSI is default length (14)
+            if SLOPE_SYMBOL in key:
+                log.critical(f"RSI key: {key} contains too many number groupings!")
+                print(f"RSI key: {key} contains too many number groupings!")
+                raise ValueError(f"RSI key: {key} contains too many number groupings!")
             # title of the column in the data
             title = 'RSI'
+            indicator_value = float(data_manager.get_data_point(title, current_day_index))
+        elif len(nums) == 1:
+            if SLOPE_SYMBOL in key:
+                # make sure the number is after the slope emblem and not the RSI emblem
+                if key.split(str(nums))[0] == 'RSI' + SLOPE_SYMBOL:
+                    log.critical(f"RSI key: {key} contains no slope value!")
+                    print(f"RSI key: {key} contains no slope value!")
+                    raise ValueError(f"RSI key: {key} contains no slope value!")
+            # RSI is custom length (not 14)
+            # title of the column in the data
+            title = f'RSI{int(nums[0])}'
             indicator_value = float(data_manager.get_data_point(title, current_day_index))
         elif len(nums) == 2:
             # title of the column in the data
@@ -108,13 +124,11 @@ class RSITrigger(Trigger):
             else:
                 log.warning(f'Warning: {key} is in incorrect format and will be ignored')
                 print(f'Warning: {key} is in incorrect format and will be ignored')
-                # re-raise the error so check_trigger() knows the parse failed
-                raise ValueError
+                raise ValueError(f"RSI key: {key} contains too many number groupings!")
         else:
             log.warning(f'Warning: {key} is in incorrect format and will be ignored')
             print(f'Warning: {key} is in incorrect format and will be ignored')
-            # re-raise the error so check_trigger() knows the parse failed
-            raise ValueError
+            raise ValueError(f"RSI key: {key} contains too many number groupings!")
 
         return indicator_value
 

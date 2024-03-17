@@ -27,9 +27,12 @@ class StochasticTrigger(Trigger):
             key (any): The key value from the strategy.
             value (any): The value from the strategy.
         """
-        nums = re.findall(r'\d+', key)
-        # map nums to a list of ints and find maximum
-        return max(list(map(int, nums)))
+        # map nums to a list of ints
+        nums = list(map(int, re.findall(r'\d+', key)))
+        if nums:
+            return max(nums)
+        # nums is empty
+        return DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH
 
     def add_to_data(self, key, value, side, data_manager):
         """Add data to the dataframe.
@@ -91,7 +94,23 @@ class StochasticTrigger(Trigger):
         # find the indicator value (left hand side of the comparison)
         nums = self.find_all_nums_in_str(key)
 
-        if len(nums) == 1:
+        if len(nums) == 0:
+            # stochastic is default length (14)
+            if SLOPE_SYMBOL in key:
+                log.critical(f"stochastic key: {key} contains too many number groupings!")
+                print(f"stochastic key: {key} contains too many number groupings!")
+                raise ValueError(f"stochastic key: {key} contains too many number groupings!")
+            # title of the column in the data
+            title = 'stochastic_oscillator'
+            indicator_value = float(data_manager.get_data_point(title, current_day_index))
+        elif len(nums) == 1:
+            if SLOPE_SYMBOL in key:
+                # make sure the number is after the slope emblem and not the stochastic emblem
+                if key.split(str(nums))[0] == 'stochastic' + SLOPE_SYMBOL:
+                    log.critical(f"stochastic key: {key} contains no slope value!")
+                    print(f"stochastic key: {key} contains no slope value!")
+                    raise ValueError(f"stochastic key: {key} contains no slope value!")
+            # stochastic is custom length (not 14)
             # title of the column in the data
             title = 'stochastic_oscillator'
             indicator_value = float(data_manager.get_data_point(title, current_day_index))
@@ -115,13 +134,11 @@ class StochasticTrigger(Trigger):
             else:
                 log.warning(f'Warning: {key} is in incorrect format and will be ignored')
                 print(f'Warning: {key} is in incorrect format and will be ignored')
-                # re-raise the error so check_trigger() knows the parse failed
-                raise ValueError
+                raise ValueError(f"stochastic key: {key} contains too many number groupings!")
         else:
             log.warning(f'Warning: {key} is in incorrect format and will be ignored')
             print(f'Warning: {key} is in incorrect format and will be ignored')
-            # re-raise the error so check_trigger() knows the parse failed
-            raise ValueError
+            raise ValueError(f"stochastic key: {key} contains too many number groupings!")
 
         return indicator_value
 
@@ -138,7 +155,7 @@ class StochasticTrigger(Trigger):
             if 'stochastic_oscillator' in col_name:
                 return
 
-        # get data to calculate SO
+        # get data to calculate the indicator value
         high_data = data_manager.get_column_data(data_manager.HIGH)
         low_data = data_manager.get_column_data(data_manager.LOW)
         close_data = data_manager.get_column_data(data_manager.CLOSE)

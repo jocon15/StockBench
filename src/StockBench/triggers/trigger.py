@@ -42,15 +42,8 @@ class Trigger:
             trigger_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
             operator = value.replace(CURRENT_PRICE_SYMBOL, '')
         else:
-            # check that the value from {key: value} has a number in it
-            try:
-                trigger_value = self.find_single_numeric_in_str(value)
-                operator = self.find_operator_in_str(value)
-            except ValueError:
-                log.warning(f'Warning: {key} is in incorrect format and will be ignored')
-                print(f'Warning: {key} is in incorrect format and will be ignored')
-                # re-raise the error so check_trigger() knows the parse failed
-                raise ValueError
+            trigger_value = self.find_single_numeric_in_str(value)
+            operator = self.find_operator_in_str(value)
 
         return operator, trigger_value
 
@@ -79,7 +72,7 @@ class Trigger:
             if indicator_value > trigger_value:
                 return True
         elif operator_value == '=':
-            if (indicator_value - trigger_value) <= 0.001:  # DOUBLE_COMPARISON_EPSILON
+            if abs(indicator_value - trigger_value) <= 0.001:  # DOUBLE_COMPARISON_EPSILON
                 return True
         return False
 

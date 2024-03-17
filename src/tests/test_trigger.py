@@ -17,13 +17,25 @@ def test_get_side():
     assert test_object_3.get_side() == Trigger.AGNOSTIC
 
 
-def test__parse_value():
+@patch('StockBench.simulation_data.data_manager.DataManager')
+def test__parse_value(data_mocker):
     # ============= Arrange ==============
+    data_mocker.get_data_point.return_value = 255.1
+    test_object = Trigger('SMA', Trigger.BUY)
 
     # ============= Act ==================
 
     # ============= Assert ===============
-    pass
+    # normal case
+    assert test_object._parse_value('SMA21', '>250', data_mocker, 0) == ('>', 250.0)
+    # current price in symbol case
+    assert test_object._parse_value('SMA21', '>$price', data_mocker, 0) == ('>', 255.1)
+    # no number case
+    try:
+        test_object._parse_value('SMA21', '>', data_mocker, 0)
+        assert False
+    except ValueError:
+        assert True
 
 
 def test_basic_trigger_check():
@@ -32,7 +44,26 @@ def test_basic_trigger_check():
     # ============= Act ==================
 
     # ============= Assert ===============
-    pass
+    # gt true
+    assert Trigger.basic_trigger_check(200.0, '>', 150.0) is True
+    # gt false
+    assert Trigger.basic_trigger_check(200.0, '>', 250.0) is False
+    # lt true
+    assert Trigger.basic_trigger_check(100.0, '<', 150.0) is True
+    # lt false
+    assert Trigger.basic_trigger_check(300.0, '<', 250.0) is False
+    # gt eq true
+    assert Trigger.basic_trigger_check(300.0, '>=', 250.0) is True
+    # gt eq false
+    assert Trigger.basic_trigger_check(200.0, '>=', 250.0) is False
+    # lt eq true
+    assert Trigger.basic_trigger_check(200.0, '<=', 250.0) is True
+    # lt eq false
+    assert Trigger.basic_trigger_check(300.0, '<=', 250.0) is False
+    # eq true
+    assert Trigger.basic_trigger_check(200.0, '=', 200.0) is True
+    # eq false
+    assert Trigger.basic_trigger_check(200.0, '=', 250.0) is False
 
 
 def find_single_numeric_in_str():

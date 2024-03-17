@@ -121,13 +121,16 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
 def test_check_trigger_value_error(data_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 90
-    numeric_mocker.side_effect = value_error_side_effect
 
     # ============= Act ==================
 
     # ============= Assert ===============
     # simple trigger not hit case
-    assert test_object.check_trigger('EMA20', '>60', data_mocker, None, 0) is False
+    try:
+        test_object.check_trigger('EMA', '>60', data_mocker, None, 0)
+        assert False
+    except ValueError:
+        assert True
 
 
 def value_error_side_effect(*args):  # noqa
@@ -171,7 +174,11 @@ def test_check_trigger_2_numbers_present_bad_format(test_object):
 
     # ============= Assert ===============
     # has 2 numbers but does not include slope symbol
-    assert test_object.check_trigger('EMA20ran50', '>$price', None, None, 0) is False
+    try:
+        assert test_object.check_trigger('EMA20ran50', '>$price', None, None, 0)
+        assert False
+    except ValueError:
+        assert True
 
 
 @patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
@@ -216,4 +223,8 @@ def test_check_trigger_slope_value_error(data_mocker, numeric_mocker, test_objec
 
     # ============= Assert ===============
     # simple trigger not hit case
-    assert test_object.check_trigger('EMA20$slope', '>60', data_mocker, None, 0) is False
+    try:
+        test_object.check_trigger('EMA20$slope', '>60', data_mocker, None, 0)
+        assert False
+    except ValueError:
+        assert True

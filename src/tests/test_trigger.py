@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import patch
 from StockBench.triggers.trigger import Trigger
 
@@ -66,7 +65,7 @@ def test_basic_trigger_check():
     assert Trigger.basic_trigger_check(200.0, '=', 250.0) is False
 
 
-def find_single_numeric_in_str():
+def test_find_single_numeric_in_str():
     # ============= Arrange ==============
 
     # ============= Act ==================
@@ -97,8 +96,8 @@ def test_find_all_nums_in_str():
 
     # ============= Assert ===============
     assert Trigger.find_all_nums_in_str('this thing') == []
-    assert Trigger.find_all_nums_in_str('SMA21') == [21]
-    assert Trigger.find_all_nums_in_str('SMA21$slope12') == [21, 12]
+    assert Trigger.find_all_nums_in_str('SMA21') == ['21']
+    assert Trigger.find_all_nums_in_str('SMA21$slope12') == ['21', '12']
 
 
 def test_find_operator_in_str():
@@ -107,7 +106,13 @@ def test_find_operator_in_str():
     # ============= Act ==================
 
     # ============= Assert ===============
-    pass
+    assert Trigger.find_operator_in_str('>21') == '>'
+    assert Trigger.find_operator_in_str('<=32') == '<='
+    try:
+        Trigger.find_operator_in_str('>')
+        assert False
+    except ValueError:
+        assert True
 
 
 def test_calculate_slope():

@@ -19,6 +19,7 @@ from StockBench.display.display import Display
 
 
 class SingularResultsWindow(QWidget):
+    """Window that holds the progress bar and the results box."""
     window_stylesheet = """background-color:#202124;"""
 
     progress_bar_stylesheet = """
@@ -125,6 +126,9 @@ class SingularResultsWindow(QWidget):
 
 
 class SimulationResultsBox(QFrame):
+    """Widget that houses the simulation results box."""
+    BACKUP_REL_PATH = os.path.join('resources', 'default', 'chart_unavailable.html')
+
     def __init__(self):
         super().__init__()
 
@@ -141,8 +145,18 @@ class SimulationResultsBox(QFrame):
         self.setLayout(self.layout)
 
     def render_data(self, simulation_results):
+        # check the simulation generated a chart
+        chart_loaded = False
         if 'chart_filepath' in simulation_results:
-            self.webView.load(QtCore.QUrl().fromLocalFile(os.path.abspath(simulation_results['chart_filepath'])))
+            # check the chart exists
+            if os.path.isfile(simulation_results['chart_filepath']):
+                chart_loaded = True
+                self.webView.load(QtCore.QUrl().fromLocalFile(os.path.abspath(simulation_results['chart_filepath'])))
+
+        if not chart_loaded:
+            # load the default html file
+            self.webView.load(QtCore.QUrl().fromLocalFile(os.path.abspath(self.BACKUP_REL_PATH)))
+
         self.simulation_results_text_box.render_data(simulation_results)
 
     def update_error_message(self, message):

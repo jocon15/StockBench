@@ -63,7 +63,7 @@ class SingularResultsWindow(QWidget):
         self.layout.addWidget(self.simulation_results_box)
 
         self.setWindowTitle('Simulation Results')
-        self.setWindowIcon(QtGui.QIcon('icon/candle.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join('resources', 'images', 'candle.ico')))
         # self.setGeometry(0, 0, 1920, 1080)
         # self.setFixedSize(400, 500)
         self.setStyleSheet(self.window_stylesheet)

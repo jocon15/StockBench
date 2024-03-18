@@ -45,9 +45,8 @@ class ConfigMainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-
         # main window styling (do it first to prevent window shifting)
-        self.setWindowIcon(QtGui.QIcon('icon/candle.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join('resources', 'images', 'candle.ico')))
         self.setWindowTitle('Configuration')
         self.setGeometry(200, 100, 400, 600)
         self.setFixedSize(400, 600)

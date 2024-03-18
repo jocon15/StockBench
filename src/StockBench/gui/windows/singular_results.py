@@ -175,89 +175,99 @@ class SimulationResultsTextBox(QFrame):
         super().__init__()
 
         self.layout = QGridLayout()
+        row = 1
 
         label = QLabel()
         label.setText('Simulation Results')
         label.setStyleSheet(self.title_stylesheet)
-        self.layout.addWidget(label, 1, 1)
+        self.layout.addWidget(label, row, 1)
 
         # nothing goes in 1, 2 because label 1 is title
 
+        row += 1
         label = QLabel()
         label.setText('Elapsed Time')
         label.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(label, 2, 1)
+        self.layout.addWidget(label, row, 1)
 
-        self.data_label1 = QLabel()
-        self.data_label1.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(self.data_label1, 2, 2)
+        self.elapsed_time_data_label = QLabel()
+        self.elapsed_time_data_label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(self.elapsed_time_data_label, row, 2)
 
+        row += 1
         label = QLabel()
         label.setText('Trades Made')
         label.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(label, 3, 1)
+        self.layout.addWidget(label, row, 1)
 
-        self.data_label2 = QLabel()
-        self.data_label2.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(self.data_label2, 3, 2)
+        self.trades_made_data_label = QLabel()
+        self.trades_made_data_label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(self.trades_made_data_label, row, 2)
 
+        row += 1
         label = QLabel()
         label.setText('Effectiveness')
         label.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(label, 4, 1)
+        self.layout.addWidget(label, row, 1)
 
-        self.data_label3 = QLabel()
-        self.data_label3.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(self.data_label3, 4, 2)
+        self.effectiveness_data_label = QLabel()
+        self.effectiveness_data_label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(self.effectiveness_data_label, row, 2)
 
+        row += 1
         label = QLabel()
         label.setText('Total P/L')
         label.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(label, 5, 1)
+        self.layout.addWidget(label, row, 1)
 
-        self.data_label4 = QLabel()
-        self.data_label4.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(self.data_label4, 5, 2)
+        self.total_pl_data_label = QLabel()
+        self.total_pl_data_label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(self.total_pl_data_label, row, 2)
 
+        row += 1
         label = QLabel()
         label.setText('Average P/L')
         label.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(label, 6, 1)
+        self.layout.addWidget(label, row, 1)
 
-        self.data_label5 = QLabel()
-        self.data_label5.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(self.data_label5, 6, 2)
+        self.average_pl_data_label = QLabel()
+        self.average_pl_data_label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(self.average_pl_data_label, row, 2)
 
+        row += 1
         label = QLabel()
         label.setText('Median P/L')
         label.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(label, 7, 1)
+        self.layout.addWidget(label, row, 1)
 
-        self.data_label6 = QLabel()
-        self.data_label6.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(self.data_label6, 7, 2)
+        self.median_pl_data_label = QLabel()
+        self.median_pl_data_label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(self.median_pl_data_label, row, 2)
 
+        row += 1
         label = QLabel()
         label.setText('Stddev P/L')
         label.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(label, 8, 1)
+        self.layout.addWidget(label, row, 1)
 
-        self.data_label7 = QLabel()
-        self.data_label7.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(self.data_label7, 8, 2)
+        self.stddev_pl_data_label = QLabel()
+        self.stddev_pl_data_label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(self.stddev_pl_data_label, row, 2)
 
+        row += 1
         label = QLabel()
         label.setText('Account Value')
         label.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(label, 9, 1)
+        self.layout.addWidget(label, row, 1)
 
-        self.data_label8 = QLabel()
-        self.data_label8.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(self.data_label8, 9, 2)
+        self.account_value_data_label = QLabel()
+        self.account_value_data_label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(self.account_value_data_label, row, 2)
 
+        row += 1
         self.error_message_box = QLabel()
         self.error_message_box.setStyleSheet(self.error_label_style_sheet)
-        self.layout.addWidget(self.error_message_box, 10, 1)
+        self.layout.addWidget(self.error_message_box, row, 1)
 
         # stretch the row and column to show natural size
         self.layout.setRowStretch(self.layout.rowCount(), 1)
@@ -270,14 +280,14 @@ class SimulationResultsTextBox(QFrame):
 
     def render_data(self, simulation_results: dict):
         if not self.__error_message:
-            self.data_label1.setText(f'{simulation_results["elapsed_time"]} seconds')
-            self.data_label2.setText(f'{simulation_results["trades_made"]}')
-            self.data_label3.setText(f'{simulation_results["effectiveness"]} %')
-            self.data_label4.setText(f'$ {simulation_results["total_profit_loss"]}')
-            self.data_label5.setText(f'$ {simulation_results["average_profit_loss"]}')
-            self.data_label6.setText(f'$ {simulation_results["median_profit_loss"]}')
-            self.data_label7.setText(f'$ {simulation_results["standard_profit_loss_deviation"]}')
-            self.data_label8.setText(f'$ {simulation_results["account_value"]}')
+            self.elapsed_time_data_label.setText(f'{simulation_results["elapsed_time"]} seconds')
+            self.trades_made_data_label.setText(f'{simulation_results["trades_made"]}')
+            self.effectiveness_data_label.setText(f'{simulation_results["effectiveness"]} %')
+            self.total_pl_data_label.setText(f'$ {simulation_results["total_profit_loss"]}')
+            self.average_pl_data_label.setText(f'$ {simulation_results["average_profit_loss"]}')
+            self.median_pl_data_label.setText(f'$ {simulation_results["median_profit_loss"]}')
+            self.stddev_pl_data_label.setText(f'$ {simulation_results["standard_profit_loss_deviation"]}')
+            self.account_value_data_label.setText(f'$ {simulation_results["account_value"]}')
         else:
             self.error_message_box.setText(f'Error: {self.__error_message}')
 

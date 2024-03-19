@@ -1,5 +1,5 @@
 import plotly.graph_objects as fplt
-from StockBench.display.subplot import Subplot
+from StockBench.indicator.subplot import Subplot
 from StockBench.display.display_constants import *
 
 

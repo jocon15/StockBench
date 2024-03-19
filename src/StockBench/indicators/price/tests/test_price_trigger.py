@@ -39,9 +39,9 @@ def test_add_to_data(test_object):
         assert False
 
 
-@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
-@patch('StockBench.triggers.trigger.Trigger.find_operator_in_str')
-@patch('StockBench.triggers.trigger.Trigger.basic_trigger_check')
+@patch('StockBench.trigger.trigger.Trigger.find_single_numeric_in_str')
+@patch('StockBench.trigger.trigger.Trigger.find_operator_in_str')
+@patch('StockBench.trigger.trigger.Trigger.basic_trigger_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============

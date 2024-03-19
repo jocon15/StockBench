@@ -1,5 +1,5 @@
 import logging
-from StockBench.triggers.trigger import Trigger
+from StockBench.indicator.trigger import Trigger
 
 log = logging.getLogger()
 
@@ -46,7 +46,7 @@ class CandlestickColorTrigger(Trigger):
         return:
             bool: True if the trigger was hit.
         """
-        log.debug('Checking candle stick triggers...')
+        log.debug('Checking candle stick trigger...')
 
         # find out how many keys there are (value is a dict)
         num_keys = len(value)
@@ -68,7 +68,7 @@ class CandlestickColorTrigger(Trigger):
             log.info('Candle stick trigger hit!')
             return True
 
-        log.debug('All candle stick triggers checked')
+        log.debug('All candle stick trigger checked')
 
         # catch all case if nothing was hit (which is ok!)
         return False

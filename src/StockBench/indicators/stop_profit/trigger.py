@@ -1,6 +1,6 @@
 import re
 import logging
-from StockBench.triggers.trigger import Trigger
+from StockBench.indicator.trigger import Trigger
 
 log = logging.getLogger()
 
@@ -45,7 +45,7 @@ class StopProfitTrigger(Trigger):
         return:
             bool: True if the trigger was hit.
         """
-        log.debug('Checking stop profit triggers...')
+        log.debug('Checking stop profit trigger...')
 
         # get the current price
         current_price = data_manager.get_data_point(data_manager.CLOSE, current_day_index)
@@ -98,7 +98,7 @@ class StopProfitTrigger(Trigger):
                         log.info('Stop profit trigger hit!')
                         return True
 
-        log.debug('Stop profit triggers checked')
+        log.debug('Stop profit trigger checked')
 
         # trigger was not hit
         return False

@@ -1,6 +1,6 @@
 import logging
 from StockBench.constants import *
-from StockBench.triggers.trigger import Trigger
+from StockBench.indicator.trigger import Trigger
 
 log = logging.getLogger()
 
@@ -61,6 +61,6 @@ class VolumeTrigger(Trigger):
         # trigger checks
         result = Trigger.basic_trigger_check(volume, operator, trigger_value)
 
-        log.debug('All volume triggers checked')
+        log.debug('All volume trigger checked')
 
         return result

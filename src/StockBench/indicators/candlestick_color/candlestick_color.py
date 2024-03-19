@@ -1,5 +1,5 @@
 from .trigger import CandlestickColorTrigger
-from StockBench.indicator.indicator_interface import IndicatorInterface
+from StockBench.indicator.indicator import IndicatorInterface
 
 
 class CandlestickColorIndicator(IndicatorInterface):

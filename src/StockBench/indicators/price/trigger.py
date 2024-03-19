@@ -1,7 +1,6 @@
-import re
 import logging
 from StockBench.constants import *
-from StockBench.triggers.trigger import Trigger
+from StockBench.indicator.trigger import Trigger
 
 log = logging.getLogger()
 

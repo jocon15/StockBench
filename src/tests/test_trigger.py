@@ -1,5 +1,5 @@
 from unittest.mock import patch
-from StockBench.triggers.trigger import Trigger
+from StockBench.indicator.trigger import Trigger
 
 
 def test_get_side():

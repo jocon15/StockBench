@@ -35,7 +35,7 @@ class Trigger:
         """Parser for parsing the operator and trigger value from the value.
 
         NOTE: This is the default implementation for this, since it is used frequently in this form.
-            For abnormal triggers like candle colors, you can override this with another implementation.
+            For abnormal trigger like candle colors, you can override this with another implementation.
         """
         # find the operator and trigger value (right hand side of the comparison)
         if CURRENT_PRICE_SYMBOL in value:

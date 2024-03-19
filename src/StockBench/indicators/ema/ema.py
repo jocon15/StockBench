@@ -1,6 +1,6 @@
 from .trigger import EMATrigger
 from .subplot import DummySubplot
-from StockBench.indicator.indicator_interface import IndicatorInterface
+from StockBench.indicator.indicator import IndicatorInterface
 
 
 class EMAIndicator(IndicatorInterface):

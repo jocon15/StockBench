@@ -1,4 +1,4 @@
-from StockBench.indicator.indicator_interface import IndicatorInterface
+from StockBench.indicator.indicator import IndicatorInterface
 from .subplot import StochasticSubplot
 from .trigger import StochasticTrigger
 

@@ -14,10 +14,10 @@ from StockBench.display.singular import SingularDisplay
 from StockBench.display.multiple import MultipleDisplay
 from StockBench.account.user_account import UserAccount
 from StockBench.analysis.analyzer import SimulationAnalyzer
-from StockBench.triggers.trigger_manager import TriggerManager
+from StockBench.trigger.trigger_manager import TriggerManager
 from StockBench.function_tools.nonce import datetime_timestamp
 from StockBench.simulation_data.data_manager import DataManager
-from StockBench.indicator.indicator_manager import IndicatorManager
+from StockBench.indicators.indicator_manager import IndicatorManager
 
 log = logging.getLogger()
 

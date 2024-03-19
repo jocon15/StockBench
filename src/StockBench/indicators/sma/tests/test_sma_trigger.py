@@ -93,9 +93,9 @@ def logger_side_effect(*args):
         assert False
 
 
-@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
-@patch('StockBench.triggers.trigger.Trigger.find_operator_in_str')
-@patch('StockBench.triggers.trigger.Trigger.basic_trigger_check')
+@patch('StockBench.trigger.trigger.Trigger.find_single_numeric_in_str')
+@patch('StockBench.trigger.trigger.Trigger.find_operator_in_str')
+@patch('StockBench.trigger.trigger.Trigger.basic_trigger_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============
@@ -133,9 +133,9 @@ def test_check_trigger_value_error(data_mocker, test_object):
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
-@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
-@patch('StockBench.triggers.trigger.Trigger.find_operator_in_str')
-@patch('StockBench.triggers.trigger.Trigger.basic_trigger_check')
+@patch('StockBench.trigger.trigger.Trigger.find_single_numeric_in_str')
+@patch('StockBench.trigger.trigger.Trigger.find_operator_in_str')
+@patch('StockBench.trigger.trigger.Trigger.basic_trigger_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker,
                                                  test_object):
@@ -179,9 +179,9 @@ def test_check_trigger_2_numbers_present_bad_format(data_mocker, test_object):
         assert True
 
 
-@patch('StockBench.triggers.trigger.Trigger.find_single_numeric_in_str')
-@patch('StockBench.triggers.trigger.Trigger.find_operator_in_str')
-@patch('StockBench.triggers.trigger.Trigger.basic_trigger_check')
+@patch('StockBench.trigger.trigger.Trigger.find_single_numeric_in_str')
+@patch('StockBench.trigger.trigger.Trigger.find_operator_in_str')
+@patch('StockBench.trigger.trigger.Trigger.basic_trigger_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============

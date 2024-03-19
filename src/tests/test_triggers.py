@@ -1,4 +1,3 @@
-from StockBench.triggers.trigger_manager import TriggerManager
 import pytest
 
 

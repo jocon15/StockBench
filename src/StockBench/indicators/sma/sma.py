@@ -1,6 +1,6 @@
 from .trigger import SMATrigger
 from .subplot import DummySubplot
-from StockBench.indicator.indicator_interface import IndicatorInterface
+from StockBench.indicator.indicator import IndicatorInterface
 
 
 class SMAIndicator(IndicatorInterface):

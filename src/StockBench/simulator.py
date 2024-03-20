@@ -298,7 +298,7 @@ class Simulator:
                     # close the position
                     self.__liquidate_position(position, current_day_index)
 
-        # update the progress
+        # update the progress observer by 1 increment
         if progress_observer is not None:
             progress_observer.update_progress(increment)
 

@@ -4,7 +4,7 @@ from PyQt6.QtCore import QRunnable, QObject, pyqtSignal, pyqtSlot
 
 
 class WorkerSignals(QObject):
-    """Define some signals"""
+    """Singles for the worker to use."""
     finished = pyqtSignal()
     error = pyqtSignal(tuple)
     result = pyqtSignal(object)

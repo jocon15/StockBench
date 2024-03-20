@@ -144,7 +144,7 @@ class TriggerManager:
                 self.__buy_only_triggers.append(indicator.get_trigger())
 
     def __handle_triggers(self, data_manager, current_day_index, position, key, side):
-        """Check all trigger for hits.
+        """Check all triggers for hits.
 
         Args:
             data_manager (any): DataManager housing the simulation data.
@@ -177,12 +177,12 @@ class TriggerManager:
                             current_day_index)
                 # note: placement of this conditional can be here or inside key check (doesn't matter)
                 if not trigger_hit:
-                    # not all 'AND' trigger were hit
+                    # not all 'AND' triggers were hit
                     return False
                 if not key_matched_with_trigger:
                     raise ValueError(f'Strategy key: {key} did not match any available indicators!')
 
-            # all 'AND' trigger were hit
+            # all 'AND' triggers were hit
             return True
         else:
             # ===== OR Triggers =====
@@ -203,5 +203,5 @@ class TriggerManager:
             if not key_matched_with_trigger:
                 raise ValueError(f'Strategy key: {key} did not match any available indicators!')
 
-            # no 'OR' trigger were hit
+            # no 'OR' triggers were hit
             return False

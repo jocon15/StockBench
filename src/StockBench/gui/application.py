@@ -43,8 +43,10 @@ class ConfigMainWindow(QMainWindow):
         }
     """
 
-    def __init__(self):
+    def __init__(self, splash):
         super().__init__()
+        self.splash = splash
+
         # main window styling (do it first to prevent window shifting)
         self.setWindowIcon(QtGui.QIcon(os.path.join('resources', 'images', 'candle.ico')))
         self.setWindowTitle('Configuration')
@@ -67,6 +69,9 @@ class ConfigMainWindow(QMainWindow):
         # Set the central widget of the Window. Widget will expand
         # to take up all the space in the window by default.
         self.setCentralWidget(widget)
+
+        # close the splash window
+        self.splash.close()
 
 
 class SingularConfigTab(QWidget):

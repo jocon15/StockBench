@@ -1,10 +1,7 @@
 import os
 import sys
 
-from PyQt6 import QtCore, QtWebEngineWidgets
-from PyQt6.QtWidgets import QVBoxLayout, QGridLayout, QHBoxLayout, QWidget, QLabel, QProgressBar, QFrame
-from PyQt6.QtCore import QTimer, QThreadPool
-from PyQt6 import QtGui
+from PyQt6.QtWidgets import QVBoxLayout, QGridLayout, QHBoxLayout, QLabel
 
 # current directory (peripherals)
 current = os.path.dirname(os.path.realpath(__file__))
@@ -16,82 +13,28 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 from StockBench.display.display import Display
+from StockBench.gui.windows.results import SimulationResultsWindow, ResultsFrame, ResultsTable
 
 
-class MultiResultsWindow(QWidget):
-    window_stylesheet = """background-color:#202124;"""
-
-    progress_bar_stylesheet = """
-        QProgressBar{
-            border-radius: 2px;
-        }
-
-        QProgressBar::chunk{
-            border-radius: 2px;
-            background-color: #7532a8;
-        }"""
-
-    btn_stylesheet = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;"""
-
+class MultiResultsWindow(SimulationResultsWindow):
+    """Window that holds the progress bar and the results box."""
     def __init__(self, worker, simulator, progress_observer, initial_balance):
-        super().__init__()
-        # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
-        self.threadpool = QThreadPool()
-
-        # parameters
-        self.worker = worker
-        self.simulator = simulator(initial_balance)  # instantiate the class reference
-        self.progress_observer = progress_observer()  # instantiate the class reference
-
+        super().__init__(worker, simulator, progress_observer, initial_balance)
         # get set by caller (MainWindow) after construction but before .show()
-        self.strategy = None
         self.symbols = None
-        self.logging = False
-        self.reporting = False
-        self.unique_chart_saving = False
 
+        # define layout type
         self.layout = QVBoxLayout()
 
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setRange(0, 100)
-        self.progress_bar.setFixedHeight(5)
-        self.progress_bar.setTextVisible(False)
-        self.progress_bar.setStyleSheet(self.progress_bar_stylesheet)
+        # progress bar
         self.layout.addWidget(self.progress_bar)
 
+        # simulation results box
         self.simulation_results_box = SimulationResultsBox()
         self.layout.addWidget(self.simulation_results_box)
 
-        self.setWindowTitle('Simulation Results')
-        self.setWindowIcon(QtGui.QIcon(os.path.join('resources', 'images', 'candle.ico')))
-        # self.setGeometry(0, 0, 1920, 1080)
-        # self.setFixedSize(400, 500)
-        self.setStyleSheet(self.window_stylesheet)
-
         # apply the layout to the window
         self.setLayout(self.layout)
-
-        # timer to periodically read from the progress observer and update the progress bar
-        self.timer = QTimer()
-
-    def begin(self):
-        # the simulation runs 1 time - so no timer, the update data just gets called once
-        self.update_data()
-
-        self.timer.setInterval(100)
-        self.timer.timeout.connect(self.update_progress_bar)  # noqa
-        self.timer.start()
-
-    def update_progress_bar(self):
-        if self.progress_observer.is_completed():
-            # mark the progress bar as completed
-            self.progress_bar.setValue(100)
-
-            # stop the timer
-            self.timer.stop()
-        else:
-            # update the progress bar
-            self.progress_bar.setValue(int(self.progress_observer.get_progress()))
 
     def run_simulation(self) -> dict:
         # load the strategy into the simulator
@@ -115,22 +58,12 @@ class MultiResultsWindow(QWidget):
     def render_updated_data(self, simulation_results: dict):
         self.simulation_results_box.render_data(simulation_results)
 
-    def update_data(self):
-        # create the worker object
-        worker = self.worker(self.run_simulation)  # Any other args, kwargs are passed to the run function
-        # connect the result (return data) of the qt_worker to the render function to handle the returned data
-        worker.signals.result.connect(self.render_updated_data)  # noqa
-        # run the qt_worker thread
-        self.threadpool.start(worker)
 
-
-class SimulationResultsBox(QFrame):
+class SimulationResultsBox(ResultsFrame):
     """Widget that houses the simulation results box."""
-    BACKUP_REL_PATH = os.path.join('resources', 'default', 'chart_unavailable.html')
 
     def __init__(self):
         super().__init__()
-
         self.layout = QHBoxLayout()
 
         self.simulation_results_text_box = SimulationResultsTextBox()
@@ -138,24 +71,14 @@ class SimulationResultsBox(QFrame):
         self.simulation_results_text_box.setMaximumWidth(300)
         self.simulation_results_text_box.setMaximumHeight(800)
 
-        self.webView = QtWebEngineWidgets.QWebEngineView()
         self.layout.addWidget(self.webView)
 
         self.setLayout(self.layout)
 
     def render_data(self, simulation_results):
-        # check the simulation generated a chart
-        chart_loaded = False
-        if 'chart_filepath' in simulation_results:
-            # check the chart exists
-            if os.path.isfile(simulation_results['chart_filepath']):
-                chart_loaded = True
-            self.webView.load(QtCore.QUrl().fromLocalFile(os.path.abspath(simulation_results['chart_filepath'])))
-
-        if not chart_loaded:
-            # load the default html file
-            self.webView.load(QtCore.QUrl().fromLocalFile(os.path.abspath(self.BACKUP_REL_PATH)))
-
+        # render the chart
+        self.render_chart(simulation_results)
+        # render the text box results
         self.simulation_results_text_box.render_data(simulation_results)
 
     def update_error_message(self, message):
@@ -163,99 +86,98 @@ class SimulationResultsBox(QFrame):
         self.simulation_results_text_box.update_error_message(message)
 
 
-class SimulationResultsTextBox(QFrame):
-    title_stylesheet = """color:#FFF;font-size:20px;font-weight:bold;"""
-
-    numeric_results_stylesheet = """color:#FFF;"""
-
-    error_label_style_sheet = """color:#dc143c;margin-top:10px;"""
-
+class SimulationResultsTextBox(ResultsTable):
+    """"""
     def __init__(self):
         super().__init__()
-
+        # define the layout
         self.layout = QGridLayout()
-        row = 1
 
+        # results title
+        row = 1
         label = QLabel()
         label.setText('Simulation Results')
         label.setStyleSheet(self.title_stylesheet)
         self.layout.addWidget(label, row, 1)
 
-        # nothing goes in 1, 2 because label 1 is title
-
+        # elapsed time title
         row += 1
         label = QLabel()
         label.setText('Elapsed Time')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, row, 1)
-
+        # elapsed time data label
         self.elapsed_time_data_label = QLabel()
         self.elapsed_time_data_label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.elapsed_time_data_label, row, 2)
 
-        row += 1
+        # trades made title
         label = QLabel()
         label.setText('Trades Made')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, row, 1)
-
+        # trades made data label
         self.trades_made_data_label = QLabel()
         self.trades_made_data_label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.trades_made_data_label, row, 2)
 
+        # effectiveness title
         row += 1
         label = QLabel()
         label.setText('Effectiveness')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, row, 1)
-
+        # effectiveness data label
         self.effectiveness_data_label = QLabel()
         self.effectiveness_data_label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.effectiveness_data_label, row, 2)
 
+        # total P/L title
         row += 1
         label = QLabel()
         label.setText('Total P/L')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, row, 1)
-
+        # total P/L data label
         self.total_pl_data_label = QLabel()
         self.total_pl_data_label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.total_pl_data_label, row, 2)
 
+        # average P/L title
         row += 1
         label = QLabel()
         label.setText('Average P/L')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, row, 1)
-
+        # average P/L data
         self.average_pl_data_label = QLabel()
         self.average_pl_data_label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.average_pl_data_label, row, 2)
 
+        # median title
         row += 1
         label = QLabel()
         label.setText('Median P/L')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, row, 1)
-
+        # median data label
         self.median_pl_data_label = QLabel()
         self.median_pl_data_label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.median_pl_data_label, row, 2)
 
+        # stddev title
         row += 1
         label = QLabel()
         label.setText('Stddev P/L')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, row, 1)
+        # stddev data label
+        self.stddev_pl_data_label = QLabel()
+        self.stddev_pl_data_label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(self.stddev_pl_data_label, row, 2)
 
-        self.data_label7 = QLabel()
-        self.data_label7.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(self.data_label7, row, 2)
-
+        # error data label
         row += 1
-        self.error_message_box = QLabel()
-        self.error_message_box.setStyleSheet(self.error_label_style_sheet)
         self.layout.addWidget(self.error_message_box, row, 1)
 
         # stretch the row and column to show natural size
@@ -265,19 +187,14 @@ class SimulationResultsTextBox(QFrame):
         # apply the layout to the frame
         self.setLayout(self.layout)
 
-        self.__error_message = ""
-
     def render_data(self, simulation_results: dict):
-        if not self.__error_message:
+        if not self._error_message:
             self.elapsed_time_data_label.setText(f'{simulation_results["elapsed_time"]} seconds')
             self.trades_made_data_label.setText(f'{simulation_results["trades_made"]}')
-            self.effectiveness_data_label.setText(f'$ {simulation_results["effectiveness"]}')
+            self.effectiveness_data_label.setText(f'{simulation_results["effectiveness"]} %')
             self.total_pl_data_label.setText(f'$ {simulation_results["total_profit_loss"]}')
             self.average_pl_data_label.setText(f'$ {simulation_results["average_profit_loss"]}')
             self.median_pl_data_label.setText(f'$ {simulation_results["median_profit_loss"]}')
-            self.data_label7.setText(f'$ {simulation_results["standard_profit_loss_deviation"]}')
+            self.stddev_pl_data_label.setText(f'$ {simulation_results["standard_profit_loss_deviation"]}')
         else:
-            self.error_message_box.setText(f'Error: {self.__error_message}')
-
-    def update_error_message(self, message):
-        self.__error_message = message
+            self.error_message_box.setText(f'Error: {self._error_message}')

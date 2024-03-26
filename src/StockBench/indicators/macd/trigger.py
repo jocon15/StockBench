@@ -27,6 +27,14 @@ class MACDTrigger(Trigger):
         return self.LARGE_EMA_LENGTH
 
     def add_to_data(self, key, value, side, data_manager):
+        """Add data to the dataframe.
+
+        Args:
+            key (any): The key value from the strategy.
+            value (any): The value from thr strategy.
+            side (str): The side (buy/sell).
+            data_manager (any): The data object.
+        """
         # if we already have MACD values in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():
             if self.DATA_COLUMN_TITLE == col_name:
@@ -65,7 +73,16 @@ class MACDTrigger(Trigger):
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
     def __parse_key(self, key, data_manager, current_day_index) -> float:
-        """Parser for parsing the key into the indicator value."""
+        """Parser for parsing the key into the indicator value.
+
+        Args:
+            key (any): The key value from the strategy.
+            data_manager (any): The data object.
+            current_day_index (int): The index of the current day.
+
+        return:
+            float: The indicator value found in the key.
+        """
 
         # find the indicator value (left hand side of the comparison)
         nums = self.find_all_nums_in_str(key)
@@ -107,6 +124,14 @@ class MACDTrigger(Trigger):
         return indicator_value
 
     def __calculate_macd(self, price_data: list) -> list:
+        """Calculate MACD values for a list of price values.
+
+        Args:
+            price_data (list): The price data to calculate the MACD from.
+
+        return:
+            list: The list of calculated MACD values.
+        """
         large_ema_length_values = MACDTrigger.__calculate_ema(self.LARGE_EMA_LENGTH, price_data)
 
         small_ema_length_values = MACDTrigger.__calculate_ema(self.SMALL_EMA_LENGTH, price_data)

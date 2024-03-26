@@ -47,7 +47,7 @@ class SingularDisplay(Display):
                     if indicator_subplot.get_type()[0]['type'] == 'ohlc':
                         ohlc_indicator = indicator
                         break
-                except KeyError:
+                except (KeyError, TypeError):
                     continue
 
         if not ohlc_indicator:

@@ -5,9 +5,7 @@ from StockBench.display.display_constants import *
 
 
 class VolumeSubplot(Subplot):
-    """This class is a subclass of the Subplot class.
-
-    A Volume object contains the subplot with volume data.
+    """Subplot for the volume indicator.
 
     Additional traces include:
     """
@@ -16,7 +14,7 @@ class VolumeSubplot(Subplot):
 
     @staticmethod
     def get_subplot(df):
-        """Builds and returns the subplot.
+        """Builds the subplot.
 
         Args:
             df (DataFrame): The dataframe from the simulation.
@@ -33,7 +31,7 @@ class VolumeSubplot(Subplot):
 
     @staticmethod
     def get_traces(df) -> list:
-        """builds and returns a list of traces to add to the subplot.
+        """Build a list of traces to add to the subplot.
 
         Args:
             df (DataFrame): The dataframe from the simulation.

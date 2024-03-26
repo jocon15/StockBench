@@ -1,6 +1,7 @@
 import logging
 from StockBench.indicators.candlestick_color.candlestick_color import CandlestickColorIndicator
 from StockBench.indicators.ema.ema import EMAIndicator
+from StockBench.indicators.macd.macd import MACDIndicator
 from StockBench.indicators.price.price import PriceIndicator
 from StockBench.indicators.rsi.rsi import RSIIndicator
 from StockBench.indicators.sma.sma import SMAIndicator
@@ -21,6 +22,7 @@ class IndicatorManager:
         return {
             'candlestick_color_indicator': CandlestickColorIndicator(),
             'ema_indicator': EMAIndicator(),
+            'macd_indicator': MACDIndicator(),
             'price_indicator': PriceIndicator(),
             'rsi_indicator': RSIIndicator(),
             'sma_indicator': SMAIndicator(),

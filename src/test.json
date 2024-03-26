@@ -9,7 +9,8 @@
             "color": {
                 "1": "red",
                 "0": "green"
-            }
+            },
+          "MACD": "> 20"
         },
         "price": ">200",
         "color": {

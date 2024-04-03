@@ -1,5 +1,8 @@
 import os
 import sys
+import logging
+
+log = logging.getLogger()
 
 from PyQt6.QtWidgets import QVBoxLayout, QGridLayout, QHBoxLayout, QLabel
 

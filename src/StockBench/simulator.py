@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import math
 import logging
@@ -172,7 +173,7 @@ class Simulator:
         (total_days, days_in_focus, sim_window_start_day,
          trade_able_days, increment) = self.__pre_process(symbol, progress_observer)
 
-        log.info(f'Beginning simulation...')
+        log.info(f'Beginning simulation for symbol: {symbol}...')
 
         # ===================== Simulation Loop ======================
         buy_mode = True
@@ -207,11 +208,18 @@ class Simulator:
         """
         start_time = perf_counter()
 
-        increment = self.__multi_pre_process(symbols, progress_observer)
+        progress_bar_increment = self.__multi_pre_process(symbols, progress_observer)
+
+        tqdm_increment = 0
+        pbar = None
+        if not getattr(sys, 'frozen', False):
+            # tqdm only works if running as python file
+            tqdm_increment = 100.0 / len(symbols)
+            pbar = tqdm(total=100)
 
         # simulate each symbol
         results = []
-        for symbol in tqdm(symbols, f'Simulating {len(symbols)} symbols'):
+        for symbol in symbols:
             # run the simulation for that symbol
             result = self.run(symbol, show_individual_charts, save_individual_charts)
             # capture the archived positions from the symbol run in the multiple positions list
@@ -219,9 +227,13 @@ class Simulator:
 
             results.append(result)
 
-            # update the progress
+            # update the progress observer
             if progress_observer is not None:
-                progress_observer.update_progress(increment)
+                progress_observer.update_progress(progress_bar_increment)
+
+            # update tqdm
+            if not getattr(sys, 'frozen', False):
+                pbar.update(tqdm_increment)
 
         return self.__multi_post_process(results, start_time, show_chart, save_option)
 
@@ -349,6 +361,7 @@ class Simulator:
         }
 
     def __multi_pre_process(self, symbols, progress_observer) -> float:
+        log.debug('Running multi simulation pre-process...')
         # disable printing for TQDM
         self.__running_multiple = True
 
@@ -364,6 +377,7 @@ class Simulator:
 
     def __multi_post_process(self, results, start_time, show_chart, save_option):
         # re-enable printing for TQDM
+        log.info('Running multi simulation post-process...')
         self.__running_multiple = False
         # save the results in case the user wants to write them to file
         self.__stored_results = results

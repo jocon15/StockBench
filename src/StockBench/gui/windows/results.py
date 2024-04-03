@@ -98,6 +98,7 @@ class SimulationResultsWindow(QWidget):
 
 class ResultsFrame(QFrame):
     """Superclass for a results frame."""
+    LOADING_REL_PATH = os.path.join('resources', 'default', 'chart_loading.html')
     BACKUP_REL_PATH = os.path.join('resources', 'default', 'chart_unavailable.html')
 
     def __init__(self):
@@ -105,6 +106,8 @@ class ResultsFrame(QFrame):
 
         # define shared attributes here but adding them to layout happens in subclass
         self.webView = QtWebEngineWidgets.QWebEngineView()
+        # load blank html file to cover the white screen while the chart loads
+        self.render_chart_loading()
 
     @abstractmethod
     def render_data(self, simulation_results: dict):
@@ -113,6 +116,10 @@ class ResultsFrame(QFrame):
     @abstractmethod
     def update_error_message(self, message):
         raise NotImplementedError('You must define an implementation for update_data()!')
+
+    def render_chart_loading(self):
+        # load the loading html file
+        self.webView.load(QtCore.QUrl().fromLocalFile(os.path.abspath(self.LOADING_REL_PATH)))
 
     def render_chart(self, simulation_results):
         # check the simulation generated a chart

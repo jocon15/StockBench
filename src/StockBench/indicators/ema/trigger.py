@@ -162,9 +162,9 @@ class EMATrigger(Trigger):
             if i < length:
                 ema_values.append(None)
             else:
-                ema = round((k * (float(price_data[i]) - previous_ema)) + previous_ema, 3)
-                ema_values.append(ema)
-                previous_ema = ema
+                ema_point = round((k * (float(price_data[i]) - previous_ema)) + previous_ema, 3)
+                ema_values.append(ema_point)
+                previous_ema = ema_point
         return ema_values
 
     @staticmethod
@@ -180,15 +180,13 @@ class EMATrigger(Trigger):
         """
         price_values = []
         sma_values = []
-        all_sma_values = []
-        for element in price_data:
+        for day in price_data:
             if len(price_values) < length:
-                price_values.append(float(element))
+                price_values.append(float(day))
             else:
                 price_values.pop(0)
                 sma_values.pop(0)
-                price_values.append(float(element))
+                price_values.append(float(day))
             avg = round(statistics.mean(price_values), 3)
             sma_values.append(avg)
-            all_sma_values.append(avg)
-        return all_sma_values
+        return sma_values

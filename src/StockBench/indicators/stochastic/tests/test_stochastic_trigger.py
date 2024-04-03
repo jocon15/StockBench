@@ -41,7 +41,7 @@ def test_add_to_data(data_mocker, logger_mocker, test_object):
     # assemble a price list from the example data
     price_data = []
     for day in EXAMPLE_DATA_MSFT['MSFT']:
-        price_data.append(float(day['o']))
+        price_data.append(float(day['c']))
 
     data_mocker.HIGH = DataManager.HIGH
     data_mocker.LOW = DataManager.LOW

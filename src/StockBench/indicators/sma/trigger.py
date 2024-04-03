@@ -160,6 +160,9 @@ class SMATrigger(Trigger):
 
         return:
             list: The list of calculated SMA values.
+
+        Notes:
+            This requires you to keep track of all SMA values so that all values can be added to the df.
         """
         price_values = []
         sma_values = []

@@ -309,6 +309,7 @@ class SingularConfigTab(QWidget):
             return
         except Exception as e:
             self.error_message_box.setText(f'Uncaught error parsing strategy file: {e}')
+            return
 
         # inject the unix equivalent dates from the combobox to the dict
         strategy['start'] = int(time.time()) - self.simulation_length
@@ -577,6 +578,7 @@ class MultiConfigTab(QWidget):
             return
         except Exception as e:
             self.error_message_box.setText(f'Uncaught error parsing strategy file: {e}')
+            return
 
         # inject the unix equivalent dates from the combobox to the dict
         strategy['start'] = int(time.time()) - self.simulation_length

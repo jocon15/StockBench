@@ -149,6 +149,7 @@ class ResultsTable(QFrame):
 
         # Note: this is the only label we can abstract here without PyQt stopp responding error
         self.error_message_box = QLabel()
+        self.error_message_box.setWordWrap(True)
         self.error_message_box.setStyleSheet(self.error_label_style_sheet)
 
     @abstractmethod

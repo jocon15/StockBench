@@ -13,7 +13,7 @@ out/
 .idea/
 
 # allowable files
-!resources/default/*
+!src/resources/default/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

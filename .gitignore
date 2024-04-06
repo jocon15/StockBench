@@ -12,6 +12,9 @@ offline_images/
 out/
 .idea/
 
+# allowable files
+!resources/default/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

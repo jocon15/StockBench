@@ -1,4 +1,3 @@
-import re
 import logging
 import statistics
 from StockBench.constants import *
@@ -19,7 +18,7 @@ class EMATrigger(Trigger):
             value (any): The value from the strategy.
         """
         # map nums to a list of ints
-        nums = list(map(int, re.findall(r'\d+', key)))
+        nums = list(map(int, self.find_all_nums_in_str(key)))
         if nums:
             return max(nums)
         # nums is empty
@@ -34,7 +33,7 @@ class EMATrigger(Trigger):
             side (str): The side (buy/sell).
             data_manager (any): The data object.
         """
-        nums = re.findall(r'\d+', key)
+        nums = self.find_all_nums_in_str(key)
         if len(nums) > 0:
             # element 0 will be the indicator length
             num = int(nums[0])

@@ -1,4 +1,3 @@
-import re
 import logging
 from StockBench.indicator.trigger import Trigger
 
@@ -65,7 +64,7 @@ class StopLossTrigger(Trigger):
                 # the position is at a loss (plpc will be a loss if pl is a loss)
                 if '%' in value:
                     # use value percent stats
-                    nums = re.findall(r'\d+', value)
+                    nums = self.find_all_nums_in_str(value)
                     trigger_value = float(nums[0])
                     # check trigger
                     if abs(intraday_plpc) >= trigger_value:
@@ -84,7 +83,7 @@ class StopLossTrigger(Trigger):
                 # the position is at a loss (plpc will be a loss if pl is a loss)
                 if '%' in value:
                     # use value percent stats
-                    nums = re.findall(r'\d+', value)
+                    nums = self.find_all_nums_in_str(value)
                     trigger_value = float(nums[0])
                     # check trigger
                     if abs(lifetime_plpc) >= trigger_value:

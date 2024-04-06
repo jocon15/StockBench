@@ -8,7 +8,6 @@ without forcing a complex [multiple] inheritance scheme. The currently used appr
 aspects of the indicator are added later on.
 """
 
-import re
 import logging
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
@@ -28,7 +27,7 @@ class StochasticTrigger(Trigger):
             value (any): The value from the strategy.
         """
         # map nums to a list of ints
-        nums = list(map(int, re.findall(r'\d+', key)))
+        nums = list(map(int, self.find_all_nums_in_str(key)))
         if nums:
             return max(nums)
         # nums is empty
@@ -44,7 +43,7 @@ class StochasticTrigger(Trigger):
             data_manager (any): The data object.
         """
         # ======== key based =========
-        nums = re.findall(r'\d+', key)
+        nums = self.find_all_nums_in_str(key)
         if len(nums) > 0:
             num = int(nums[0])
             # add the stochastic data to the df
@@ -53,7 +52,7 @@ class StochasticTrigger(Trigger):
             # add the stochastic data to the df
             self.__add_stochastic_oscillator(DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH, data_manager)
         # ======== value based (stochastic limit)=========
-        nums = re.findall(r'\d+', value)
+        nums = self.find_all_nums_in_str(value)
         if side == 'buy':
             if len(nums) > 0:
                 trigger = float(nums[0])

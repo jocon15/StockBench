@@ -1,4 +1,3 @@
-import re
 import logging
 import statistics
 from StockBench.constants import *
@@ -18,7 +17,7 @@ class RSITrigger(Trigger):
             key (any): The key value from the strategy.
             value (any): The value from the strategy.
         """
-        nums = re.findall(r'\d+', key)
+        nums = self.find_all_nums_in_str(key)
         if len(nums) > 0:
             return max(list(map(int, nums)))
         else:
@@ -34,7 +33,7 @@ class RSITrigger(Trigger):
             data_manager (any): The data object.
         """
         # ======== key based =========
-        nums = re.findall(r'\d+', key)
+        nums = self.find_all_nums_in_str(key)
         if len(nums) > 0:
             num = int(nums[0])
             # add the RSI data to the df
@@ -43,7 +42,7 @@ class RSITrigger(Trigger):
             # add the RSI data to the df
             self.__add_rsi(DEFAULT_RSI_LENGTH, data_manager)
         # ======== value based (rsi limit)=========
-        nums = re.findall(r'\d+', value)
+        nums = self.find_all_nums_in_str(value)
         if side == 'buy':
             if len(nums) > 0:
                 _trigger = float(nums[0])

@@ -39,6 +39,8 @@ class Simulator:
     |   OHLC   |
     ------------ - End of the simulation (user defined)
     """
+    BUY_SIDE = 'buy'
+    SELL_SIDE = 'sell'
 
     def __init__(self, balance: float):
         """
@@ -285,7 +287,8 @@ class Simulator:
         """Core simulation logic for simulating 1 day."""
         log.debug(f'Current day index: {current_day_index}')
         if buy_mode:
-            was_triggered = self.__trigger_manager.check_buy_triggers(self.__data_manager, current_day_index)
+            was_triggered = self.__trigger_manager.check_triggers_by_side(self.BUY_SIDE, self.__data_manager,
+                                                                          current_day_index, None)
             if was_triggered:
                 # create a position
                 position = self.__create_position(current_day_index)
@@ -293,8 +296,8 @@ class Simulator:
                 buy_mode = False
         else:
             # sell mode
-            was_triggered = self.__trigger_manager.check_sell_triggers(self.__data_manager, position,
-                                                                       current_day_index)
+            was_triggered = self.__trigger_manager.check_triggers_by_side(self.SELL_SIDE, self.__data_manager,
+                                                                          current_day_index, position)
             if was_triggered:
                 # close the position
                 self.__liquidate_position(position, current_day_index)

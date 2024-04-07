@@ -85,44 +85,26 @@ class TriggerManager:
                             trigger.add_to_data(inner_key, self.__strategy['sell'][key][inner_key], 'sell',
                                                 data_manager)
 
-    def check_buy_triggers(self, data_manager, current_day_index) -> bool:
-        """Check all buy trigger.
+    def check_triggers_by_side(self, side, data_manager, current_day_index, position):
+        """Check all sell triggers for a defined side.
 
         Args:
+            side(str): Buy or sell.
             data_manager (object): The data object.
             current_day_index (int): The index of the current day.
-
-        returns:
-            bool: True if triggered, False otherwise.
-        """
-        was_triggered = False
-        buy_keys = self.__strategy['buy'].keys()
-        for key in buy_keys:
-            # handle trigger
-            was_triggered = self.__handle_triggers(data_manager, current_day_index, None, key, side='buy')
-            if was_triggered:
-                break
-
-        return was_triggered
-
-    def check_sell_triggers(self, data_manager, position, current_day_index) -> bool:
-        """Check all sell trigger.
-
-        Args:
-            data_manager (object): The data object.
             position (object): The position object.
-            current_day_index (int): The index of the current day.
 
         returns:
             bool: True if triggered, False otherwise.
         """
         was_triggered = False
-        sell_keys = self.__strategy['sell'].keys()
-        for key in sell_keys:
-            # handle and trigger
-            was_triggered = self.__handle_triggers(data_manager, current_day_index, position, key, side='sell')
+        side_keys = self.__strategy[side].keys()
+        for key in side_keys:
+            # handle trigger
+            was_triggered = self.__handle_triggers(data_manager, current_day_index, position, key, side)
             if was_triggered:
                 break
+
         return was_triggered
 
     def __sort_indicator_trigger_sides(self, indicators: list):

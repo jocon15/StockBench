@@ -39,6 +39,8 @@ class Simulator:
     |   OHLC   |
     ------------ - End of the simulation (user defined)
     """
+    BUY_SIDE = 'buy'
+    SELL_SIDE = 'sell'
 
     def __init__(self, balance: float):
         """
@@ -73,6 +75,8 @@ class Simulator:
         self.__save_folder = 'saved_simulations'
         self.__logs_folder = 'logs'
         self.__dev_folder = 'dev'
+
+        self.__running_as_exe = getattr(sys, 'frozen', False)
 
     def enable_logging(self):
         """Enable user logging."""
@@ -212,7 +216,7 @@ class Simulator:
 
         tqdm_increment = 0
         pbar = None
-        if not getattr(sys, 'frozen', False):
+        if not self.__running_as_exe:
             # tqdm only works if running as python file
             tqdm_increment = 100.0 / len(symbols)
             pbar = tqdm(total=100)
@@ -231,8 +235,8 @@ class Simulator:
             if progress_observer is not None:
                 progress_observer.update_progress(progress_bar_increment)
 
-            # update tqdm
-            if not getattr(sys, 'frozen', False):
+            # update tqdm if enabled
+            if not self.__running_as_exe:
                 pbar.update(tqdm_increment)
 
         return self.__multi_post_process(results, start_time, show_chart, save_option)
@@ -285,7 +289,8 @@ class Simulator:
         """Core simulation logic for simulating 1 day."""
         log.debug(f'Current day index: {current_day_index}')
         if buy_mode:
-            was_triggered = self.__trigger_manager.check_buy_triggers(self.__data_manager, current_day_index)
+            was_triggered = self.__trigger_manager.check_triggers_by_side(self.BUY_SIDE, self.__data_manager,
+                                                                          current_day_index, None)
             if was_triggered:
                 # create a position
                 position = self.__create_position(current_day_index)
@@ -293,8 +298,8 @@ class Simulator:
                 buy_mode = False
         else:
             # sell mode
-            was_triggered = self.__trigger_manager.check_sell_triggers(self.__data_manager, position,
-                                                                       current_day_index)
+            was_triggered = self.__trigger_manager.check_triggers_by_side(self.SELL_SIDE, self.__data_manager,
+                                                                          current_day_index, position)
             if was_triggered:
                 # close the position
                 self.__liquidate_position(position, current_day_index)
@@ -422,12 +427,12 @@ class Simulator:
         if 'end' not in self.__strategy.keys():
             log.critical("Strategy missing 'end' key")
             raise Exception("Strategy missing 'end' key")
-        if 'buy' not in self.__strategy.keys():
-            log.critical("Strategy missing 'buy' key")
-            raise Exception("Strategy missing 'buy' key")
-        if 'sell' not in self.__strategy.keys():
-            log.critical("Strategy missing 'sell' key")
-            raise Exception("Strategy missing 'sell' key")
+        if self.BUY_SIDE not in self.__strategy.keys():
+            log.critical(f"Strategy missing '{self.BUY_SIDE}' key")
+            raise Exception(f"Strategy missing '{self.BUY_SIDE}' key")
+        if self.SELL_SIDE not in self.__strategy.keys():
+            log.critical(f"Strategy missing '{self.SELL_SIDE}' key")
+            raise Exception(f"Strategy missing '{self.SELL_SIDE}' key")
         log.debug('No errors found in the strategy')
 
     def __check_strategy_timestamps(self):
@@ -526,8 +531,8 @@ class Simulator:
             liquidation_price_list[position.sell_day_index] = position.get_sell_price()
 
         # add the columns to the data
-        self.__data_manager.add_column('Buy', acquisition_price_list)
-        self.__data_manager.add_column('Sell', liquidation_price_list)
+        self.__data_manager.add_column(self.BUY_SIDE, acquisition_price_list)
+        self.__data_manager.add_column(self.SELL_SIDE, liquidation_price_list)
 
     @staticmethod
     def __print_header(symbol):

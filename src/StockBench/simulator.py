@@ -531,8 +531,8 @@ class Simulator:
             liquidation_price_list[position.sell_day_index] = position.get_sell_price()
 
         # add the columns to the data
-        self.__data_manager.add_column(self.BUY_SIDE, acquisition_price_list)
-        self.__data_manager.add_column(self.SELL_SIDE, liquidation_price_list)
+        self.__data_manager.add_column('Buy', acquisition_price_list)
+        self.__data_manager.add_column('Sell', liquidation_price_list)
 
     @staticmethod
     def __print_header(symbol):

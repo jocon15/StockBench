@@ -3,7 +3,7 @@ import sys
 from abc import abstractmethod
 
 from PyQt6 import QtCore, QtWebEngineWidgets
-from PyQt6.QtWidgets import QWidget, QProgressBar, QFrame, QLabel
+from PyQt6.QtWidgets import QWidget, QProgressBar, QFrame, QLabel, QTabWidget
 from PyQt6.QtCore import QTimer, QThreadPool
 from PyQt6 import QtGui
 
@@ -30,6 +30,19 @@ class SimulationResultsWindow(QWidget):
             border-radius: 2px;
             background-color: #7532a8;
         }"""
+    tab_widget_stylesheet = """
+            QTabWidget::pane{
+                background-color: #202124;
+                border: 0;
+            }
+            QTabBar::tab:selected {
+                color: #ffffff;
+                background-color: #42444a;
+            }
+            QTabBar::tab:!selected {
+                color: #ffffff;
+                background-color: #323338;
+            }"""
 
     def __init__(self, worker, simulator, progress_observer, initial_balance):
         super().__init__()
@@ -56,6 +69,9 @@ class SimulationResultsWindow(QWidget):
         self.progress_bar.setFixedHeight(5)
         self.progress_bar.setTextVisible(False)
         self.progress_bar.setStyleSheet(self.progress_bar_stylesheet)
+
+        self.tab_widget = QTabWidget()
+        self.tab_widget.setStyleSheet(self.tab_widget_stylesheet)
 
         # timer to periodically read from the progress observer and update the progress bar
         self.timer = QTimer()

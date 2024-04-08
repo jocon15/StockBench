@@ -1,8 +1,5 @@
 import os
 import sys
-import logging
-
-log = logging.getLogger()
 
 from PyQt6.QtWidgets import QVBoxLayout, QGridLayout, QHBoxLayout, QLabel
 
@@ -17,14 +14,15 @@ sys.path.append(parent)
 
 from StockBench.display.display import Display
 from StockBench.gui.windows.results import SimulationResultsWindow, ResultsFrame, ResultsTable
+from StockBench.gui.windows.singular.singular_rules_tab import SingularRulesTab
 
 
-class MultiResultsWindow(SimulationResultsWindow):
+class SingularResultsWindow(SimulationResultsWindow):
     """Window that holds the progress bar and the results box."""
     def __init__(self, worker, simulator, progress_observer, initial_balance):
         super().__init__(worker, simulator, progress_observer, initial_balance)
         # get set by caller (MainWindow) after construction but before .show()
-        self.symbols = None
+        self.symbol = None
 
         # define layout type
         self.layout = QVBoxLayout()
@@ -32,9 +30,14 @@ class MultiResultsWindow(SimulationResultsWindow):
         # progress bar
         self.layout.addWidget(self.progress_bar)
 
-        # simulation results box
-        self.simulation_results_box = SimulationResultsBox()
-        self.layout.addWidget(self.simulation_results_box)
+        # simulation results frame (gets added to layout via tab widget
+        self.results_frame = SingularResultsFrame()
+
+        # tab widget
+        self.tab_widget.addTab(self.results_frame, "Overview")
+        self.tab_widget.addTab(SingularRulesTab('buy'), "Buy Rules (beta)")
+        self.tab_widget.addTab(SingularRulesTab('sell'), "Sell Rules (beta)")
+        self.layout.addWidget(self.tab_widget)
 
         # apply the layout to the window
         self.setLayout(self.layout)
@@ -51,45 +54,45 @@ class MultiResultsWindow(SimulationResultsWindow):
         else:
             save_option = Display.TEMP_SAVE
         try:
-            return self.simulator.run_multiple(self.symbols, show_chart=False, save_option=save_option,
-                                               progress_observer=self.progress_observer)
+            return self.simulator.run(self.symbol, show_chart=False, save_option=save_option,
+                                      progress_observer=self.progress_observer)
         except ValueError as e:
             # pass the error to the simulation results box
-            self.simulation_results_box.update_error_message(f'{e}')
+            self.results_frame.update_error_message(f'{e}')
             return {}
 
     def render_updated_data(self, simulation_results: dict):
-        self.simulation_results_box.render_data(simulation_results)
+        self.results_frame.render_data(simulation_results)
 
 
-class SimulationResultsBox(ResultsFrame):
+class SingularResultsFrame(ResultsFrame):
     """Widget that houses the simulation results box."""
 
     def __init__(self):
         super().__init__()
         self.layout = QHBoxLayout()
 
-        self.simulation_results_text_box = SimulationResultsTextBox()
-        self.layout.addWidget(self.simulation_results_text_box)
-        self.simulation_results_text_box.setMaximumWidth(300)
-        self.simulation_results_text_box.setMaximumHeight(800)
+        self.results_table = SingularResultsTable()
+        self.layout.addWidget(self.results_table)
+        self.results_table.setMaximumWidth(300)
+        self.results_table.setMaximumHeight(800)
 
         self.layout.addWidget(self.webView)
 
         self.setLayout(self.layout)
 
-    def render_data(self, simulation_results):
+    def render_data(self, simulation_results: dict):
         # render the chart
         self.render_chart(simulation_results)
         # render the text box results
-        self.simulation_results_text_box.render_data(simulation_results)
+        self.results_table.render_data(simulation_results)
 
     def update_error_message(self, message):
         # pass the error down to the simulation results text box
-        self.simulation_results_text_box.update_error_message(message)
+        self.results_table.update_error_message(message)
 
 
-class SimulationResultsTextBox(ResultsTable):
+class SingularResultsTable(ResultsTable):
     """"""
     def __init__(self):
         super().__init__()
@@ -179,6 +182,17 @@ class SimulationResultsTextBox(ResultsTable):
         self.stddev_pl_data_label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.stddev_pl_data_label, row, 2)
 
+        # account value title
+        row += 1
+        label = QLabel()
+        label.setText('Account Value')
+        label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(label, row, 1)
+        # account value data label
+        self.account_value_data_label = QLabel()
+        self.account_value_data_label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(self.account_value_data_label, row, 2)
+
         # error data label
         row += 1
         self.layout.addWidget(self.error_message_box, row, 1)
@@ -199,5 +213,6 @@ class SimulationResultsTextBox(ResultsTable):
             self.average_pl_data_label.setText(f'$ {simulation_results["average_profit_loss"]}')
             self.median_pl_data_label.setText(f'$ {simulation_results["median_profit_loss"]}')
             self.stddev_pl_data_label.setText(f'$ {simulation_results["standard_profit_loss_deviation"]}')
+            self.account_value_data_label.setText(f'$ {simulation_results["account_value"]}')
         else:
             self.error_message_box.setText(f'Error: {self._error_message}')

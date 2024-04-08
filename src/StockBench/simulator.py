@@ -289,20 +289,20 @@ class Simulator:
         """Core simulation logic for simulating 1 day."""
         log.debug(f'Current day index: {current_day_index}')
         if buy_mode:
-            was_triggered = self.__trigger_manager.check_triggers_by_side(self.BUY_SIDE, self.__data_manager,
-                                                                          current_day_index, None)
+            was_triggered, rule = self.__trigger_manager.check_triggers_by_side(self.BUY_SIDE, self.__data_manager,
+                                                                                current_day_index, None)
             if was_triggered:
                 # create a position
-                position = self.__create_position(current_day_index)
+                position = self.__create_position(current_day_index, rule)
                 # switch to selling
                 buy_mode = False
         else:
             # sell mode
-            was_triggered = self.__trigger_manager.check_triggers_by_side(self.SELL_SIDE, self.__data_manager,
-                                                                          current_day_index, position)
+            was_triggered, rule = self.__trigger_manager.check_triggers_by_side(self.SELL_SIDE, self.__data_manager,
+                                                                                current_day_index, position)
             if was_triggered:
                 # close the position
-                self.__liquidate_position(position, current_day_index)
+                self.__liquidate_position(position, current_day_index, rule)
                 # clear the stored position
                 position = None
                 # switch to buying
@@ -313,7 +313,7 @@ class Simulator:
                 # check that position still exists - if so sell
                 if position:
                     # close the position
-                    self.__liquidate_position(position, current_day_index)
+                    self.__liquidate_position(position, current_day_index, rule)
 
         # update the progress observer by 1 increment
         if progress_observer is not None:
@@ -464,11 +464,12 @@ class Simulator:
 
         return total_days, days_in_focus, sim_window_start_day, trade_able_days
 
-    def __create_position(self, current_day_index: int) -> Position:
+    def __create_position(self, current_day_index: int, rule: str) -> Position:
         """Creates a position and updates the account.
 
         Args:
             current_day_index (int): The index of the current day
+            rule (str): The strategy rule used to acquire the position.
 
         return:
             Position: The created Position object.
@@ -491,14 +492,15 @@ class Simulator:
         log.info('Position created successfully')
 
         # build and return the new position
-        return Position(_buy_price, share_count, current_day_index)
+        return Position(_buy_price, share_count, current_day_index, rule)
 
-    def __liquidate_position(self, position: Position, current_day_index: int):
+    def __liquidate_position(self, position: Position, current_day_index: int, rule: str):
         """Closes the position and updates the account.
 
         Args:
             position (Position): The position to close.
             current_day_index (int): The index of the current day
+            rule (str): The strategy key used to acquire the position.
         """
         log.info('Closing the position...')
 
@@ -506,7 +508,7 @@ class Simulator:
         _sell_price = float(self.__data_manager.get_data_point(self.__data_manager.CLOSE, current_day_index))
 
         # close the position
-        position.close_position(_sell_price, current_day_index)
+        position.close_position(_sell_price, current_day_index, rule)
 
         # add the position to the archive
         self.__single_simulation_position_archive.append(position)

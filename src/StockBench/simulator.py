@@ -425,12 +425,12 @@ class Simulator:
         if 'end' not in self.__strategy.keys():
             log.critical("Strategy missing 'end' key")
             raise Exception("Strategy missing 'end' key")
-        if 'buy' not in self.__strategy.keys():
-            log.critical("Strategy missing 'buy' key")
-            raise Exception("Strategy missing 'buy' key")
-        if 'sell' not in self.__strategy.keys():
-            log.critical("Strategy missing 'sell' key")
-            raise Exception("Strategy missing 'sell' key")
+        if self.BUY_SIDE not in self.__strategy.keys():
+            log.critical(f"Strategy missing '{self.BUY_SIDE}' key")
+            raise Exception(f"Strategy missing '{self.BUY_SIDE}' key")
+        if self.SELL_SIDE not in self.__strategy.keys():
+            log.critical(f"Strategy missing '{self.SELL_SIDE}' key")
+            raise Exception(f"Strategy missing '{self.SELL_SIDE}' key")
         log.debug('No errors found in the strategy')
 
     def __check_strategy_timestamps(self):
@@ -529,8 +529,8 @@ class Simulator:
             liquidation_price_list[position.sell_day_index] = position.get_sell_price()
 
         # add the columns to the data
-        self.__data_manager.add_column('Buy', acquisition_price_list)
-        self.__data_manager.add_column('Sell', liquidation_price_list)
+        self.__data_manager.add_column(self.BUY_SIDE, acquisition_price_list)
+        self.__data_manager.add_column(self.SELL_SIDE, liquidation_price_list)
 
     @staticmethod
     def __print_header(symbol):

@@ -76,6 +76,8 @@ class Simulator:
         self.__logs_folder = 'logs'
         self.__dev_folder = 'dev'
 
+        self.__running_as_exe = getattr(sys, 'frozen', False)
+
     def enable_logging(self):
         """Enable user logging."""
         # set the logging level to info
@@ -214,7 +216,7 @@ class Simulator:
 
         tqdm_increment = 0
         pbar = None
-        if not getattr(sys, 'frozen', False):
+        if not self.__running_as_exe:
             # tqdm only works if running as python file
             tqdm_increment = 100.0 / len(symbols)
             pbar = tqdm(total=100)
@@ -233,8 +235,8 @@ class Simulator:
             if progress_observer is not None:
                 progress_observer.update_progress(progress_bar_increment)
 
-            # update tqdm
-            if not getattr(sys, 'frozen', False):
+            # update tqdm if enabled
+            if not self.__running_as_exe:
                 pbar.update(tqdm_increment)
 
         return self.__multi_post_process(results, start_time, show_chart, save_option)

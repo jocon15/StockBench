@@ -11,7 +11,7 @@ class Position:
         Args:
             buy_price (float): The price of the position upon acquisition.
             current_day_index (int): The index of the day that the position was acquired on.
-            key (str): The strategy key used to acquire the position.
+            rule (str): The strategy key used to acquire the position.
         """
         self.buy_day_index = int(current_day_index)
         self.sell_day_index = None

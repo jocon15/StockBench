@@ -24,7 +24,7 @@ class SingularDisplay(Display):
         self.__subplot_objects = []
         self.__subplot_types = []
 
-    def chart(self, df, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
+    def chart_overview(self, df, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
         """Chart the data.
 
         Args:

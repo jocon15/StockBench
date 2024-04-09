@@ -346,11 +346,16 @@ class Simulator:
             # synchronous charting
             exporter.export(chopped_temp_df, symbol)
 
-        chart_filepath = ''
+        overview_chart_filepath = ''
+        buy_rule_analysis_chart_filepath = ''
+        sell_rule_analysis_chart_filepath = ''
         if show_chart or save_option:
             # create the display object
             display = SingularDisplay(self.__indicators.values())
-            chart_filepath = display.chart(chopped_temp_df, symbol, show_chart, save_option)
+            overview_chart_filepath = display.chart_overview(chopped_temp_df, symbol, show_chart, save_option)
+            # FIXME: implement charting methods
+            #   buy_rule_analysis_chart_filepath = display.chart_buy_rule_analysis()
+            #   sell_rule_analysis_chart_filepath = display.chart_sell_rule_analysis()
 
         return {
             'symbol': symbol,
@@ -362,7 +367,9 @@ class Simulator:
             'median_profit_loss': analyzer.median_profit_loss(),
             'standard_profit_loss_deviation': analyzer.standard_profit_loss_deviation(),
             'account_value': self.__account.get_balance(),
-            'chart_filepath': chart_filepath
+            'buy_rule_analysis_chart_filepath': buy_rule_analysis_chart_filepath,
+            'sell_rule_analysis_chart_filepath': sell_rule_analysis_chart_filepath,
+            'overview_chart_filepath': overview_chart_filepath
         }
 
     def __multi_pre_process(self, symbols, progress_observer) -> float:
@@ -390,11 +397,16 @@ class Simulator:
         # initiate an analyzer with the positions data
         analyzer = SimulationAnalyzer(self.__multiple_simulation_position_archive)
 
-        chart_filepath = ''
+        overview_chart_filepath = ''
+        buy_rule_analysis_chart_filepath = ''
+        sell_rule_analysis_chart_filepath = ''
         if show_chart or save_option:
             # create the display object
             display = MultipleDisplay()
-            chart_filepath = display.chart(results, show_chart, save_option)
+            overview_chart_filepath = display.chart_overview(results, show_chart, save_option)
+            # FIXME: implement charting methods
+            #   buy_rule_analysis_chart_filepath = display.chart_buy_rule_analysis()
+            #   sell_rule_analysis_chart_filepath = display.chart_sell_rule_analysis()
 
         end_time = perf_counter()
         elapsed_time = round(end_time - start_time, 4)
@@ -407,7 +419,9 @@ class Simulator:
             'average_profit_loss': analyzer.average_profit_loss(),
             'median_profit_loss': analyzer.median_profit_loss(),
             'standard_profit_loss_deviation': analyzer.standard_profit_loss_deviation(),
-            'chart_filepath': chart_filepath
+            'buy_rule_analysis_chart_filepath': buy_rule_analysis_chart_filepath,
+            'sell_rule_analysis_chart_filepath': sell_rule_analysis_chart_filepath,
+            'overview_chart_filepath': overview_chart_filepath
         }
 
     def __reset_singular_attributes(self):

@@ -13,7 +13,7 @@ class MultipleDisplay(Display):
     def __init__(self):
         self.__data = None
 
-    def chart(self, data, show=True, save_option=Display.TEMP_SAVE) -> str:
+    def chart_overview(self, data, show=True, save_option=Display.TEMP_SAVE) -> str:
         self.__data = data
 
         rows = 2

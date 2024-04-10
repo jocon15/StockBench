@@ -119,6 +119,7 @@ class ResultsFrame(QFrame):
 
     def __init__(self):
         super().__init__()
+        self.chart_name = 'overview_chart_filepath'
 
         # define shared attributes here but adding them to layout happens in subclass
         self.webView = QtWebEngineWidgets.QWebEngineView()
@@ -140,11 +141,11 @@ class ResultsFrame(QFrame):
     def render_chart(self, simulation_results):
         # check the simulation generated a chart
         chart_loaded = False
-        if 'overview_chart_path' in simulation_results:
+        if self.chart_name in simulation_results:
             # check the chart exists
-            if os.path.isfile(simulation_results['overview_chart_path']):
+            if os.path.isfile(simulation_results[self.chart_name]):
                 chart_loaded = True
-                self.webView.load(QtCore.QUrl().fromLocalFile(os.path.abspath(simulation_results['overview_chart_path'])))
+                self.webView.load(QtCore.QUrl().fromLocalFile(os.path.abspath(simulation_results[self.chart_name])))
 
         if not chart_loaded:
             # load the default html file

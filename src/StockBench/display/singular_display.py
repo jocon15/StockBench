@@ -1,7 +1,5 @@
 import logging
-import plotly.offline as offline
 from plotly.subplots import make_subplots
-from StockBench.function_tools.nonce import datetime_timestamp
 from StockBench.display.display import Display
 
 log = logging.getLogger()
@@ -108,35 +106,9 @@ class SingularDisplay(Display):
         fig.update_layout(template='plotly_dark', title=f'{window_size} day simulation for {symbol}',
                           xaxis_title='Date', yaxis_title='Price (USD)', xaxis_rangeslider_visible=False)
 
-        config = dict({
-            'scrollZoom': False,
-            'displayModeBar': False,
-            'editable': False
-        })
+        # format the chart (remove plotly white border)
+        formatted_fig = Display.format_chart(fig)
 
-        plot_div = offline.plot(fig, config=config, output_type='div')
-
-        formatted_fig = """
-                            <head>
-                            <body style="background-color:#202124;">
-                            </head>
-                            <body>
-                            {plot_div:s}
-                            </body>""".format(plot_div=plot_div)
-
-        if save_option == Display.TEMP_SAVE:
-            # save chart as temporary file - will be overwritten by any new chart
-            filename = 'temp_chart.html'
-            chart_filepath = self.save_chart(formatted_fig, filename)
-        elif save_option == Display.UNIQUE_SAVE:
-            # save chart as unique file for persistent saving
-            filename = f'figure_{symbol}_{datetime_timestamp()}.html'
-            chart_filepath = self.save_chart(formatted_fig, filename)
-        else:
-            # no chart was saved
-            chart_filepath = ''
-
-        if show:
-            fig.show()
-
-        return chart_filepath
+        # perform and saving or showing (returns saved filepath)
+        return self.handle_save_chart(formatted_fig, show, save_option,
+                                      'temp_chart', f'figure_{symbol}')

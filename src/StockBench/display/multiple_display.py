@@ -1,10 +1,8 @@
 import statistics
 import pandas as pd
 from .display_constants import *
-import plotly.offline as offline
 import plotly.graph_objects as plotter
 from plotly.subplots import make_subplots
-from StockBench.function_tools.nonce import datetime_timestamp
 from StockBench.display.display import Display
 
 
@@ -32,55 +30,83 @@ class MultipleDisplay(Display):
                             subplot_titles=chart_titles)
 
         # Profit/Loss Bar
-        fig.add_trace(self.__profit_loss_bar(), row=1, col=1)
+        fig.add_trace(self.__overview_profit_loss_bar(), row=1, col=1)
 
         # Avg Profit/Loss Gauge
-        fig.add_trace(self.__avg_effectiveness_gauge(), row=1, col=2)
+        fig.add_trace(self.__overview_avg_effectiveness_gauge(), row=1, col=2)
 
         # Total Trades Made Bar
-        fig.add_trace(self.__trades_made_bar(), row=2, col=1)
+        fig.add_trace(self.__overview_trades_made_bar(), row=2, col=1)
 
         # Avg Profit/Loss Gauge
-        fig.add_trace(self.__avg_profit_loss_gauge(), row=2, col=2)
+        fig.add_trace(self.__overview_avg_profit_loss_gauge(), row=2, col=2)
 
         # set the layout
         fig.update_layout(template='plotly_dark', title=f'Simulation Results for {len(self.__data)} Symbols',
                           xaxis_rangeslider_visible=False, showlegend=False)
 
-        config = dict({
-            'scrollZoom': False,
-            'displayModeBar': False,
-            'editable': False
-        })
+        # format the chart (remove plotly white border)
+        formatted_fig = Display.format_chart(fig)
 
-        plot_div = offline.plot(fig, config=config, output_type='div')
+        # perform and saving or showing (returns saved filepath)
+        return self.handle_save_chart(formatted_fig, show, save_option, 'temp_chart', 'multi')
 
-        formatted_fig = """
-                            <head>
-                            <body style="background-color:#202124;">
-                            </head>
-                            <body>
-                            {plot_div:s}
-                            </body>""".format(plot_div=plot_div)
+    def chart_buy_rules_analysis(self, positions, show=True, save_option=Display.TEMP_SAVE) -> str:
+        rows = 1
+        cols = 1
 
-        if save_option == Display.TEMP_SAVE:
-            # save chart as temporary file - will be overwritten by any new chart
-            filename = 'temp_chart.html'
-            chart_filepath = self.save_chart(formatted_fig, filename)
-        elif save_option == Display.UNIQUE_SAVE:
-            # save chart as unique file for persistent saving
-            filename = f'multi_{datetime_timestamp()}.html'
-            chart_filepath = self.save_chart(formatted_fig, filename)
-        else:
-            # no chart was saved
-            chart_filepath = ''
+        chart_list = [[{"type": "bar"}]]
+        chart_titles = ('Acquisition count per rule',)
 
-        if show:
-            fig.show()
+        # Parent Plot
+        fig = make_subplots(rows=rows,
+                            cols=cols,
+                            shared_xaxes=True,
+                            vertical_spacing=0.15,
+                            horizontal_spacing=0.05,
+                            specs=chart_list,
+                            subplot_titles=chart_titles)
 
-        return chart_filepath
+        fig.add_trace(MultipleDisplay.buy_rule_count_bar(positions))
 
-    def __profit_loss_bar(self):
+        # set the layout
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, showlegend=False)
+
+        # format the chart (remove plotly white border)
+        formatted_fig = Display.format_chart(fig)
+
+        # perform and saving or showing (returns saved filepath)
+        return self.handle_save_chart(formatted_fig, show, save_option, 'temp_buy_chart', 'multi_buy_rules')
+
+    def chart_sell_rules_analysis(self, positions, show=True, save_option=Display.TEMP_SAVE) -> str:
+        rows = 1
+        cols = 1
+
+        chart_list = [[{"type": "bar"}]]
+        chart_titles = ('Acquisition count per rule',)
+
+        # Parent Plot
+        fig = make_subplots(rows=rows,
+                            cols=cols,
+                            shared_xaxes=True,
+                            vertical_spacing=0.15,
+                            horizontal_spacing=0.05,
+                            specs=chart_list,
+                            subplot_titles=chart_titles)
+
+        fig.add_trace(MultipleDisplay.sell_rule_count_bar(positions))
+
+        # set the layout
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, showlegend=False)
+
+        # format the chart (remove plotly white border)
+        formatted_fig = Display.format_chart(fig)
+
+        # perform and saving or showing (returns saved filepath)
+        return self.handle_save_chart(formatted_fig, show, save_option,
+                                      'temp_sell_chart', 'multi_sell_rules')
+
+    def __overview_profit_loss_bar(self):
         color_df = pd.DataFrame()
         bar_colors = []
         for value in self.__get_total_pl_per_symbol():
@@ -95,7 +121,7 @@ class MultipleDisplay(Display):
             y=self.__get_total_pl_per_symbol(),
             marker_color=color_df['colors'])
 
-    def __avg_effectiveness_gauge(self):
+    def __overview_avg_effectiveness_gauge(self):
         indicator_value = self.__get_avg_effectiveness()
         if indicator_value > 50.0:
             bar_color = 'green'
@@ -114,7 +140,7 @@ class MultipleDisplay(Display):
                        {'range': [0, 50], 'color': PLOTLY_DARK_BACKGROUND},
                        {'range': [50, 100], 'color': PLOTLY_DARK_BACKGROUND}]})
 
-    def __avg_profit_loss_gauge(self):
+    def __overview_avg_profit_loss_gauge(self):
         indicator_value = self.__get_avg_pl()
         if indicator_value > 0:
             bar_color = 'green'
@@ -133,7 +159,7 @@ class MultipleDisplay(Display):
                        {'range': [-1000, 0], 'color': PLOTLY_DARK_BACKGROUND},
                        {'range': [0, 1000], 'color': PLOTLY_DARK_BACKGROUND}]})
 
-    def __trades_made_bar(self):
+    def __overview_trades_made_bar(self):
         return plotter.Bar(
             x=self.__get_symbols(),
             y=self.__get_trades_per_symbol(),

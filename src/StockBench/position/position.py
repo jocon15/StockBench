@@ -131,3 +131,19 @@ class Position:
             float: The liquidation price.
         """
         return self.__sell_price
+
+    def get_buy_rule(self):
+        """Accessor for the buy rule that triggered the acquisition.
+
+        return:
+            string: The rule string.
+        """
+        return self.__buy_rule
+
+    def get_sell_rule(self):
+        """Accessor for the buy rule that triggered the liquidation.
+
+        return:
+            string: The rule string.
+        """
+        return self.__sell_rule

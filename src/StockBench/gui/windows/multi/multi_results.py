@@ -36,10 +36,13 @@ class MultiResultsWindow(SimulationResultsWindow):
         # simulation results frame (gets added to layout via tab widget
         self.results_frame = MultiResultsFrame()
 
+        self.buy_rules_tab = MultiRulesTab('buy')
+        self.sell_rules_tab = MultiRulesTab('sell')
+
         # tab widget
         self.tab_widget.addTab(self.results_frame, "Overview")
-        self.tab_widget.addTab(MultiRulesTab('buy'), "Buy Rules (beta)")
-        self.tab_widget.addTab(MultiRulesTab('sell'), "Sell Rules (beta)")
+        self.tab_widget.addTab(self.buy_rules_tab, "Buy Rules (beta)")
+        self.tab_widget.addTab(self.sell_rules_tab, "Sell Rules (beta)")
         self.layout.addWidget(self.tab_widget)
 
         # apply the layout to the window
@@ -66,6 +69,8 @@ class MultiResultsWindow(SimulationResultsWindow):
 
     def render_updated_data(self, simulation_results: dict):
         self.results_frame.render_data(simulation_results)
+        self.buy_rules_tab.render_data(simulation_results)
+        self.sell_rules_tab.render_data(simulation_results)
 
 
 class MultiResultsFrame(ResultsFrame):
@@ -96,7 +101,7 @@ class MultiResultsFrame(ResultsFrame):
 
 
 class SimulationResultsTable(ResultsTable):
-    """"""
+    """Widget that houses the numerical results table."""
     def __init__(self):
         super().__init__()
         # define the layout

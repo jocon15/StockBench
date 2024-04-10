@@ -11,8 +11,8 @@ from StockBench.broker.broker import Broker
 from StockBench.export.export import Exporter
 from StockBench.display.display import Display
 from StockBench.position.position import Position
-from StockBench.display.singular import SingularDisplay
-from StockBench.display.multiple import MultipleDisplay
+from StockBench.display.singular_display import SingularDisplay
+from StockBench.display.multiple_display import MultipleDisplay
 from StockBench.account.user_account import UserAccount
 from StockBench.analysis.analyzer import SimulationAnalyzer
 from StockBench.trigger.trigger_manager import TriggerManager
@@ -403,10 +403,13 @@ class Simulator:
         if show_chart or save_option:
             # create the display object
             display = MultipleDisplay()
+            # overview tab chart
             overview_chart_filepath = display.chart_overview(results, show_chart, save_option)
-            # FIXME: implement charting methods
-            #   buy_rule_analysis_chart_filepath = display.chart_buy_rule_analysis()
-            #   sell_rule_analysis_chart_filepath = display.chart_sell_rule_analysis()
+            # buy rules tab chart
+            buy_rule_analysis_chart_filepath = display.chart_buy_rules_analysis(
+                self.__multiple_simulation_position_archive, show_chart, save_option)
+            sell_rule_analysis_chart_filepath = display.chart_sell_rules_analysis(
+                self.__multiple_simulation_position_archive, show_chart, save_option)
 
         end_time = perf_counter()
         elapsed_time = round(end_time - start_time, 4)

@@ -1,5 +1,4 @@
 import os
-import sys
 import json
 import time
 
@@ -9,20 +8,11 @@ from PyQt6.QtCore import QThreadPool, Qt
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6 import QtGui
 
-# current directory (peripherals)
-current = os.path.dirname(os.path.realpath(__file__))
-
-# parent filepath (src)
-parent = os.path.dirname(current)
-
-# add the parent (src) to path
-sys.path.append(parent)
-
 from StockBench.gui.worker.worker import Worker
 from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.simulator import Simulator
-from StockBench.gui.windows.singular.singular_results import SingularResultsWindow
-from StockBench.gui.windows.multi.multi_results import MultiResultsWindow
+from StockBench.gui.windows.singular.singular_results_window import SingularResultsWindow
+from StockBench.gui.windows.multi.multi_results_window import MultiResultsWindow
 from StockBench.constants import *
 
 

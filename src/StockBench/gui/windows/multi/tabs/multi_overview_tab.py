@@ -1,89 +1,22 @@
-import os
-import sys
 import logging
 
 log = logging.getLogger()
 
-from PyQt6.QtWidgets import QVBoxLayout, QGridLayout, QHBoxLayout, QLabel
-
-# current directory (peripherals)
-current = os.path.dirname(os.path.realpath(__file__))
-
-# parent filepath (src)
-parent = os.path.dirname(current)
-
-# add the parent (src) to path
-sys.path.append(parent)
-
-from StockBench.display.display import Display
-from StockBench.gui.windows.results import SimulationResultsWindow, ResultsFrame, ResultsTable
-from StockBench.gui.windows.multi.multi_rules_tab import MultiRulesTab
+from PyQt6.QtWidgets import QGridLayout, QHBoxLayout, QLabel
+from StockBench.gui.windows.overview_tab import OverviewTab, OverviewTable
 
 
-class MultiResultsWindow(SimulationResultsWindow):
-    """Window that holds the progress bar and the results box."""
-    def __init__(self, worker, simulator, progress_observer, initial_balance):
-        super().__init__(worker, simulator, progress_observer, initial_balance)
-        # get set by caller (MainWindow) after construction but before .show()
-        self.symbols = None
-
-        # define layout type
-        self.layout = QVBoxLayout()
-
-        # progress bar
-        self.layout.addWidget(self.progress_bar)
-
-        # simulation results frame (gets added to layout via tab widget
-        self.results_frame = MultiResultsFrame()
-
-        self.buy_rules_tab = MultiRulesTab('buy')
-        self.sell_rules_tab = MultiRulesTab('sell')
-
-        # tab widget
-        self.tab_widget.addTab(self.results_frame, "Overview")
-        self.tab_widget.addTab(self.buy_rules_tab, "Buy Rules (beta)")
-        self.tab_widget.addTab(self.sell_rules_tab, "Sell Rules (beta)")
-        self.layout.addWidget(self.tab_widget)
-
-        # apply the layout to the window
-        self.setLayout(self.layout)
-
-    def run_simulation(self) -> dict:
-        # load the strategy into the simulator
-        if self.logging:
-            self.simulator.enable_logging()
-        if self.reporting:
-            self.simulator.enable_reporting()
-        self.simulator.load_strategy(self.strategy)
-        if self.unique_chart_saving:
-            save_option = Display.UNIQUE_SAVE
-        else:
-            save_option = Display.TEMP_SAVE
-        try:
-            return self.simulator.run_multiple(self.symbols, show_chart=False, save_option=save_option,
-                                               progress_observer=self.progress_observer)
-        except ValueError as e:
-            # pass the error to the simulation results box
-            self.results_frame.update_error_message(f'{e}')
-            return {}
-
-    def render_updated_data(self, simulation_results: dict):
-        self.results_frame.render_data(simulation_results)
-        self.buy_rules_tab.render_data(simulation_results)
-        self.sell_rules_tab.render_data(simulation_results)
-
-
-class MultiResultsFrame(ResultsFrame):
+class MultiOverviewTab(OverviewTab):
     """Widget that houses the simulation results box."""
 
     def __init__(self):
         super().__init__()
         self.layout = QHBoxLayout()
 
-        self.simulation_results_text_box = SimulationResultsTable()
-        self.layout.addWidget(self.simulation_results_text_box)
-        self.simulation_results_text_box.setMaximumWidth(300)
-        self.simulation_results_text_box.setMaximumHeight(800)
+        self.results_table = MultiOverviewTable()
+        self.layout.addWidget(self.results_table)
+        self.results_table.setMaximumWidth(300)
+        self.results_table.setMaximumHeight(800)
 
         self.layout.addWidget(self.webView)
 
@@ -93,14 +26,14 @@ class MultiResultsFrame(ResultsFrame):
         # render the chart
         self.render_chart(simulation_results)
         # render the text box results
-        self.simulation_results_text_box.render_data(simulation_results)
+        self.results_table.render_data(simulation_results)
 
     def update_error_message(self, message):
         # pass the error down to the simulation results text box
-        self.simulation_results_text_box.update_error_message(message)
+        self.results_table.update_error_message(message)
 
 
-class SimulationResultsTable(ResultsTable):
+class MultiOverviewTable(OverviewTable):
     """Widget that houses the numerical results table."""
     def __init__(self):
         super().__init__()

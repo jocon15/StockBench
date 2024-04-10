@@ -1,78 +1,15 @@
-import os
-import sys
-
-from PyQt6.QtWidgets import QVBoxLayout, QGridLayout, QHBoxLayout, QLabel
-
-# current directory (peripherals)
-current = os.path.dirname(os.path.realpath(__file__))
-
-# parent filepath (src)
-parent = os.path.dirname(current)
-
-# add the parent (src) to path
-sys.path.append(parent)
-
-from StockBench.display.display import Display
-from StockBench.gui.windows.results import SimulationResultsWindow, ResultsFrame, ResultsTable
-from StockBench.gui.windows.singular.singular_rules_tab import SingularRulesTab
+from PyQt6.QtWidgets import QGridLayout, QHBoxLayout, QLabel
+from StockBench.gui.windows.overview_tab import OverviewTab, OverviewTable
 
 
-class SingularResultsWindow(SimulationResultsWindow):
-    """Window that holds the progress bar and the results box."""
-    def __init__(self, worker, simulator, progress_observer, initial_balance):
-        super().__init__(worker, simulator, progress_observer, initial_balance)
-        # get set by caller (MainWindow) after construction but before .show()
-        self.symbol = None
-
-        # define layout type
-        self.layout = QVBoxLayout()
-
-        # progress bar
-        self.layout.addWidget(self.progress_bar)
-
-        # simulation results frame (gets added to layout via tab widget
-        self.results_frame = SingularResultsFrame()
-
-        # tab widget
-        self.tab_widget.addTab(self.results_frame, "Overview")
-        self.tab_widget.addTab(SingularRulesTab('buy'), "Buy Rules (beta)")
-        self.tab_widget.addTab(SingularRulesTab('sell'), "Sell Rules (beta)")
-        self.layout.addWidget(self.tab_widget)
-
-        # apply the layout to the window
-        self.setLayout(self.layout)
-
-    def run_simulation(self) -> dict:
-        # load the strategy into the simulator
-        if self.logging:
-            self.simulator.enable_logging()
-        if self.reporting:
-            self.simulator.enable_reporting()
-        self.simulator.load_strategy(self.strategy)
-        if self.unique_chart_saving:
-            save_option = Display.UNIQUE_SAVE
-        else:
-            save_option = Display.TEMP_SAVE
-        try:
-            return self.simulator.run(self.symbol, show_chart=False, save_option=save_option,
-                                      progress_observer=self.progress_observer)
-        except ValueError as e:
-            # pass the error to the simulation results box
-            self.results_frame.update_error_message(f'{e}')
-            return {}
-
-    def render_updated_data(self, simulation_results: dict):
-        self.results_frame.render_data(simulation_results)
-
-
-class SingularResultsFrame(ResultsFrame):
+class SingularOverviewTab(OverviewTab):
     """Widget that houses the simulation results box."""
 
     def __init__(self):
         super().__init__()
         self.layout = QHBoxLayout()
 
-        self.results_table = SingularResultsTable()
+        self.results_table = SingularOverviewTable()
         self.layout.addWidget(self.results_table)
         self.results_table.setMaximumWidth(300)
         self.results_table.setMaximumHeight(800)
@@ -92,8 +29,8 @@ class SingularResultsFrame(ResultsFrame):
         self.results_table.update_error_message(message)
 
 
-class SingularResultsTable(ResultsTable):
-    """"""
+class SingularOverviewTable(OverviewTable):
+    """Widget for numeric overview data."""
     def __init__(self):
         super().__init__()
         # define the layout

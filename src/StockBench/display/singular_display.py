@@ -112,3 +112,59 @@ class SingularDisplay(Display):
         # perform and saving or showing (returns saved filepath)
         return self.handle_save_chart(formatted_fig, show, save_option,
                                       'temp_chart', f'figure_{symbol}')
+
+    def chart_buy_rules_analysis(self, positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
+        rows = 1
+        cols = 1
+
+        chart_list = [[{"type": "bar"}]]
+        chart_titles = ('Acquisition count per rule',)
+
+        # Parent Plot
+        fig = make_subplots(rows=rows,
+                            cols=cols,
+                            shared_xaxes=True,
+                            vertical_spacing=0.15,
+                            horizontal_spacing=0.05,
+                            specs=chart_list,
+                            subplot_titles=chart_titles)
+
+        fig.add_trace(Display.buy_rule_count_bar(positions))
+
+        # set the layout
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, showlegend=False)
+
+        # format the chart (remove plotly white border)
+        formatted_fig = Display.format_chart(fig)
+
+        # perform and saving or showing (returns saved filepath)
+        return self.handle_save_chart(formatted_fig, show, save_option,
+                                      'temp_buy_chart', f'{symbol}_buy_rules')
+
+    def chart_sell_rules_analysis(self, positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
+        rows = 1
+        cols = 1
+
+        chart_list = [[{"type": "bar"}]]
+        chart_titles = ('Acquisition count per rule',)
+
+        # Parent Plot
+        fig = make_subplots(rows=rows,
+                            cols=cols,
+                            shared_xaxes=True,
+                            vertical_spacing=0.15,
+                            horizontal_spacing=0.05,
+                            specs=chart_list,
+                            subplot_titles=chart_titles)
+
+        fig.add_trace(Display.sell_rule_count_bar(positions))
+
+        # set the layout
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, showlegend=False)
+
+        # format the chart (remove plotly white border)
+        formatted_fig = Display.format_chart(fig)
+
+        # perform and saving or showing (returns saved filepath)
+        return self.handle_save_chart(formatted_fig, show, save_option,
+                                      'temp_sell_chart', f'{symbol}_se;;_rules')

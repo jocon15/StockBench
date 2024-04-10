@@ -67,7 +67,7 @@ class MultipleDisplay(Display):
                             specs=chart_list,
                             subplot_titles=chart_titles)
 
-        fig.add_trace(MultipleDisplay.buy_rule_count_bar(positions))
+        fig.add_trace(Display.buy_rule_count_bar(positions))
 
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, showlegend=False)

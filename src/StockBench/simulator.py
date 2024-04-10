@@ -353,9 +353,10 @@ class Simulator:
             # create the display object
             display = SingularDisplay(self.__indicators.values())
             overview_chart_filepath = display.chart_overview(chopped_temp_df, symbol, show_chart, save_option)
-            # FIXME: implement charting methods
-            #   buy_rule_analysis_chart_filepath = display.chart_buy_rule_analysis()
-            #   sell_rule_analysis_chart_filepath = display.chart_sell_rule_analysis()
+            buy_rule_analysis_chart_filepath = display.chart_buy_rules_analysis(
+                self.__multiple_simulation_position_archive, symbol, show_chart, save_option)
+            sell_rule_analysis_chart_filepath = display.chart_sell_rules_analysis(
+                self.__multiple_simulation_position_archive, symbol, show_chart, save_option)
 
         return {
             'symbol': symbol,

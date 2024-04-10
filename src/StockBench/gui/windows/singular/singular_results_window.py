@@ -21,10 +21,14 @@ class SingularResultsWindow(SimulationResultsWindow):
         # simulation results frame (gets added to layout via tab widget
         self.results_frame = SingularOverviewTab()
 
+        # buy and sell rules analysis tabs (gets added to layout via tab widget)
+        self.buy_rules_tab = SingularRulesTab('buy')
+        self.sell_rules_tab = SingularRulesTab('sell')
+
         # tab widget
         self.tab_widget.addTab(self.results_frame, "Overview")
-        self.tab_widget.addTab(SingularRulesTab('buy'), "Buy Rules (beta)")
-        self.tab_widget.addTab(SingularRulesTab('sell'), "Sell Rules (beta)")
+        self.tab_widget.addTab(self.buy_rules_tab, "Buy Rules (beta)")
+        self.tab_widget.addTab(self.sell_rules_tab, "Sell Rules (beta)")
         self.layout.addWidget(self.tab_widget)
 
         # apply the layout to the window
@@ -51,3 +55,5 @@ class SingularResultsWindow(SimulationResultsWindow):
 
     def render_updated_data(self, simulation_results: dict):
         self.results_frame.render_data(simulation_results)
+        self.buy_rules_tab.render_data(simulation_results)
+        self.sell_rules_tab.render_data(simulation_results)

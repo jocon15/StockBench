@@ -14,6 +14,7 @@ class Display:
     UNIQUE_SAVE = 2
 
     def handle_save_chart(self, formatted_fig, show, save_option, temp_filename, unique_prefix) -> str:
+        """andle save options for charts"""
         if save_option == Display.TEMP_SAVE:
             # save chart as temporary file - will be overwritten by any new chart
             chart_filepath = self.save_chart(formatted_fig, f'{temp_filename}.html')
@@ -72,22 +73,7 @@ class Display:
     @staticmethod
     def buy_rule_count_bar(positions):
         """Bar chart for the number of trades made for each buy rule"""
-        # [['SMA>20', 12], [<rule>, <count>]]
-        rule_counts = []  # list of tuples
-        for position in positions:
-            match_found = False
-            for element in rule_counts:
-                if position.get_buy_rule() == element[0]:
-                    match_found = True
-                    element[1] = element[1] + 1
-                    break
-            if not match_found:
-                # create new rule count tuple
-                rule_counts.append([position.get_buy_rule(), 1])
-
-        # convert the list into respective lists for the df
-        rules_list = [x[0] for x in rule_counts]
-        counts_list = [x[1] for x in rule_counts]
+        rules_list, counts_list = Display.__get_rules_count_lists(positions, 'buy')
 
         # create df and add values
         df = pd.DataFrame()
@@ -102,23 +88,8 @@ class Display:
 
     @staticmethod
     def sell_rule_count_bar(positions):
-        """Bar chart for the number of trades made for each buy rule"""
-        # [['SMA>20', 12], [<rule>, <count>]]
-        rule_counts = []  # list of tuples
-        for position in positions:
-            match_found = False
-            for element in rule_counts:
-                if position.get_sell_rule() == element[0]:
-                    match_found = True
-                    element[1] = element[1] + 1
-                    break
-            if not match_found:
-                # create new rule count tuple
-                rule_counts.append([position.get_sell_rule(), 1])
-
-        # convert the list into respective lists for the df
-        rules_list = [x[0] for x in rule_counts]
-        counts_list = [x[1] for x in rule_counts]
+        """Bar chart for the number of trades made for each buy rule."""
+        rules_list, counts_list = Display.__get_rules_count_lists(positions, 'sell')
 
         # create df and add values
         df = pd.DataFrame()
@@ -130,3 +101,35 @@ class Display:
             x=df['Rule'],
             y=df['Count'],
             marker=dict(color=OFF_BLUE))
+
+    @staticmethod
+    def __get_rules_count_lists(positions, side) -> tuple:
+        """Counts the number of positions that were triggered by each rule
+
+        return:
+            tuple: (rules list, counts list)
+
+        example return:
+            (['SMA20>0', 'RSI>30'], [12, 35])
+        """
+        rule_counts = []  # list of tuples
+        for position in positions:
+            match_found = False
+            if side == 'buy':
+                rule = position.get_buy_rule()
+            else:
+                rule = position.get_sell_rule()
+            for element in rule_counts:
+                if rule == element[0]:
+                    match_found = True
+                    element[1] = element[1] + 1
+                    break
+            if not match_found:
+                # create new rule count tuple
+                rule_counts.append([rule, 1])
+
+        # convert the list into respective lists for the df
+        rules_list = [x[0] for x in rule_counts]
+        counts_list = [x[1] for x in rule_counts]
+
+        return rules_list, counts_list

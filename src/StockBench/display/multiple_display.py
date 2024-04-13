@@ -83,7 +83,7 @@ class MultipleDisplay(Display):
         cols = 1
 
         chart_list = [[{"type": "bar"}]]
-        chart_titles = ('Acquisition count per rule',)
+        chart_titles = ('Liquidation count per rule',)
 
         # Parent Plot
         fig = make_subplots(rows=rows,

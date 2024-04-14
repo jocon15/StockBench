@@ -11,8 +11,8 @@ from StockBench.broker.broker import Broker
 from StockBench.export.export import Exporter
 from StockBench.display.display import Display
 from StockBench.position.position import Position
-from StockBench.display.singular_display import SingularDisplay
-from StockBench.display.multiple_display import MultipleDisplay
+from StockBench.display.singular.singular_display import SingularDisplay
+from StockBench.display.multi.multiple_display import MultipleDisplay
 from StockBench.account.user_account import UserAccount
 from StockBench.analysis.analyzer import SimulationAnalyzer
 from StockBench.trigger.trigger_manager import TriggerManager
@@ -218,7 +218,7 @@ class Simulator:
         pbar = None
         if not self.__running_as_exe:
             # tqdm only works if running as python file
-            tqdm_increment = 100.0 / len(symbols)
+            tqdm_increment = round(100.0 / len(symbols), 2)
             pbar = tqdm(total=100)
 
         # simulate each symbol
@@ -354,9 +354,9 @@ class Simulator:
             display = SingularDisplay(self.__indicators.values())
             overview_chart_filepath = display.chart_overview(chopped_temp_df, symbol, show_chart, save_option)
             buy_rule_analysis_chart_filepath = display.chart_buy_rules_analysis(
-                self.__multiple_simulation_position_archive, symbol, show_chart, save_option)
+                self.__single_simulation_position_archive, symbol, show_chart, save_option)
             sell_rule_analysis_chart_filepath = display.chart_sell_rules_analysis(
-                self.__multiple_simulation_position_archive, symbol, show_chart, save_option)
+                self.__single_simulation_position_archive, symbol, show_chart, save_option)
 
         return {
             'symbol': symbol,

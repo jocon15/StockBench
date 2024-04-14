@@ -1,4 +1,5 @@
 import os
+import statistics
 import pandas as pd
 import plotly.offline as offline
 from .display_constants import *
@@ -17,36 +18,16 @@ class Display:
         """andle save options for charts"""
         if save_option == Display.TEMP_SAVE:
             # save chart as temporary file - will be overwritten by any new chart
-            chart_filepath = self.save_chart(formatted_fig, f'{temp_filename}.html')
+            chart_filepath = self.__save_chart(formatted_fig, f'{temp_filename}.html')
         elif save_option == Display.UNIQUE_SAVE:
             # save chart as unique file for persistent saving
-            chart_filepath = self.save_chart(formatted_fig, f'{unique_prefix}_{datetime_timestamp()}.html')
+            chart_filepath = self.__save_chart(formatted_fig, f'{unique_prefix}_{datetime_timestamp()}.html')
         else:
             # no chart was saved
             chart_filepath = ''
 
         if show:
             formatted_fig.show()
-
-        return chart_filepath
-
-    @staticmethod
-    def save_chart(figure, filename) -> str:
-        """Saves a chart to a file.
-
-        Args:
-            figure(str): The html string of the chart.
-            filename(str): The name of the file to save as.
-
-        Return:
-            (str): The filepath of the saved chart.
-        """
-        chart_filepath = os.path.join('figures', filename)
-        # make the directories if they don't already exist
-        os.makedirs(os.path.dirname(chart_filepath), exist_ok=True)
-
-        with open(chart_filepath, 'w', encoding="utf-8") as file:
-            file.write(figure)
 
         return chart_filepath
 
@@ -71,9 +52,16 @@ class Display:
         return formatted_fig
 
     @staticmethod
-    def buy_rule_count_bar(positions):
-        """Bar chart for the number of trades made for each buy rule"""
-        rules_list, counts_list = Display.__get_rules_count_lists(positions, 'buy')
+    def rule_count_bar(positions, side):
+        """Build bar chart for the number of trades made for each buy rule."""
+        stats = Display.__get_rule_statistics(positions, side)
+
+        # extract the data from the stats dict
+        rules_list = []
+        counts_list = []
+        for key in stats.keys():
+            rules_list.append(key)
+            counts_list.append(stats[key]['count'])
 
         # create df and add values
         df = pd.DataFrame()
@@ -87,49 +75,110 @@ class Display:
             marker=dict(color=OFF_BLUE))
 
     @staticmethod
-    def sell_rule_count_bar(positions):
-        """Bar chart for the number of trades made for each buy rule."""
-        rules_list, counts_list = Display.__get_rules_count_lists(positions, 'sell')
+    def rule_stats_traces(positions, side) -> list:
+        stats = Display.__get_rule_statistics(positions, side)
+
+        # extract the data from the stats dict
+        rules_list = []
+        avg_list = []
+        med_list = []
+        stddev_list = []
+        for key in stats.keys():
+            rules_list.append(key)
+            avg_list.append(stats[key]['average_plpc'])
+            med_list.append(stats[key]['median_plpc'])
+            stddev_list.append(stats[key]['stddev_plpc'])
 
         # create df and add values
         df = pd.DataFrame()
         df['Rule'] = rules_list
-        df['Count'] = counts_list
+        df['Avg'] = avg_list
+        df['Med'] = med_list
+        df['Stddev'] = stddev_list
 
         # build and return chart
-        return plotter.Bar(
-            x=df['Rule'],
-            y=df['Count'],
-            marker=dict(color=OFF_BLUE))
+        return [plotter.Bar(x=df['Rule'], y=df['Avg'], marker=dict(color=AVG_COLOR)),
+                plotter.Bar(x=df['Rule'], y=df['Med'], marker=dict(color=MED_COLOR)),
+                plotter.Bar(x=df['Rule'], y=df['Stddev'], marker=dict(color=STDDEV_COLOR))]
 
     @staticmethod
-    def __get_rules_count_lists(positions, side) -> tuple:
-        """Counts the number of positions that were triggered by each rule
-
-        return:
-            tuple: (rules list, counts list)
-
-        example return:
-            (['SMA20>0', 'RSI>30'], [12, 35])
-        """
-        rule_counts = []  # list of tuples
+    def __get_rule_statistics(positions, side) -> dict:
+        """Builds a dict of statistics for each rule based for the given side."""
+        rule_stats = {}
         for position in positions:
-            match_found = False
-            if side == 'buy':
-                rule = position.get_buy_rule()
-            else:
-                rule = position.get_sell_rule()
-            for element in rule_counts:
-                if rule == element[0]:
-                    match_found = True
-                    element[1] = element[1] + 1
-                    break
-            if not match_found:
-                # create new rule count tuple
-                rule_counts.append([rule, 1])
+            rule = Display.__get_rule_from_side(position, side)
 
-        # convert the list into respective lists for the df
-        rules_list = [x[0] for x in rule_counts]
-        counts_list = [x[1] for x in rule_counts]
+            # create a new key : value for the rule
+            rule_stats[rule] = {}
 
-        return rules_list, counts_list
+            # FIXME: these calls may need to be multi-processed so it is not as slow for longer simulations
+            # add statistics to the rule here
+            rule_stats[rule]['count'] = Display.__calculate_rule_count(positions, side, rule)
+            rule_stats[rule]['average_plpc'] = Display.__calculate_average_plpc(positions, side, rule)
+            rule_stats[rule]['median_plpc'] = Display.__calculate_median_plpc(positions, side, rule)
+            rule_stats[rule]['stddev_plpc'] = Display.__calculate_stddev_plpc(positions, side, rule)
+        return rule_stats
+
+    @staticmethod
+    def __calculate_rule_count(positions, side, rule) -> int:
+        """Counts the number of positions that were triggered by the given rule."""
+        count = 0
+        for position in positions:
+            if Display.__get_rule_from_side(position, side) == rule:
+                count += 1
+        return count
+
+    @staticmethod
+    def __calculate_average_plpc(positions, side, rule) -> float:
+        """Calculates the average profit/loss percent of the positions triggers by a given rule."""
+        plpc_values = []
+        for position in positions:
+            if Display.__get_rule_from_side(position, side) == rule:
+                plpc_values.append(position.lifetime_profit_loss_percent())
+        return statistics.mean(plpc_values)
+
+    @staticmethod
+    def __calculate_median_plpc(positions, side, rule) -> float:
+        """Calculates the median profit/loss percent of the positions triggers by a given rule."""
+        plpc_values = []
+        for position in positions:
+            if Display.__get_rule_from_side(position, side) == rule:
+                plpc_values.append(position.lifetime_profit_loss_percent())
+        return statistics.median(plpc_values)
+
+    @staticmethod
+    def __calculate_stddev_plpc(positions, side, rule) -> float:
+        """Calculates the stddev (population) profit/loss percent of the positions triggers by a given rule."""
+        plpc_values = []
+        for position in positions:
+            if Display.__get_rule_from_side(position, side) == rule:
+                plpc_values.append(position.lifetime_profit_loss_percent())
+        return statistics.pstdev(plpc_values)
+
+    @staticmethod
+    def __get_rule_from_side(position, side):
+        """Returns the correct rule used to trigger a position based on side."""
+        if side == 'buy':
+            return position.get_buy_rule()
+        else:
+            return position.get_sell_rule()
+
+    @staticmethod
+    def __save_chart(figure, filename) -> str:
+        """Saves a chart to a file.
+
+        Args:
+            figure(str): The html string of the chart.
+            filename(str): The name of the file to save as.
+
+        Return:
+            (str): The filepath of the saved chart.
+        """
+        chart_filepath = os.path.join('figures', filename)
+        # make the directories if they don't already exist
+        os.makedirs(os.path.dirname(chart_filepath), exist_ok=True)
+
+        with open(chart_filepath, 'w', encoding="utf-8") as file:
+            file.write(figure)
+
+        return chart_filepath

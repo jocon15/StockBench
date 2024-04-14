@@ -17,3 +17,8 @@ BUY_SELL_DOTS_WIDTH = 4
 HORIZONTAL_TRIGGER_YELLOW = "#fcc203"
 BUY_COLOR = "#fcad03"
 SELL_COLOR = "#03fcd3"
+
+# ======= Rule Analysis ======================
+AVG_COLOR = '#0ec934'
+MED_COLOR = '#c90e14'
+STDDEV_COLOR = '#c9b00e'

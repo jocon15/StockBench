@@ -1,6 +1,6 @@
 import statistics
 import pandas as pd
-from .display_constants import *
+from StockBench.display.display_constants import *
 import plotly.graph_objects as plotter
 from plotly.subplots import make_subplots
 from StockBench.display.display import Display
@@ -52,11 +52,11 @@ class MultipleDisplay(Display):
         return self.handle_save_chart(formatted_fig, show, save_option, 'temp_chart', 'multi')
 
     def chart_buy_rules_analysis(self, positions, show=True, save_option=Display.TEMP_SAVE) -> str:
-        rows = 1
+        rows = 2
         cols = 1
 
-        chart_list = [[{"type": "bar"}]]
-        chart_titles = ('Acquisition count per rule',)
+        chart_list = [[{"type": "bar"}], [{"type": "bar"}]]
+        chart_titles = ('Acquisition Count per Rule', 'Acquisition Profit/Loss % Stats per Rule')
 
         # Parent Plot
         fig = make_subplots(rows=rows,
@@ -67,7 +67,14 @@ class MultipleDisplay(Display):
                             specs=chart_list,
                             subplot_titles=chart_titles)
 
-        fig.add_trace(Display.buy_rule_count_bar(positions))
+        # rule counts chart
+        fig.add_trace(Display.rule_count_bar(positions, 'buy'), 1, 1)
+
+        # rule plpc stats chart (overlayed charts)
+        rule_stats_traces = Display.rule_stats_traces(positions, 'buy')
+        fig.add_trace(rule_stats_traces[0], 2, 1)
+        fig.add_trace(rule_stats_traces[1], 2, 1)
+        fig.add_trace(rule_stats_traces[2], 2, 1)
 
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, showlegend=False)
@@ -79,11 +86,11 @@ class MultipleDisplay(Display):
         return self.handle_save_chart(formatted_fig, show, save_option, 'temp_buy_chart', 'multi_buy_rules')
 
     def chart_sell_rules_analysis(self, positions, show=True, save_option=Display.TEMP_SAVE) -> str:
-        rows = 1
+        rows = 2
         cols = 1
 
-        chart_list = [[{"type": "bar"}]]
-        chart_titles = ('Liquidation count per rule',)
+        chart_list = [[{"type": "bar"}], [{"type": "bar"}]]
+        chart_titles = ('Liquidation Count per Rule', 'Acquisition Profit/Loss % Stats per Rule')
 
         # Parent Plot
         fig = make_subplots(rows=rows,
@@ -94,7 +101,14 @@ class MultipleDisplay(Display):
                             specs=chart_list,
                             subplot_titles=chart_titles)
 
-        fig.add_trace(MultipleDisplay.sell_rule_count_bar(positions))
+        # rule counts chart
+        fig.add_trace(Display.rule_count_bar(positions, 'sell'), 1, 1)
+
+        # rule plpc stats chart (overlayed charts)
+        rule_stats_traces = Display.rule_stats_traces(positions, 'sell')
+        fig.add_trace(rule_stats_traces[0], 2, 1)
+        fig.add_trace(rule_stats_traces[1], 2, 1)
+        fig.add_trace(rule_stats_traces[2], 2, 1)
 
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, showlegend=False)

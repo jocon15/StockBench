@@ -114,11 +114,11 @@ class SingularDisplay(Display):
                                       'temp_chart', f'figure_{symbol}')
 
     def chart_buy_rules_analysis(self, positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
-        rows = 1
+        rows = 2
         cols = 1
 
-        chart_list = [[{"type": "bar"}]]
-        chart_titles = ('Acquisition count per rule',)
+        chart_list = [[{"type": "bar"}], [{"type": "bar"}]]
+        chart_titles = ('Acquisition Count per Rule', 'Acquisition Profit/Loss % Stats per Rule')
 
         # Parent Plot
         fig = make_subplots(rows=rows,
@@ -129,7 +129,14 @@ class SingularDisplay(Display):
                             specs=chart_list,
                             subplot_titles=chart_titles)
 
-        fig.add_trace(Display.buy_rule_count_bar(positions))
+        # rule counts chart
+        fig.add_trace(Display.rule_count_bar(positions, 'buy'), 1, 1)
+
+        # rule plpc stats chart (overlayed charts)
+        rule_stats_traces = Display.rule_stats_traces(positions, 'buy')
+        fig.add_trace(rule_stats_traces[0], 2, 1)
+        fig.add_trace(rule_stats_traces[1], 2, 1)
+        fig.add_trace(rule_stats_traces[2], 2, 1)
 
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, showlegend=False)
@@ -142,11 +149,11 @@ class SingularDisplay(Display):
                                       'temp_buy_chart', f'{symbol}_buy_rules')
 
     def chart_sell_rules_analysis(self, positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
-        rows = 1
+        rows = 2
         cols = 1
 
-        chart_list = [[{"type": "bar"}]]
-        chart_titles = ('Liquidation count per rule',)
+        chart_list = [[{"type": "bar"}], [{"type": "bar"}]]
+        chart_titles = ('Liquidation Count per Rule', 'Acquisition Profit/Loss % Stats per Rule')
 
         # Parent Plot
         fig = make_subplots(rows=rows,
@@ -157,7 +164,14 @@ class SingularDisplay(Display):
                             specs=chart_list,
                             subplot_titles=chart_titles)
 
-        fig.add_trace(Display.sell_rule_count_bar(positions))
+        # rule counts chart
+        fig.add_trace(Display.rule_count_bar(positions, 'sell'), 1, 1)
+
+        # rule plpc stats chart (overlayed charts)
+        rule_stats_traces = Display.rule_stats_traces(positions, 'sell')
+        fig.add_trace(rule_stats_traces[0], 2, 1)
+        fig.add_trace(rule_stats_traces[1], 2, 1)
+        fig.add_trace(rule_stats_traces[2], 2, 1)
 
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, showlegend=False)

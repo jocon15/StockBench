@@ -6,7 +6,7 @@ log = logging.getLogger()
 
 
 class SingularDisplay(Display):
-    """This class defines a display object.
+    """This class defines a display object for a simulation where a single stock was simulated.
 
     The display object is used as an API for the simulator to chart the data. The display will use the simulation
     data to establish which subplots need to be added to the singular chart. The subplots abstract all of that

@@ -7,7 +7,7 @@ from StockBench.display.display import Display
 
 
 class MultipleDisplay(Display):
-
+    """This class defines a display object for a simulation where multiple stocks were simulated."""
     def __init__(self):
         self.__data = None
 

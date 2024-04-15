@@ -288,36 +288,52 @@ class Simulator:
     def __simulate_day(self, current_day_index, buy_mode, position, progress_observer, increment) -> tuple:
         """Core simulation logic for simulating 1 day."""
         log.debug(f'Current day index: {current_day_index}')
-        if buy_mode:
-            was_triggered, rule = self.__trigger_manager.check_triggers_by_side(self.BUY_SIDE, self.__data_manager,
-                                                                                current_day_index, None)
-            if was_triggered:
-                # create a position
-                position = self.__create_position(current_day_index, rule)
-                # switch to selling
-                buy_mode = False
-        else:
-            # sell mode
-            was_triggered, rule = self.__trigger_manager.check_triggers_by_side(self.SELL_SIDE, self.__data_manager,
-                                                                                current_day_index, position)
-            if was_triggered:
-                # close the position
-                self.__liquidate_position(position, current_day_index, rule)
-                # clear the stored position
-                position = None
-                # switch to buying
-                buy_mode = True
-            elif current_day_index == (self.__data_manager.get_data_length() - 1):
+
+        if current_day_index == self.__data_manager.get_data_length() - 1:
+            # check that position still exists - if so sell
+            if position:
                 # the position is still open at the end of the simulation
                 log.info('Position closed due to end of simulation reached')
-                # check that position still exists - if so sell
-                if position:
+                # close the position
+                self.__liquidate_position(position, current_day_index, 'end of simulation window')
+        else:
+            # current day is not the end of the simulation (free to buy and sell)
+            if buy_mode:
+                was_triggered, rule = self.__trigger_manager.check_triggers_by_side(self.BUY_SIDE, self.__data_manager,
+                                                                                    current_day_index, None)
+                if was_triggered:
+                    # create a position
+                    position = self.__create_position(current_day_index, rule)
+                    # switch to selling
+                    buy_mode = False
+            else:
+                # sell mode
+                was_triggered, rule = self.__trigger_manager.check_triggers_by_side(self.SELL_SIDE, self.__data_manager,
+                                                                                    current_day_index, position)
+                log.info(current_day_index)
+                num = self.__data_manager.get_data_length() - 1
+                log.info(num)
+                if current_day_index == 517:
+                    print(2)
+                if was_triggered:
                     # close the position
                     self.__liquidate_position(position, current_day_index, rule)
+                    # clear the stored position
+                    position = None
+                    # switch to buying
+                    buy_mode = True
 
-        # update the progress observer by 1 increment
-        if progress_observer is not None:
-            progress_observer.update_progress(increment)
+                elif current_day_index == self.__data_manager.get_data_length() - 1:
+                    # the position is still open at the end of the simulation
+                    log.info('Position closed due to end of simulation reached')
+                    # check that position still exists - if so sell
+                    if position:
+                        # close the position
+                        self.__liquidate_position(position, current_day_index, rule)
+
+            # update the progress observer by 1 increment
+            if progress_observer is not None:
+                progress_observer.update_progress(increment)
 
         return buy_mode, position
 
@@ -498,19 +514,20 @@ class Simulator:
         log.info('Creating the position...')
 
         # add the buying price to the DataFrame
-        _buy_price = self.__data_manager.get_data_point(self.__data_manager.CLOSE, current_day_index)
+        buy_price = self.__data_manager.get_data_point(self.__data_manager.CLOSE, current_day_index)
 
         # calculate the withdrawal amount (nearest whole share - floor direction)
-        share_count = float(math.floor(self.__account.get_balance() / _buy_price))
-        withdraw_amount = round(_buy_price * share_count, 3)
+        share_count = float(math.floor(self.__account.get_balance() / buy_price))
 
-        # withdraw the money from the account
-        self.__account.withdraw(withdraw_amount)
+        # create the new position
+        new_position = Position(buy_price, share_count, current_day_index, rule)
 
         log.info('Position created successfully')
 
-        # build and return the new position
-        return Position(_buy_price, share_count, current_day_index, rule)
+        # withdraw the money from the account
+        self.__account.withdraw(round(buy_price * share_count, 3))
+
+        return new_position
 
     def __liquidate_position(self, position: Position, current_day_index: int, rule: str):
         """Closes the position and updates the account.
@@ -523,21 +540,18 @@ class Simulator:
         log.info('Closing the position...')
 
         # get the cosing price
-        _sell_price = float(self.__data_manager.get_data_point(self.__data_manager.CLOSE, current_day_index))
+        sell_price = float(self.__data_manager.get_data_point(self.__data_manager.CLOSE, current_day_index))
 
         # close the position
-        position.close_position(_sell_price, current_day_index, rule)
+        position.close_position(sell_price, current_day_index, rule)
 
         # add the position to the archive
         self.__single_simulation_position_archive.append(position)
 
-        # calculate the deposit amount
-        deposit_amount = round(_sell_price * position.get_share_count(), 3)
-
         log.info('Position closed successfully')
 
         # deposit the value of the position to the account
-        self.__account.deposit(deposit_amount)
+        self.__account.deposit(round(sell_price * position.get_share_count(), 3))
 
     def __add_positions_to_data(self):
         """Add the position data to the simulation data."""

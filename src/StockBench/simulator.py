@@ -365,6 +365,7 @@ class Simulator:
         overview_chart_filepath = ''
         buy_rule_analysis_chart_filepath = ''
         sell_rule_analysis_chart_filepath = ''
+        position_analysis_chart_filepath = ''
         if show_chart or save_option:
             # create the display object
             display = SingularDisplay(self.__indicators.values())
@@ -372,6 +373,8 @@ class Simulator:
             buy_rule_analysis_chart_filepath = display.chart_buy_rules_analysis(
                 self.__single_simulation_position_archive, symbol, show_chart, save_option)
             sell_rule_analysis_chart_filepath = display.chart_sell_rules_analysis(
+                self.__single_simulation_position_archive, symbol, show_chart, save_option)
+            position_analysis_chart_filepath = display.chart_positions_analysis(
                 self.__single_simulation_position_archive, symbol, show_chart, save_option)
 
         return {
@@ -386,6 +389,7 @@ class Simulator:
             'account_value': self.__account.get_balance(),
             'buy_rule_analysis_chart_filepath': buy_rule_analysis_chart_filepath,
             'sell_rule_analysis_chart_filepath': sell_rule_analysis_chart_filepath,
+            'position_analysis_chart_filepath': position_analysis_chart_filepath,
             'overview_chart_filepath': overview_chart_filepath
         }
 
@@ -417,6 +421,7 @@ class Simulator:
         overview_chart_filepath = ''
         buy_rule_analysis_chart_filepath = ''
         sell_rule_analysis_chart_filepath = ''
+        position_analysis_chart_filepath = ''
         if show_chart or save_option:
             # create the display object
             display = MultipleDisplay()
@@ -426,6 +431,8 @@ class Simulator:
             buy_rule_analysis_chart_filepath = display.chart_buy_rules_analysis(
                 self.__multiple_simulation_position_archive, show_chart, save_option)
             sell_rule_analysis_chart_filepath = display.chart_sell_rules_analysis(
+                self.__multiple_simulation_position_archive, show_chart, save_option)
+            position_analysis_chart_filepath = display.chart_positions_analysis(
                 self.__multiple_simulation_position_archive, show_chart, save_option)
 
         end_time = perf_counter()
@@ -441,6 +448,7 @@ class Simulator:
             'standard_profit_loss_deviation': analyzer.standard_profit_loss_deviation(),
             'buy_rule_analysis_chart_filepath': buy_rule_analysis_chart_filepath,
             'sell_rule_analysis_chart_filepath': sell_rule_analysis_chart_filepath,
+            'position_analysis_chart_filepath': position_analysis_chart_filepath,
             'overview_chart_filepath': overview_chart_filepath
         }
 

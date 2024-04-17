@@ -1,5 +1,4 @@
 import os
-import sys
 from abc import abstractmethod
 
 from PyQt6.QtWidgets import QWidget, QProgressBar, QTabWidget

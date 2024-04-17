@@ -106,11 +106,14 @@ class SingularDisplay(Display):
         fig.update_layout(template='plotly_dark', title=f'{window_size} day simulation for {symbol}',
                           xaxis_title='Date', yaxis_title='Price (USD)', xaxis_rangeslider_visible=False)
 
+        if show:
+            fig.show()
+
         # format the chart (remove plotly white border)
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, show, save_option,
+        return self.handle_save_chart(formatted_fig, save_option,
                                       'temp_chart', f'figure_{symbol}')
 
     def chart_buy_rules_analysis(self, positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
@@ -141,11 +144,14 @@ class SingularDisplay(Display):
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, showlegend=False)
 
+        if show:
+            fig.show()
+
         # format the chart (remove plotly white border)
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, show, save_option,
+        return self.handle_save_chart(formatted_fig, save_option,
                                       'temp_buy_chart', f'{symbol}_buy_rules')
 
     def chart_sell_rules_analysis(self, positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
@@ -167,7 +173,7 @@ class SingularDisplay(Display):
         # rule counts chart
         fig.add_trace(Display.rule_count_bar(positions, 'sell'), 1, 1)
 
-        # rule plpc stats chart (overlayed charts)
+        # rule plpc stats chart (overlayed traces)
         rule_stats_traces = Display.rule_stats_traces(positions, 'sell')
         fig.add_trace(rule_stats_traces[0], 2, 1)
         fig.add_trace(rule_stats_traces[1], 2, 1)
@@ -176,9 +182,49 @@ class SingularDisplay(Display):
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, showlegend=False)
 
+        if show:
+            fig.show()
+
         # format the chart (remove plotly white border)
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, show, save_option,
-                                      'temp_sell_chart', f'{symbol}_se;;_rules')
+        return self.handle_save_chart(formatted_fig, save_option,
+                                      'temp_sell_chart', f'{symbol}_sell_rules')
+
+    def chart_positions_analysis(self, positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
+        rows = 1
+        cols = 1
+
+        chart_list = [[{"type": "bar"}]]
+        chart_titles = ('Total Profit/Loss per Position',)
+
+        # Parent Plot
+        fig = make_subplots(rows=rows,
+                            cols=cols,
+                            shared_xaxes=True,
+                            vertical_spacing=0.15,
+                            horizontal_spacing=0.05,
+                            specs=chart_list,
+                            subplot_titles=chart_titles)
+
+        # positions analysis traces
+        position_analysis_traces = Display.positions_total_pl_bar(positions)
+
+        # position analysis chart (overlayed traces)
+        fig.add_trace(position_analysis_traces[0], 1, 1)
+        fig.add_trace(position_analysis_traces[1], 1, 1)
+        fig.add_trace(position_analysis_traces[2], 1, 1)
+
+        # set the layout
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
+
+        if show:
+            fig.show()
+
+        # format the chart (remove plotly white border)
+        formatted_fig = Display.format_chart(fig)
+
+        # perform and saving or showing (returns saved filepath)
+        return self.handle_save_chart(formatted_fig, save_option,
+                                      'temp_positions_chart', f'{symbol}_positions')

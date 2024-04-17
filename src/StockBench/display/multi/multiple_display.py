@@ -45,11 +45,14 @@ class MultipleDisplay(Display):
         fig.update_layout(template='plotly_dark', title=f'Simulation Results for {len(self.__data)} Symbols',
                           xaxis_rangeslider_visible=False, showlegend=False)
 
+        if show:
+            fig.show()
+
         # format the chart (remove plotly white border)
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, show, save_option, 'temp_chart', 'multi')
+        return self.handle_save_chart(formatted_fig, save_option, 'temp_chart', 'multi')
 
     def chart_buy_rules_analysis(self, positions, show=True, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
@@ -79,11 +82,14 @@ class MultipleDisplay(Display):
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, showlegend=False)
 
+        if show:
+            fig.show()
+
         # format the chart (remove plotly white border)
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, show, save_option, 'temp_buy_chart', 'multi_buy_rules')
+        return self.handle_save_chart(formatted_fig, save_option, 'temp_buy_chart', 'multi_buy_rules')
 
     def chart_sell_rules_analysis(self, positions, show=True, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
@@ -113,12 +119,52 @@ class MultipleDisplay(Display):
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, showlegend=False)
 
+        if show:
+            fig.show()
+
         # format the chart (remove plotly white border)
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, show, save_option,
+        return self.handle_save_chart(formatted_fig, save_option,
                                       'temp_sell_chart', 'multi_sell_rules')
+
+    def chart_positions_analysis(self, positions, show=True, save_option=Display.TEMP_SAVE) -> str:
+        rows = 1
+        cols = 1
+
+        chart_list = [[{"type": "bar"}]]
+        chart_titles = ('Total Profit/Loss per Position',)
+
+        # Parent Plot
+        fig = make_subplots(rows=rows,
+                            cols=cols,
+                            shared_xaxes=True,
+                            vertical_spacing=0.15,
+                            horizontal_spacing=0.05,
+                            specs=chart_list,
+                            subplot_titles=chart_titles)
+
+        # positions analysis traces
+        position_analysis_traces = Display.positions_total_pl_bar(positions)
+
+        # position analysis chart (overlayed traces)
+        fig.add_trace(position_analysis_traces[0], 1, 1)
+        fig.add_trace(position_analysis_traces[1], 1, 1)
+        fig.add_trace(position_analysis_traces[2], 1, 1)
+
+        # set the layout
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
+
+        if show:
+            fig.show()
+
+        # format the chart (remove plotly white border)
+        formatted_fig = Display.format_chart(fig)
+
+        # perform and saving or showing (returns saved filepath)
+        return self.handle_save_chart(formatted_fig, save_option,
+                                      'temp_positions_chart', 'multi_positions')
 
     def __overview_profit_loss_bar(self):
         color_df = pd.DataFrame()

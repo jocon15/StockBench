@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import QFrame, QLabel
 
 
 class OverviewTab(QFrame):
-    """Superclass for a results frame."""
+    """Superclass for an overview tab."""
     LOADING_REL_PATH = os.path.join('resources', 'default', 'chart_loading.html')
     BACKUP_REL_PATH = os.path.join('resources', 'default', 'chart_unavailable.html')
 

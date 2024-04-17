@@ -14,7 +14,7 @@ class Display:
     TEMP_SAVE = 1
     UNIQUE_SAVE = 2
 
-    def handle_save_chart(self, formatted_fig, show, save_option, temp_filename, unique_prefix) -> str:
+    def handle_save_chart(self, formatted_fig, save_option, temp_filename, unique_prefix) -> str:
         """andle save options for charts"""
         if save_option == Display.TEMP_SAVE:
             # save chart as temporary file - will be overwritten by any new chart
@@ -25,9 +25,6 @@ class Display:
         else:
             # no chart was saved
             chart_filepath = ''
-
-        if show:
-            formatted_fig.show()
 
         return chart_filepath
 
@@ -68,7 +65,7 @@ class Display:
         df['Rule'] = rules_list
         df['Count'] = counts_list
 
-        # build and return chart
+        # build and return trace
         return plotter.Bar(
             x=df['Rule'],
             y=df['Count'],
@@ -96,10 +93,29 @@ class Display:
         df['Med'] = med_list
         df['Stddev'] = stddev_list
 
-        # build and return chart
+        # build and return traces
         return [plotter.Bar(x=df['Rule'], y=df['Avg'], marker=dict(color=AVG_COLOR)),
                 plotter.Bar(x=df['Rule'], y=df['Med'], marker=dict(color=MED_COLOR)),
                 plotter.Bar(x=df['Rule'], y=df['Stddev'], marker=dict(color=STDDEV_COLOR))]
+
+    @staticmethod
+    def positions_total_pl_bar(positions):
+        total_pls = []
+        for position in positions:
+            total_pls.append(position.lifetime_profit_loss())
+
+        # calculate mean and median
+        mean = statistics.mean(total_pls)
+        median = statistics.median(total_pls)
+
+        # assemble the values into a list for plotting
+        mean_values = [mean for _ in total_pls]
+        median_values = [median for _ in total_pls]
+
+        # build and return chart
+        return [plotter.Bar(y=total_pls, marker=dict(color=AVG_COLOR)),
+                plotter.Scatter(y=mean_values, marker=dict(color=WHITE)),
+                plotter.Scatter(y=median_values, marker=dict(color=WHITE))]
 
     @staticmethod
     def __get_rule_statistics(positions, side) -> dict:

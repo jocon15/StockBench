@@ -114,6 +114,9 @@ class TriggerManager:
             if was_triggered:
                 break
 
+        if triggered_key == '':
+            raise ValueError(f'Strategy does not have any {side} triggers defined!')
+
         return was_triggered, self.__get_rule_string(side, triggered_key)
 
     def __sort_indicator_trigger_sides(self, indicators: list):

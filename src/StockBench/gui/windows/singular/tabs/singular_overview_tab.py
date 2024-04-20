@@ -11,8 +11,8 @@ class SingularOverviewTab(OverviewTab):
 
         self.results_table = SingularOverviewTable()
         self.layout.addWidget(self.results_table)
-        self.results_table.setMaximumWidth(300)
-        self.results_table.setMaximumHeight(800)
+        self.results_table.setMaximumWidth(230)
+        self.results_table.setMaximumHeight(900)
 
         self.layout.addWidget(self.webView)
 
@@ -36,10 +36,39 @@ class SingularOverviewTable(OverviewTable):
         # define the layout
         self.layout = QGridLayout()
 
-        # results title
+        # parameters title
         row = 1
         label = QLabel()
-        label.setText('Simulation Results')
+        label.setText('Metadata')
+        label.setStyleSheet(self.title_stylesheet)
+        self.layout.addWidget(label, row, 1)
+
+        # symbol title
+        row += 1
+        label = QLabel()
+        label.setText('Symbol')
+        label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(label, row, 1)
+        # elapsed time data label
+        self.symbol_data_label = QLabel()
+        self.symbol_data_label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(self.symbol_data_label, row, 2)
+
+        # trade-able days title
+        row += 1
+        label = QLabel()
+        label.setText('Trade-able Days')
+        label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(label, row, 1)
+        # elapsed time data label
+        self.trade_able_days_data_label = QLabel()
+        self.trade_able_days_data_label.setStyleSheet(self.numeric_results_stylesheet)
+        self.layout.addWidget(self.trade_able_days_data_label, row, 2)
+
+        # results title
+        row += 1
+        label = QLabel()
+        label.setText('Results')
         label.setStyleSheet(self.title_stylesheet)
         self.layout.addWidget(label, row, 1)
 
@@ -143,6 +172,8 @@ class SingularOverviewTable(OverviewTable):
 
     def render_data(self, simulation_results: dict):
         if not self._error_message:
+            self.symbol_data_label.setText(f'{simulation_results["symbol"]}')
+            self.trade_able_days_data_label.setText(f'{simulation_results["trade_able_days"]}')
             self.elapsed_time_data_label.setText(f'{simulation_results["elapsed_time"]} seconds')
             self.trades_made_data_label.setText(f'{simulation_results["trades_made"]}')
             self.effectiveness_data_label.setText(f'{simulation_results["effectiveness"]} %')

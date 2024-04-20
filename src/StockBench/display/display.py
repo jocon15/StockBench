@@ -14,6 +14,11 @@ class Display:
     TEMP_SAVE = 1
     UNIQUE_SAVE = 2
 
+    PLOTLY_CHART_MARGIN_TOP = 50
+    PLOTLY_CHART_MARGIN_BOTTOM = 60
+    PLOTLY_CHART_MARGIN_LEFT = 60
+    PLOTLY_CHART_MARGIN_RIGHT = 100
+
     def handle_save_chart(self, formatted_fig, save_option, temp_filename, unique_prefix) -> str:
         """andle save options for charts"""
         if save_option == Display.TEMP_SAVE:

@@ -106,8 +106,21 @@ class SingularDisplay(Display):
 
         # update the layout
         window_size = len(self.__df['Close'])
-        fig.update_layout(template='plotly_dark', title=f'{window_size} day simulation for {symbol}',
-                          xaxis_rangeslider_visible=False)
+        if save_option != Display.TEMP_SAVE:
+            # non-temp save should show the simulation metadata in the title (uses DEFAULT margin)
+
+            fig.update_layout(template='plotly_dark', title=f'{window_size} day simulation for {symbol}',
+                              xaxis_rangeslider_visible=False)
+        else:
+            # temp save does not need a title because the data is shown elsewhere
+            # setting xaxis_range prevents the buy and sell point traces from changing the chart scale
+            # setting margin overrides plotly's default margin setting
+            fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False,
+                              xaxis_range=(self.__df['Date'][0], self.__df['Date'][window_size-1]),
+                              margin=dict(l=self.PLOTLY_CHART_MARGIN_LEFT,
+                                          r=self.PLOTLY_CHART_MARGIN_RIGHT,
+                                          t=self.PLOTLY_CHART_MARGIN_TOP,
+                                          b=self.PLOTLY_CHART_MARGIN_BOTTOM))
 
         if show:
             fig.show()

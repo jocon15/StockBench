@@ -174,8 +174,7 @@ class Simulator:
         symbol = symbol.upper()
 
         # perform the pre-simulation tasks
-        (total_days, days_in_focus, sim_window_start_day,
-         trade_able_days, increment) = self.__pre_process(symbol, progress_observer)
+        sim_window_start_day, trade_able_days, increment = self.__pre_process(symbol, progress_observer)
 
         log.info(f'Beginning simulation for symbol: {symbol}...')
 
@@ -191,7 +190,7 @@ class Simulator:
 
         log.info('Simulation complete!')
 
-        return self.__post_process(symbol, sim_window_start_day, start_time, show_chart, save_option)
+        return self.__post_process(symbol, trade_able_days, sim_window_start_day, start_time, show_chart, save_option)
 
     def run_multiple(self,
                      symbols: list,
@@ -283,7 +282,7 @@ class Simulator:
                            self.__unix_to_string(self.__end_date_unix), days_in_focus, trade_able_days,
                            self.__account.get_balance())
 
-        return total_days, days_in_focus, sim_window_start_day, trade_able_days, increment
+        return sim_window_start_day, trade_able_days, increment
 
     def __simulate_day(self, current_day_index, buy_mode, position, progress_observer, increment) -> tuple:
         """Core simulation logic for simulating 1 day."""
@@ -337,7 +336,8 @@ class Simulator:
 
         return buy_mode, position
 
-    def __post_process(self, symbol, sim_window_start_day, start_time, show_chart, save_option) -> dict:
+    def __post_process(self, symbol, trade_able_days, sim_window_start_day, start_time, show_chart,
+                       save_option) -> dict:
         """Cleanup and analysis after the simulation."""
         # add the buys and sells to the df
         self.__add_positions_to_data()
@@ -379,6 +379,7 @@ class Simulator:
 
         return {
             'symbol': symbol,
+            'trade_able_days': trade_able_days,
             'elapsed_time': elapsed_time,
             'trades_made': analyzer.total_trades(),
             'effectiveness': analyzer.effectiveness(),

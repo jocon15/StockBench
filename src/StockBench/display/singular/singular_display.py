@@ -13,6 +13,8 @@ class SingularDisplay(Display):
     specific subplots details to make it easier to edit. This API simply aggregates the subplot objects and
     assembles the final parent plot that gets displayed to the user.
     """
+    SUBPLOT_VERTICAL_SPACING = 0.05
+
     def __init__(self, indicators):
         self.__df = None
 
@@ -72,7 +74,8 @@ class SingularDisplay(Display):
         # build the parent plot
         cols = col = 1  # only one col in every row
         rows = len(self.__subplot_objects)
-        fig = make_subplots(rows=rows, cols=cols, shared_xaxes=True, vertical_spacing=0.06, specs=self.__subplot_types)
+        fig = make_subplots(rows=rows, cols=cols, shared_xaxes=True, vertical_spacing=self.SUBPLOT_VERTICAL_SPACING,
+                            specs=self.__subplot_types)
 
         # add subplots and traces from the objects to the parent plot
         for enum_row, subplot in enumerate(self.__subplot_objects):
@@ -104,7 +107,7 @@ class SingularDisplay(Display):
         # update the layout
         window_size = len(self.__df['Close'])
         fig.update_layout(template='plotly_dark', title=f'{window_size} day simulation for {symbol}',
-                          xaxis_title='Date', yaxis_title='Price (USD)', xaxis_rangeslider_visible=False)
+                          xaxis_rangeslider_visible=False)
 
         if show:
             fig.show()

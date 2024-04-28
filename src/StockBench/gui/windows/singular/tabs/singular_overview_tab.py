@@ -57,7 +57,7 @@ class SingularOverviewTable(OverviewTable):
         # trade-able days title
         row += 1
         label = QLabel()
-        label.setText('Trade-able Days')
+        label.setText('Length')
         label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(label, row, 1)
         # elapsed time data label
@@ -173,7 +173,7 @@ class SingularOverviewTable(OverviewTable):
     def render_data(self, simulation_results: dict):
         if not self._error_message:
             self.symbol_data_label.setText(f'{simulation_results["symbol"]}')
-            self.trade_able_days_data_label.setText(f'{simulation_results["trade_able_days"]}')
+            self.trade_able_days_data_label.setText(f'{simulation_results["trade_able_days"]} days')
             self.elapsed_time_data_label.setText(f'{simulation_results["elapsed_time"]} seconds')
             self.trades_made_data_label.setText(f'{simulation_results["trades_made"]}')
             self.effectiveness_data_label.setText(f'{simulation_results["effectiveness"]} %')

@@ -5,7 +5,14 @@ class Position:
     needed because we need to keep tract of the purchase price of those shares. In the context of a simulation,
     the position is going to be opened on one day, likely held for some time, then liquidated. At the liquidation
     point, we want to have all the details regarding that position in one place for analytical purposes."""
-    def __init__(self, buy_price: float, share_count: float, current_day_index: int):
+    def __init__(self, buy_price: float, share_count: float, current_day_index: int, rule: str):
+        """Constructor
+
+        Args:
+            buy_price (float): The price of the position upon acquisition.
+            current_day_index (int): The index of the day that the position was acquired on.
+            rule (str): The strategy key used to acquire the position.
+        """
         self.buy_day_index = int(current_day_index)
         self.sell_day_index = None
 
@@ -13,15 +20,20 @@ class Position:
         self.__sell_price = None
         self.__share_count = float(share_count)
 
-    def close_position(self, sell_price: float, current_day_index: int):
-        """ Close the position.
+        self.__buy_rule = rule
+        self.__sell_rule = None
+
+    def close_position(self, sell_price: float, current_day_index: int, rule: str):
+        """Close the position.
 
         Args:
             sell_price (float): The sell price of the position.
             current_day_index (int): The index of the day that the position was closed on.
+            rule (str): The strategy key used to close the position.
         """
         self.__sell_price = float(sell_price)
         self.sell_day_index = int(current_day_index)
+        self.__sell_rule = rule
 
     def profit_loss(self, current_price: float) -> float:
         """Calculate the profit/loss for the position for a current price
@@ -119,3 +131,19 @@ class Position:
             float: The liquidation price.
         """
         return self.__sell_price
+
+    def get_buy_rule(self):
+        """Accessor for the buy rule that triggered the acquisition.
+
+        return:
+            string: The rule string.
+        """
+        return self.__buy_rule
+
+    def get_sell_rule(self):
+        """Accessor for the buy rule that triggered the liquidation.
+
+        return:
+            string: The rule string.
+        """
+        return self.__sell_rule

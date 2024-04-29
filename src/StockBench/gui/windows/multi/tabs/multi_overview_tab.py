@@ -1,72 +1,19 @@
-import os
-import sys
+import logging
 
-from PyQt6.QtWidgets import QVBoxLayout, QGridLayout, QHBoxLayout, QLabel
+log = logging.getLogger()
 
-# current directory (peripherals)
-current = os.path.dirname(os.path.realpath(__file__))
-
-# parent filepath (src)
-parent = os.path.dirname(current)
-
-# add the parent (src) to path
-sys.path.append(parent)
-
-from StockBench.display.display import Display
-from StockBench.gui.windows.results import SimulationResultsWindow, ResultsFrame, ResultsTable
+from PyQt6.QtWidgets import QGridLayout, QHBoxLayout, QLabel
+from StockBench.gui.windows.overview_tab import OverviewTab, OverviewTable
 
 
-class SingularResultsWindow(SimulationResultsWindow):
-    """Window that holds the progress bar and the results box."""
-    def __init__(self, worker, simulator, progress_observer, initial_balance):
-        super().__init__(worker, simulator, progress_observer, initial_balance)
-        # get set by caller (MainWindow) after construction but before .show()
-        self.symbol = None
-
-        # define layout type
-        self.layout = QVBoxLayout()
-
-        # progress bar
-        self.layout.addWidget(self.progress_bar)
-
-        # simulation results box
-        self.results_frame = SingularResultsFrame()
-        self.layout.addWidget(self.results_frame)
-
-        # apply the layout to the window
-        self.setLayout(self.layout)
-
-    def run_simulation(self) -> dict:
-        # load the strategy into the simulator
-        if self.logging:
-            self.simulator.enable_logging()
-        if self.reporting:
-            self.simulator.enable_reporting()
-        self.simulator.load_strategy(self.strategy)
-        if self.unique_chart_saving:
-            save_option = Display.UNIQUE_SAVE
-        else:
-            save_option = Display.TEMP_SAVE
-        try:
-            return self.simulator.run(self.symbol, show_chart=False, save_option=save_option,
-                                      progress_observer=self.progress_observer)
-        except ValueError as e:
-            # pass the error to the simulation results box
-            self.results_frame.update_error_message(f'{e}')
-            return {}
-
-    def render_updated_data(self, simulation_results: dict):
-        self.results_frame.render_data(simulation_results)
-
-
-class SingularResultsFrame(ResultsFrame):
+class MultiOverviewTab(OverviewTab):
     """Widget that houses the simulation results box."""
 
     def __init__(self):
         super().__init__()
         self.layout = QHBoxLayout()
 
-        self.results_table = SingularResultsTable()
+        self.results_table = MultiOverviewTable()
         self.layout.addWidget(self.results_table)
         self.results_table.setMaximumWidth(300)
         self.results_table.setMaximumHeight(800)
@@ -75,7 +22,7 @@ class SingularResultsFrame(ResultsFrame):
 
         self.setLayout(self.layout)
 
-    def render_data(self, simulation_results: dict):
+    def render_data(self, simulation_results):
         # render the chart
         self.render_chart(simulation_results)
         # render the text box results
@@ -86,8 +33,8 @@ class SingularResultsFrame(ResultsFrame):
         self.results_table.update_error_message(message)
 
 
-class SingularResultsTable(ResultsTable):
-    """"""
+class MultiOverviewTable(OverviewTable):
+    """Widget that houses the numerical results table."""
     def __init__(self):
         super().__init__()
         # define the layout
@@ -176,17 +123,6 @@ class SingularResultsTable(ResultsTable):
         self.stddev_pl_data_label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.stddev_pl_data_label, row, 2)
 
-        # account value title
-        row += 1
-        label = QLabel()
-        label.setText('Account Value')
-        label.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(label, row, 1)
-        # account value data label
-        self.account_value_data_label = QLabel()
-        self.account_value_data_label.setStyleSheet(self.numeric_results_stylesheet)
-        self.layout.addWidget(self.account_value_data_label, row, 2)
-
         # error data label
         row += 1
         self.layout.addWidget(self.error_message_box, row, 1)
@@ -207,6 +143,5 @@ class SingularResultsTable(ResultsTable):
             self.average_pl_data_label.setText(f'$ {simulation_results["average_profit_loss"]}')
             self.median_pl_data_label.setText(f'$ {simulation_results["median_profit_loss"]}')
             self.stddev_pl_data_label.setText(f'$ {simulation_results["standard_profit_loss_deviation"]}')
-            self.account_value_data_label.setText(f'$ {simulation_results["account_value"]}')
         else:
             self.error_message_box.setText(f'Error: {self._error_message}')

@@ -33,6 +33,7 @@ class RSITrigger(Trigger):
             data_manager (any): The data object.
         """
         # ======== key based =========
+        # (adds the RSI values to the data based on the key)
         nums = self.find_all_nums_in_str(key)
         if len(nums) > 0:
             num = int(nums[0])
@@ -42,15 +43,16 @@ class RSITrigger(Trigger):
             # add the RSI data to the df
             self.__add_rsi(DEFAULT_RSI_LENGTH, data_manager)
         # ======== value based (rsi limit)=========
+        # (adds the RSI limit values to the data for charting)
         nums = self.find_all_nums_in_str(value)
         if side == 'buy':
             if len(nums) > 0:
-                _trigger = float(nums[0])
-                self.__add_lower_rsi(_trigger, data_manager)
+                trigger = float(nums[0])
+                self.__add_lower_rsi(trigger, data_manager)
         else:
             if len(nums) > 0:
-                _trigger = float(nums[0])
-                self.__add_upper_rsi(_trigger, data_manager)
+                trigger = float(nums[0])
+                self.__add_upper_rsi(trigger, data_manager)
 
     def check_trigger(self, key, value, data_manager, position_obj, current_day_index) -> bool:
         """Trigger logic for RSI.
@@ -163,7 +165,7 @@ class RSITrigger(Trigger):
         """
         # if we already have RSI upper values in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():
-            if 'rsi_upper' in col_name:
+            if 'rsi_upper' in col_name.lower():
                 return
 
         # create a list of the trigger value repeated
@@ -182,7 +184,7 @@ class RSITrigger(Trigger):
         """
         # if we already have RSI lower values in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():
-            if 'rsi_upper' in col_name:
+            if 'rsi_lower' in col_name.lower():
                 return
 
         # create a list of the trigger value repeated

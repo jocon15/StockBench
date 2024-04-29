@@ -85,7 +85,7 @@ class TriggerManager:
                             trigger.add_to_data(inner_key, self.__strategy['sell'][key][inner_key], 'sell',
                                                 data_manager)
 
-    def check_triggers_by_side(self, side, data_manager, current_day_index, position):
+    def check_triggers_by_side(self, side, data_manager, current_day_index, position) -> tuple:
         """Check all sell triggers for a defined side.
 
         Args:
@@ -94,18 +94,30 @@ class TriggerManager:
             current_day_index (int): The index of the current day.
             position (object): The position object.
 
-        returns:
-            bool: True if triggered, False otherwise.
+        return:
+            Tuple: boolean was triggered, and the rule string that triggered it
+
+        Notes:
+            The key is returned because we need to eventually add it to the position object that gets created
+            (or already exists - depending on side) so we can perform rule analytics post-simulation. Even though
+            we have a reference to the position object here, we do not record the key that triggered it here because,
+            depending on side, the reference may be None. Better to perform the key assignment to position once we have
+            a guaranteed position object to add it to.
         """
         was_triggered = False
+        triggered_key = ''
         side_keys = self.__strategy[side].keys()
         for key in side_keys:
             # handle trigger
+            triggered_key = key
             was_triggered = self.__handle_triggers(data_manager, current_day_index, position, key, side)
             if was_triggered:
                 break
 
-        return was_triggered
+        if triggered_key == '':
+            raise ValueError(f'Strategy does not have any {side} triggers defined!')
+
+        return was_triggered, self.__get_rule_string(side, triggered_key)
 
     def __sort_indicator_trigger_sides(self, indicators: list):
         """Sorts the trigger of each indicator into their respective list based on trade side.
@@ -125,7 +137,7 @@ class TriggerManager:
             else:
                 self.__buy_only_triggers.append(indicator.get_trigger())
 
-    def __handle_triggers(self, data_manager, current_day_index, position, key, side):
+    def __handle_triggers(self, data_manager, current_day_index, position, key, side) -> bool:
         """Check all triggers for hits.
 
         Args:
@@ -133,7 +145,10 @@ class TriggerManager:
             current_day_index (int): Index of the current day in the simulation.
             position (any): Currently open position (if applicable).
             key (str): The key of the current context in the strategy.
-            side (str): 'buy' or 'sell'
+            side (str): Buy or sell.
+
+        return:
+            bool: True if triggered, false if not.
         """
         if side == 'buy':
             # concatenate the agnostic list with the buy list
@@ -143,47 +158,89 @@ class TriggerManager:
             triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
 
         if 'and' in key:
-            # ===== AND Triggers =====
-            for inner_key in self.__strategy[side][key].keys():
-                trigger_hit = False
-                key_matched_with_trigger = False
-                # check all trigger
-                for trigger in triggers:
-                    if trigger.strategy_symbol in inner_key:
-                        key_matched_with_trigger = True
-                        trigger_hit = trigger.check_trigger(
-                            inner_key,
-                            self.__strategy[side][key][inner_key],
-                            data_manager,
-                            position,
-                            current_day_index)
-                # note: placement of this conditional can be here or inside key check (doesn't matter)
-                if not trigger_hit:
-                    # not all 'AND' triggers were hit
-                    return False
-                if not key_matched_with_trigger:
-                    raise ValueError(f'Strategy key: {key} did not match any available indicators!')
-
-            # all 'AND' triggers were hit
-            return True
+            return self.__handle_and_triggers(triggers, data_manager, current_day_index, position, key, side)
         else:
-            # ===== OR Triggers =====
+            return self.__handle_or_triggers(triggers, data_manager, current_day_index, position, key, side)
+
+    def __handle_and_triggers(self, triggers, data_manager, current_day_index, position, key, side) -> bool:
+        """Check all triggers for hits.
+
+        Args:
+            triggers (list): A list of applicable triggers based on side.
+            data_manager (any): DataManager housing the simulation data.
+            current_day_index (int): Index of the current day in the simulation.
+            position (any): Currently open position (if applicable).
+            key (str): The key of the current context in the strategy.
+            side (str): 'buy' or 'sell'
+
+        return:
+            bool: True if triggered, false if not.
+        """
+        for inner_key in self.__strategy[side][key].keys():
+            trigger_hit = False
             key_matched_with_trigger = False
             # check all trigger
             for trigger in triggers:
-                if trigger.strategy_symbol in key:
+                if trigger.strategy_symbol in inner_key:
                     key_matched_with_trigger = True
                     trigger_hit = trigger.check_trigger(
-                        key,
-                        self.__strategy[side][key],
+                        inner_key,
+                        self.__strategy[side][key][inner_key],
                         data_manager,
                         position,
                         current_day_index)
-                    if trigger_hit:
-                        # any 'OR' trigger was hit
-                        return True
+            # note: placement of this conditional can be here or inside key check (doesn't matter)
+            if not trigger_hit:
+                # not all 'AND' triggers were hit
+                return False
             if not key_matched_with_trigger:
                 raise ValueError(f'Strategy key: {key} did not match any available indicators!')
 
-            # no 'OR' triggers were hit
-            return False
+        # all 'AND' triggers were hit
+        return True
+
+    def __handle_or_triggers(self, triggers, data_manager, current_day_index, position, key, side) -> bool:
+        """Check all triggers for hits.
+
+        Args:
+            triggers (list): A list of applicable triggers based on side.
+            data_manager (any): DataManager housing the simulation data.
+            current_day_index (int): Index of the current day in the simulation.
+            position (any): Currently open position (if applicable).
+            key (str): The key of the current context in the strategy.
+            side (str): 'buy' or 'sell'
+
+        return:
+            bool: True if triggered, false if not.
+        """
+        key_matched_with_trigger = False
+        # check all trigger
+        for trigger in triggers:
+            if trigger.strategy_symbol in key:
+                key_matched_with_trigger = True
+                trigger_hit = trigger.check_trigger(
+                    key,
+                    self.__strategy[side][key],
+                    data_manager,
+                    position,
+                    current_day_index)
+                if trigger_hit:
+                    # any 'OR' trigger was hit
+                    return True
+        if not key_matched_with_trigger:
+            raise ValueError(f'Strategy key: {key} did not match any available indicators!')
+
+        # no 'OR' triggers were hit
+        return False
+
+    def __get_rule_string(self, side: str, key: str) -> str:
+        """Get the rule as a string.
+
+        Args:
+            side (str): Buy or sell.
+            key (str): The key of strategy rule.
+
+        return:
+            The full strategy rule as a string
+        """
+        return f'{key}:{self.__strategy[side][key]}'

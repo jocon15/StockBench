@@ -1,6 +1,31 @@
+<style>
+    .spinner {
+    border: 16px solid silver;
+    border-top: 16px solid #337AB7;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin 700ms linear infinite;
+    top: 45%;
+    left: 45%;
+    position: absolute;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg)
+    }
+
+    100% {
+        transform: rotate(360deg)
+    }
+}
+</style>
+
 
 <head>
 </head>
 <body style="background-color:#1f222e;">
     <p style="color:#fff;font-family: Segoe UI;text-align:center;">Chart Loading...</p>
+    <div class="spinner"></div>
 </body>

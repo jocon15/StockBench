@@ -175,7 +175,7 @@ class StochasticTrigger(Trigger):
         """
         # if we already have values in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():
-            if 'stochastic_upper' in col_name:
+            if 'stochastic_upper' in col_name.lower():
                 return
 
         # create a list of the trigger value repeated
@@ -194,7 +194,7 @@ class StochasticTrigger(Trigger):
         """
         # if we already have values in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():
-            if 'stochastic_lower' in col_name:
+            if 'stochastic_lower' in col_name.lower():
                 return
 
         # create a list of the trigger value repeated

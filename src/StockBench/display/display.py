@@ -1,5 +1,6 @@
 import os
 import statistics
+import numpy as np
 import pandas as pd
 import plotly.offline as offline
 from .display_constants import *
@@ -74,7 +75,7 @@ class Display:
         return plotter.Bar(
             x=df['Rule'],
             y=df['Count'],
-            marker=dict(color=OFF_BLUE))
+            marker=dict(color=OFF_BLUE), name='Count')
 
     @staticmethod
     def rule_stats_traces(positions, side) -> list:
@@ -99,15 +100,20 @@ class Display:
         df['Stddev'] = stddev_list
 
         # build and return traces
-        return [plotter.Bar(x=df['Rule'], y=df['Avg'], marker=dict(color=AVG_COLOR)),
-                plotter.Bar(x=df['Rule'], y=df['Med'], marker=dict(color=MED_COLOR)),
-                plotter.Bar(x=df['Rule'], y=df['Stddev'], marker=dict(color=STDDEV_COLOR))]
+        return [plotter.Bar(x=df['Rule'], y=df['Avg'], marker=dict(color=AVG_COLOR), name='Mean'),
+                plotter.Bar(x=df['Rule'], y=df['Med'], marker=dict(color=MED_COLOR), name='Median'),
+                plotter.Bar(x=df['Rule'], y=df['Stddev'], marker=dict(color=STDDEV_COLOR), name='Stddev')]
 
     @staticmethod
     def positions_total_pl_bar(positions):
         total_pls = []
         for position in positions:
             total_pls.append(position.lifetime_profit_loss())
+
+        # create a df to use for total pls (so we can keep track of bar color as well
+        df = pd.DataFrame()
+        df['total_pl'] = total_pls
+        df['color'] = np.where(df['total_pl'] < 0, BEAR_RED, BULL_GREEN)
 
         # calculate mean and median
         mean = statistics.mean(total_pls)
@@ -118,9 +124,9 @@ class Display:
         median_values = [median for _ in total_pls]
 
         # build and return chart
-        return [plotter.Bar(y=total_pls, marker=dict(color=AVG_COLOR)),
-                plotter.Scatter(y=mean_values, marker=dict(color=WHITE)),
-                plotter.Scatter(y=median_values, marker=dict(color=WHITE))]
+        return [plotter.Bar(y=df['total_pl'], marker_color=df['color'], name='Profit/Loss'),
+                plotter.Scatter(y=mean_values, marker=dict(color=MED_COLOR), name='Mean'),
+                plotter.Scatter(y=median_values, marker=dict(color=STDDEV_COLOR), name='Median')]
 
     @staticmethod
     def __get_rule_statistics(positions, side) -> dict:

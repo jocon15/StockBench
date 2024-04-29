@@ -80,7 +80,7 @@ class MultipleDisplay(Display):
         fig.add_trace(rule_stats_traces[2], 2, 1)
 
         # set the layout
-        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, showlegend=False)
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
 
         if show:
             fig.show()
@@ -96,7 +96,7 @@ class MultipleDisplay(Display):
         cols = 1
 
         chart_list = [[{"type": "bar"}], [{"type": "bar"}]]
-        chart_titles = ('Liquidation Count per Rule', 'Acquisition Profit/Loss % Stats per Rule')
+        chart_titles = ('Liquidation Count per Rule', 'Liquidation Profit/Loss % Stats per Rule')
 
         # Parent Plot
         fig = make_subplots(rows=rows,
@@ -117,7 +117,7 @@ class MultipleDisplay(Display):
         fig.add_trace(rule_stats_traces[2], 2, 1)
 
         # set the layout
-        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, showlegend=False)
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
 
         if show:
             fig.show()

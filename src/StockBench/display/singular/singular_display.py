@@ -137,7 +137,7 @@ class SingularDisplay(Display):
         cols = 1
 
         chart_list = [[{"type": "bar"}], [{"type": "bar"}]]
-        chart_titles = ('Acquisition Count per Rule', 'Acquisition Profit/Loss % Stats per Rule')
+        chart_titles = ('Acquisition Count per Rule', 'Position Profit/Loss % Analytics per Acquisition Rule')
 
         # Parent Plot
         fig = make_subplots(rows=rows,
@@ -175,7 +175,7 @@ class SingularDisplay(Display):
         cols = 1
 
         chart_list = [[{"type": "bar"}], [{"type": "bar"}]]
-        chart_titles = ('Liquidation Count per Rule', 'Liquidation Profit/Loss % Stats per Rule')
+        chart_titles = ('Liquidation Count per Rule', 'Position Profit/Loss % Analytics per Liquidation Rule')
 
         # Parent Plot
         fig = make_subplots(rows=rows,

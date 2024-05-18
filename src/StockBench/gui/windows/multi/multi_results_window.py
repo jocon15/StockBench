@@ -14,7 +14,7 @@ class MultiResultsWindow(SimulationResultsWindow):
     """Window that holds the progress bar and the results box."""
     def __init__(self, worker, simulator, progress_observer, initial_balance):
         super().__init__(worker, simulator, progress_observer, initial_balance)
-        # get set by caller (MainWindow) after construction but before .show()
+        # gets set by caller (MainWindow) after construction but before .show()
         self.symbols = None
 
         # define layout type

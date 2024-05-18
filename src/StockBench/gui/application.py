@@ -14,7 +14,7 @@ from StockBench.simulator import Simulator
 from StockBench.gui.windows.singular.singular_results_window import SingularResultsWindow
 from StockBench.gui.windows.multi.multi_results_window import MultiResultsWindow
 from StockBench.constants import *
-from StockBench.gui.windows.StrategyEditor import StrategyEditorWindow
+from StockBench.gui.windows.strategy_studio import StrategyStudioWindow
 
 
 class ConfigMainWindow(QMainWindow):
@@ -114,6 +114,7 @@ class SingularConfigTab(QWidget):
         # windows launched from a class need to be attributes or else they will be closed when the function
         # scope that called them is exited
         self.simulation_result_window = None
+        self.strategy_studio_window = None
 
         self.simulation_length = None
         self.simulation_logging = False
@@ -131,6 +132,11 @@ class SingularConfigTab(QWidget):
         self.strategy_selection_box = StrategySelection()
         self.strategy_selection_box.setStyleSheet(self.select_file_btn_stylesheet)
         self.layout.addWidget(self.strategy_selection_box)
+        self.strategy_studio_btn = QPushButton()
+        self.strategy_studio_btn.setText('Strategy Studio (beta)')
+        self.strategy_studio_btn.clicked.connect(self.on_strategy_studio_btn_clicked)  # noqa
+        self.strategy_studio_btn.setStyleSheet(self.select_file_btn_stylesheet)
+        self.layout.addWidget(self.strategy_studio_btn)
 
         label = QLabel()
         label.setText('Simulation Length:')
@@ -234,6 +240,13 @@ class SingularConfigTab(QWidget):
 
         # render the window
         self.show()
+
+    def on_strategy_studio_btn_clicked(self):
+        # launch the strategy studio window injecting the filepath from the filepath box into the strategy editor
+        self.strategy_studio_window = StrategyStudioWindow(
+            self.strategy_selection_box.filepath_box.text()
+        )
+        self.strategy_studio_window.show()
 
     def on_logging_btn_clicked(self):
         if self.logging_btn.isChecked():
@@ -405,7 +418,7 @@ class MultiConfigTab(QWidget):
         self.strategy_selection_box.setStyleSheet(self.select_file_btn_stylesheet)
         self.layout.addWidget(self.strategy_selection_box)
         self.strategy_studio_btn = QPushButton()
-        self.strategy_studio_btn.setText('Strategy Studio')
+        self.strategy_studio_btn.setText('Strategy Studio (beta)')
         self.strategy_studio_btn.clicked.connect(self.on_strategy_studio_btn_clicked)  # noqa
         self.strategy_studio_btn.setStyleSheet(self.select_file_btn_stylesheet)
         self.layout.addWidget(self.strategy_studio_btn)
@@ -515,7 +528,7 @@ class MultiConfigTab(QWidget):
 
     def on_strategy_studio_btn_clicked(self):
         # launch the strategy studio window injecting the filepath from the filepath box into the strategy editor
-        self.strategy_studio_window = StrategyEditorWindow(
+        self.strategy_studio_window = StrategyStudioWindow(
             self.strategy_selection_box.filepath_box.text()
         )
         self.strategy_studio_window.show()

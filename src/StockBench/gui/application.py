@@ -60,10 +60,6 @@ class ConfigMainWindow(QMainWindow):
         # to take up all the space in the window by default.
         self.setCentralWidget(widget)
 
-        # open the strategy editor
-        self.strategy_editor_window = StrategyEditorWindow()
-        self.strategy_editor_window.show()
-
         # close the splash window
         self.splash.close()
 
@@ -389,6 +385,7 @@ class MultiConfigTab(QWidget):
         # windows launched from a class need to be attributes or else they will be closed when the function
         # scope that called them is exited
         self.simulation_result_window = None
+        self.strategy_studio_window = None
 
         self.simulation_length = None
         self.simulation_logging = False
@@ -396,6 +393,7 @@ class MultiConfigTab(QWidget):
         self.simulation_unique_chart_saving = False
         self.simulation_show_results_window = True
 
+        # layout type
         self.layout = QVBoxLayout()
 
         label = QLabel()
@@ -406,6 +404,11 @@ class MultiConfigTab(QWidget):
         self.strategy_selection_box = StrategySelection()
         self.strategy_selection_box.setStyleSheet(self.select_file_btn_stylesheet)
         self.layout.addWidget(self.strategy_selection_box)
+        self.strategy_studio_btn = QPushButton()
+        self.strategy_studio_btn.setText('Strategy Studio')
+        self.strategy_studio_btn.clicked.connect(self.on_strategy_studio_btn_clicked)  # noqa
+        self.strategy_studio_btn.setStyleSheet(self.select_file_btn_stylesheet)
+        self.layout.addWidget(self.strategy_studio_btn)
 
         label = QLabel()
         label.setText('Simulation Length:')
@@ -509,6 +512,13 @@ class MultiConfigTab(QWidget):
 
         # render the window
         self.show()
+
+    def on_strategy_studio_btn_clicked(self):
+        # launch the strategy studio window injecting the filepath from the filepath box into the strategy editor
+        self.strategy_studio_window = StrategyEditorWindow(
+            self.strategy_selection_box.filepath_box.text()
+        )
+        self.strategy_studio_window.show()
 
     def on_logging_btn_clicked(self):
         if self.logging_btn.isChecked():

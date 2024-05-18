@@ -14,6 +14,7 @@ from StockBench.simulator import Simulator
 from StockBench.gui.windows.singular.singular_results_window import SingularResultsWindow
 from StockBench.gui.windows.multi.multi_results_window import MultiResultsWindow
 from StockBench.constants import *
+from StockBench.gui.windows.StrategyEditor import StrategyEditorWindow
 
 
 class ConfigMainWindow(QMainWindow):
@@ -58,6 +59,10 @@ class ConfigMainWindow(QMainWindow):
         # Set the central widget of the Window. Widget will expand
         # to take up all the space in the window by default.
         self.setCentralWidget(widget)
+
+        # open the strategy editor
+        self.strategy_editor_window = StrategyEditorWindow()
+        self.strategy_editor_window.show()
 
         # close the splash window
         self.splash.close()

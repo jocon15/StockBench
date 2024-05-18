@@ -1,10 +1,6 @@
-import os
 import json
-from abc import abstractmethod
 
-from PyQt6.QtWidgets import QWidget, QProgressBar, QTabWidget, QVBoxLayout, QTextEdit, QPushButton
-from PyQt6.QtCore import QTimer, QThreadPool
-from PyQt6 import QtGui
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QPushButton
 
 
 class StrategyEditorWindow(QWidget):

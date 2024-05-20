@@ -42,16 +42,30 @@ class StrategyStudioWindow(QWidget):
         self.__set_geometry(config_pos, config_width)
 
         # load the strategy from the file
-        self.load_filepath_into_editor()
+        self.__load_filepath_into_editor()
 
         # apply the layout
         self.setLayout(self.layout)
+
+    def on_save_btn_clicked(self):
+        if self.filepath is not None and self.filepath != '':
+            # write the json to the filepath
+            self.__save_json_file(self.filepath)
+        else:
+            # this file has not been saved yet and needs to use save_as instead
+            self.on_save_as_btn_clicked()
+
+    def on_save_as_btn_clicked(self):
+        fileName, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "", "JSON (*.json)")
+        if fileName is not None and fileName != '':
+            # only save the file if the user picked a location
+            self.__save_json_file(fileName)
 
     def __set_geometry(self, config_pos, config_width):
         # place the strategy studio to the right of the config window
         self.setGeometry(config_pos.x() + config_width, config_pos.y(), self.WIDTH, self.HEIGHT)
 
-    def load_filepath_into_editor(self):
+    def __load_filepath_into_editor(self):
         # if a filepath was injected, try loading it, else, show the template
         if self.filepath is not None and self.filepath != '':
             # load the strategy from the file
@@ -67,20 +81,6 @@ class StrategyStudioWindow(QWidget):
             self.text_edit.setText(json.dumps(TEMPLATE_JSON, indent=4))
 
             self.__set_status('You are creating a new strategy')
-
-    def on_save_btn_clicked(self):
-        if self.filepath is not None and self.filepath != '':
-            # write the json to the filepath
-            self.__save_json_file(self.filepath)
-        else:
-            # this file has not been saved yet and needs to use save_as instead
-            self.on_save_as_btn_clicked()
-
-    def on_save_as_btn_clicked(self):
-        fileName, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "", "JSON (*.json)")
-        if fileName is not None and fileName != '':
-            # only save the file if the user picked a location
-            self.__save_json_file(fileName)
 
     def __set_status(self, msg):
         self.status.setText(f'Status: {msg}')

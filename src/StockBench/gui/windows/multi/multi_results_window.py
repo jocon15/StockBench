@@ -1,18 +1,17 @@
-import logging
 from StockBench.gui.windows.base.results_window import SimulationResultsWindow
 from StockBench.gui.windows.multi.tabs.multi_rules_tab import MultiRulesTab
 from StockBench.gui.windows.multi.tabs.multi_overview_tab import MultiOverviewTab
 from StockBench.gui.windows.base.positions_tab import PositionsTab
 
-log = logging.getLogger()
-
 
 class MultiResultsWindow(SimulationResultsWindow):
     """Simulation results window for a simulation on multiple symbols."""
-    def __init__(self, worker, simulator, progress_observer, initial_balance):
-        super().__init__(worker, simulator, progress_observer, initial_balance)
-        # gets set by caller (MainWindow) after construction but before .show()
-        self.symbols = None
+
+    def __init__(self, symbols, strategy, initial_balance, simulator, progress_observer, worker, logging, reporting,
+                 unique_chart_saving):
+        super().__init__(strategy, initial_balance, simulator, progress_observer, worker, logging, reporting,
+                         unique_chart_saving)
+        self.symbols = symbols
 
         # add objects to the layout
         # progress bar
@@ -39,7 +38,7 @@ class MultiResultsWindow(SimulationResultsWindow):
         return self.simulator.run_multiple(self.symbols, show_chart=False, save_option=save_option,
                                            progress_observer=self.progress_observer)
 
-    def render_updated_data(self, simulation_results: dict):
+    def _render_updated_data(self, simulation_results: dict):
         """Render the updated data in the window's components."""
         self.results_frame.render_data(simulation_results)
         self.buy_rules_tab.render_data(simulation_results)

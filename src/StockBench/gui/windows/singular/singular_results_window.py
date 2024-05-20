@@ -1,4 +1,3 @@
-
 from StockBench.gui.windows.base.results_window import SimulationResultsWindow
 from StockBench.gui.windows.singular.tabs.singular_overview_tab import SingularOverviewTab
 from StockBench.gui.windows.singular.tabs.singular_rules_tab import SingularRulesTab
@@ -7,10 +6,12 @@ from StockBench.gui.windows.base.positions_tab import PositionsTab
 
 class SingularResultsWindow(SimulationResultsWindow):
     """Simulation results window for a simulation on a single symbol."""
-    def __init__(self, worker, simulator, progress_observer, initial_balance):
-        super().__init__(worker, simulator, progress_observer, initial_balance)
-        # get set by caller (MainWindow) after construction but before .show()
-        self.symbol = None
+
+    def __init__(self, symbol, strategy, initial_balance, simulator, progress_observer, worker, logging, reporting,
+                 unique_chart_saving):
+        super().__init__(strategy, initial_balance, simulator, progress_observer, worker, logging, reporting,
+                         unique_chart_saving)
+        self.symbol = symbol
 
         # add objects to layout
         # progress bar
@@ -37,7 +38,7 @@ class SingularResultsWindow(SimulationResultsWindow):
         return self.simulator.run(self.symbol, show_chart=False, save_option=save_option,
                                   progress_observer=self.progress_observer)
 
-    def render_updated_data(self, simulation_results: dict):
+    def _render_updated_data(self, simulation_results: dict):
         """Render the updated data in the window's components."""
         self.results_frame.render_data(simulation_results)
         self.buy_rules_tab.render_data(simulation_results)

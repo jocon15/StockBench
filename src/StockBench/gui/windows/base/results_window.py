@@ -8,16 +8,19 @@ from PyQt6 import QtGui
 
 
 class SimulationResultsWindow(QWidget):
-    """Superclass for a simulation results window.
+    """Abstract superclass for a simulation results window.
 
-    Once instantiated, the caller must provide
+    After instantiation, the caller must call the begin() function to start the simulation and progress observer timer.
+    If the user deselects the option to view the results, this window never gets shown because this window's show
+    command is delegated to the caller, meaning the caller has control over whether this window actually gets
+    shown.
 
     The simulation is long-running, therefore it is run on a QThread as to not freeze the Qt app while it runs. A
     progress observer (thread-safe) is injected into the simulator to monitor progress of the simulation from this
     window. When the window starts, the simulation is started. A timer is also started to check the progress via the
     progress observer every 100ms. Each interval, the progress is rendered to the window's progress bar to display.
 
-    Once the simulation is complete, the timer is stopped and the progress bar is set to 100%. The simulation returns
+    Once the simulation is complete, the timer is stopped and the progress bar gets set to 100%. The simulation returns
     a dict of results which are fed to the render_updated_data() function, which uses that information to render the
     results to the window.
     """
@@ -46,20 +49,19 @@ class SimulationResultsWindow(QWidget):
                 background-color: #323338;
             }"""
 
-    def __init__(self, worker, simulator, progress_observer, initial_balance):
+    def __init__(self, strategy, initial_balance, simulator, progress_observer, worker, logging=False, reporting=False,
+                 unique_chart_saving=False):
         super().__init__()
-        # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
-        self.threadpool = QThreadPool()
-        # parameters
-        self.worker = worker
+        self.strategy = strategy
         self.simulator = simulator(initial_balance)  # instantiate the class reference
         self.progress_observer = progress_observer()  # instantiate the class reference
+        self.worker = worker
+        self.logging = logging
+        self.reporting = reporting
+        self.unique_chart_saving = unique_chart_saving
 
-        # get set by caller (MainWindow) after construction but before .show()
-        self.strategy = None
-        self.logging = False
-        self.reporting = False
-        self.unique_chart_saving = False
+        # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
+        self.threadpool = QThreadPool()
 
         # gets set by child objects
         self.results_frame = None
@@ -85,16 +87,16 @@ class SimulationResultsWindow(QWidget):
         self.timer = QTimer()
 
     def begin(self):
-        """Start the window."""
+        """Starts the simulation and window's progress bar updater timer."""
         # the simulation runs 1 time - so no timer, the update data just gets called once
-        self.update_data()
+        self.__update_data()
 
         # start the timer to update the progress bar every 100ms
         self.timer.setInterval(100)
-        self.timer.timeout.connect(self.update_progress_bar)  # noqa
+        self.timer.timeout.connect(self.__update_progress_bar)  # noqa
         self.timer.start()
 
-    def update_progress_bar(self):
+    def __update_progress_bar(self):
         """Update the progress bar."""
         if self.progress_observer.is_completed():
             # mark the progress bar as completed
@@ -106,7 +108,7 @@ class SimulationResultsWindow(QWidget):
             # update the progress bar
             self.progress_bar.setValue(int(self.progress_observer.get_progress()))
 
-    def run_simulation(self) -> dict:
+    def __run_simulation(self) -> dict:
         """Run the simulation."""
         if self.logging:
             self.simulator.enable_logging()
@@ -129,18 +131,18 @@ class SimulationResultsWindow(QWidget):
         raise NotImplementedError('You must define an implementation for _run_simulation()!')
 
     @abstractmethod
-    def render_updated_data(self, simulation_results: dict):
-        raise NotImplementedError('You must define an implementation for render_updated_data()!')
+    def _render_updated_data(self, simulation_results: dict):
+        raise NotImplementedError('You must define an implementation for _render_updated_data()!')
 
-    def update_data(self):
+    def __update_data(self):
         """Get updated data by running the simulation on a QThread. (different thread from the Qt app)
         This prevents the app from freezing as the long-running simulation is run on a different thread.
         We have a progress observer to keep track of the progress which is used on a timer to update the
         progress bar in the window every 100ms interval until simulation completion.
         """
         # create the worker object
-        worker = self.worker(self.run_simulation)  # Any other args, kwargs are passed to the run function
+        worker = self.worker(self.__run_simulation)  # Any other args, kwargs are passed to the run function
         # connect the result (return data) of the qt_worker to the render function to handle the returned data
-        worker.signals.result.connect(self.render_updated_data)  # noqa
+        worker.signals.result.connect(self._render_updated_data)  # noqa
         # run the qt_worker thread
         self.threadpool.start(worker)

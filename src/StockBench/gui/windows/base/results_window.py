@@ -21,8 +21,8 @@ class SimulationResultsWindow(QWidget):
     progress observer every 100ms. Each interval, the progress is rendered to the window's progress bar to display.
 
     Once the simulation is complete, the timer is stopped and the progress bar gets set to 100%. The simulation returns
-    a dict of results which are fed to the render_updated_data() function, which uses that information to render the
-    results to the window.
+    a dict of results which are fed to the _render_data() function, which uses that information to render the results to
+    the window.
     """
     window_stylesheet = """background-color:#202124;"""
 
@@ -131,8 +131,8 @@ class SimulationResultsWindow(QWidget):
         raise NotImplementedError('You must define an implementation for _run_simulation()!')
 
     @abstractmethod
-    def _render_updated_data(self, simulation_results: dict):
-        raise NotImplementedError('You must define an implementation for _render_updated_data()!')
+    def _render_data(self, simulation_results: dict):
+        raise NotImplementedError('You must define an implementation for _render_data()!')
 
     def __update_data(self):
         """Get updated data by running the simulation on a QThread. (different thread from the Qt app)
@@ -143,6 +143,6 @@ class SimulationResultsWindow(QWidget):
         # create the worker object
         worker = self.worker(self.__run_simulation)  # Any other args, kwargs are passed to the run function
         # connect the result (return data) of the qt_worker to the render function to handle the returned data
-        worker.signals.result.connect(self._render_updated_data)  # noqa
+        worker.signals.result.connect(self._render_data)  # noqa
         # run the qt_worker thread
         self.threadpool.start(worker)

@@ -38,7 +38,7 @@ class MultiResultsWindow(SimulationResultsWindow):
         return self.simulator.run_multiple(self.symbols, show_chart=False, save_option=save_option,
                                            progress_observer=self.progress_observer)
 
-    def _render_updated_data(self, simulation_results: dict):
+    def _render_data(self, simulation_results: dict):
         """Render the updated data in the window's components."""
         self.results_frame.render_data(simulation_results)
         self.buy_rules_tab.render_data(simulation_results)

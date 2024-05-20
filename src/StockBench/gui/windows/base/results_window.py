@@ -1,7 +1,7 @@
 import os
 from abc import abstractmethod
 
-from PyQt6.QtWidgets import QWidget, QProgressBar, QTabWidget
+from PyQt6.QtWidgets import QWidget, QProgressBar, QTabWidget, QVBoxLayout
 from PyQt6.QtCore import QTimer, QThreadPool
 from PyQt6 import QtGui
 
@@ -51,6 +51,9 @@ class SimulationResultsWindow(QWidget):
         self.setWindowTitle('Simulation Results')
         self.setWindowIcon(QtGui.QIcon(os.path.join('resources', 'images', 'candle.ico')))
         self.setStyleSheet(self.window_stylesheet)
+
+        # define layout type
+        self.layout = QVBoxLayout()
 
         # define shared attributes here but adding them to layout happens in subclass
         self.progress_bar = QProgressBar()

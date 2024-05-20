@@ -6,15 +6,14 @@ class SingularOverviewTab(OverviewTab):
     """Tab showing simulation overview for single-symbol simulation results."""
     def __init__(self):
         super().__init__()
-        self.layout = QHBoxLayout()
-
+        # add objects to the layout
         self.results_table = SingularOverviewTable()
         self.layout.addWidget(self.results_table)
         self.results_table.setMaximumWidth(230)
         self.results_table.setMaximumHeight(900)
-
         self.layout.addWidget(self.webView)
 
+        # apply the layout
         self.setLayout(self.layout)
 
     def render_data(self, simulation_results: dict):

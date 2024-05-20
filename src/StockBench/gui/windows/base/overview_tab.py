@@ -1,8 +1,7 @@
 import os
 from abc import abstractmethod
-
 from PyQt6 import QtCore, QtWebEngineWidgets
-from PyQt6.QtWidgets import QFrame, QLabel
+from PyQt6.QtWidgets import QFrame, QLabel, QHBoxLayout
 
 
 class OverviewTab(QFrame):
@@ -14,8 +13,11 @@ class OverviewTab(QFrame):
 
     def __init__(self):
         super().__init__()
-        # define shared attributes here but adding them to layout happens in subclass
+        # layout type
+        self.layout = QHBoxLayout()
+
         self.webView = QtWebEngineWidgets.QWebEngineView()
+
         # load blank html file to cover the white screen while the chart loads
         self.render_chart_loading()
 

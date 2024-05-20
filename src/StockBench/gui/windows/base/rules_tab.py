@@ -13,6 +13,7 @@ class RulesTab(QWidget):
         self.side = side
         self.chart_key = f'{self.side}_rule_analysis_chart_filepath'
 
+        # layout type
         self.layout = QVBoxLayout()
 
         # define shared attributes here but adding them to layout happens in subclass

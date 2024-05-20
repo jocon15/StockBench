@@ -15,11 +15,11 @@ class PositionsTab(QWidget):
         # layout type
         self.layout = QVBoxLayout()
 
-        # define shared attributes here but adding them to layout happens in subclass
+        # add objects to the layout
         self.webView = QtWebEngineWidgets.QWebEngineView()
-
         self.layout.addWidget(self.webView)
 
+        # apply the layout
         self.setLayout(self.layout)
 
         # load blank html file to cover the white screen while the chart loads

@@ -2,37 +2,31 @@ import logging
 
 log = logging.getLogger()
 
-from PyQt6.QtWidgets import QVBoxLayout
+
 from StockBench.display.display import Display
-from StockBench.gui.windows.results_window import SimulationResultsWindow
+from StockBench.gui.windows.base.results_window import SimulationResultsWindow
 from StockBench.gui.windows.multi.tabs.multi_rules_tab import MultiRulesTab
 from StockBench.gui.windows.multi.tabs.multi_overview_tab import MultiOverviewTab
-from StockBench.gui.windows.positions_tab import PositionsTab
+from StockBench.gui.windows.base.positions_tab import PositionsTab
 
 
 class MultiResultsWindow(SimulationResultsWindow):
-    """Window that holds the progress bar and the results box."""
+    """Window that holds the progress bar and the results box for a simulation on multiple symbols."""
     def __init__(self, worker, simulator, progress_observer, initial_balance):
         super().__init__(worker, simulator, progress_observer, initial_balance)
         # gets set by caller (MainWindow) after construction but before .show()
         self.symbols = None
 
-        # define layout type
-        self.layout = QVBoxLayout()
-
+        # add objects to the layout
         # progress bar
         self.layout.addWidget(self.progress_bar)
-
         # simulation results frame (gets added to layout via tab widget)
         self.results_frame = MultiOverviewTab()
-
         # buy and sell rules analysis tabs (gets added to layout via tab widget)
         self.buy_rules_tab = MultiRulesTab('buy')
         self.sell_rules_tab = MultiRulesTab('sell')
-
         # positions analysis tab (gets added to layout via tab widget)
         self.positions_analysis_tab = PositionsTab()
-
         # tab widget
         self.tab_widget.addTab(self.results_frame, "Overview")
         self.tab_widget.addTab(self.buy_rules_tab, "Buy Rules (beta)")

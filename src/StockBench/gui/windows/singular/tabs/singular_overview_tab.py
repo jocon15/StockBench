@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QGridLayout, QHBoxLayout, QLabel
-from StockBench.gui.windows.overview_tab import OverviewTab, OverviewTable
+from StockBench.gui.windows.base.overview_tab import OverviewTab, OverviewTable
 
 
 class SingularOverviewTab(OverviewTab):

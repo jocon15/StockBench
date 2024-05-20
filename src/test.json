@@ -1,5 +1,5 @@
 {
-  "buy": {
+    "buy": {
         "SMA20$slope4": ">10",
         "RSI": "<30",
         "stochastic": "<20",
@@ -10,7 +10,7 @@
                 "1": "red",
                 "0": "green"
             },
-          "MACD": "> 20"
+            "MACD": "> 20"
         },
         "price": ">200",
         "color": {

@@ -4,7 +4,7 @@ import time
 
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTabWidget, QHBoxLayout, QLabel, QPushButton, QComboBox
 from PyQt6.QtWidgets import QFileDialog, QLineEdit
-from PyQt6.QtCore import QThreadPool, Qt
+from PyQt6.QtCore import QThreadPool, Qt, QPoint
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6 import QtGui
 
@@ -33,6 +33,8 @@ class ConfigMainWindow(QMainWindow):
             background-color: #323338;
         }
     """
+    WIDTH = 400
+    HEIGHT = 600
 
     def __init__(self, splash):
         super().__init__()
@@ -41,8 +43,8 @@ class ConfigMainWindow(QMainWindow):
         # main window styling (do it first to prevent window shifting)
         self.setWindowIcon(QtGui.QIcon(os.path.join('resources', 'images', 'candle.ico')))
         self.setWindowTitle('Configuration')
-        self.setGeometry(200, 100, 400, 600)
-        self.setFixedSize(400, 600)
+        # set window geometry
+        self.__set_geometry()
 
         self.layout = QVBoxLayout()
 
@@ -62,6 +64,9 @@ class ConfigMainWindow(QMainWindow):
 
         # close the splash window
         self.splash.close()
+
+    def __set_geometry(self):
+        self.setFixedSize(self.WIDTH, self.HEIGHT)
 
 
 class SingularConfigTab(QWidget):
@@ -243,8 +248,11 @@ class SingularConfigTab(QWidget):
 
     def on_strategy_studio_btn_clicked(self):
         # launch the strategy studio window injecting the filepath from the filepath box into the strategy editor
+        coordinates = self.mapToGlobal(QPoint(0, 0))
         self.strategy_studio_window = StrategyStudioWindow(
-            self.strategy_selection_box.filepath_box.text()
+            self.strategy_selection_box.filepath_box.text(),
+            coordinates,
+            self.width()
         )
         self.strategy_studio_window.show()
 
@@ -529,8 +537,11 @@ class MultiConfigTab(QWidget):
 
     def on_strategy_studio_btn_clicked(self):
         # launch the strategy studio window injecting the filepath from the filepath box into the strategy editor
+        coordinates = self.mapToGlobal(QPoint(0, 0))
         self.strategy_studio_window = StrategyStudioWindow(
-            self.strategy_selection_box.filepath_box.text()
+            self.strategy_selection_box.filepath_box.text(),
+            coordinates,
+            self.width()
         )
         self.strategy_studio_window.show()
 

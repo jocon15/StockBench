@@ -11,7 +11,10 @@ class StrategyStudioWindow(QWidget):
     strategy_text_edit_stylesheet = """background-color: #303134;color: #fff"""
     status_stylesheet = """background-color: #303134;color: #fff"""
 
-    def __init__(self, filepath):
+    WIDTH = 400
+    HEIGHT = 600
+
+    def __init__(self, filepath, config_pos, config_width):
         super().__init__()
         self.filepath = filepath
 
@@ -35,13 +38,18 @@ class StrategyStudioWindow(QWidget):
         self.setStyleSheet(self.window_stylesheet)
         self.layout.addWidget(self.text_edit)
 
-        self.setGeometry(600, 100, 400, 600)
+        # set window geometry
+        self.__set_geometry(config_pos, config_width)
 
         # load the strategy from the file
         self.load_filepath_into_editor()
 
         # apply the layout
         self.setLayout(self.layout)
+
+    def __set_geometry(self, config_pos, config_width):
+        # place the strategy studio to the right of the config window
+        self.setGeometry(config_pos.x() + config_width, config_pos.y(), self.WIDTH, self.HEIGHT)
 
     def load_filepath_into_editor(self):
         # if a filepath was injected, try loading it, else, show the template

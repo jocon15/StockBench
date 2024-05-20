@@ -3,8 +3,7 @@ from StockBench.gui.windows.base.overview_tab import OverviewTab, OverviewTable
 
 
 class SingularOverviewTab(OverviewTab):
-    """Widget that houses the simulation results box."""
-
+    """Tab showing simulation overview for single-symbol simulation results."""
     def __init__(self):
         super().__init__()
         self.layout = QHBoxLayout()

@@ -6,8 +6,7 @@ log = logging.getLogger()
 
 
 class MultiOverviewTab(OverviewTab):
-    """Widget that houses the simulation results box."""
-
+    """Tab showing simulation overview for multi-symbol simulation results."""
     def __init__(self):
         super().__init__()
         self.layout = QHBoxLayout()

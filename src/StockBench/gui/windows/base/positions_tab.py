@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout
 
 
 class PositionsTab(QWidget):
-    """Abstract superclass for a positions tab."""
+    """Abstract superclass for a positions analysis tab."""
     LOADING_REL_PATH = os.path.join('resources', 'default', 'chart_loading.html')
     BACKUP_REL_PATH = os.path.join('resources', 'default', 'chart_unavailable.html')
 

@@ -1,9 +1,8 @@
 import logging
-
-log = logging.getLogger()
-
 from PyQt6.QtWidgets import QGridLayout, QHBoxLayout, QLabel
 from StockBench.gui.windows.base.overview_tab import OverviewTab, OverviewTable
+
+log = logging.getLogger()
 
 
 class MultiOverviewTab(OverviewTab):

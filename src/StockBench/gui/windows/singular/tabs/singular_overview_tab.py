@@ -1,21 +1,19 @@
 from PyQt6.QtWidgets import QGridLayout, QHBoxLayout, QLabel
-from StockBench.gui.windows.overview_tab import OverviewTab, OverviewTable
+from StockBench.gui.windows.base.overview_tab import OverviewTab, OverviewTable
 
 
 class SingularOverviewTab(OverviewTab):
-    """Widget that houses the simulation results box."""
-
+    """Tab showing simulation overview for single-symbol simulation results."""
     def __init__(self):
         super().__init__()
-        self.layout = QHBoxLayout()
-
+        # add objects to the layout
         self.results_table = SingularOverviewTable()
         self.layout.addWidget(self.results_table)
         self.results_table.setMaximumWidth(230)
         self.results_table.setMaximumHeight(900)
-
         self.layout.addWidget(self.webView)
 
+        # apply the layout
         self.setLayout(self.layout)
 
     def render_data(self, simulation_results: dict):

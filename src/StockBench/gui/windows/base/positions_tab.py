@@ -4,21 +4,22 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout
 
 
 class PositionsTab(QWidget):
-    """Superclass for a positions tab."""
+    """Abstract superclass for a positions analysis tab."""
     LOADING_REL_PATH = os.path.join('resources', 'default', 'chart_loading.html')
     BACKUP_REL_PATH = os.path.join('resources', 'default', 'chart_unavailable.html')
 
+    CHART_KEY = 'position_analysis_chart_filepath'
+
     def __init__(self):
         super().__init__()
-        self.chart_name = 'position_analysis_chart_filepath'
-
+        # layout type
         self.layout = QVBoxLayout()
 
-        # define shared attributes here but adding them to layout happens in subclass
+        # add objects to the layout
         self.webView = QtWebEngineWidgets.QWebEngineView()
-
         self.layout.addWidget(self.webView)
 
+        # apply the layout
         self.setLayout(self.layout)
 
         # load blank html file to cover the white screen while the chart loads
@@ -31,12 +32,11 @@ class PositionsTab(QWidget):
     def render_data(self, simulation_results):
         # check the simulation generated a chart
         chart_loaded = False
-        if self.chart_name in simulation_results:
+        if self.CHART_KEY in simulation_results:
             # check the chart exists
-            if os.path.isfile(simulation_results[self.chart_name]):
+            if os.path.isfile(simulation_results[self.CHART_KEY]):
                 chart_loaded = True
-                self.webView.load(QtCore.QUrl().fromLocalFile(os.path.abspath(
-                    simulation_results[self.chart_name])))
+                self.webView.load(QtCore.QUrl().fromLocalFile(os.path.abspath(simulation_results[self.CHART_KEY])))
 
         if not chart_loaded:
             # load the default html file

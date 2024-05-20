@@ -1,25 +1,22 @@
 import logging
+from PyQt6.QtWidgets import QGridLayout, QLabel
+from StockBench.gui.windows.base.overview_tab import OverviewTab, OverviewTable
 
 log = logging.getLogger()
 
-from PyQt6.QtWidgets import QGridLayout, QHBoxLayout, QLabel
-from StockBench.gui.windows.overview_tab import OverviewTab, OverviewTable
-
 
 class MultiOverviewTab(OverviewTab):
-    """Widget that houses the simulation results box."""
-
+    """Tab showing simulation overview for multi-symbol simulation results."""
     def __init__(self):
         super().__init__()
-        self.layout = QHBoxLayout()
-
+        # add objects to the layout
         self.results_table = MultiOverviewTable()
         self.layout.addWidget(self.results_table)
         self.results_table.setMaximumWidth(300)
         self.results_table.setMaximumHeight(800)
-
         self.layout.addWidget(self.webView)
 
+        # apply the layout
         self.setLayout(self.layout)
 
     def render_data(self, simulation_results):

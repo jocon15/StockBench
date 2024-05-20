@@ -327,15 +327,16 @@ class SingularConfigTab(QWidget):
             return
 
         # create a new simulations results window
-        self.simulation_result_window = SingularResultsWindow(self.worker, self.simulator, self.progress_bar_observer,
-                                                              simulation_balance)
-
-        # pass the relevant information to the results window by setting its attributes
-        self.simulation_result_window.strategy = strategy
-        self.simulation_result_window.symbol = simulation_symbol
-        self.simulation_result_window.logging = self.simulation_logging
-        self.simulation_result_window.reporting = self.simulation_reporting
-        self.simulation_result_window.unique_chart_saving = self.simulation_unique_chart_saving
+        self.simulation_result_window = SingularResultsWindow(
+            simulation_symbol,
+            strategy,
+            simulation_balance,
+            self.simulator,
+            self.progress_bar_observer,
+            self.worker,
+            self.simulation_logging,
+            self.simulation_reporting,
+            self.simulation_unique_chart_saving)
 
         # all error checks have passed, can now clear the error message box
         self.error_message_box.setText('')
@@ -614,15 +615,16 @@ class MultiConfigTab(QWidget):
             return
 
         # create a new simulations results window
-        self.simulation_result_window = MultiResultsWindow(self.worker, self.simulator, self.progress_bar_observer,
-                                                           simulation_balance)
-
-        # pass the relevant information to the results window by setting its attributes
-        self.simulation_result_window.strategy = strategy
-        self.simulation_result_window.symbols = simulation_symbols
-        self.simulation_result_window.logging = self.simulation_logging
-        self.simulation_result_window.reporting = self.simulation_reporting
-        self.simulation_result_window.unique_chart_saving = self.simulation_unique_chart_saving
+        self.simulation_result_window = MultiResultsWindow(
+            simulation_symbols,
+            strategy,
+            simulation_balance,
+            self.simulator,
+            self.progress_bar_observer,
+            self.worker,
+            self.simulation_logging,
+            self.simulation_reporting,
+            self.simulation_unique_chart_saving)
 
         # all error checks have passed, can now clear the error message box
         self.error_message_box.setText('')

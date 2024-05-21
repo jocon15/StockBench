@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QFrame, QHBoxLayout
 
 
 class Tab(QFrame):
-    """Abstract superclass for a simulation results overview tab."""
+    """Abstract superclass for a gui tab."""
     LOADING_REL_PATH = os.path.join('resources', 'default', 'chart_loading.html')
     BACKUP_REL_PATH = os.path.join('resources', 'default', 'chart_unavailable.html')
 

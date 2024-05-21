@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QGridLayout, QHBoxLayout, QLabel
+from PyQt6.QtWidgets import QGridLayout, QLabel
 from StockBench.gui.windows.base.overview_tab import OverviewTab, OverviewTable
 
 

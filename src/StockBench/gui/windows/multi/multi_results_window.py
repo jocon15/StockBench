@@ -41,6 +41,6 @@ class MultiResultsWindow(SimulationResultsWindow):
     def _render_data(self, simulation_results: dict):
         """Render the updated data in the window's components."""
         self.results_frame.render_data(simulation_results)
-        self.buy_rules_tab.render_data(simulation_results)
-        self.sell_rules_tab.render_data(simulation_results)
-        self.positions_analysis_tab.render_data(simulation_results)
+        self.buy_rules_tab.render_chart(simulation_results)
+        self.sell_rules_tab.render_chart(simulation_results)
+        self.positions_analysis_tab.render_chart(simulation_results)

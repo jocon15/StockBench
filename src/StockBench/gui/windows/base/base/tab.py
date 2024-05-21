@@ -21,10 +21,11 @@ class Tab(QFrame):
         self.render_chart_loading()
 
     def render_chart_loading(self):
-        # load the loading html file
+        """Render the chart-loading file."""
         self.webView.load(QtCore.QUrl().fromLocalFile(os.path.abspath(self.LOADING_REL_PATH)))
 
     def render_chart(self, simulation_results):
+        """Render the chart created from the simulation."""
         # check the simulation generated a chart
         chart_loaded = False
         if self.chart_key in simulation_results:

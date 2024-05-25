@@ -23,11 +23,12 @@ class OverviewTab(Tab):
 
 
 class OverviewSideBar(QWidget):
-    # SIDE_BAR_STYLESHEET = """border: 1px solid red;"""
+    SIDE_BAR_STYLESHEET = """"""
 
-    OUTPUT_BOX_STYLESHEET = """color: #fff; border:2px solid white;"""
+    OUTPUT_BOX_STYLESHEET = """color: #fff; background-color: #303136; padding: 5px; max-height: 250px; 
+    position: absolute; bottom: 0;"""
 
-    title_stylesheet = """border: 1px solid red; max-height:45px; color:#FFF;font-size:20px;font-weight:bold;"""
+    title_stylesheet = """max-height:45px; color:#FFF;font-size:20px;font-weight:bold;"""
 
     error_label_style_sheet = """color:#dc143c; margin-top:10px;"""
 
@@ -59,7 +60,7 @@ class OverviewSideBar(QWidget):
         self.error_message_box.setAlignment(Qt.AlignmentFlag.AlignTop)  # aligns text inside
         self.error_message_box.setStyleSheet(self.error_label_style_sheet)
 
-        # self.setStyleSheet(self.SIDE_BAR_STYLESHEET)
+        self.setStyleSheet(self.SIDE_BAR_STYLESHEET)
 
         # timer to periodically read from the progress observer and update output box
         self.timer = QTimer()
@@ -100,7 +101,7 @@ class OverviewSideBar(QWidget):
 
 class OverviewTable(QFrame):
     """Superclass for a results table frame."""
-    TABLE_STYLESHEET = """max-height:200px"""
+    TABLE_STYLESHEET = """max-height:150px"""
 
     numeric_results_stylesheet = """color:#FFF;"""
 

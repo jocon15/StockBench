@@ -36,7 +36,7 @@ And just like that, you have simulated a strategy on historical data. Have fun!
 
 | Setup                                                                                        | Results                                                                               |
 |:--------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------:|
-| ![single](https://github.com/jocon15/StockBench/blob/master/images/configuration.png) | ![multi](https://github.com/jocon15/StockBench/blob/master/images/results_screen.png) |
+| ![single](https://github.com/jocon15/StockBench/blob/master/images/configuration.png) | ![multi](https://github.com/jocon15/StockBench/blob/master/images/results.png) |
 
 Or test your strategy on multiple symbols and see overview analytics:
 ![chart](https://github.com/jocon15/StockBench/blob/master/images/multi_display.png)
@@ -45,6 +45,8 @@ Or test your strategy on multiple symbols and see overview analytics:
 ![strategy studio](https://github.com/jocon15/StockBench/blob/master/images/strategy_studio.png)
 
 ## Additional Results Analytics
+| Buy Rules Tab                                                     | Positions Tab                                                                              |
+|:--------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------:|
 | ![buy rules tab](https://github.com/jocon15/StockBench/blob/master/images/buy_rules_tab.png) | ![positions tab](https://github.com/jocon15/StockBench/blob/master/images/positions_tab.png) |
 
 ## Diving Deeper

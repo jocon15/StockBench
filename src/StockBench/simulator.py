@@ -19,6 +19,7 @@ from StockBench.trigger.trigger_manager import TriggerManager
 from StockBench.function_tools.nonce import datetime_timestamp
 from StockBench.simulation_data.data_manager import DataManager
 from StockBench.indicators.indicator_manager import IndicatorManager
+from StockBench.logging_handlers.handlers import ProgressMessageHandler
 
 log = logging.getLogger()
 
@@ -79,8 +80,8 @@ class Simulator:
         self.__running_as_exe = getattr(sys, 'frozen', False)
 
     def enable_logging(self):
-        """Enable user logging."""
-        # set the logging level to info
+        """Enable user logging_handlers."""
+        # set the logging_handlers level to info
         log.setLevel(logging.INFO)
 
         # build the filepath
@@ -102,12 +103,12 @@ class Simulator:
         log.addHandler(user_handler)
 
     def enable_developer_logging(self, level=2):
-        """Enable developer logging.
+        """Enable developer logging_handlers.
 
         Args:
-            level (int): The logging level for the logger.
+            level (int): The logging_handlers level for the logger.
         """
-        # set the logging level
+        # set the logging_handlers level
         if level == 1:
             log.setLevel(logging.DEBUG)
             # build the formatter
@@ -212,7 +213,10 @@ class Simulator:
         start_time = perf_counter()
 
         if progress_observer:
-            progress_observer.add_message("Starting multi-simulation...")
+            # enable the progress message handler to capture the logs
+            log.setLevel(logging.INFO)
+            handler = ProgressMessageHandler(progress_observer)
+            log.addHandler(handler)
 
         progress_bar_increment = self.__multi_pre_process(symbols, progress_observer)
 
@@ -241,10 +245,9 @@ class Simulator:
             if not self.__running_as_exe:
                 pbar.update(tqdm_increment)
 
-        if progress_observer:
-            progress_observer.add_message("Multi-simulation complete")
+        log.info('Multi-simulation complete')
 
-        return self.__multi_post_process(results, start_time, show_chart, save_option, progress_observer)
+        return self.__multi_post_process(results, start_time, show_chart, save_option)
 
     def __pre_process(self, symbol, progress_observer) -> tuple:
         """Setup for the simulation."""
@@ -415,10 +418,8 @@ class Simulator:
 
         return increment
 
-    def __multi_post_process(self, results, start_time, show_chart, save_option, progress_observer):
+    def __multi_post_process(self, results, start_time, show_chart, save_option):
         # re-enable printing for TQDM
-        if progress_observer:
-            progress_observer.add_message('Running analytics on simulation results...')
         log.info('Running multi simulation post-process...')
         self.__running_multiple = False
         # save the results in case the user wants to write them to file
@@ -447,8 +448,7 @@ class Simulator:
         end_time = perf_counter()
         elapsed_time = round(end_time - start_time, 4)
 
-        if progress_observer:
-            progress_observer.add_message('Analytics Complete')
+        # FIXME: this is where we tell progress observer that analytics is done
 
         return {
             'elapsed_time': elapsed_time,

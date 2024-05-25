@@ -26,7 +26,7 @@ And just like that, you have simulated a strategy on historical data. Have fun!
 
 3. Restart your PC to enable the [Environment Variables](https://github.com/jocon15/StockBench/wiki/Environment-Variables).
 
-4. Build your strategy .JSON file. See [Building a Strategy](https://github.com/jocon15/StockBench/wiki/Building-a-Strategy)
+4. Build your strategy .JSON file. See [Building a Strategy](https://github.com/jocon15/StockBench/wiki/Building-a-Strategy) or try our new [Strategy Studio (beta)](#Strategy-Studio).
 
 5. Run the StockBench.exe.
 
@@ -36,10 +36,16 @@ And just like that, you have simulated a strategy on historical data. Have fun!
 
 | Setup                                                                                        | Results                                                                               |
 |:--------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------:|
-| ![single](https://github.com/jocon15/StockBench/blob/master/images/configuration_screen.png) | ![multi](https://github.com/jocon15/StockBench/blob/master/images/results_screen.png) |
+| ![single](https://github.com/jocon15/StockBench/blob/master/images/configuration.png) | ![multi](https://github.com/jocon15/StockBench/blob/master/images/results_screen.png) |
 
 Or test your strategy on multiple symbols and see overview analytics:
 ![chart](https://github.com/jocon15/StockBench/blob/master/images/multi_display.png)
+
+## Strategy Studio
+![strategy studio](https://github.com/jocon15/StockBench/blob/master/images/strategy_studio.png)
+
+## Additional Results Analytics
+| ![buy rules tab](https://github.com/jocon15/StockBench/blob/master/images/buy_rules_tab.png) | ![positions tab](https://github.com/jocon15/StockBench/blob/master/images/positions_tab.png) |
 
 ## Diving Deeper
 

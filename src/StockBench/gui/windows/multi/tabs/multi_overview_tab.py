@@ -1,19 +1,20 @@
 import logging
 from PyQt6.QtWidgets import QGridLayout, QLabel
-from StockBench.gui.windows.base.overview_tab import OverviewTab, OverviewTable
+from StockBench.gui.windows.base.overview_tab import OverviewTab, OverviewSideBar, OverviewTable
 
 log = logging.getLogger()
 
 
 class MultiOverviewTab(OverviewTab):
     """Tab showing simulation overview for multi-symbol simulation results."""
-    def __init__(self):
+    def __init__(self, progress_observer):
         super().__init__()
         # add objects to the layout
-        self.results_table = MultiOverviewTable()
-        self.layout.addWidget(self.results_table)
-        self.results_table.setMaximumWidth(300)
-        self.results_table.setMaximumHeight(800)
+
+        self.overview_side_bar = MultiOverviewSideBar(progress_observer)
+        self.layout.addWidget(self.overview_side_bar)
+        self.overview_side_bar.setMaximumWidth(300)
+        self.overview_side_bar.setMaximumHeight(800)
         self.layout.addWidget(self.webView)
 
         # apply the layout
@@ -23,11 +24,29 @@ class MultiOverviewTab(OverviewTab):
         # render the chart
         self.render_chart(simulation_results)
         # render the text box results
-        self.results_table.render_data(simulation_results)
+        self.overview_side_bar.render_data(simulation_results)
 
     def update_error_message(self, message):
         # pass the error down to the simulation results text box
-        self.results_table.update_error_message(message)
+        self.overview_side_bar.update_error_message(message)
+
+
+class MultiOverviewSideBar(OverviewSideBar):
+    def __init__(self, progress_observer):
+        super().__init__(progress_observer)
+
+        self.overview_table = MultiOverviewTable()
+        self.layout.addWidget(self.overview_table)
+
+        self.layout.addWidget(self.output_box)
+
+        self.layout.addWidget(self.error_message_box)
+
+        self.setLayout(self.layout)
+
+    def render_data(self, simulation_results):
+        # render the table of results
+        self.overview_table.render_data(simulation_results)
 
 
 class MultiOverviewTable(OverviewTable):
@@ -120,19 +139,15 @@ class MultiOverviewTable(OverviewTable):
         self.stddev_pl_data_label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.stddev_pl_data_label, row, 2)
 
-        # error data label
-        row += 1
-        self.layout.addWidget(self.error_message_box, row, 1)
-
         # stretch the row and column to show natural size
-        self.layout.setRowStretch(self.layout.rowCount(), 1)
-        self.layout.setColumnStretch(self.layout.columnCount(), 1)
+        # self.layout.setRowStretch(self.layout.rowCount(), 1)
+        # self.layout.setColumnStretch(self.layout.columnCount(), 1)
 
         # apply the layout to the frame
         self.setLayout(self.layout)
 
     def render_data(self, simulation_results: dict):
-        if not self._error_message:
+        if simulation_results.keys():
             self.elapsed_time_data_label.setText(f'{simulation_results["elapsed_time"]} seconds')
             self.trades_made_data_label.setText(f'{simulation_results["trades_made"]}')
             self.effectiveness_data_label.setText(f'{simulation_results["effectiveness"]} %')
@@ -140,5 +155,3 @@ class MultiOverviewTable(OverviewTable):
             self.average_pl_data_label.setText(f'$ {simulation_results["average_profit_loss"]}')
             self.median_pl_data_label.setText(f'$ {simulation_results["median_profit_loss"]}')
             self.stddev_pl_data_label.setText(f'$ {simulation_results["standard_profit_loss_deviation"]}')
-        else:
-            self.error_message_box.setText(f'Error: {self._error_message}')

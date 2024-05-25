@@ -211,6 +211,9 @@ class Simulator:
         """
         start_time = perf_counter()
 
+        if progress_observer:
+            progress_observer.add_message("Starting multi-simulation...")
+
         progress_bar_increment = self.__multi_pre_process(symbols, progress_observer)
 
         tqdm_increment = 0
@@ -231,14 +234,17 @@ class Simulator:
             results.append(result)
 
             # update the progress observer
-            if progress_observer is not None:
+            if progress_observer:
                 progress_observer.update_progress(progress_bar_increment)
 
             # update tqdm if enabled
             if not self.__running_as_exe:
                 pbar.update(tqdm_increment)
 
-        return self.__multi_post_process(results, start_time, show_chart, save_option)
+        if progress_observer:
+            progress_observer.add_message("Multi-simulation complete")
+
+        return self.__multi_post_process(results, start_time, show_chart, save_option, progress_observer)
 
     def __pre_process(self, symbol, progress_observer) -> tuple:
         """Setup for the simulation."""
@@ -409,8 +415,10 @@ class Simulator:
 
         return increment
 
-    def __multi_post_process(self, results, start_time, show_chart, save_option):
+    def __multi_post_process(self, results, start_time, show_chart, save_option, progress_observer):
         # re-enable printing for TQDM
+        if progress_observer:
+            progress_observer.add_message('Running analytics on simulation results...')
         log.info('Running multi simulation post-process...')
         self.__running_multiple = False
         # save the results in case the user wants to write them to file
@@ -438,6 +446,9 @@ class Simulator:
 
         end_time = perf_counter()
         elapsed_time = round(end_time - start_time, 4)
+
+        if progress_observer:
+            progress_observer.add_message('Analytics Complete')
 
         return {
             'elapsed_time': elapsed_time,

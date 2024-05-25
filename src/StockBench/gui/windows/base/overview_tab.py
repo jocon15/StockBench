@@ -23,9 +23,11 @@ class OverviewTab(Tab):
 
 
 class OverviewSideBar(QWidget):
-    SIDE_BAR_STYLESHEET = """border: 1px solid red;"""
+    # SIDE_BAR_STYLESHEET = """border: 1px solid red;"""
 
-    OUTPUT_BOX_STYLESHEET = """color: #fff; border:2px solid white; min-height: 300px;"""
+    OUTPUT_BOX_STYLESHEET = """color: #fff; border:2px solid white;"""
+
+    title_stylesheet = """border: 1px solid red; max-height:45px; color:#FFF;font-size:20px;font-weight:bold;"""
 
     error_label_style_sheet = """color:#dc143c; margin-top:10px;"""
 
@@ -39,17 +41,25 @@ class OverviewSideBar(QWidget):
         # define layout type
         self.layout = QVBoxLayout()
 
+        # title
+        self.title = QLabel()
+        self.title.setText('Simulation Results')
+        self.title.setStyleSheet(self.title_stylesheet)
+
+        # output box (terminal)
         self.output_box = QLabel()
+        self.output_box.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.output_box.setStyleSheet(self.OUTPUT_BOX_STYLESHEET)
+
         # error data label
         self._error_message = ""
         # Note: this is the only label we can abstract here without PyQt stopp responding error
         self.error_message_box = QLabel()
         self.error_message_box.setWordWrap(True)
-        self.error_message_box.setAlignment(Qt.AlignmentFlag.AlignBottom)
+        self.error_message_box.setAlignment(Qt.AlignmentFlag.AlignTop)  # aligns text inside
         self.error_message_box.setStyleSheet(self.error_label_style_sheet)
 
-        self.setStyleSheet(self.SIDE_BAR_STYLESHEET)
+        # self.setStyleSheet(self.SIDE_BAR_STYLESHEET)
 
         # timer to periodically read from the progress observer and update output box
         self.timer = QTimer()
@@ -59,8 +69,12 @@ class OverviewSideBar(QWidget):
         self.timer.start()
 
     def update_error_message(self, message):
-        """Set the error message text box."""
-        self.error_message_box.setText(message)
+        """Set the error message in the output box"""
+        # copy existing text
+        existing_text = self.output_box.text()
+        # FIXME: find out how to make the text red
+        # self.output_box.setText(f'{text}\n<font color="red">{message}</font>')
+        self.output_box.setText(f'{existing_text}\n{message}')
 
     def __update_output_box(self):
         """Update the output box with messages from the progress observer."""
@@ -86,12 +100,14 @@ class OverviewSideBar(QWidget):
 
 class OverviewTable(QFrame):
     """Superclass for a results table frame."""
-    title_stylesheet = """color:#FFF;font-size:20px;font-weight:bold;"""
+    TABLE_STYLESHEET = """max-height:200px"""
 
     numeric_results_stylesheet = """color:#FFF;"""
 
     def __init__(self):
         super().__init__()
+
+        self.setStyleSheet(self.TABLE_STYLESHEET)
 
     @abstractmethod
     def render_data(self, simulation_results: dict):

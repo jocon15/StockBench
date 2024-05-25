@@ -35,12 +35,14 @@ class MultiOverviewSideBar(OverviewSideBar):
     def __init__(self, progress_observer):
         super().__init__(progress_observer)
 
+        self.layout.addWidget(self.title)
+
         self.overview_table = MultiOverviewTable()
         self.layout.addWidget(self.overview_table)
 
         self.layout.addWidget(self.output_box)
 
-        self.layout.addWidget(self.error_message_box)
+        # self.layout.addWidget(self.error_message_box)
 
         self.setLayout(self.layout)
 
@@ -56,15 +58,8 @@ class MultiOverviewTable(OverviewTable):
         # define the layout
         self.layout = QGridLayout()
 
-        # results title
-        row = 1
-        label = QLabel()
-        label.setText('Simulation Results')
-        label.setStyleSheet(self.title_stylesheet)
-        self.layout.addWidget(label, row, 1)
-
         # elapsed time title
-        row += 1
+        row = 1
         label = QLabel()
         label.setText('Elapsed Time')
         label.setStyleSheet(self.numeric_results_stylesheet)

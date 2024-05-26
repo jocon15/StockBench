@@ -2,7 +2,7 @@ from StockBench.gui.windows.base.base.tab import Tab
 
 
 class PositionsTab(Tab):
-    """Abstract superclass for a positions analysis tab."""
+    """Abstract base class for a positions analysis tab."""
     CHART_KEY = 'position_analysis_chart_filepath'
 
     def __init__(self):

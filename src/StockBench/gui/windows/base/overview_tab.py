@@ -8,7 +8,7 @@ from PyQt6.QtCore import QTimer, QThreadPool
 
 
 class OverviewTab(Tab):
-    """Abstract superclass for a simulation results overview tab."""
+    """Abstract base class for a simulation results overview tab."""
     CHART_KEY = 'overview_chart_filepath'
 
     def __init__(self):
@@ -24,13 +24,10 @@ class OverviewTab(Tab):
 
 
 class OverviewSideBar(QWidget):
-    # SIDE_BAR_STYLESHEET = """border: 1px solid red"""
-
+    """Abstract base class for a sidebar widget."""
     OUTPUT_BOX_STYLESHEET = """color: #fff; background-color: #303136; border: 0px; padding: 5px; max-height: 300px;"""
 
-    title_stylesheet = """max-height:45px; color:#FFF;font-size:20px;font-weight:bold;"""
-
-    error_label_style_sheet = """color:#dc143c; margin-top:10px;"""
+    HEADER_STYLESHEET = """max-height:45px; color:#FFF;font-size:20px;font-weight:bold;"""
 
     def __init__(self, progress_observer):
         super().__init__()
@@ -42,10 +39,10 @@ class OverviewSideBar(QWidget):
         # define layout type
         self.layout = QVBoxLayout()
 
-        # results title
-        self.results_title = QLabel()
-        self.results_title.setText('Simulation Results')
-        self.results_title.setStyleSheet(self.title_stylesheet)
+        # results header
+        self.results_header = QLabel()
+        self.results_header.setText('Simulation Results')
+        self.results_header.setStyleSheet(self.HEADER_STYLESHEET)
 
         # output box (terminal)
         self.output_box = QListWidget()
@@ -53,12 +50,10 @@ class OverviewSideBar(QWidget):
         self.output_box.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.output_box.setStyleSheet(self.OUTPUT_BOX_STYLESHEET)
 
-        # self.setStyleSheet(self.SIDE_BAR_STYLESHEET)
-
-        # status
-        self.status_title = QLabel()
-        self.status_title.setText('Status')
-        self.status_title.setStyleSheet(self.title_stylesheet)
+        # status header
+        self.status_header = QLabel()
+        self.status_header.setText('Status')
+        self.status_header.setStyleSheet(self.HEADER_STYLESHEET)
 
         # timer to periodically read from the progress observer and update output box
         self.timer = QTimer()
@@ -68,7 +63,7 @@ class OverviewSideBar(QWidget):
         self.timer.start()
 
     def update_error_message(self, message):
-        """Set the error message in the output box."""
+        # handle the passed down error message by adding it to the output box
         list_item = QListWidgetItem(message)
         list_item.setForeground(QColor("red"))
         self.output_box.addItem(list_item)
@@ -93,7 +88,7 @@ class OverviewTable(QFrame):
     """Superclass for a results table frame."""
     TABLE_STYLESHEET = """max-height:200px"""
 
-    numeric_results_stylesheet = """color:#FFF;"""
+    RESULT_VALUE_STYLESHEET = """color:#FFF;"""
 
     def __init__(self):
         super().__init__()

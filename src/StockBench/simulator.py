@@ -21,7 +21,11 @@ from StockBench.simulation_data.data_manager import DataManager
 from StockBench.indicators.indicator_manager import IndicatorManager
 from StockBench.logging_handlers.handlers import ProgressMessageHandler
 
+# generic logger used for debugging the application
 log = logging.getLogger()
+
+# logger dedicated to logging messages to the gui terminal
+gui_terminal_log = logging.getLogger('gui_terminal_logging')
 
 
 class Simulator:
@@ -171,6 +175,11 @@ class Simulator:
         """
         start_time = perf_counter()
 
+        # FIXME: add progress observer logger initialization here
+        #   if not running multiple:
+        #       if progress_observer:
+        #           set level, and handler
+
         # broker only excepts capitalized symbols
         symbol = symbol.upper()
 
@@ -188,8 +197,6 @@ class Simulator:
             buy_mode, position = self.__simulate_day(current_day_index, buy_mode, position, progress_observer,
                                                      increment)
         # ============================================================
-
-        log.info('Simulation complete!')
 
         return self.__post_process(symbol, trade_able_days, sim_window_start_day, start_time, show_chart, save_option)
 
@@ -214,9 +221,10 @@ class Simulator:
 
         if progress_observer:
             # enable the progress message handler to capture the logs
-            log.setLevel(logging.INFO)
-            handler = ProgressMessageHandler(progress_observer)
-            log.addHandler(handler)
+            gui_terminal_log.setLevel(logging.INFO)
+            gui_terminal_log.addHandler(ProgressMessageHandler(progress_observer))
+
+        gui_terminal_log.info('Beginning multiple symbol simulation...')
 
         progress_bar_increment = self.__multi_pre_process(symbols, progress_observer)
 
@@ -246,6 +254,7 @@ class Simulator:
                 pbar.update(tqdm_increment)
 
         log.info('Multi-simulation complete')
+        gui_terminal_log.info('Multiple symbol simulation complete')
 
         return self.__multi_post_process(results, start_time, show_chart, save_option, progress_observer)
 
@@ -386,7 +395,13 @@ class Simulator:
             position_analysis_chart_filepath = display.chart_positions_analysis(
                 self.__single_simulation_position_archive, symbol, show_chart, save_option)
 
+        log.info('Simulation complete!')
+        gui_terminal_log.info(f'Simulation for {symbol} complete')
+
         # FIXME: this is where we tell progress observer that analytics is done
+        #   if not running multiple
+        #       if progress observer
+        #           set the analytics completed
 
         return {
             'symbol': symbol,
@@ -423,6 +438,7 @@ class Simulator:
     def __multi_post_process(self, results, start_time, show_chart, save_option, progress_observer):
         # re-enable printing for TQDM
         log.info('Running multi simulation post-process...')
+        gui_terminal_log.info('Running analytics...')
         self.__running_multiple = False
         # save the results in case the user wants to write them to file
         self.__stored_results = results
@@ -449,6 +465,8 @@ class Simulator:
 
         end_time = perf_counter()
         elapsed_time = round(end_time - start_time, 4)
+
+        gui_terminal_log.info('Analytics complete')
 
         if progress_observer:
             # inform the progress observer that the analytics is complete

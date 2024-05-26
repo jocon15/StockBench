@@ -98,7 +98,7 @@ class SimulationResultsWindow(QWidget):
 
     def __update_progress_bar(self):
         """Update the progress bar."""
-        if self.progress_observer.is_completed():
+        if self.progress_observer.is_simulation_completed():
             # mark the progress bar as completed
             self.progress_bar.setValue(100)
 

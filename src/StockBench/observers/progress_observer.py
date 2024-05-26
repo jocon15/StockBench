@@ -18,7 +18,8 @@ class ProgressObserver:
         self.__message_queue = Queue()
         self.__current_progress = 0.0
         self.__max_progress = 100.0
-        self.__completed = False
+        self.__simulation_completed = False
+        self.__analytics_completed = False
 
     def update_progress(self, advance: float):
         """Update the progress of the task.
@@ -32,7 +33,7 @@ class ProgressObserver:
                 # If the advance will exceed the max progress, set progress to full progress.
                 # This will prevent the progress from going out of bounds in a gui if the advance does not evently
                 # divide the max progress (100)
-                self.__completed = True
+                self.__simulation_completed = True
                 self.__current_progress = self.__max_progress
             else:
                 self.__current_progress += advance
@@ -44,11 +45,11 @@ class ProgressObserver:
             return self.__current_progress
 
     def add_message(self, message):
-        # reminder that queue is threadsafe
+        # reminder that queue is threadsafe by default
         self.__message_queue.put(message)
 
     def get_messages(self) -> list:
-        # reminder that queue is threadsafe
+        # reminder that queue is threadsafe by default
         messages = []
         if self.__message_queue.qsize() != 0:
             for _ in range(self.__message_queue.qsize()):
@@ -58,8 +59,17 @@ class ProgressObserver:
             self.__message_queue.task_done()
         return messages
 
-    def is_completed(self) -> bool:
-        """See if the task is complete."""
-        # acquire lock to be thread-safe
+    def set_analytics_complete(self):
+        """Manually list the analytics as complete"""
         with self.__progress_lock:
-            return self.__completed
+            self.__analytics_completed = True
+
+    def is_simulation_completed(self) -> bool:
+        """See if the simulation is complete."""
+        with self.__progress_lock:
+            return self.__simulation_completed
+
+    def is_analytics_completed(self) -> bool:
+        """See if the analytics are complete."""
+        with self.__progress_lock:
+            return self.__analytics_completed

@@ -75,7 +75,7 @@ class OverviewSideBar(QWidget):
 
     def __update_output_box(self):
         """Update the output box with messages from the progress observer."""
-        if self.progress_observer.is_completed():
+        if self.progress_observer.is_analytics_completed():
             # stop the timer
             self.timer.stop()
         messages = self.progress_observer.get_messages()

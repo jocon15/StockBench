@@ -247,7 +247,7 @@ class Simulator:
 
         log.info('Multi-simulation complete')
 
-        return self.__multi_post_process(results, start_time, show_chart, save_option)
+        return self.__multi_post_process(results, start_time, show_chart, save_option, progress_observer)
 
     def __pre_process(self, symbol, progress_observer) -> tuple:
         """Setup for the simulation."""
@@ -386,6 +386,8 @@ class Simulator:
             position_analysis_chart_filepath = display.chart_positions_analysis(
                 self.__single_simulation_position_archive, symbol, show_chart, save_option)
 
+        # FIXME: this is where we tell progress observer that analytics is done
+
         return {
             'symbol': symbol,
             'trade_able_days': trade_able_days,
@@ -418,7 +420,7 @@ class Simulator:
 
         return increment
 
-    def __multi_post_process(self, results, start_time, show_chart, save_option):
+    def __multi_post_process(self, results, start_time, show_chart, save_option, progress_observer):
         # re-enable printing for TQDM
         log.info('Running multi simulation post-process...')
         self.__running_multiple = False
@@ -448,7 +450,9 @@ class Simulator:
         end_time = perf_counter()
         elapsed_time = round(end_time - start_time, 4)
 
-        # FIXME: this is where we tell progress observer that analytics is done
+        if progress_observer:
+            # inform the progress observer that the analytics is complete
+            progress_observer.set_analytics_complete()
 
         return {
             'elapsed_time': elapsed_time,

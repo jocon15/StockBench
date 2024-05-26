@@ -24,10 +24,9 @@ class OverviewTab(Tab):
 
 
 class OverviewSideBar(QWidget):
-    SIDE_BAR_STYLESHEET = """"""
+    # SIDE_BAR_STYLESHEET = """border: 1px solid red"""
 
-    OUTPUT_BOX_STYLESHEET = """color: #fff; background-color: #303136; padding: 5px; max-height: 250px; 
-    position: absolute; bottom: 0;"""
+    OUTPUT_BOX_STYLESHEET = """color: #fff; background-color: #303136; border: 0px; padding: 5px; max-height: 300px;"""
 
     title_stylesheet = """max-height:45px; color:#FFF;font-size:20px;font-weight:bold;"""
 
@@ -43,25 +42,22 @@ class OverviewSideBar(QWidget):
         # define layout type
         self.layout = QVBoxLayout()
 
-        # title
-        self.title = QLabel()
-        self.title.setText('Simulation Results')
-        self.title.setStyleSheet(self.title_stylesheet)
+        # results title
+        self.results_title = QLabel()
+        self.results_title.setText('Simulation Results')
+        self.results_title.setStyleSheet(self.title_stylesheet)
 
         # output box (terminal)
         self.output_box = QListWidget()
-        # self.output_box.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.output_box.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.output_box.setStyleSheet(self.OUTPUT_BOX_STYLESHEET)
 
-        # error data label
-        self._error_message = ""
-        # Note: this is the only label we can abstract here without PyQt stopp responding error
-        self.error_message_box = QLabel()
-        self.error_message_box.setWordWrap(True)
-        self.error_message_box.setAlignment(Qt.AlignmentFlag.AlignTop)  # aligns text inside
-        self.error_message_box.setStyleSheet(self.error_label_style_sheet)
+        # self.setStyleSheet(self.SIDE_BAR_STYLESHEET)
 
-        self.setStyleSheet(self.SIDE_BAR_STYLESHEET)
+        # status
+        self.status_title = QLabel()
+        self.status_title.setText('Status')
+        self.status_title.setStyleSheet(self.title_stylesheet)
 
         # timer to periodically read from the progress observer and update output box
         self.timer = QTimer()
@@ -71,9 +67,7 @@ class OverviewSideBar(QWidget):
         self.timer.start()
 
     def update_error_message(self, message):
-        """Set the error message in the output box"""
-        # copy existing text
-
+        """Set the error message in the output box."""
         list_item = QListWidgetItem(message)
         list_item.setForeground(QColor("red"))
         self.output_box.addItem(list_item)
@@ -96,7 +90,7 @@ class OverviewSideBar(QWidget):
 
 class OverviewTable(QFrame):
     """Superclass for a results table frame."""
-    TABLE_STYLESHEET = """max-height:150px"""
+    TABLE_STYLESHEET = """max-height:200px"""
 
     numeric_results_stylesheet = """color:#FFF;"""
 

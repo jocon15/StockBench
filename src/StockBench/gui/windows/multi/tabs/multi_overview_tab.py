@@ -10,7 +10,6 @@ class MultiOverviewTab(OverviewTab):
     def __init__(self, progress_observer):
         super().__init__()
         # add objects to the layout
-
         self.overview_side_bar = MultiOverviewSideBar(progress_observer)
         self.layout.addWidget(self.overview_side_bar)
         self.overview_side_bar.setMaximumWidth(300)
@@ -35,14 +34,16 @@ class MultiOverviewSideBar(OverviewSideBar):
     def __init__(self, progress_observer):
         super().__init__(progress_observer)
 
-        self.layout.addWidget(self.title)
+        self.layout.addWidget(self.results_title)
 
         self.overview_table = MultiOverviewTable()
         self.layout.addWidget(self.overview_table)
 
-        self.layout.addWidget(self.output_box)
+        # pushes the status title and output box to the bottom
+        self.layout.addStretch()
 
-        # self.layout.addWidget(self.error_message_box)
+        self.layout.addWidget(self.status_title)
+        self.layout.addWidget(self.output_box)
 
         self.setLayout(self.layout)
 

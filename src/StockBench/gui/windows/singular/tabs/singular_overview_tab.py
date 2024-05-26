@@ -1,13 +1,13 @@
-from PyQt6.QtWidgets import QGridLayout, QLabel
-from StockBench.gui.windows.base.overview_tab import OverviewTab, OverviewTable
+from PyQt6.QtWidgets import QLabel
+from StockBench.gui.windows.base.overview_tab import OverviewTab, OverviewSideBar, OverviewTable
 
 
 class SingularOverviewTab(OverviewTab):
     """Tab showing simulation overview for single-symbol simulation results."""
-    def __init__(self):
+    def __init__(self, progress_observer):
         super().__init__()
         # add objects to the layout
-        self.results_table = SingularOverviewTable()
+        self.results_table = SingularOverviewSideBar(progress_observer)
         self.layout.addWidget(self.results_table)
         self.results_table.setMaximumWidth(230)
         self.results_table.setMaximumHeight(900)
@@ -27,22 +27,45 @@ class SingularOverviewTab(OverviewTab):
         self.results_table.update_error_message(message)
 
 
-class SingularOverviewTable(OverviewTable):
-    """Widget for numeric overview data."""
+class SingularOverviewSideBar(OverviewSideBar):
+    def __init__(self, progress_observer):
+        super().__init__(progress_observer)
+        # add objects to the layout
+        metadata_label = QLabel()
+        metadata_label.setText('Metadata')
+        metadata_label.setStyleSheet(self.title_stylesheet)
+        self.layout.addWidget(metadata_label)
+
+        self.metadata_table = SingularMetadataOverviewTable()
+        self.layout.addWidget(self.metadata_table)
+
+        results_label = QLabel()
+        results_label.setText("Simulation Results")
+        results_label.setStyleSheet(self.title_stylesheet)
+        self.layout.addWidget(results_label)
+
+        self.results_table = SingularResultsOverviewTable()
+        self.layout.addWidget(self.results_table)
+
+        # pushes the status title and output box to the bottom
+        self.layout.addStretch()
+
+        self.layout.addWidget(self.status_title)
+        self.layout.addWidget(self.output_box)
+
+        # apply the layout
+        self.setLayout(self.layout)
+
+    def render_data(self, simulation_results: dict):
+        self.metadata_table.render_data(simulation_results)
+        self.results_table.render_data(simulation_results)
+
+
+class SingularMetadataOverviewTable(OverviewTable):
     def __init__(self):
         super().__init__()
-        # define the layout
-        self.layout = QGridLayout()
-
-        # parameters title
-        row = 1
-        label = QLabel()
-        label.setText('Metadata')
-        label.setStyleSheet(self.title_stylesheet)
-        self.layout.addWidget(label, row, 1)
-
         # symbol title
-        row += 1
+        row = 1
         label = QLabel()
         label.setText('Symbol')
         label.setStyleSheet(self.numeric_results_stylesheet)
@@ -63,15 +86,21 @@ class SingularOverviewTable(OverviewTable):
         self.trade_able_days_data_label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.trade_able_days_data_label, row, 2)
 
-        # results title
-        row += 1
-        label = QLabel()
-        label.setText('Results')
-        label.setStyleSheet(self.title_stylesheet)
-        self.layout.addWidget(label, row, 1)
+        # apply the layout to the frame
+        self.setLayout(self.layout)
 
+    def render_data(self, simulation_results: dict):
+        if simulation_results.keys():
+            self.symbol_data_label.setText(f'{simulation_results["symbol"]}')
+            self.trade_able_days_data_label.setText(f'{simulation_results["trade_able_days"]} days')
+
+
+class SingularResultsOverviewTable(OverviewTable):
+    """Widget for numeric overview data."""
+    def __init__(self):
+        super().__init__()
         # elapsed time title
-        row += 1
+        row = 1
         label = QLabel()
         label.setText('Elapsed Time')
         label.setStyleSheet(self.numeric_results_stylesheet)
@@ -157,21 +186,15 @@ class SingularOverviewTable(OverviewTable):
         self.account_value_data_label.setStyleSheet(self.numeric_results_stylesheet)
         self.layout.addWidget(self.account_value_data_label, row, 2)
 
-        # error data label
-        row += 1
-        self.layout.addWidget(self.error_message_box, row, 1)
-
         # stretch the row and column to show natural size
-        self.layout.setRowStretch(self.layout.rowCount(), 1)
-        self.layout.setColumnStretch(self.layout.columnCount(), 1)
+        # self.layout.setRowStretch(self.layout.rowCount(), 1)
+        # self.layout.setColumnStretch(self.layout.columnCount(), 1)
 
         # apply the layout to the frame
         self.setLayout(self.layout)
 
     def render_data(self, simulation_results: dict):
-        if not self._error_message:
-            self.symbol_data_label.setText(f'{simulation_results["symbol"]}')
-            self.trade_able_days_data_label.setText(f'{simulation_results["trade_able_days"]} days')
+        if simulation_results.keys():
             self.elapsed_time_data_label.setText(f'{simulation_results["elapsed_time"]} seconds')
             self.trades_made_data_label.setText(f'{simulation_results["trades_made"]}')
             self.effectiveness_data_label.setText(f'{simulation_results["effectiveness"]} %')
@@ -180,5 +203,3 @@ class SingularOverviewTable(OverviewTable):
             self.median_pl_data_label.setText(f'$ {simulation_results["median_profit_loss"]}')
             self.stddev_pl_data_label.setText(f'$ {simulation_results["standard_profit_loss_deviation"]}')
             self.account_value_data_label.setText(f'$ {simulation_results["account_value"]}')
-        else:
-            self.error_message_box.setText(f'Error: {self._error_message}')

@@ -175,18 +175,20 @@ class Simulator:
         """
         start_time = perf_counter()
 
-        # FIXME: add progress observer logger initialization here
-        #   if not running multiple:
-        #       if progress_observer:
-        #           set level, and handler
+        if not self.__running_multiple:
+            if progress_observer:
+                # enable the progress message handler to capture the logs
+                gui_terminal_log.setLevel(logging.INFO)
+                gui_terminal_log.addHandler(ProgressMessageHandler(progress_observer))
+
+        log.info(f'Starting simulation for symbol: {symbol}...')
+        gui_terminal_log.info(f'Starting simulation for {symbol}...')
 
         # broker only excepts capitalized symbols
         symbol = symbol.upper()
 
         # perform the pre-simulation tasks
         sim_window_start_day, trade_able_days, increment = self.__pre_process(symbol, progress_observer)
-
-        log.info(f'Beginning simulation for symbol: {symbol}...')
 
         # ===================== Simulation Loop ======================
         buy_mode = True
@@ -198,7 +200,10 @@ class Simulator:
                                                      increment)
         # ============================================================
 
-        return self.__post_process(symbol, trade_able_days, sim_window_start_day, start_time, show_chart, save_option)
+        gui_terminal_log.info(f'Simulation for {symbol} complete')
+
+        return self.__post_process(symbol, trade_able_days, sim_window_start_day, start_time, show_chart, save_option,
+                                   progress_observer)
 
     def run_multiple(self,
                      symbols: list,
@@ -327,11 +332,6 @@ class Simulator:
                 # sell mode
                 was_triggered, rule = self.__trigger_manager.check_triggers_by_side(self.SELL_SIDE, self.__data_manager,
                                                                                     current_day_index, position)
-                log.info(current_day_index)
-                num = self.__data_manager.get_data_length() - 1
-                log.info(num)
-                if current_day_index == 517:
-                    print(2)
                 if was_triggered:
                     # close the position
                     self.__liquidate_position(position, current_day_index, rule)
@@ -355,8 +355,9 @@ class Simulator:
         return buy_mode, position
 
     def __post_process(self, symbol, trade_able_days, sim_window_start_day, start_time, show_chart,
-                       save_option) -> dict:
+                       save_option, progress_observer) -> dict:
         """Cleanup and analysis after the simulation."""
+        gui_terminal_log.info(f'Starting analytics for {symbol}...')
         # add the buys and sells to the df
         self.__add_positions_to_data()
 
@@ -387,21 +388,25 @@ class Simulator:
         if show_chart or save_option:
             # create the display object
             display = SingularDisplay(self.__indicators.values())
+            gui_terminal_log.info('Building overview chart...')
             overview_chart_filepath = display.chart_overview(chopped_temp_df, symbol, show_chart, save_option)
+            gui_terminal_log.info('Building buy rules analysis chart...')
             buy_rule_analysis_chart_filepath = display.chart_buy_rules_analysis(
                 self.__single_simulation_position_archive, symbol, show_chart, save_option)
+            gui_terminal_log.info('Building sell rules analysis chart...')
             sell_rule_analysis_chart_filepath = display.chart_sell_rules_analysis(
                 self.__single_simulation_position_archive, symbol, show_chart, save_option)
+            gui_terminal_log.info('Building positions analysis charts...')
             position_analysis_chart_filepath = display.chart_positions_analysis(
                 self.__single_simulation_position_archive, symbol, show_chart, save_option)
 
         log.info('Simulation complete!')
-        gui_terminal_log.info(f'Simulation for {symbol} complete')
+        gui_terminal_log.info(f'Analytics for {symbol} complete')
 
-        # FIXME: this is where we tell progress observer that analytics is done
-        #   if not running multiple
-        #       if progress observer
-        #           set the analytics completed
+        if not self.__running_multiple:
+            if progress_observer:
+                # inform the progress observer that the analytics is complete
+                progress_observer.set_analytics_complete()
 
         return {
             'symbol': symbol,
@@ -438,7 +443,7 @@ class Simulator:
     def __multi_post_process(self, results, start_time, show_chart, save_option, progress_observer):
         # re-enable printing for TQDM
         log.info('Running multi simulation post-process...')
-        gui_terminal_log.info('Running analytics...')
+        gui_terminal_log.info('Starting analytics...')
         self.__running_multiple = False
         # save the results in case the user wants to write them to file
         self.__stored_results = results
@@ -453,13 +458,15 @@ class Simulator:
         if show_chart or save_option:
             # create the display object
             display = MultipleDisplay()
-            # overview tab chart
+            gui_terminal_log.info('Building overview chart...')
             overview_chart_filepath = display.chart_overview(results, show_chart, save_option)
-            # buy rules tab chart
+            gui_terminal_log.info('Building buy rules analysis chart...')
             buy_rule_analysis_chart_filepath = display.chart_buy_rules_analysis(
                 self.__multiple_simulation_position_archive, show_chart, save_option)
+            gui_terminal_log.info('Building sell rules analysis chart...')
             sell_rule_analysis_chart_filepath = display.chart_sell_rules_analysis(
                 self.__multiple_simulation_position_archive, show_chart, save_option)
+            gui_terminal_log.info('Building positions analysis charts...')
             position_analysis_chart_filepath = display.chart_positions_analysis(
                 self.__multiple_simulation_position_archive, show_chart, save_option)
 

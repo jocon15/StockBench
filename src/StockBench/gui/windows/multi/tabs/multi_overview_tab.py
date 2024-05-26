@@ -1,5 +1,5 @@
 import logging
-from PyQt6.QtWidgets import QGridLayout, QLabel
+from PyQt6.QtWidgets import QLabel
 from StockBench.gui.windows.base.overview_tab import OverviewTab, OverviewSideBar, OverviewTable
 
 log = logging.getLogger()
@@ -56,9 +56,6 @@ class MultiOverviewTable(OverviewTable):
     """Widget that houses the numerical results table."""
     def __init__(self):
         super().__init__()
-        # define the layout
-        self.layout = QGridLayout()
-
         # elapsed time title
         row = 1
         label = QLabel()

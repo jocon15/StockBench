@@ -3,7 +3,7 @@ from StockBench.gui.windows.base.base.tab import Tab
 from abc import abstractmethod
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QListWidgetItem
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QGridLayout
 from PyQt6.QtCore import QTimer, QThreadPool
 
 
@@ -97,6 +97,8 @@ class OverviewTable(QFrame):
 
     def __init__(self):
         super().__init__()
+        # define the layout
+        self.layout = QGridLayout()
 
         self.setStyleSheet(self.TABLE_STYLESHEET)
 

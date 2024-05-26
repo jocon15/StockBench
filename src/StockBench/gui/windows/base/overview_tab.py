@@ -2,7 +2,8 @@ from PyQt6.QtWidgets import QFrame
 from StockBench.gui.windows.base.base.tab import Tab
 from abc import abstractmethod
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel
+from PyQt6.QtGui import QColor
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QListWidgetItem
 from PyQt6.QtCore import QTimer, QThreadPool
 
 
@@ -48,8 +49,8 @@ class OverviewSideBar(QWidget):
         self.title.setStyleSheet(self.title_stylesheet)
 
         # output box (terminal)
-        self.output_box = QLabel()
-        self.output_box.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.output_box = QListWidget()
+        # self.output_box.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.output_box.setStyleSheet(self.OUTPUT_BOX_STYLESHEET)
 
         # error data label
@@ -72,10 +73,10 @@ class OverviewSideBar(QWidget):
     def update_error_message(self, message):
         """Set the error message in the output box"""
         # copy existing text
-        existing_text = self.output_box.text()
-        # FIXME: find out how to make the text red
-        # self.output_box.setText(f'{text}\n<font color="red">{message}</font>')
-        self.output_box.setText(f'{existing_text}\n{message}')
+
+        list_item = QListWidgetItem(message)
+        list_item.setForeground(QColor("red"))
+        self.output_box.addItem(list_item)
 
     def __update_output_box(self):
         """Update the output box with messages from the progress observer."""
@@ -83,16 +84,10 @@ class OverviewSideBar(QWidget):
             # stop the timer
             self.timer.stop()
         messages = self.progress_observer.get_messages()
-        self.__write_messages(messages)
-
-    def __write_messages(self, messages: list):
-        """Write a list of messages to the output box, preserving existing content."""
-        # copy existing text
-        text = self.output_box.text()
-        # add new messages
         for message in messages:
-            text += f"\n{message}"
-        self.output_box.setText(text)
+            self.output_box.addItem(QListWidgetItem(str(message.msg)))
+        # scroll the output box to the bottom
+        self.output_box.scrollToBottom()
 
     @abstractmethod
     def render_data(self, simulation_results: dict):

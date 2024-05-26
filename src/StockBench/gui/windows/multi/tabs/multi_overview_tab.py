@@ -13,7 +13,6 @@ class MultiOverviewTab(OverviewTab):
         self.overview_side_bar = MultiOverviewSideBar(progress_observer)
         self.layout.addWidget(self.overview_side_bar)
         self.overview_side_bar.setMaximumWidth(300)
-        self.overview_side_bar.setMaximumHeight(800)
         self.layout.addWidget(self.webView)
 
         # apply the layout

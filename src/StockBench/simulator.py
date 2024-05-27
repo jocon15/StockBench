@@ -473,7 +473,7 @@ class Simulator:
         end_time = perf_counter()
         elapsed_time = round(end_time - start_time, 4)
 
-        gui_terminal_log.info('Analytics complete')
+        gui_terminal_log.info('Analytics complete \u2705')
 
         if progress_observer:
             # inform the progress observer that the analytics is complete

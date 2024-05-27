@@ -8,7 +8,7 @@ class PositionsTab(Tab):
     def __init__(self):
         super().__init__(self.CHART_KEY)
 
-        self.layout.addWidget(self.webView)
+        self.layout.addWidget(self.html_viewer)
 
         # apply the layout
         self.setLayout(self.layout)

@@ -10,7 +10,7 @@ class SingularOverviewTab(OverviewTab):
         self.results_table = SingularOverviewSideBar(progress_observer)
         self.layout.addWidget(self.results_table)
         self.results_table.setMaximumWidth(300)
-        self.layout.addWidget(self.webView)
+        self.layout.addWidget(self.html_viewer)
 
         # apply the layout
         self.setLayout(self.layout)

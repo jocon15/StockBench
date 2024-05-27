@@ -46,7 +46,7 @@ class Display:
 
         formatted_fig = """
                                         <head>
-                                        <body style="background-color:#202124;">
+                                        <body style="background-color:#111111;">
                                         </head>
                                         <body>
                                         {plot_div:s}

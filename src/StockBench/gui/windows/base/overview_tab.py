@@ -25,7 +25,8 @@ class OverviewTab(Tab):
 
 class OverviewSideBar(QWidget):
     """Abstract base class for a sidebar widget."""
-    OUTPUT_BOX_STYLESHEET = """color: #fff; background-color: #303136; border: 0px; padding: 5px; max-height: 300px;"""
+    OUTPUT_BOX_STYLESHEET = """color: #fff; background-color: #303136; border-radius: 8px;border: 0px; padding: 5px; 
+    max-height: 300px;"""
 
     HEADER_STYLESHEET = """max-height:45px; color:#FFF;font-size:20px;font-weight:bold;"""
 
@@ -65,7 +66,7 @@ class OverviewSideBar(QWidget):
     def update_error_message(self, message):
         # handle the passed down error message by adding it to the output box
         list_item = QListWidgetItem(message)
-        list_item.setForeground(QColor("red"))
+        list_item.setForeground(QColor('red'))
         self.output_box.addItem(list_item)
 
     def __update_output_box(self):
@@ -75,7 +76,9 @@ class OverviewSideBar(QWidget):
             self.timer.stop()
         messages = self.progress_observer.get_messages()
         for message in messages:
-            self.output_box.addItem(QListWidgetItem(str(message.msg)))
+            list_item = QListWidgetItem(str(message.msg))
+            list_item.setForeground(QColor('grey'))
+            self.output_box.addItem(list_item)
         # scroll the output box to the bottom
         self.output_box.scrollToBottom()
 

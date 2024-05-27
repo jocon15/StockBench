@@ -89,9 +89,9 @@ class OverviewSideBar(QWidget):
 
 class OverviewTable(QFrame):
     """Superclass for a results table frame."""
-    TABLE_STYLESHEET = """max-height:200px"""
+    TABLE_STYLESHEET = """max-height:200px; background-color: #303136; border-radius:8px;"""
 
-    RESULT_VALUE_STYLESHEET = """color:#FFF;"""
+    RESULT_VALUE_STYLESHEET = """color: #fff;"""
 
     def __init__(self):
         super().__init__()

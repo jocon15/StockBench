@@ -6,7 +6,7 @@
 
 ### A back-testing app for testing stock trading strategies with historical data.
 
-![multi](https://github.com/jocon15/StockBench/blob/master/images/results.png)
+![multi](https://github.com/jocon15/StockBench/blob/master/images/cut.gif)
 
 # How it Works
 

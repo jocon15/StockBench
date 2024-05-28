@@ -401,12 +401,14 @@ class Simulator:
                 self.__single_simulation_position_archive, symbol, show_chart, save_option)
 
         log.info('Simulation complete!')
-        gui_terminal_log.info(f'Analytics for {symbol} complete')
 
         if not self.__running_multiple:
+            gui_terminal_log.info(f'Analytics for {symbol} complete \u2705')
             if progress_observer:
                 # inform the progress observer that the analytics is complete
                 progress_observer.set_analytics_complete()
+        else:
+            gui_terminal_log.info(f'Analytics for {symbol} complete')
 
         return {
             'symbol': symbol,

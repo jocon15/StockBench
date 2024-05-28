@@ -25,7 +25,7 @@ def test_additional_days(test_object):
     assert test_object.additional_days('MACD', '<$price') == 26
 
 
-@patch('logging.getLogger')
+@patch('logging_handlers.getLogger')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_add_to_data(data_mocker, logger_mocker, test_object):
     # ============= Arrange ==============

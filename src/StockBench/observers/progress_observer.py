@@ -1,4 +1,5 @@
 import threading
+from queue import Queue
 
 
 class ProgressObserver:
@@ -10,10 +11,15 @@ class ProgressObserver:
     Progress observer is thread-safe.
     """
     def __init__(self):
+        # locks
+        self.__progress_lock = threading.Lock()
+
+        # defaults
+        self.__message_queue = Queue()
         self.__current_progress = 0.0
         self.__max_progress = 100.0
-        self.__lock = threading.Lock()
-        self.__completed = False
+        self.__simulation_completed = False
+        self.__analytics_completed = False
 
     def update_progress(self, advance: float):
         """Update the progress of the task.
@@ -22,12 +28,12 @@ class ProgressObserver:
             advance (float): Amount to increase the progress by.
         """
         # acquire lock to be thread-safe
-        with self.__lock:
-            if advance + self.__current_progress > self.__max_progress:
+        with self.__progress_lock:
+            if advance + self.__current_progress >= self.__max_progress:
                 # If the advance will exceed the max progress, set progress to full progress.
                 # This will prevent the progress from going out of bounds in a gui if the advance does not evently
                 # divide the max progress (100)
-                self.__completed = True
+                self.__simulation_completed = True
                 self.__current_progress = self.__max_progress
             else:
                 self.__current_progress += advance
@@ -35,11 +41,35 @@ class ProgressObserver:
     def get_progress(self) -> float:
         """Get the progress of the task."""
         # acquire lock to be thread-safe
-        with self.__lock:
+        with self.__progress_lock:
             return self.__current_progress
 
-    def is_completed(self) -> bool:
-        """See if the task is complete."""
-        # acquire lock to be thread-safe
-        with self.__lock:
-            return self.__completed
+    def add_message(self, message):
+        # reminder that queue is threadsafe by default
+        self.__message_queue.put(message)
+
+    def get_messages(self) -> list:
+        # reminder that queue is threadsafe by default
+        messages = []
+        if self.__message_queue.qsize() != 0:
+            for _ in range(self.__message_queue.qsize()):
+                messages.append(self.__message_queue.get())
+
+            # release the queue lock
+            self.__message_queue.task_done()
+        return messages
+
+    def set_analytics_complete(self):
+        """Manually list the analytics as complete"""
+        with self.__progress_lock:
+            self.__analytics_completed = True
+
+    def is_simulation_completed(self) -> bool:
+        """See if the simulation is complete."""
+        with self.__progress_lock:
+            return self.__simulation_completed
+
+    def is_analytics_completed(self) -> bool:
+        """See if the analytics are complete."""
+        with self.__progress_lock:
+            return self.__analytics_completed

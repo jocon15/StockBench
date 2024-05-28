@@ -17,7 +17,7 @@ class SingularResultsWindow(SimulationResultsWindow):
         # progress bar
         self.layout.addWidget(self.progress_bar)
         # simulation results frame (gets added to layout via tab widget
-        self.results_frame = SingularOverviewTab()
+        self.results_frame = SingularOverviewTab(self.progress_observer)
         # buy and sell rules analysis tabs (gets added to layout via tab widget)
         self.buy_rules_tab = SingularRulesTab('buy')
         self.sell_rules_tab = SingularRulesTab('sell')

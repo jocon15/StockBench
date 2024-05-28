@@ -8,7 +8,7 @@ from PyQt6 import QtGui
 
 
 class SimulationResultsWindow(QWidget):
-    """Abstract superclass for a simulation results window.
+    """Abstract base class for a simulation results window.
 
     After instantiation, the caller must call the begin() function to start the simulation and progress observer timer.
     If the user deselects the option to view the results, this window never gets shown because this window's show
@@ -98,7 +98,7 @@ class SimulationResultsWindow(QWidget):
 
     def __update_progress_bar(self):
         """Update the progress bar."""
-        if self.progress_observer.is_completed():
+        if self.progress_observer.is_simulation_completed():
             # mark the progress bar as completed
             self.progress_bar.setValue(100)
 
@@ -122,7 +122,7 @@ class SimulationResultsWindow(QWidget):
         try:
             return self._run_simulation(save_option)
         except ValueError as e:
-            # pass the error to the simulation results box
+            # pass the error down
             self.results_frame.update_error_message(f'{e}')
             return {}
 

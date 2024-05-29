@@ -17,3 +17,5 @@ SLOPE_SYMBOL = '$slope'
 
 # ========== System Constants ============
 DELAY_SECONDS_15MIN = 960
+
+STOCK_SPLIT_PLPC = 50

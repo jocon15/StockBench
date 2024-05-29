@@ -596,6 +596,14 @@ class Simulator:
         # close the position
         position.close_position(sell_price, current_day_index, rule)
 
+        if self.__is_stock_split(position, sell_price):
+            gui_terminal_log.info(f'Stock split avoided at day: {current_day_index}')
+            log.info('Position excluded due to stock split!')
+            # deposit the initial investment amount (undoing the withdrawal)
+            self.__account.deposit(position.get_buy_price() * position.get_share_count())
+            # skip adding the position to the list
+            return
+
         # add the position to the archive
         self.__single_simulation_position_archive.append(position)
 
@@ -618,6 +626,13 @@ class Simulator:
         # add the columns to the data
         self.__data_manager.add_column('Buy', acquisition_price_list)
         self.__data_manager.add_column('Sell', liquidation_price_list)
+
+    @staticmethod
+    def __is_stock_split(position: Position, sell_price: float) -> bool:
+        """Check if the position encountered a stock split."""
+        if abs(position.profit_loss_percent(sell_price)) > STOCK_SPLIT_PLPC:
+            return True
+        return False
 
     @staticmethod
     def __print_header(symbol):

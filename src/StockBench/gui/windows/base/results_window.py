@@ -1,10 +1,13 @@
 import os
+import logging
 from abc import abstractmethod
 
 from StockBench.display.display import Display
 from PyQt6.QtWidgets import QWidget, QProgressBar, QTabWidget, QVBoxLayout
 from PyQt6.QtCore import QTimer, QThreadPool
 from PyQt6 import QtGui
+
+log = logging.getLogger()
 
 
 class SimulationResultsWindow(QWidget):
@@ -122,8 +125,13 @@ class SimulationResultsWindow(QWidget):
         try:
             return self._run_simulation(save_option)
         except ValueError as e:
-            # pass the error down
+            # pass the known error down
             self.results_frame.update_error_message(f'{e}')
+            return {}
+        except Exception as e:
+            # unexpected error
+            log.error(f'Unexpected error during simulation: {e}')
+            self.results_frame.update_error_message(f'Unexpected error: {e}')
             return {}
 
     @abstractmethod

@@ -136,6 +136,11 @@ class Broker:
         close_values = []
         volume_values = []
         for data_point in json_data:
+            # check for duplicated data (implies this symbol has not been around long enough)
+            # Alpaca records all points as the same value if this happens
+            if data_point['h'] == data_point['c'] and data_point['l'] == data_point['c']:
+                raise ValueError('This symbol does not have enough data!')
+
             time_values.append(str(data_point['t']))
             open_values.append(float(data_point['o']))
             high_values.append(float(data_point['h']))

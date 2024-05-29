@@ -7,10 +7,10 @@ from StockBench.gui.windows.base.positions_tab import PositionsTab
 class SingularResultsWindow(SimulationResultsWindow):
     """Simulation results window for a simulation on a single symbol."""
 
-    def __init__(self, symbol, strategy, initial_balance, simulator, progress_observer, worker, logging, reporting,
-                 unique_chart_saving):
-        super().__init__(strategy, initial_balance, simulator, progress_observer, worker, logging, reporting,
-                         unique_chart_saving)
+    def __init__(self, symbol, strategy, initial_balance, simulator, progress_observer, worker, logging_on, reporting_on,
+                 unique_chart_saving_on):
+        super().__init__(strategy, initial_balance, simulator, progress_observer, worker, logging_on, reporting_on,
+                         unique_chart_saving_on)
         self.symbol = symbol
 
         # add objects to layout

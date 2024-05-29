@@ -7,9 +7,9 @@ TEMPLATE_JSON = {"buy": {}, "sell": {}}
 
 
 class StrategyStudioWindow(QWidget):
-    window_stylesheet = """background-color: #202124;"""
-    strategy_text_edit_stylesheet = """background-color: #303134;color: #fff"""
-    status_stylesheet = """background-color: #303134;color: #fff"""
+    WINDOW_STYLESHEET = """background-color: #202124;"""
+    STRATEGY_TEXT_EDIT_STYLESHEET = """border-radius: 12px;padding: 5px;background-color: #303134;color: #fff"""
+    STATUS_STYLESHEET = """border-radius: 5px;padding: 3px;background-color: #303134;color: #fff"""
 
     WIDTH = 400
     HEIGHT = 600
@@ -27,15 +27,15 @@ class StrategyStudioWindow(QWidget):
 
         # add objects to the layout
         self.status = QLabel()
-        self.status.setStyleSheet(self.status_stylesheet)
+        self.status.setStyleSheet(self.STATUS_STYLESHEET)
         self.layout.addWidget(self.status)
         self.save_buttons = SaveButtons()
         self.save_buttons.save_btn.clicked.connect(self.on_save_btn_clicked)  # noqa
         self.save_buttons.save_as_btn.clicked.connect(self.on_save_as_btn_clicked)  # noqa
         self.layout.addWidget(self.save_buttons)
         self.text_edit = QTextEdit()
-        self.text_edit.setStyleSheet(self.strategy_text_edit_stylesheet)
-        self.setStyleSheet(self.window_stylesheet)
+        self.text_edit.setStyleSheet(self.STRATEGY_TEXT_EDIT_STYLESHEET)
+        self.setStyleSheet(self.WINDOW_STYLESHEET)
         self.layout.addWidget(self.text_edit)
 
         # set window geometry

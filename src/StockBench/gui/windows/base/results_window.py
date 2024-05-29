@@ -52,16 +52,16 @@ class SimulationResultsWindow(QWidget):
                 background-color: #323338;
             }"""
 
-    def __init__(self, strategy, initial_balance, simulator, progress_observer, worker, logging=False, reporting=False,
-                 unique_chart_saving=False):
+    def __init__(self, strategy, initial_balance, simulator, progress_observer, worker, logging_on=False,
+                 reporting_on=False, unique_chart_saving_on=False):
         super().__init__()
         self.strategy = strategy
         self.simulator = simulator(initial_balance)  # instantiate the class reference
         self.progress_observer = progress_observer()  # instantiate the class reference
         self.worker = worker
-        self.logging = logging
-        self.reporting = reporting
-        self.unique_chart_saving = unique_chart_saving
+        self.logging = logging_on
+        self.reporting = reporting_on
+        self.unique_chart_saving = unique_chart_saving_on
 
         # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
         self.threadpool = QThreadPool()

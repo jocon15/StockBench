@@ -42,6 +42,10 @@ class SingularOverviewSideBar(OverviewSideBar):
         self.results_table = SingularResultsOverviewTable()
         self.layout.addWidget(self.results_table)
 
+        self.layout.addWidget(self.export_json_btn)
+
+        self.layout.addWidget(self.export_excel_btn)
+
         # pushes the status header and output box to the bottom
         self.layout.addStretch()
 
@@ -52,8 +56,26 @@ class SingularOverviewSideBar(OverviewSideBar):
         self.setLayout(self.layout)
 
     def render_data(self, simulation_results: dict):
+        # save the results to allow exporting
+        self.simulation_results_to_export = simulation_results
+        # render data in child components
         self.metadata_table.render_data(simulation_results)
         self.results_table.render_data(simulation_results)
+
+    def _remove_extraneous_info(self, results: dict) -> dict:
+        """Remove info from the simulation results that is not relevant to exporting."""
+        export_dict = results.copy()
+
+        # remove extraneous data from exported results
+        export_dict.pop('symbol')
+        export_dict.pop('trade_able_days')
+        export_dict.pop('elapsed_time')
+        export_dict.pop('buy_rule_analysis_chart_filepath')
+        export_dict.pop('sell_rule_analysis_chart_filepath')
+        export_dict.pop('position_analysis_chart_filepath')
+        export_dict.pop('overview_chart_filepath')
+
+        return export_dict
 
 
 class SingularMetadataOverviewTable(OverviewTable):

@@ -67,7 +67,9 @@ class SingularOverviewSideBar(OverviewSideBar):
             # copy the saved dict
             export_dict = self.simulation_results_to_export.copy()
 
-            # remove filepaths from exported results
+            # remove extraneous data from exported results
+            export_dict.pop('symbol')
+            export_dict.pop('elapsed_time')
             export_dict.pop('buy_rule_analysis_chart_filepath')
             export_dict.pop('sell_rule_analysis_chart_filepath')
             export_dict.pop('position_analysis_chart_filepath')

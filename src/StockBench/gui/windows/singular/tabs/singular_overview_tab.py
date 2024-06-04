@@ -1,5 +1,5 @@
 import subprocess
-from PyQt6.QtWidgets import QLabel, QPushButton
+from PyQt6.QtWidgets import QLabel
 from StockBench.gui.windows.base.overview_tab import OverviewTab, OverviewSideBar, OverviewTable
 
 
@@ -27,8 +27,6 @@ class SingularOverviewTab(OverviewTab):
 
 class SingularOverviewSideBar(OverviewSideBar):
     """Sidebar that stands next to the overview chart."""
-    BTN_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;"""
-
     def __init__(self, progress_observer):
         super().__init__(progress_observer)
         self.simulation_results_to_export = {}
@@ -47,10 +45,6 @@ class SingularOverviewSideBar(OverviewSideBar):
         self.results_table = SingularResultsOverviewTable()
         self.layout.addWidget(self.results_table)
 
-        self.export_btn = QPushButton()
-        self.export_btn.setText('Export to Clipboard')
-        self.export_btn.setStyleSheet(self.BTN_STYLESHEET)
-        self.export_btn.clicked.connect(self.on_export_btn_clicked)  # noqa
         self.layout.addWidget(self.export_btn)
 
         # pushes the status header and output box to the bottom
@@ -78,6 +72,7 @@ class SingularOverviewSideBar(OverviewSideBar):
             # copy the dict to the clipboard
             cmd = 'echo ' + str(export_dict) + '|clip'
             return subprocess.check_call(cmd, shell=True)
+        # if no results are available yet, nothing gets copied to the clipboard
 
     def render_data(self, simulation_results: dict):
         # save the results to allow exporting

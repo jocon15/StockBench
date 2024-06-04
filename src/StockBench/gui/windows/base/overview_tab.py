@@ -3,7 +3,7 @@ from StockBench.gui.windows.base.base.tab import Tab
 from abc import abstractmethod
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QGridLayout
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QGridLayout, QPushButton
 from PyQt6.QtCore import QTimer, QThreadPool
 
 
@@ -27,7 +27,7 @@ class OverviewSideBar(QWidget):
     """Abstract base class for a sidebar widget."""
     OUTPUT_BOX_STYLESHEET = """color: #fff; background-color: #303136; border-radius: 8px;border: 0px; padding: 5px; 
     max-height: 300px;"""
-
+    BTN_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;"""
     HEADER_STYLESHEET = """max-height:45px; color:#FFF;font-size:20px;font-weight:bold;"""
 
     def __init__(self, progress_observer):
@@ -44,6 +44,12 @@ class OverviewSideBar(QWidget):
         self.results_header = QLabel()
         self.results_header.setText('Simulation Results')
         self.results_header.setStyleSheet(self.HEADER_STYLESHEET)
+
+        # export button
+        self.export_btn = QPushButton()
+        self.export_btn.setText('Export to Clipboard')
+        self.export_btn.setStyleSheet(self.BTN_STYLESHEET)
+        self.export_btn.clicked.connect(self.on_export_btn_clicked)  # noqa
 
         # output box (terminal)
         self.output_box = QListWidget()
@@ -81,6 +87,10 @@ class OverviewSideBar(QWidget):
             self.output_box.addItem(list_item)
         # scroll the output box to the bottom
         self.output_box.scrollToBottom()
+
+    @abstractmethod
+    def on_export_btn_clicked(self):
+        raise NotImplementedError('You must define an implementation for on_export_btn_clicked()!')
 
     @abstractmethod
     def render_data(self, simulation_results: dict):

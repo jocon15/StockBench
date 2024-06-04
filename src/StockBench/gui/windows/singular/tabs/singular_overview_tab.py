@@ -1,4 +1,5 @@
-from PyQt6.QtWidgets import QLabel
+import subprocess
+from PyQt6.QtWidgets import QLabel, QPushButton
 from StockBench.gui.windows.base.overview_tab import OverviewTab, OverviewSideBar, OverviewTable
 
 
@@ -26,8 +27,12 @@ class SingularOverviewTab(OverviewTab):
 
 class SingularOverviewSideBar(OverviewSideBar):
     """Sidebar that stands next to the overview chart."""
+    BTN_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;"""
+
     def __init__(self, progress_observer):
         super().__init__(progress_observer)
+        self.simulation_results_to_export = {}
+
         # add objects to the layout
         metadata_header = QLabel()
         metadata_header.setText('Metadata')
@@ -42,6 +47,12 @@ class SingularOverviewSideBar(OverviewSideBar):
         self.results_table = SingularResultsOverviewTable()
         self.layout.addWidget(self.results_table)
 
+        self.export_btn = QPushButton()
+        self.export_btn.setText('Export to Clipboard')
+        self.export_btn.setStyleSheet(self.BTN_STYLESHEET)
+        self.export_btn.clicked.connect(self.on_export_btn_clicked)  # noqa
+        self.layout.addWidget(self.export_btn)
+
         # pushes the status header and output box to the bottom
         self.layout.addStretch()
 
@@ -51,7 +62,25 @@ class SingularOverviewSideBar(OverviewSideBar):
         # apply the layout
         self.setLayout(self.layout)
 
+    def on_export_btn_clicked(self):
+        if self.simulation_results_to_export:
+            # copy the saved dict
+            export_dict = self.simulation_results_to_export.copy()
+
+            # remove filepaths from exported results
+            export_dict.pop('buy_rule_analysis_chart_filepath')
+            export_dict.pop('sell_rule_analysis_chart_filepath')
+            export_dict.pop('position_analysis_chart_filepath')
+            export_dict.pop('overview_chart_filepath')
+
+            # copy the dict to the clipboard
+            cmd = 'echo ' + str(export_dict) + '|clip'
+            return subprocess.check_call(cmd, shell=True)
+
     def render_data(self, simulation_results: dict):
+        # save the results to allow exporting
+        self.simulation_results_to_export = simulation_results
+        # render data in child components
         self.metadata_table.render_data(simulation_results)
         self.results_table.render_data(simulation_results)
 

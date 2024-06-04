@@ -1,5 +1,4 @@
 import logging
-import subprocess
 from PyQt6.QtWidgets import QLabel
 from StockBench.gui.windows.base.overview_tab import OverviewTab, OverviewSideBar, OverviewTable
 
@@ -40,7 +39,9 @@ class MultiOverviewSideBar(OverviewSideBar):
         self.overview_table = MultiOverviewTable()
         self.layout.addWidget(self.overview_table)
 
-        self.layout.addWidget(self.export_btn)
+        self.layout.addWidget(self.export_json_btn)
+
+        self.layout.addWidget(self.export_excel_btn)
 
         # pushes the status header and output box to the bottom
         self.layout.addStretch()
@@ -51,28 +52,24 @@ class MultiOverviewSideBar(OverviewSideBar):
         # apply the layout
         self.setLayout(self.layout)
 
-    def on_export_btn_clicked(self):
-        if self.simulation_results_to_export:
-            # copy the saved dict
-            export_dict = self.simulation_results_to_export.copy()
-
-            # remove extraneous data from exported results
-            export_dict.pop('elapsed_time')
-            export_dict.pop('buy_rule_analysis_chart_filepath')
-            export_dict.pop('sell_rule_analysis_chart_filepath')
-            export_dict.pop('position_analysis_chart_filepath')
-            export_dict.pop('overview_chart_filepath')
-
-            # copy the dict to the clipboard
-            cmd = 'echo ' + str(export_dict) + '|clip'
-            return subprocess.check_call(cmd, shell=True)
-    # if no results are available yet, nothing gets copied to the clipboard
-
     def render_data(self, simulation_results):
         # save the results to allow exporting
         self.simulation_results_to_export = simulation_results
         # render data in child components
         self.overview_table.render_data(simulation_results)
+
+    def _remove_extraneous_info(self, results: dict) -> dict:
+        """Remove info from the simulation results that is not relevant to exporting."""
+        export_dict = results.copy()
+
+        # remove extraneous data from exported results
+        export_dict.pop('elapsed_time')
+        export_dict.pop('buy_rule_analysis_chart_filepath')
+        export_dict.pop('sell_rule_analysis_chart_filepath')
+        export_dict.pop('position_analysis_chart_filepath')
+        export_dict.pop('overview_chart_filepath')
+
+        return export_dict
 
 
 class MultiOverviewTable(OverviewTable):

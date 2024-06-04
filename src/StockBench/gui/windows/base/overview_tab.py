@@ -1,3 +1,4 @@
+import subprocess
 from PyQt6.QtWidgets import QFrame
 from StockBench.gui.windows.base.base.tab import Tab
 from abc import abstractmethod
@@ -34,6 +35,8 @@ class OverviewSideBar(QWidget):
         super().__init__()
         self.progress_observer = progress_observer
 
+        self.simulation_results_to_export = {}
+
         # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
         self.threadpool = QThreadPool()
 
@@ -45,11 +48,17 @@ class OverviewSideBar(QWidget):
         self.results_header.setText('Simulation Results')
         self.results_header.setStyleSheet(self.HEADER_STYLESHEET)
 
-        # export button
-        self.export_btn = QPushButton()
-        self.export_btn.setText('Export to Clipboard')
-        self.export_btn.setStyleSheet(self.BTN_STYLESHEET)
-        self.export_btn.clicked.connect(self.on_export_btn_clicked)  # noqa
+        # export JSON button
+        self.export_json_btn = QPushButton()
+        self.export_json_btn.setText('Export to Clipboard (JSON)')
+        self.export_json_btn.setStyleSheet(self.BTN_STYLESHEET)
+        self.export_json_btn.clicked.connect(self.on_export_json_btn_clicked)  # noqa
+
+        # export excel button
+        self.export_excel_btn = QPushButton()
+        self.export_excel_btn.setText('Export to ClipBoard (excel)')
+        self.export_excel_btn.setStyleSheet(self.BTN_STYLESHEET)
+        self.export_excel_btn.clicked.connect(self.on_export_excel_btn_clicked)  # noqa
 
         # output box (terminal)
         self.output_box = QListWidget()
@@ -88,9 +97,40 @@ class OverviewSideBar(QWidget):
         # scroll the output box to the bottom
         self.output_box.scrollToBottom()
 
+    def on_export_json_btn_clicked(self):
+        """On click function for exporting to JSON button."""
+        if self.simulation_results_to_export:
+            # copy and clean the results info
+            export_dict = self._remove_extraneous_info(self.simulation_results_to_export)
+
+            self._copy_to_clipboard(str(export_dict))
+        # if no results are available yet, nothing gets copied to the clipboard
+
+    def on_export_excel_btn_clicked(self):
+        """On click function for exporting to excel button."""
+        if self.simulation_results_to_export:
+            # copy and clean the results info
+            export_dict = self._remove_extraneous_info(self.simulation_results_to_export)
+
+            # format the results for excel use
+            export_values = ''
+            for key in export_dict.keys():
+                export_values += f'{export_dict[key]},'
+            # remove last comma from string
+            export_values = export_values.rsplit(',', 1)[0]
+
+            self._copy_to_clipboard(export_values)
+        # if no results are available yet, nothing gets copied to the clipboard
+
+    @staticmethod
+    def _copy_to_clipboard(text: str):
+        # copy the dict to the clipboard
+        cmd = 'echo ' + text + '|clip'
+        return subprocess.check_call(cmd, shell=True)
+
     @abstractmethod
-    def on_export_btn_clicked(self):
-        raise NotImplementedError('You must define an implementation for on_export_btn_clicked()!')
+    def _remove_extraneous_info(self, results: dict) -> dict:
+        raise NotImplementedError('You must define an implementation for _remove_extraneous_info()!')
 
     @abstractmethod
     def render_data(self, simulation_results: dict):

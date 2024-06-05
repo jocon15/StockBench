@@ -323,6 +323,7 @@ class SingularConfigTab(QWidget):
             return
 
         # inject the unix equivalent dates from the combobox to the dict
+        strategy['strategy_filepath'] = strategy_filepath
         strategy['start'] = int(time.time()) - self.simulation_length
         strategy['end'] = int(time.time())
 
@@ -610,6 +611,7 @@ class MultiConfigTab(QWidget):
             return
 
         # inject the unix equivalent dates from the combobox to the dict
+        strategy['strategy_filepath'] = strategy_filepath
         strategy['start'] = int(time.time()) - self.simulation_length
         strategy['end'] = int(time.time())
 

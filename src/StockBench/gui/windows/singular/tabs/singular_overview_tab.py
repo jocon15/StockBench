@@ -82,13 +82,24 @@ class SingularMetadataOverviewTable(OverviewTable):
     """Table of overview metadata."""
     def __init__(self):
         super().__init__()
-        # symbol header
+        # strategy header
         row = 1
+        label = QLabel()
+        label.setText('Strategy')
+        label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        self.layout.addWidget(label, row, 1)
+        # strategy data label
+        self.strategy_data_label = QLabel()
+        self.strategy_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        self.layout.addWidget(self.strategy_data_label, row, 2)
+
+        # symbol header
+        row += 1
         label = QLabel()
         label.setText('Symbol')
         label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
         self.layout.addWidget(label, row, 1)
-        # elapsed time data label
+        # symbol data label
         self.symbol_data_label = QLabel()
         self.symbol_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
         self.layout.addWidget(self.symbol_data_label, row, 2)
@@ -99,7 +110,7 @@ class SingularMetadataOverviewTable(OverviewTable):
         label.setText('Length')
         label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
         self.layout.addWidget(label, row, 1)
-        # elapsed time data label
+        # length data label
         self.trade_able_days_data_label = QLabel()
         self.trade_able_days_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
         self.layout.addWidget(self.trade_able_days_data_label, row, 2)
@@ -109,6 +120,7 @@ class SingularMetadataOverviewTable(OverviewTable):
 
     def render_data(self, simulation_results: dict):
         if simulation_results.keys():
+            self.strategy_data_label.setText(f'{simulation_results["strategy"]}')
             self.symbol_data_label.setText(f'{simulation_results["symbol"]}')
             self.trade_able_days_data_label.setText(f'{simulation_results["trade_able_days"]} days')
 

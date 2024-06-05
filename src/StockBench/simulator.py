@@ -47,6 +47,8 @@ class Simulator:
     BUY_SIDE = 'buy'
     SELL_SIDE = 'sell'
 
+    FILEPATH_KEY = 'strategy_filepath'
+
     def __init__(self, balance: float):
         """
         Args:
@@ -60,6 +62,7 @@ class Simulator:
         self.__indicators = IndicatorManager.load_indicators()
 
         # simulation settings
+        self.__strategy_filename = 'Unknown'
         self.__strategy = None
         self.__start_date_unix = None
         self.__end_date_unix = None
@@ -159,7 +162,14 @@ class Simulator:
          Args:
              strategy (dict): The strategy as a dictionary.
          """
-        # initialize the member variable
+        # extract filepath if available
+        if self.FILEPATH_KEY in strategy:
+            # extract filepath to class attribute
+            self.__strategy_filename = os.path.basename(strategy[self.FILEPATH_KEY])
+            # remove key from strategy
+            strategy.pop(self.FILEPATH_KEY)
+
+        # set strategy to class attribute
         self.__strategy = strategy
         # initialize the member object
         self.__trigger_manager = TriggerManager(strategy, self.__indicators.values())
@@ -180,6 +190,9 @@ class Simulator:
                 # enable the progress message handler to capture the logs
                 gui_terminal_log.setLevel(logging.INFO)
                 gui_terminal_log.addHandler(ProgressMessageHandler(progress_observer))
+
+            log.info(f'Using strategy: {self.__strategy_filename}')
+            gui_terminal_log.info(f'Using strategy: {self.__strategy_filename}')
 
         log.info(f'Starting simulation for symbol: {symbol}...')
         gui_terminal_log.info(f'Starting simulation for {symbol}...')
@@ -230,6 +243,9 @@ class Simulator:
             gui_terminal_log.addHandler(ProgressMessageHandler(progress_observer))
 
         gui_terminal_log.info('Beginning multiple symbol simulation...')
+
+        log.info(f'Using strategy: {self.__strategy_filename}')
+        gui_terminal_log.info(f'Using strategy: {self.__strategy_filename}')
 
         progress_bar_increment = self.__multi_pre_process(symbols, progress_observer)
 
@@ -301,7 +317,7 @@ class Simulator:
 
         log.info(f'Setup for symbol: {symbol} complete')
 
-        self.__log_details(symbol, self.__unix_to_string(self.__start_date_unix),
+        self.__log_details(self.__strategy_filename, symbol, self.__unix_to_string(self.__start_date_unix),
                            self.__unix_to_string(self.__end_date_unix), days_in_focus, trade_able_days,
                            self.__account.get_balance())
 
@@ -411,6 +427,7 @@ class Simulator:
             gui_terminal_log.info(f'Analytics for {symbol} complete')
 
         return {
+            'strategy': self.__strategy_filename,
             'symbol': symbol,
             'trade_able_days': trade_able_days,
             'elapsed_time': elapsed_time,
@@ -482,6 +499,7 @@ class Simulator:
             progress_observer.set_analytics_complete()
 
         return {
+            'strategy': self.__strategy_filename,
             'elapsed_time': elapsed_time,
             'trades_made': analyzer.total_trades(),
             'effectiveness': analyzer.effectiveness(),
@@ -642,8 +660,9 @@ class Simulator:
         print('================================')
 
     @staticmethod
-    def __log_details(symbol, start, end, focus_days, tradable_days, balance):
+    def __log_details(filename, symbol, start, end, focus_days, tradable_days, balance):
         log.info('==== Simulation Details =====')
+        log.info(f'Strategy        : {filename}')
         log.info(f'Symbol          : {symbol}')
         log.info(f'Start Date      : {start}')
         log.info(f'End Date        : {end}')

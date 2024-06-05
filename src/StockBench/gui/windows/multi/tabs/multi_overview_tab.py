@@ -76,8 +76,19 @@ class MultiOverviewTable(OverviewTable):
     """Widget that houses the numerical results table."""
     def __init__(self):
         super().__init__()
-        # elapsed time header
+        # strategy header
         row = 1
+        label = QLabel()
+        label.setText('Strategy')
+        label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        self.layout.addWidget(label, row, 1)
+        # strategy data label
+        self.strategy_data_label = QLabel()
+        self.strategy_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        self.layout.addWidget(self.strategy_data_label, row, 2)
+
+        # elapsed time header
+        row += 1
         label = QLabel()
         label.setText('Elapsed Time')
         label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
@@ -152,15 +163,12 @@ class MultiOverviewTable(OverviewTable):
         self.stddev_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
         self.layout.addWidget(self.stddev_pl_data_label, row, 2)
 
-        # stretch the row and column to show natural size
-        # self.layout.setRowStretch(self.layout.rowCount(), 1)
-        # self.layout.setColumnStretch(self.layout.columnCount(), 1)
-
         # apply the layout to the frame
         self.setLayout(self.layout)
 
     def render_data(self, simulation_results: dict):
         if simulation_results.keys():
+            self.strategy_data_label.setText(f'{simulation_results["strategy"]}')
             self.elapsed_time_data_label.setText(f'{simulation_results["elapsed_time"]} seconds')
             self.trades_made_data_label.setText(f'{simulation_results["trades_made"]}')
             self.effectiveness_data_label.setText(f'{simulation_results["effectiveness"]} %')

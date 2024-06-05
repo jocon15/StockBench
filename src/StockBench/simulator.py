@@ -317,7 +317,7 @@ class Simulator:
 
         log.info(f'Setup for symbol: {symbol} complete')
 
-        self.__log_details(symbol, self.__unix_to_string(self.__start_date_unix),
+        self.__log_details(self.__strategy_filename, symbol, self.__unix_to_string(self.__start_date_unix),
                            self.__unix_to_string(self.__end_date_unix), days_in_focus, trade_able_days,
                            self.__account.get_balance())
 
@@ -658,8 +658,9 @@ class Simulator:
         print('================================')
 
     @staticmethod
-    def __log_details(symbol, start, end, focus_days, tradable_days, balance):
+    def __log_details(filename, symbol, start, end, focus_days, tradable_days, balance):
         log.info('==== Simulation Details =====')
+        log.info(f'Strategy        : {filename}')
         log.info(f'Symbol          : {symbol}')
         log.info(f'Start Date      : {start}')
         log.info(f'End Date        : {end}')

@@ -427,6 +427,7 @@ class Simulator:
             gui_terminal_log.info(f'Analytics for {symbol} complete')
 
         return {
+            'strategy': self.__strategy_filename,
             'symbol': symbol,
             'trade_able_days': trade_able_days,
             'elapsed_time': elapsed_time,
@@ -498,6 +499,7 @@ class Simulator:
             progress_observer.set_analytics_complete()
 
         return {
+            'strategy': self.__strategy_filename,
             'elapsed_time': elapsed_time,
             'trades_made': analyzer.total_trades(),
             'effectiveness': analyzer.effectiveness(),

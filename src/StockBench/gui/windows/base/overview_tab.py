@@ -28,7 +28,9 @@ class OverviewSideBar(QWidget):
     """Abstract base class for a sidebar widget."""
     OUTPUT_BOX_STYLESHEET = """color: #fff; background-color: #303136; border-radius: 8px;border: 0px; padding: 5px; 
     max-height: 300px;"""
-    BTN_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;"""
+
+    EXPORT_BTN_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;"""
+
     HEADER_STYLESHEET = """max-height:45px; color:#FFF;font-size:20px;font-weight:bold;"""
 
     def __init__(self, progress_observer):
@@ -51,13 +53,13 @@ class OverviewSideBar(QWidget):
         # export JSON button
         self.export_json_btn = QPushButton()
         self.export_json_btn.setText('Export to Clipboard (JSON)')
-        self.export_json_btn.setStyleSheet(self.BTN_STYLESHEET)
+        self.export_json_btn.setStyleSheet(self.EXPORT_BTN_STYLESHEET)
         self.export_json_btn.clicked.connect(self.on_export_json_btn_clicked)  # noqa
 
         # export excel button
         self.export_excel_btn = QPushButton()
         self.export_excel_btn.setText('Export to ClipBoard (excel)')
-        self.export_excel_btn.setStyleSheet(self.BTN_STYLESHEET)
+        self.export_excel_btn.setStyleSheet(self.EXPORT_BTN_STYLESHEET)
         self.export_excel_btn.clicked.connect(self.on_export_excel_btn_clicked)  # noqa
 
         # output box (terminal)

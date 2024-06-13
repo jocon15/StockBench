@@ -15,28 +15,11 @@ from StockBench.gui.windows.singular.singular_results_window import SingularResu
 from StockBench.gui.windows.multi.multi_results_window import MultiResultsWindow
 from StockBench.constants import *
 from StockBench.gui.windows.strategy_studio import StrategyStudioWindow
+from StockBench.gui.palette.palette import Palette
 
 
 class ConfigMainWindow(QMainWindow):
-    WINDOW_STYLESHEET = """background-color: #202124;"""
-
-    TAB_WIDGET_STYLESHEET = """
-        QTabWidget::pane{
-            background-color: #202124;
-            border: 0;
-        }
-        QTabBar::tab:selected {
-            color: #ffffff;
-            background-color: #42444a;
-        }
-        QTabBar::tab:!selected {
-            color: #ffffff;
-            background-color: #323338;
-        }
-    """
-
     WIDTH = 400
-
     HEIGHT = 600
 
     def __init__(self, splash):
@@ -54,11 +37,11 @@ class ConfigMainWindow(QMainWindow):
         self.tab_widget = QTabWidget()
         self.tab_widget.addTab(SingularConfigTab(), "Single")
         self.tab_widget.addTab(MultiConfigTab(), "Multi")
-        self.tab_widget.setStyleSheet(self.TAB_WIDGET_STYLESHEET)
+        self.tab_widget.setStyleSheet(Palette.TAB_WIDGET_STYLESHEET)
         self.layout.addWidget(self.tab_widget)
 
         widget = QWidget()
-        widget.setStyleSheet(self.WINDOW_STYLESHEET)
+        widget.setStyleSheet(Palette.WINDOW_STYLESHEET)
         widget.setLayout(self.layout)
 
         # Set the central widget of the Window. Widget will expand
@@ -73,39 +56,6 @@ class ConfigMainWindow(QMainWindow):
 
 
 class SingularConfigTab(QWidget):
-    TEXT_BOX_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
-        text-indent:3px;"""
-
-    SELECT_FILE_BTN_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;
-        height:25px;"""
-
-    COMBOBOX_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
-        text-indent:3px;"""
-
-    LINE_EDIT_STYLESHEET = """background-color:#303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
-        text-indent:5px;"""
-
-    TOGGLE_BTN_ENABLED_STYLESHEET = """background-color:#04ba5f;margin-left:auto;margin-right:auto;
-        width:40%;height:25px;border-radius:10px;"""
-
-    TOGGLE_BTN_DISABLED_STYLESHEET = """background-color: #303134;margin-left: auto;
-            margin-right:auto;width: 40%;height:25px;border-radius: 10px;"""
-
-    RUN_BTN_STYLESHEET = """
-            QPushButton
-            {
-                background-color: #04ba5f;
-                color: #FFF;
-                border-radius: 10px;
-            }
-            QPushButton:hover
-            {
-                background-color: #04ba50;
-            }
-            """
-
-    ERROR_LABEL_STYLESHEET = """color:#dc143c;"""
-
     def __init__(self):
         super().__init__()
         # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
@@ -138,12 +88,12 @@ class SingularConfigTab(QWidget):
         self.layout.addWidget(label)
 
         self.strategy_selection_box = StrategySelection()
-        self.strategy_selection_box.setStyleSheet(self.SELECT_FILE_BTN_STYLESHEET)
+        self.strategy_selection_box.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
         self.layout.addWidget(self.strategy_selection_box)
         self.strategy_studio_btn = QPushButton()
         self.strategy_studio_btn.setText('Strategy Studio (beta)')
         self.strategy_studio_btn.clicked.connect(self.on_strategy_studio_btn_clicked)  # noqa
-        self.strategy_studio_btn.setStyleSheet(self.SELECT_FILE_BTN_STYLESHEET)
+        self.strategy_studio_btn.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
         self.layout.addWidget(self.strategy_studio_btn)
 
         label = QLabel()
@@ -159,7 +109,7 @@ class SingularConfigTab(QWidget):
         self.simulation_length_cbox.setCurrentIndex(1)
         self.simulation_length = SECONDS_2_YEAR
 
-        self.simulation_length_cbox.setStyleSheet(self.COMBOBOX_STYLESHEET)
+        self.simulation_length_cbox.setStyleSheet(Palette.COMBOBOX_STYLESHEET)
         self.simulation_length_cbox.currentIndexChanged.connect(self.on_simulation_length_cbox_index_changed)  # noqa
         self.layout.addWidget(self.simulation_length_cbox)
 
@@ -170,7 +120,7 @@ class SingularConfigTab(QWidget):
 
         self.symbol_tbox = QLineEdit()
         self.symbol_tbox.setText("MSFT")
-        self.symbol_tbox.setStyleSheet(self.LINE_EDIT_STYLESHEET)
+        self.symbol_tbox.setStyleSheet(Palette.LINE_EDIT_STYLESHEET)
         self.layout.addWidget(self.symbol_tbox)
 
         label = QLabel()
@@ -182,7 +132,7 @@ class SingularConfigTab(QWidget):
         self.balance_tbox.setText('1000.0')
         self.onlyFloat = QDoubleValidator()
         self.balance_tbox.setValidator(self.onlyFloat)
-        self.balance_tbox.setStyleSheet(self.LINE_EDIT_STYLESHEET)
+        self.balance_tbox.setStyleSheet(Palette.LINE_EDIT_STYLESHEET)
         self.layout.addWidget(self.balance_tbox)
 
         label = QLabel()
@@ -193,7 +143,7 @@ class SingularConfigTab(QWidget):
         self.logging_btn = QPushButton()
         self.logging_btn.setCheckable(True)
         self.logging_btn.setText('OFF')
-        self.logging_btn.setStyleSheet(self.TOGGLE_BTN_DISABLED_STYLESHEET)
+        self.logging_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
         self.logging_btn.clicked.connect(self.on_logging_btn_clicked)  # noqa
         self.layout.addWidget(self.logging_btn)
 
@@ -205,7 +155,7 @@ class SingularConfigTab(QWidget):
         self.reporting_btn = QPushButton()
         self.reporting_btn.setCheckable(True)
         self.reporting_btn.setText('OFF')
-        self.reporting_btn.setStyleSheet(self.TOGGLE_BTN_DISABLED_STYLESHEET)
+        self.reporting_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
         self.reporting_btn.clicked.connect(self.on_reporting_btn_clicked)  # noqa
         self.layout.addWidget(self.reporting_btn)
 
@@ -217,7 +167,7 @@ class SingularConfigTab(QWidget):
         self.unique_chart_save_btn = QPushButton()
         self.unique_chart_save_btn.setCheckable(True)
         self.unique_chart_save_btn.setText('OFF')
-        self.unique_chart_save_btn.setStyleSheet(self.TOGGLE_BTN_DISABLED_STYLESHEET)
+        self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
         self.unique_chart_save_btn.clicked.connect(self.on_chart_saving_btn_clicked)  # noqa
         self.layout.addWidget(self.unique_chart_save_btn)
 
@@ -229,7 +179,7 @@ class SingularConfigTab(QWidget):
         self.show_sim_results_btn = QPushButton()
         self.show_sim_results_btn.setCheckable(True)
         self.show_sim_results_btn.setText('ON')
-        self.show_sim_results_btn.setStyleSheet(self.TOGGLE_BTN_ENABLED_STYLESHEET)
+        self.show_sim_results_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         self.show_sim_results_btn.clicked.connect(self.on_show_results_btn_clicked)  # noqa
         self.layout.addWidget(self.show_sim_results_btn)
 
@@ -237,11 +187,11 @@ class SingularConfigTab(QWidget):
         self.run_btn.setFixedSize(60, 30)
         self.run_btn.setText('RUN')
         self.run_btn.clicked.connect(self.on_run_btn_clicked)  # noqa
-        self.run_btn.setStyleSheet(self.RUN_BTN_STYLESHEET)
+        self.run_btn.setStyleSheet(Palette.RUN_BTN_STYLESHEET)
         self.layout.addWidget(self.run_btn, alignment=Qt.AlignmentFlag.AlignRight)
 
         self.error_message_box = QLabel()
-        self.error_message_box.setStyleSheet(self.ERROR_LABEL_STYLESHEET)
+        self.error_message_box.setStyleSheet(Palette.ERROR_LABEL_STYLESHEET)
         self.layout.addWidget(self.error_message_box)
 
         self.setLayout(self.layout)
@@ -263,41 +213,41 @@ class SingularConfigTab(QWidget):
         if self.logging_btn.isChecked():
             self.simulation_logging = True
             self.logging_btn.setText('ON')
-            self.logging_btn.setStyleSheet(self.TOGGLE_BTN_ENABLED_STYLESHEET)
+            self.logging_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
             self.simulation_logging = False
             self.logging_btn.setText('OFF')
-            self.logging_btn.setStyleSheet(self.TOGGLE_BTN_DISABLED_STYLESHEET)
+            self.logging_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def on_reporting_btn_clicked(self):
         if self.reporting_btn.isChecked():
             self.simulation_reporting = True
             self.reporting_btn.setText('ON')
-            self.reporting_btn.setStyleSheet(self.TOGGLE_BTN_ENABLED_STYLESHEET)
+            self.reporting_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
             self.simulation_reporting = False
             self.reporting_btn.setText('OFF')
-            self.reporting_btn.setStyleSheet(self.TOGGLE_BTN_DISABLED_STYLESHEET)
+            self.reporting_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def on_chart_saving_btn_clicked(self):
         if self.unique_chart_save_btn.isChecked():
             self.simulation_unique_chart_saving = True
             self.unique_chart_save_btn.setText('ON')
-            self.unique_chart_save_btn.setStyleSheet(self.TOGGLE_BTN_ENABLED_STYLESHEET)
+            self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
             self.simulation_unique_chart_saving = False
             self.unique_chart_save_btn.setText('OFF')
-            self.unique_chart_save_btn.setStyleSheet(self.TOGGLE_BTN_DISABLED_STYLESHEET)
+            self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def on_show_results_btn_clicked(self):
         if self.show_sim_results_btn.isChecked():
             self.simulation_show_results_window = True
             self.show_sim_results_btn.setText('ON')
-            self.show_sim_results_btn.setStyleSheet(self.TOGGLE_BTN_ENABLED_STYLESHEET)
+            self.show_sim_results_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
             self.simulation_show_results_window = False
             self.show_sim_results_btn.setText('OFF')
-            self.show_sim_results_btn.setStyleSheet(self.TOGGLE_BTN_DISABLED_STYLESHEET)
+            self.show_sim_results_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def on_simulation_length_cbox_index_changed(self, index):
         if index == 0:
@@ -362,39 +312,6 @@ class SingularConfigTab(QWidget):
 
 
 class MultiConfigTab(QWidget):
-    TEXT_BOX_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
-        text-indent:3px;"""
-
-    SELECT_FILE_BTN_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;
-        height:25px;"""
-
-    COMBOBOX_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
-        text-indent:3px;"""
-
-    LINE_EDIT_STYLESHEET = """background-color:#303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
-        text-indent:5px;"""
-
-    TOGGLE_BTN_ENABLED_STYLESHEET = """background-color:#04ba5f;margin-left:auto;margin-right:auto;
-        width:40%;height:25px;border-radius:10px;"""
-
-    TOGGLE_BTN_DISABLED_STYLESHEET = """background-color: #303134;margin-left: auto;
-            margin-right:auto;width: 40%;height:25px;border-radius: 10px;"""
-
-    RUN_BTN_STYLESHEET = """
-            QPushButton
-            {
-                background-color: #04ba5f;
-                color: #FFF;
-                border-radius: 10px;
-            }
-            QPushButton:hover
-            {
-                background-color: #04ba50;
-            }
-            """
-
-    ERROR_LABEL_STYLESHEET = """color:#dc143c;"""
-
     def __init__(self):
         super().__init__()
         # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
@@ -428,12 +345,12 @@ class MultiConfigTab(QWidget):
         self.layout.addWidget(label)
 
         self.strategy_selection_box = StrategySelection()
-        self.strategy_selection_box.setStyleSheet(self.SELECT_FILE_BTN_STYLESHEET)
+        self.strategy_selection_box.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
         self.layout.addWidget(self.strategy_selection_box)
         self.strategy_studio_btn = QPushButton()
         self.strategy_studio_btn.setText('Strategy Studio (beta)')
         self.strategy_studio_btn.clicked.connect(self.on_strategy_studio_btn_clicked)  # noqa
-        self.strategy_studio_btn.setStyleSheet(self.SELECT_FILE_BTN_STYLESHEET)
+        self.strategy_studio_btn.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
         self.layout.addWidget(self.strategy_studio_btn)
 
         label = QLabel()
@@ -449,7 +366,7 @@ class MultiConfigTab(QWidget):
         self.simulation_length_cbox.setCurrentIndex(1)
         self.simulation_length = SECONDS_2_YEAR
 
-        self.simulation_length_cbox.setStyleSheet(self.COMBOBOX_STYLESHEET)
+        self.simulation_length_cbox.setStyleSheet(Palette.COMBOBOX_STYLESHEET)
         self.simulation_length_cbox.currentIndexChanged.connect(self.on_simulation_length_cbox_index_changed)  # noqa
         self.layout.addWidget(self.simulation_length_cbox)
 
@@ -460,7 +377,7 @@ class MultiConfigTab(QWidget):
 
         self.symbol_tbox = QLineEdit()
         self.symbol_tbox.setText("MSFT, AAPL")
-        self.symbol_tbox.setStyleSheet(self.LINE_EDIT_STYLESHEET)
+        self.symbol_tbox.setStyleSheet(Palette.LINE_EDIT_STYLESHEET)
         self.layout.addWidget(self.symbol_tbox)
 
         label = QLabel()
@@ -472,7 +389,7 @@ class MultiConfigTab(QWidget):
         self.balance_tbox.setText('1000.0')
         self.onlyFloat = QDoubleValidator()
         self.balance_tbox.setValidator(self.onlyFloat)
-        self.balance_tbox.setStyleSheet(self.LINE_EDIT_STYLESHEET)
+        self.balance_tbox.setStyleSheet(Palette.LINE_EDIT_STYLESHEET)
         self.layout.addWidget(self.balance_tbox)
 
         label = QLabel()
@@ -483,7 +400,7 @@ class MultiConfigTab(QWidget):
         self.logging_btn = QPushButton()
         self.logging_btn.setCheckable(True)
         self.logging_btn.setText('OFF')
-        self.logging_btn.setStyleSheet(self.TOGGLE_BTN_DISABLED_STYLESHEET)
+        self.logging_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
         self.logging_btn.clicked.connect(self.on_logging_btn_clicked)  # noqa
         self.layout.addWidget(self.logging_btn)
 
@@ -495,7 +412,7 @@ class MultiConfigTab(QWidget):
         self.reporting_btn = QPushButton()
         self.reporting_btn.setCheckable(True)
         self.reporting_btn.setText('OFF')
-        self.reporting_btn.setStyleSheet(self.TOGGLE_BTN_DISABLED_STYLESHEET)
+        self.reporting_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
         self.reporting_btn.clicked.connect(self.on_reporting_btn_clicked)  # noqa
         self.layout.addWidget(self.reporting_btn)
 
@@ -507,7 +424,7 @@ class MultiConfigTab(QWidget):
         self.unique_chart_save_btn = QPushButton()
         self.unique_chart_save_btn.setCheckable(True)
         self.unique_chart_save_btn.setText('OFF')
-        self.unique_chart_save_btn.setStyleSheet(self.TOGGLE_BTN_DISABLED_STYLESHEET)
+        self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
         self.unique_chart_save_btn.clicked.connect(self.on_chart_saving_btn_clicked)  # noqa
         self.layout.addWidget(self.unique_chart_save_btn)
 
@@ -519,7 +436,7 @@ class MultiConfigTab(QWidget):
         self.show_sim_results_btn = QPushButton()
         self.show_sim_results_btn.setCheckable(True)
         self.show_sim_results_btn.setText('ON')
-        self.show_sim_results_btn.setStyleSheet(self.TOGGLE_BTN_ENABLED_STYLESHEET)
+        self.show_sim_results_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         self.show_sim_results_btn.clicked.connect(self.on_show_results_btn_clicked)  # noqa
         self.layout.addWidget(self.show_sim_results_btn)
 
@@ -527,11 +444,11 @@ class MultiConfigTab(QWidget):
         self.run_btn.setFixedSize(60, 30)
         self.run_btn.setText('RUN')
         self.run_btn.clicked.connect(self.on_run_btn_clicked)  # noqa
-        self.run_btn.setStyleSheet(self.RUN_BTN_STYLESHEET)
+        self.run_btn.setStyleSheet(Palette.RUN_BTN_STYLESHEET)
         self.layout.addWidget(self.run_btn, alignment=Qt.AlignmentFlag.AlignRight)
 
         self.error_message_box = QLabel()
-        self.error_message_box.setStyleSheet(self.ERROR_LABEL_STYLESHEET)
+        self.error_message_box.setStyleSheet(Palette.ERROR_LABEL_STYLESHEET)
         self.layout.addWidget(self.error_message_box)
 
         self.setLayout(self.layout)
@@ -553,41 +470,41 @@ class MultiConfigTab(QWidget):
         if self.logging_btn.isChecked():
             self.simulation_logging = True
             self.logging_btn.setText('ON')
-            self.logging_btn.setStyleSheet(self.TOGGLE_BTN_ENABLED_STYLESHEET)
+            self.logging_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
             self.simulation_logging = False
             self.logging_btn.setText('OFF')
-            self.logging_btn.setStyleSheet(self.TOGGLE_BTN_DISABLED_STYLESHEET)
+            self.logging_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def on_reporting_btn_clicked(self):
         if self.reporting_btn.isChecked():
             self.simulation_reporting = True
             self.reporting_btn.setText('ON')
-            self.reporting_btn.setStyleSheet(self.TOGGLE_BTN_ENABLED_STYLESHEET)
+            self.reporting_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
             self.simulation_reporting = False
             self.reporting_btn.setText('OFF')
-            self.reporting_btn.setStyleSheet(self.TOGGLE_BTN_DISABLED_STYLESHEET)
+            self.reporting_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def on_chart_saving_btn_clicked(self):
         if self.unique_chart_save_btn.isChecked():
             self.simulation_unique_chart_saving = True
             self.unique_chart_save_btn.setText('ON')
-            self.unique_chart_save_btn.setStyleSheet(self.TOGGLE_BTN_ENABLED_STYLESHEET)
+            self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
             self.simulation_unique_chart_saving = False
             self.unique_chart_save_btn.setText('OFF')
-            self.unique_chart_save_btn.setStyleSheet(self.TOGGLE_BTN_DISABLED_STYLESHEET)
+            self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def on_show_results_btn_clicked(self):
         if self.show_sim_results_btn.isChecked():
             self.simulation_show_results_window = True
             self.show_sim_results_btn.setText('ON')
-            self.show_sim_results_btn.setStyleSheet(self.TOGGLE_BTN_ENABLED_STYLESHEET)
+            self.show_sim_results_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
             self.simulation_show_results_window = False
             self.show_sim_results_btn.setText('OFF')
-            self.show_sim_results_btn.setStyleSheet(self.TOGGLE_BTN_DISABLED_STYLESHEET)
+            self.show_sim_results_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def on_simulation_length_cbox_index_changed(self, index):
         if index == 0:

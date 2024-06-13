@@ -2,17 +2,17 @@ import os
 import json
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QPushButton, QLabel, QFileDialog
-
-TEMPLATE_JSON = {"buy": {}, "sell": {}}
+from StockBench.gui.palette.palette import Palette
 
 
 class StrategyStudioWindow(QWidget):
-    WINDOW_STYLESHEET = """background-color: #202124;"""
     STRATEGY_TEXT_EDIT_STYLESHEET = """border-radius: 12px;padding: 5px;background-color: #303134;color: #fff"""
     STATUS_STYLESHEET = """border-radius: 5px;padding: 3px;background-color: #303134;color: #fff"""
 
     WIDTH = 400
     HEIGHT = 600
+
+    TEMPLATE_JSON = {"buy": {}, "sell": {}}
 
     def __init__(self, filepath, config_pos, config_width):
         super().__init__()
@@ -35,7 +35,7 @@ class StrategyStudioWindow(QWidget):
         self.layout.addWidget(self.save_buttons)
         self.text_edit = QTextEdit()
         self.text_edit.setStyleSheet(self.STRATEGY_TEXT_EDIT_STYLESHEET)
-        self.setStyleSheet(self.WINDOW_STYLESHEET)
+        self.setStyleSheet(Palette.WINDOW_STYLESHEET)
         self.layout.addWidget(self.text_edit)
 
         # set window geometry
@@ -78,7 +78,7 @@ class StrategyStudioWindow(QWidget):
             self.__set_status(f'You are editing: {self.filepath}')
         else:
             # set the strategy text to the editor widget
-            self.text_edit.setText(json.dumps(TEMPLATE_JSON, indent=4))
+            self.text_edit.setText(json.dumps(self.TEMPLATE_JSON, indent=4))
 
             self.__set_status('You are creating a new strategy')
 

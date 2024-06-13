@@ -6,6 +6,7 @@ from StockBench.display.display import Display
 from PyQt6.QtWidgets import QWidget, QProgressBar, QTabWidget, QVBoxLayout
 from PyQt6.QtCore import QTimer, QThreadPool
 from PyQt6 import QtGui
+from StockBench.gui.palette.palette import Palette
 
 log = logging.getLogger()
 
@@ -13,10 +14,9 @@ log = logging.getLogger()
 class SimulationResultsWindow(QWidget):
     """Abstract base class for a simulation results window.
 
-    After instantiation, the caller must call the begin() function to start the simulation and progress observer timer.
-    If the user deselects the option to view the results, this window never gets shown because this window's show
-    command is delegated to the caller, meaning the caller has control over whether this window actually gets
-    shown.
+    After instantiation, the caller must call the 'begin()' function to start the simulation and progress observer
+    timer. If the user deselects the option to view the results, this window never gets shown because this window's show
+    command is delegated to the caller, meaning the caller has control over whether this window actually gets shown.
 
     The simulation is long-running, therefore it is run on a QThread as to not freeze the Qt app while it runs. A
     progress observer (thread-safe) is injected into the simulator to monitor progress of the simulation from this
@@ -27,31 +27,6 @@ class SimulationResultsWindow(QWidget):
     a dict of results which are fed to the _render_data() function, which uses that information to render the results to
     the window.
     """
-    WINDOW_STYLESHEET = """background-color:#202124;"""
-
-    PROGRESS_BAR_STYLESHEET = """
-        QProgressBar{
-            border-radius: 2px;
-        }
-
-        QProgressBar::chunk{
-            border-radius: 2px;
-            background-color: #7532a8;
-        }"""
-
-    TAB_WIDGET_STYLESHEET = """
-            QTabWidget::pane{
-                background-color: #202124;
-                border: 0;
-            }
-            QTabBar::tab:selected {
-                color: #ffffff;
-                background-color: #42444a;
-            }
-            QTabBar::tab:!selected {
-                color: #ffffff;
-                background-color: #323338;
-            }"""
 
     def __init__(self, strategy, initial_balance, simulator, progress_observer, worker, logging_on=False,
                  reporting_on=False, unique_chart_saving_on=False):
@@ -72,7 +47,7 @@ class SimulationResultsWindow(QWidget):
 
         self.setWindowTitle('Simulation Results')
         self.setWindowIcon(QtGui.QIcon(os.path.join('resources', 'images', 'candle.ico')))
-        self.setStyleSheet(self.WINDOW_STYLESHEET)
+        self.setStyleSheet(Palette.WINDOW_STYLESHEET)
 
         # define layout type
         self.layout = QVBoxLayout()
@@ -82,10 +57,10 @@ class SimulationResultsWindow(QWidget):
         self.progress_bar.setRange(0, 100)
         self.progress_bar.setFixedHeight(5)
         self.progress_bar.setTextVisible(False)
-        self.progress_bar.setStyleSheet(self.PROGRESS_BAR_STYLESHEET)
+        self.progress_bar.setStyleSheet(Palette.PROGRESS_BAR_STYLESHEET)
 
         self.tab_widget = QTabWidget()
-        self.tab_widget.setStyleSheet(self.TAB_WIDGET_STYLESHEET)
+        self.tab_widget.setStyleSheet(Palette.TAB_WIDGET_STYLESHEET)
 
         # timer to periodically read from the progress observer and update the progress bar
         self.timer = QTimer()

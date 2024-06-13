@@ -9,7 +9,7 @@ class MultiOverviewTab(OverviewTab):
     """Tab showing simulation overview for multi-symbol simulation results."""
     def __init__(self, progress_observer):
         super().__init__()
-        # add objects to the layout
+        # add components to the layout
         self.overview_side_bar = MultiOverviewSideBar(progress_observer)
         self.layout.addWidget(self.overview_side_bar)
         self.overview_side_bar.setMaximumWidth(300)
@@ -33,7 +33,7 @@ class MultiOverviewSideBar(OverviewSideBar):
         super().__init__(progress_observer)
         self.simulation_results_to_export = {}
 
-        # add objects to the layout
+        # add components to the layout
         self.layout.addWidget(self.results_header)
 
         self.overview_table = MultiOverviewTable()

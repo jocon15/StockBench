@@ -27,9 +27,9 @@ class SimulationResultsWindow(QWidget):
     a dict of results which are fed to the _render_data() function, which uses that information to render the results to
     the window.
     """
-    window_stylesheet = """background-color:#202124;"""
+    WINDOW_STYLESHEET = """background-color:#202124;"""
 
-    progress_bar_stylesheet = """
+    PROGRESS_BAR_STYLESHEET = """
         QProgressBar{
             border-radius: 2px;
         }
@@ -38,7 +38,8 @@ class SimulationResultsWindow(QWidget):
             border-radius: 2px;
             background-color: #7532a8;
         }"""
-    tab_widget_stylesheet = """
+
+    TAB_WIDGET_STYLESHEET = """
             QTabWidget::pane{
                 background-color: #202124;
                 border: 0;
@@ -71,7 +72,7 @@ class SimulationResultsWindow(QWidget):
 
         self.setWindowTitle('Simulation Results')
         self.setWindowIcon(QtGui.QIcon(os.path.join('resources', 'images', 'candle.ico')))
-        self.setStyleSheet(self.window_stylesheet)
+        self.setStyleSheet(self.WINDOW_STYLESHEET)
 
         # define layout type
         self.layout = QVBoxLayout()
@@ -81,10 +82,10 @@ class SimulationResultsWindow(QWidget):
         self.progress_bar.setRange(0, 100)
         self.progress_bar.setFixedHeight(5)
         self.progress_bar.setTextVisible(False)
-        self.progress_bar.setStyleSheet(self.progress_bar_stylesheet)
+        self.progress_bar.setStyleSheet(self.PROGRESS_BAR_STYLESHEET)
 
         self.tab_widget = QTabWidget()
-        self.tab_widget.setStyleSheet(self.tab_widget_stylesheet)
+        self.tab_widget.setStyleSheet(self.TAB_WIDGET_STYLESHEET)
 
         # timer to periodically read from the progress observer and update the progress bar
         self.timer = QTimer()

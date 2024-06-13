@@ -6,7 +6,7 @@ class SingularOverviewTab(OverviewTab):
     """Tab showing simulation overview for single-symbol simulation results."""
     def __init__(self, progress_observer):
         super().__init__()
-        # add objects to the layout
+        # add components to the layout
         self.results_table = SingularOverviewSideBar(progress_observer)
         self.layout.addWidget(self.results_table)
         self.results_table.setMaximumWidth(300)
@@ -28,7 +28,7 @@ class SingularOverviewSideBar(OverviewSideBar):
     """Sidebar that stands next to the overview chart."""
     def __init__(self, progress_observer):
         super().__init__(progress_observer)
-        # add objects to the layout
+        # add components to the layout
         metadata_header = QLabel()
         metadata_header.setText('Metadata')
         metadata_header.setStyleSheet(self.HEADER_STYLESHEET)

@@ -7,13 +7,13 @@ from StockBench.gui.windows.base.positions_tab import PositionsTab
 class MultiResultsWindow(SimulationResultsWindow):
     """Simulation results window for a simulation on multiple symbols."""
 
-    def __init__(self, symbols, strategy, initial_balance, simulator, progress_observer, worker, logging_on, reporting_on,
-                 unique_chart_saving_on):
+    def __init__(self, symbols, strategy, initial_balance, simulator, progress_observer, worker, logging_on, 
+                 reporting_on, unique_chart_saving_on):
         super().__init__(strategy, initial_balance, simulator, progress_observer, worker, logging_on, reporting_on,
                          unique_chart_saving_on)
         self.symbols = symbols
 
-        # add objects to the layout
+        # add components to the layout
         # progress bar
         self.layout.addWidget(self.progress_bar)
         # simulation results frame (gets added to layout via tab widget)

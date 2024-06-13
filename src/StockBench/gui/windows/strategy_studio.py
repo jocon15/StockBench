@@ -25,7 +25,7 @@ class StrategyStudioWindow(QWidget):
         # layout type
         self.layout = QVBoxLayout()
 
-        # add objects to the layout
+        # add components to the layout
         self.status = QLabel()
         self.status.setStyleSheet(self.STATUS_STYLESHEET)
         self.layout.addWidget(self.status)
@@ -91,7 +91,7 @@ class StrategyStudioWindow(QWidget):
 
 
 class SaveButtons(QWidget):
-    btn_stylesheet = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;
+    BTN_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;
         height:25px;"""
 
     def __init__(self):
@@ -101,11 +101,11 @@ class SaveButtons(QWidget):
 
         self.save_btn = QPushButton()
         self.save_btn.setText('Save')
-        self.save_btn.setStyleSheet(self.btn_stylesheet)
+        self.save_btn.setStyleSheet(self.BTN_STYLESHEET)
         self.layout.addWidget(self.save_btn)
         self.save_as_btn = QPushButton()
         self.save_as_btn.setText('Save as')
-        self.save_as_btn.setStyleSheet(self.btn_stylesheet)
+        self.save_as_btn.setStyleSheet(self.BTN_STYLESHEET)
         self.layout.addWidget(self.save_as_btn)
 
         # buttons get connected by the window

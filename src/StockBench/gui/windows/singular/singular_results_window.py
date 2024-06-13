@@ -13,7 +13,7 @@ class SingularResultsWindow(SimulationResultsWindow):
                          unique_chart_saving_on)
         self.symbol = symbol
 
-        # add objects to layout
+        # add components to the layout
         # progress bar
         self.layout.addWidget(self.progress_bar)
         # simulation results frame (gets added to layout via tab widget

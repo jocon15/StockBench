@@ -275,6 +275,9 @@ class SingularConfigTab(QWidget):
             self.error_message_box.setText(f'Uncaught error parsing strategy file: {e}')
             return
 
+        # cache the strategy filepath (create if it does not already exist)
+        self.cache_strategy_filepath(strategy_filepath)
+
         # inject the unix equivalent dates from the combobox to the dict
         strategy['strategy_filepath'] = strategy_filepath
         strategy['start'] = int(time.time()) - self.simulation_length
@@ -309,6 +312,13 @@ class SingularConfigTab(QWidget):
         if self.simulation_show_results_window:
             # show the results window if option is checked
             self.simulation_result_window.showMaximized()
+
+    @staticmethod
+    def cache_strategy_filepath(strategy_filepath):
+        # cache the strategy filepath (create if it does not already exist)
+        data = {'cached_strategy_filepath': strategy_filepath}
+        with open('cache.json', 'w+') as file:
+            json.dump(data, file)
 
 
 class MultiConfigTab(QWidget):
@@ -530,6 +540,9 @@ class MultiConfigTab(QWidget):
             self.error_message_box.setText(f'Uncaught error parsing strategy file: {e}')
             return
 
+        # cache the strategy filepath (create if it does not already exist)
+        self.cache_strategy_filepath(strategy_filepath)
+
         # inject the unix equivalent dates from the combobox to the dict
         strategy['strategy_filepath'] = strategy_filepath
         strategy['start'] = int(time.time()) - self.simulation_length
@@ -569,6 +582,13 @@ class MultiConfigTab(QWidget):
             # show the results window if option is checked
             self.simulation_result_window.showMaximized()
 
+    @staticmethod
+    def cache_strategy_filepath(strategy_filepath):
+        # cache the strategy filepath (create if it does not already exist)
+        data = {'cached_strategy_filepath': strategy_filepath}
+        with open('cache.json', 'w+') as file:
+            json.dump(data, file)
+
 
 class StrategySelection(QWidget):
     FILEPATH_BOX_STYLESHEET = """background-color: #303134;color: #FFF;"""
@@ -585,6 +605,7 @@ class StrategySelection(QWidget):
         self.filepath_box = QLabel()
         self.filepath_box.setStyleSheet(self.FILEPATH_BOX_STYLESHEET)
         self.layout.addWidget(self.filepath_box)
+        self.add_cached_strategy_filepath()
 
         self.select_file_btn = QPushButton()
         self.select_file_btn.setText('Select File')
@@ -593,6 +614,14 @@ class StrategySelection(QWidget):
         self.layout.addWidget(self.select_file_btn)
 
         self.setLayout(self.layout)
+
+    def add_cached_strategy_filepath(self):
+        filepath = 'cache.json'
+        if os.path.exists(filepath):
+            with open(filepath, 'r') as file:
+                data = json.load(file)
+            if 'cached_strategy_filepath' in data.keys():
+                self.filepath_box.setText(data['cached_strategy_filepath'])
 
     def on_select_file_btn_click(self):
         dlg = QFileDialog()

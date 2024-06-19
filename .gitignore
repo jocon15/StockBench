@@ -11,6 +11,7 @@ saved_simulations/
 offline_images/
 out/
 .idea/
+cache.json
 
 # allowable files
 !src/resources/default/*

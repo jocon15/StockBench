@@ -260,7 +260,7 @@ class SingularConfigTab(QWidget):
     def on_run_btn_clicked(self):
         # load the strategy from the JSON file into a strategy python dict
 
-        strategy_filepath = self.strategy_selection_box.strategy_filepath
+        strategy_filepath = self.strategy_selection_box.filepath_box.text()
 
         if strategy_filepath is None or strategy_filepath == '':
             self.error_message_box.setText('You must select a strategy file!')
@@ -526,7 +526,7 @@ class MultiConfigTab(QWidget):
 
     def on_run_btn_clicked(self):
         # load the strategy from the JSON file into a strategy python dict
-        strategy_filepath = self.strategy_selection_box.strategy_filepath
+        strategy_filepath = self.strategy_selection_box.filepath_box.text()
         if strategy_filepath is None or strategy_filepath == '':
             self.error_message_box.setText('You must select a strategy file!')
             return
@@ -598,8 +598,6 @@ class StrategySelection(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.strategy_filepath = None
-
         self.layout = QHBoxLayout()
 
         self.filepath_box = QLabel()
@@ -629,5 +627,4 @@ class StrategySelection(QWidget):
         dlg.setNameFilter("JSON (*.json)")
         if dlg.exec():
             filenames = dlg.selectedFiles()
-            self.strategy_filepath = filenames[0]
-            self.filepath_box.setText(self.strategy_filepath)
+            self.filepath_box.setText(filenames[0])

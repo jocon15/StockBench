@@ -4,13 +4,11 @@ import time
 
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTabWidget, QHBoxLayout, QLabel, QPushButton, QComboBox
 from PyQt6.QtWidgets import QFileDialog, QLineEdit
-from PyQt6.QtCore import QThreadPool, Qt, QPoint
+from PyQt6.QtCore import Qt, QPoint
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6 import QtGui
 
-from StockBench.gui.worker.worker import Worker
-from StockBench.observers.progress_observer import ProgressObserver
-from StockBench.simulator import Simulator
+from StockBench.gui.windows.base.base.config_tab import ConfigTab
 from StockBench.gui.windows.singular.singular_results_window import SingularResultsWindow
 from StockBench.gui.windows.multi.multi_results_window import MultiResultsWindow
 from StockBench.constants import *
@@ -55,31 +53,10 @@ class ConfigMainWindow(QMainWindow):
         self.setFixedSize(self.WIDTH, self.HEIGHT)
 
 
-class SingularConfigTab(QWidget):
+class SingularConfigTab(ConfigTab):
     def __init__(self):
         super().__init__()
-        # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
-        self.threadpool = QThreadPool()
-
-        # since sim results window calls run(), this has to be passed to the sim results window to avoid
-        #   circular import error (maybe just pass class reference to window and let the window instantiate?)
-        self.progress_bar_observer = ProgressObserver
-        # pass an uninitialized reference of the worker object to the windows
-        self.worker = Worker
-        # pass an uninitialized reference of the simulator object to the windows
-        self.simulator = Simulator
-
-        # windows launched from a class need to be attributes or else they will be closed when the function
-        # scope that called them is exited
-        self.simulation_result_window = None
-        self.strategy_studio_window = None
-
-        self.simulation_length = None
-        self.simulation_logging = False
-        self.simulation_reporting = False
-        self.simulation_unique_chart_saving = False
-        self.simulation_show_results_window = True
-
+        # layout type
         self.layout = QVBoxLayout()
 
         label = QLabel()
@@ -313,39 +290,10 @@ class SingularConfigTab(QWidget):
             # show the results window if option is checked
             self.simulation_result_window.showMaximized()
 
-    @staticmethod
-    def cache_strategy_filepath(strategy_filepath):
-        # cache the strategy filepath (create if it does not already exist)
-        data = {'cached_strategy_filepath': strategy_filepath}
-        with open('cache.json', 'w+') as file:
-            json.dump(data, file)
 
-
-class MultiConfigTab(QWidget):
+class MultiConfigTab(ConfigTab):
     def __init__(self):
         super().__init__()
-        # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
-        self.threadpool = QThreadPool()
-
-        # since sim results window calls run(), this has to be passed to the sim results window to avoid
-        #   circular import error (maybe just pass class reference to window and let the window instantiate?)
-        self.progress_bar_observer = ProgressObserver
-        # pass an uninitialized reference of the worker object to the windows
-        self.worker = Worker
-        # pass an uninitialized reference of the simulator object to the windows
-        self.simulator = Simulator
-
-        # windows launched from a class need to be attributes or else they will be closed when the function
-        # scope that called them is exited
-        self.simulation_result_window = None
-        self.strategy_studio_window = None
-
-        self.simulation_length = None
-        self.simulation_logging = False
-        self.simulation_reporting = False
-        self.simulation_unique_chart_saving = False
-        self.simulation_show_results_window = True
-
         # layout type
         self.layout = QVBoxLayout()
 
@@ -581,13 +529,6 @@ class MultiConfigTab(QWidget):
         if self.simulation_show_results_window:
             # show the results window if option is checked
             self.simulation_result_window.showMaximized()
-
-    @staticmethod
-    def cache_strategy_filepath(strategy_filepath):
-        # cache the strategy filepath (create if it does not already exist)
-        data = {'cached_strategy_filepath': strategy_filepath}
-        with open('cache.json', 'w+') as file:
-            json.dump(data, file)
 
 
 class StrategySelection(QWidget):

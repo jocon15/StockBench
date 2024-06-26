@@ -52,9 +52,10 @@ class MultipleDisplay(Display):
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, save_option, 'temp_chart', 'multi')
+        return self.handle_save_chart(formatted_fig, save_option, 'temp_overview_chart', 'multi')
 
-    def chart_buy_rules_analysis(self, positions, show=True, save_option=Display.TEMP_SAVE) -> str:
+    @staticmethod
+    def chart_buy_rules_analysis(positions, show=True, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
         cols = 1
 
@@ -89,9 +90,10 @@ class MultipleDisplay(Display):
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, save_option, 'temp_buy_chart', 'multi_buy_rules')
+        return Display.handle_save_chart(formatted_fig, save_option, 'temp_buy_chart', 'multi_buy_rules')
 
-    def chart_sell_rules_analysis(self, positions, show=True, save_option=Display.TEMP_SAVE) -> str:
+    @staticmethod
+    def chart_sell_rules_analysis(positions, show=True, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
         cols = 1
 
@@ -126,10 +128,11 @@ class MultipleDisplay(Display):
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, save_option,
+        return Display.handle_save_chart(formatted_fig, save_option,
                                       'temp_sell_chart', 'multi_sell_rules')
 
-    def chart_positions_analysis(self, positions, show=True, save_option=Display.TEMP_SAVE) -> str:
+    @staticmethod
+    def chart_positions_analysis(positions, show=True, save_option=Display.TEMP_SAVE) -> str:
         rows = 1
         cols = 1
 
@@ -163,7 +166,7 @@ class MultipleDisplay(Display):
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, save_option,
+        return Display.handle_save_chart(formatted_fig, save_option,
                                       'temp_positions_chart', 'multi_positions')
 
     def __overview_profit_loss_bar(self):

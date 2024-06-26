@@ -116,7 +116,7 @@ class SingularDisplay(Display):
             # setting xaxis_range prevents the buy and sell point traces from changing the chart scale
             # setting margin overrides plotly's default margin setting
             fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False,
-                              xaxis_range=(self.__df['Date'][0], self.__df['Date'][window_size-1]),
+                              xaxis_range=(self.__df['Date'][0], self.__df['Date'][window_size - 1]),
                               margin=dict(l=self.PLOTLY_CHART_MARGIN_LEFT,
                                           r=self.PLOTLY_CHART_MARGIN_RIGHT,
                                           t=self.PLOTLY_CHART_MARGIN_TOP,
@@ -130,9 +130,10 @@ class SingularDisplay(Display):
 
         # perform and saving or showing (returns saved filepath)
         return self.handle_save_chart(formatted_fig, save_option,
-                                      'temp_chart', f'figure_{symbol}')
+                                      'temp_overview_chart', f'figure_{symbol}')
 
-    def chart_buy_rules_analysis(self, positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
+    @staticmethod
+    def chart_buy_rules_analysis(positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
         cols = 1
 
@@ -167,10 +168,11 @@ class SingularDisplay(Display):
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, save_option,
-                                      'temp_buy_chart', f'{symbol}_buy_rules')
+        return Display.handle_save_chart(formatted_fig, save_option,
+                                         'temp_buy_chart', f'{symbol}_buy_rules')
 
-    def chart_sell_rules_analysis(self, positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
+    @staticmethod
+    def chart_sell_rules_analysis(positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
         cols = 1
 
@@ -205,10 +207,10 @@ class SingularDisplay(Display):
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, save_option,
-                                      'temp_sell_chart', f'{symbol}_sell_rules')
+        return Display.handle_save_chart(formatted_fig, save_option, 'temp_sell_chart', f'{symbol}_sell_rules')
 
-    def chart_positions_analysis(self, positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
+    @staticmethod
+    def chart_positions_analysis(positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
         rows = 1
         cols = 1
 
@@ -242,5 +244,5 @@ class SingularDisplay(Display):
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, save_option,
-                                      'temp_positions_chart', f'{symbol}_positions')
+        return Display.handle_save_chart(formatted_fig, save_option,
+                                         'temp_positions_chart', f'{symbol}_positions')

@@ -20,14 +20,15 @@ class Display:
     PLOTLY_CHART_MARGIN_LEFT = 60
     PLOTLY_CHART_MARGIN_RIGHT = 100
 
-    def handle_save_chart(self, formatted_fig, save_option, temp_filename, unique_prefix) -> str:
+    @staticmethod
+    def handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix) -> str:
         """andle save options for charts"""
         if save_option == Display.TEMP_SAVE:
             # save chart as temporary file - will be overwritten by any new chart
-            chart_filepath = self.__save_chart(formatted_fig, f'{temp_filename}.html')
+            chart_filepath = Display.__save_chart(formatted_fig, f'{temp_filename}.html')
         elif save_option == Display.UNIQUE_SAVE:
             # save chart as unique file for persistent saving
-            chart_filepath = self.__save_chart(formatted_fig, f'{unique_prefix}_{datetime_timestamp()}.html')
+            chart_filepath = Display.__save_chart(formatted_fig, f'{unique_prefix}_{datetime_timestamp()}.html')
         else:
             # no chart was saved
             chart_filepath = ''

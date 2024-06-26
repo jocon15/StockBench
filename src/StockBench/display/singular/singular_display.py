@@ -22,7 +22,7 @@ class SingularDisplay(Display):
         Args:
             df (DataFrame): The full DataFrame post-simulation.
             symbol (str): The symbol the simulation was run on.
-            indicators (list): The list of indicators.
+            indicators (any): The list of indicators.
             show (bool): Show the chart.
             save_option (int): Save the chart.
 

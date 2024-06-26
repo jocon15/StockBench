@@ -8,12 +8,9 @@ from StockBench.display.display import Display
 
 class MultipleDisplay(Display):
     """This class defines a display object for a simulation where multiple stocks were simulated."""
-    def __init__(self):
-        self.__data = None
 
-    def chart_overview(self, data, show=True, save_option=Display.TEMP_SAVE) -> str:
-        self.__data = data
-
+    @staticmethod
+    def chart_overview(data, show=True, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
         cols = 2
 
@@ -30,19 +27,19 @@ class MultipleDisplay(Display):
                             subplot_titles=chart_titles)
 
         # Profit/Loss Bar
-        fig.add_trace(self.__overview_profit_loss_bar(), row=1, col=1)
+        fig.add_trace(MultipleDisplay.__overview_profit_loss_bar(data), row=1, col=1)
 
         # Avg Profit/Loss Gauge
-        fig.add_trace(self.__overview_avg_effectiveness_gauge(), row=1, col=2)
+        fig.add_trace(MultipleDisplay.__overview_avg_effectiveness_gauge(data), row=1, col=2)
 
         # Total Trades Made Bar
-        fig.add_trace(self.__overview_trades_made_bar(), row=2, col=1)
+        fig.add_trace(MultipleDisplay.__overview_trades_made_bar(data), row=2, col=1)
 
         # Avg Profit/Loss Gauge
-        fig.add_trace(self.__overview_avg_profit_loss_gauge(), row=2, col=2)
+        fig.add_trace(MultipleDisplay.__overview_avg_profit_loss_gauge(data), row=2, col=2)
 
         # set the layout
-        fig.update_layout(template='plotly_dark', title=f'Simulation Results for {len(self.__data)} Symbols',
+        fig.update_layout(template='plotly_dark', title=f'Simulation Results for {len(data)} Symbols',
                           xaxis_rangeslider_visible=False, showlegend=False)
 
         if show:
@@ -52,9 +49,10 @@ class MultipleDisplay(Display):
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, save_option, 'temp_chart', 'multi')
+        return Display.handle_save_chart(formatted_fig, save_option, 'temp_overview_chart', 'multi')
 
-    def chart_buy_rules_analysis(self, positions, show=True, save_option=Display.TEMP_SAVE) -> str:
+    @staticmethod
+    def chart_buy_rules_analysis(positions, show=True, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
         cols = 1
 
@@ -89,9 +87,10 @@ class MultipleDisplay(Display):
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, save_option, 'temp_buy_chart', 'multi_buy_rules')
+        return Display.handle_save_chart(formatted_fig, save_option, 'temp_buy_chart', 'multi_buy_rules')
 
-    def chart_sell_rules_analysis(self, positions, show=True, save_option=Display.TEMP_SAVE) -> str:
+    @staticmethod
+    def chart_sell_rules_analysis(positions, show=True, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
         cols = 1
 
@@ -126,10 +125,11 @@ class MultipleDisplay(Display):
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, save_option,
-                                      'temp_sell_chart', 'multi_sell_rules')
+        return Display.handle_save_chart(formatted_fig, save_option,
+                                         'temp_sell_chart', 'multi_sell_rules')
 
-    def chart_positions_analysis(self, positions, show=True, save_option=Display.TEMP_SAVE) -> str:
+    @staticmethod
+    def chart_positions_analysis(positions, show=True, save_option=Display.TEMP_SAVE) -> str:
         rows = 1
         cols = 1
 
@@ -163,13 +163,14 @@ class MultipleDisplay(Display):
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, save_option,
-                                      'temp_positions_chart', 'multi_positions')
+        return Display.handle_save_chart(formatted_fig, save_option,
+                                         'temp_positions_chart', 'multi_positions')
 
-    def __overview_profit_loss_bar(self):
+    @staticmethod
+    def __overview_profit_loss_bar(data):
         color_df = pd.DataFrame()
         bar_colors = []
-        for value in self.__get_total_pl_per_symbol():
+        for value in MultipleDisplay.__get_total_pl_per_symbol(data):
             if value > 0:
                 bar_colors.append(BULL_GREEN)
             else:
@@ -177,12 +178,13 @@ class MultipleDisplay(Display):
         color_df['colors'] = bar_colors
 
         return plotter.Bar(
-            x=self.__get_symbols(),
-            y=self.__get_total_pl_per_symbol(),
+            x=MultipleDisplay.__get_symbols(data),
+            y=MultipleDisplay.__get_total_pl_per_symbol(data),
             marker_color=color_df['colors'])
 
-    def __overview_avg_effectiveness_gauge(self):
-        indicator_value = self.__get_avg_effectiveness()
+    @staticmethod
+    def __overview_avg_effectiveness_gauge(data):
+        indicator_value = MultipleDisplay.__get_avg_effectiveness(data)
         if indicator_value > 50.0:
             bar_color = 'green'
         else:
@@ -200,8 +202,9 @@ class MultipleDisplay(Display):
                        {'range': [0, 50], 'color': PLOTLY_DARK_BACKGROUND},
                        {'range': [50, 100], 'color': PLOTLY_DARK_BACKGROUND}]})
 
-    def __overview_avg_profit_loss_gauge(self):
-        indicator_value = self.__get_avg_pl()
+    @staticmethod
+    def __overview_avg_profit_loss_gauge(data):
+        indicator_value = MultipleDisplay.__get_avg_pl(data)
         if indicator_value > 0:
             bar_color = 'green'
         else:
@@ -219,31 +222,38 @@ class MultipleDisplay(Display):
                        {'range': [-1000, 0], 'color': PLOTLY_DARK_BACKGROUND},
                        {'range': [0, 1000], 'color': PLOTLY_DARK_BACKGROUND}]})
 
-    def __overview_trades_made_bar(self):
+    @staticmethod
+    def __overview_trades_made_bar(data):
         return plotter.Bar(
-            x=self.__get_symbols(),
-            y=self.__get_trades_per_symbol(),
+            x=MultipleDisplay.__get_symbols(data),
+            y=MultipleDisplay.__get_trades_per_symbol(data),
             marker=dict(color=OFF_BLUE))
 
-    def __get_symbols(self) -> list:
-        return self.__get_list_by_name('symbol')
+    @staticmethod
+    def __get_symbols(data) -> list:
+        return MultipleDisplay.__get_list_by_name('symbol', data)
 
-    def __get_total_pl_per_symbol(self) -> list:
-        return self.__get_list_by_name('total_profit_loss')
+    @staticmethod
+    def __get_total_pl_per_symbol(data) -> list:
+        return MultipleDisplay.__get_list_by_name('total_profit_loss', data)
 
-    def __get_trades_per_symbol(self) -> list:
-        return self.__get_list_by_name('trades_made')
+    @staticmethod
+    def __get_trades_per_symbol(data) -> list:
+        return MultipleDisplay.__get_list_by_name('trades_made', data)
 
-    def __get_avg_effectiveness(self) -> float:
-        effectiveness_per_symbol = self.__get_list_by_name('effectiveness')
+    @staticmethod
+    def __get_avg_effectiveness(data) -> float:
+        effectiveness_per_symbol = MultipleDisplay.__get_list_by_name('effectiveness', data)
         return round(float(statistics.mean(effectiveness_per_symbol)), 2)
 
-    def __get_avg_pl(self) -> float:
-        pl_per_symbol = self.__get_list_by_name('total_profit_loss')
+    @staticmethod
+    def __get_avg_pl(data) -> float:
+        pl_per_symbol = MultipleDisplay.__get_list_by_name('total_profit_loss', data)
         return round(float(statistics.mean(pl_per_symbol)), 2)
 
-    def __get_list_by_name(self, name) -> list:
-        return [stock[name] for stock in self.__data]
+    @staticmethod
+    def __get_list_by_name(name, data) -> list:
+        return [stock[name] for stock in data]
 
     @staticmethod
     def __list_out_of_100(value: float) -> list:

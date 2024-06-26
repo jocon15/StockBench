@@ -11,6 +11,7 @@ from StockBench.broker.broker import Broker
 from StockBench.export.export import Exporter
 from StockBench.display.display import Display
 from StockBench.position.position import Position
+from concurrent.futures import ProcessPoolExecutor
 from StockBench.display.singular.singular_display import SingularDisplay
 from StockBench.display.multi.multiple_display import MultipleDisplay
 from StockBench.account.user_account import UserAccount
@@ -402,18 +403,19 @@ class Simulator:
         sell_rule_analysis_chart_filepath = ''
         position_analysis_chart_filepath = ''
         if show_chart or save_option:
-            # create the display object
-            display = SingularDisplay(self.__indicators.values())
+            # faster to do it synchronously for singular
             gui_terminal_log.info('Building overview chart...')
-            overview_chart_filepath = display.chart_overview(chopped_temp_df, symbol, show_chart, save_option)
+            overview_chart_filepath = SingularDisplay.chart_overview(chopped_temp_df, symbol,
+                                                                     self.__indicators.values(), show_chart,
+                                                                     save_option)
             gui_terminal_log.info('Building buy rules analysis chart...')
-            buy_rule_analysis_chart_filepath = display.chart_buy_rules_analysis(
+            buy_rule_analysis_chart_filepath = SingularDisplay.chart_buy_rules_analysis(
                 self.__single_simulation_position_archive, symbol, show_chart, save_option)
             gui_terminal_log.info('Building sell rules analysis chart...')
-            sell_rule_analysis_chart_filepath = display.chart_sell_rules_analysis(
+            sell_rule_analysis_chart_filepath = SingularDisplay.chart_sell_rules_analysis(
                 self.__single_simulation_position_archive, symbol, show_chart, save_option)
             gui_terminal_log.info('Building positions analysis charts...')
-            position_analysis_chart_filepath = display.chart_positions_analysis(
+            position_analysis_chart_filepath = SingularDisplay.chart_positions_analysis(
                 self.__single_simulation_position_archive, symbol, show_chart, save_option)
 
         log.info('Simulation complete!')
@@ -475,19 +477,24 @@ class Simulator:
         sell_rule_analysis_chart_filepath = ''
         position_analysis_chart_filepath = ''
         if show_chart or save_option:
-            # create the display object
-            display = MultipleDisplay()
-            gui_terminal_log.info('Building overview chart...')
-            overview_chart_filepath = display.chart_overview(results, show_chart, save_option)
-            gui_terminal_log.info('Building buy rules analysis chart...')
-            buy_rule_analysis_chart_filepath = display.chart_buy_rules_analysis(
-                self.__multiple_simulation_position_archive, show_chart, save_option)
-            gui_terminal_log.info('Building sell rules analysis chart...')
-            sell_rule_analysis_chart_filepath = display.chart_sell_rules_analysis(
-                self.__multiple_simulation_position_archive, show_chart, save_option)
-            gui_terminal_log.info('Building positions analysis charts...')
-            position_analysis_chart_filepath = display.chart_positions_analysis(
-                self.__multiple_simulation_position_archive, show_chart, save_option)
+            with ProcessPoolExecutor() as executor:
+                gui_terminal_log.info('Building overview chart...')
+                future1 = executor.submit(MultipleDisplay.chart_overview, results, show_chart, save_option)
+
+                gui_terminal_log.info('Building buy rules analysis chart...')
+                future2 = executor.submit(MultipleDisplay.chart_buy_rules_analysis,
+                                          self.__multiple_simulation_position_archive, show_chart, save_option),
+                gui_terminal_log.info('Building sell rules analysis chart...')
+                future3 = executor.submit(MultipleDisplay.chart_sell_rules_analysis,
+                                          self.__multiple_simulation_position_archive, show_chart, save_option),
+                gui_terminal_log.info('Building positions analysis charts...')
+                future4 = executor.submit(MultipleDisplay.chart_positions_analysis,
+                                          self.__multiple_simulation_position_archive, show_chart, save_option)
+
+                overview_chart_filepath = future1.result()
+                buy_rule_analysis_chart_filepath = future2[0].result()
+                sell_rule_analysis_chart_filepath = future3[0].result()
+                position_analysis_chart_filepath = future4.result()
 
         end_time = perf_counter()
         elapsed_time = round(end_time - start_time, 4)

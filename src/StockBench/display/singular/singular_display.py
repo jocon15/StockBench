@@ -15,32 +15,26 @@ class SingularDisplay(Display):
     """
     SUBPLOT_VERTICAL_SPACING = 0.05
 
-    def __init__(self, indicators):
-        self.__df = None
-
-        self.__indicators = indicators
-
-        # DO NOT ADD ANY to this list
-        self.__subplot_objects = []
-        self.__subplot_types = []
-
-    def chart_overview(self, df, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
+    @staticmethod
+    def chart_overview(df, symbol, indicators, show=True, save_option=Display.TEMP_SAVE) -> str:
         """Chart the data.
 
         Args:
             df (DataFrame): The full DataFrame post-simulation.
             symbol (str): The symbol the simulation was run on.
+            indicators (any): The list of indicators.
             show (bool): Show the chart.
             save_option (int): Save the chart.
 
         Return:
             (str): The filepath of the chart
         """
-        self.__df = df
+        subplot_objects = []
+        subplot_types = []
 
         # find the OHLC indicator
         ohlc_indicator = None
-        for indicator in self.__indicators:
+        for indicator in indicators:
             indicator_subplot = indicator.get_subplot()
             if indicator_subplot is not None:
                 try:
@@ -54,46 +48,45 @@ class SingularDisplay(Display):
             raise Exception('No OHLC indicator found, cannot chart!')
 
         # add ohlc to list
-        self.__subplot_objects.append(ohlc_indicator.get_subplot())
+        subplot_objects.append(ohlc_indicator.get_subplot())
 
         # activate the subplot objects if evidence is found in the df
-        for (column_name, column_data) in self.__df.items():
-            for indicator in self.__indicators:
+        for (column_name, column_data) in df.items():
+            for indicator in indicators:
                 indicator_subplot = indicator.get_subplot()
                 if indicator_subplot is not None:
                     if column_name == indicator.get_data_name():
                         if not indicator_subplot.is_ohlc_trace():
                             # concatenate the 2 lists (add element to list)
-                            self.__subplot_objects = [x for n in (self.__subplot_objects, [indicator_subplot]) for x in
-                                                      n]
+                            subplot_objects = [x for n in (subplot_objects, [indicator_subplot]) for x in n]
 
         # get the subplot types after all subplot objects have been established
-        for subplot in self.__subplot_objects:
-            self.__subplot_types.append(subplot.get_type())
+        for subplot in subplot_objects:
+            subplot_types.append(subplot.get_type())
 
         # build the parent plot
         cols = col = 1  # only one col in every row
-        rows = len(self.__subplot_objects)
-        fig = make_subplots(rows=rows, cols=cols, shared_xaxes=True, vertical_spacing=self.SUBPLOT_VERTICAL_SPACING,
-                            specs=self.__subplot_types)
+        rows = len(subplot_objects)
+        fig = make_subplots(rows=rows, cols=cols, shared_xaxes=True,
+                            vertical_spacing=SingularDisplay.SUBPLOT_VERTICAL_SPACING, specs=subplot_types)
 
         # add subplots and traces from the objects to the parent plot
-        for enum_row, subplot in enumerate(self.__subplot_objects):
+        for enum_row, subplot in enumerate(subplot_objects):
             row = enum_row + 1
             # add the subplot
-            fig.add_trace(subplot.get_subplot(self.__df), row=row, col=col)
+            fig.add_trace(subplot.get_subplot(df), row=row, col=col)
             if subplot.get_type()[0]['type'] == 'ohlc':
                 # special case for OHLC subplot
                 traces = []
                 # get the traces from the subplot
-                for trace in subplot.get_traces(self.__df):
+                for trace in subplot.get_traces(df):
                     traces.append(trace)
                 # get the traces from all aux OHLC trace indicators
-                for indicator in self.__indicators:
+                for indicator in indicators:
                     indicator_subplot = indicator.get_subplot()
                     if indicator_subplot is not None:
                         if indicator_subplot.is_ohlc_trace():
-                            for trace in indicator_subplot.get_traces(self.__df):
+                            for trace in indicator_subplot.get_traces(df):
                                 traces.append(trace)
                 # now add all traces to the subplot on the figure
                 for trace in traces:
@@ -101,11 +94,11 @@ class SingularDisplay(Display):
             else:
                 # non-ohlc subplots
                 # add the subplots traces to the subplot on the figure
-                for trace in subplot.get_traces(self.__df):
+                for trace in subplot.get_traces(df):
                     fig.add_trace(trace, row=row, col=col)
 
         # update the layout
-        window_size = len(self.__df['Close'])
+        window_size = len(df['Close'])
         if save_option != Display.TEMP_SAVE:
             # non-temp save should show the simulation metadata in the title (uses DEFAULT margin)
 
@@ -116,11 +109,11 @@ class SingularDisplay(Display):
             # setting xaxis_range prevents the buy and sell point traces from changing the chart scale
             # setting margin overrides plotly's default margin setting
             fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False,
-                              xaxis_range=(self.__df['Date'][0], self.__df['Date'][window_size-1]),
-                              margin=dict(l=self.PLOTLY_CHART_MARGIN_LEFT,
-                                          r=self.PLOTLY_CHART_MARGIN_RIGHT,
-                                          t=self.PLOTLY_CHART_MARGIN_TOP,
-                                          b=self.PLOTLY_CHART_MARGIN_BOTTOM))
+                              xaxis_range=(df['Date'][0], df['Date'][window_size - 1]),
+                              margin=dict(l=SingularDisplay.PLOTLY_CHART_MARGIN_LEFT,
+                                          r=SingularDisplay.PLOTLY_CHART_MARGIN_RIGHT,
+                                          t=SingularDisplay.PLOTLY_CHART_MARGIN_TOP,
+                                          b=SingularDisplay.PLOTLY_CHART_MARGIN_BOTTOM))
 
         if show:
             fig.show()
@@ -129,10 +122,11 @@ class SingularDisplay(Display):
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, save_option,
-                                      'temp_chart', f'figure_{symbol}')
+        return Display.handle_save_chart(formatted_fig, save_option,
+                                         'temp_overview_chart', f'figure_{symbol}')
 
-    def chart_buy_rules_analysis(self, positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
+    @staticmethod
+    def chart_buy_rules_analysis(positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
         cols = 1
 
@@ -167,10 +161,11 @@ class SingularDisplay(Display):
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, save_option,
-                                      'temp_buy_chart', f'{symbol}_buy_rules')
+        return Display.handle_save_chart(formatted_fig, save_option,
+                                         'temp_buy_chart', f'{symbol}_buy_rules')
 
-    def chart_sell_rules_analysis(self, positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
+    @staticmethod
+    def chart_sell_rules_analysis(positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
         cols = 1
 
@@ -205,10 +200,10 @@ class SingularDisplay(Display):
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, save_option,
-                                      'temp_sell_chart', f'{symbol}_sell_rules')
+        return Display.handle_save_chart(formatted_fig, save_option, 'temp_sell_chart', f'{symbol}_sell_rules')
 
-    def chart_positions_analysis(self, positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
+    @staticmethod
+    def chart_positions_analysis(positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
         rows = 1
         cols = 1
 
@@ -242,5 +237,5 @@ class SingularDisplay(Display):
         formatted_fig = Display.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return self.handle_save_chart(formatted_fig, save_option,
-                                      'temp_positions_chart', f'{symbol}_positions')
+        return Display.handle_save_chart(formatted_fig, save_option,
+                                         'temp_positions_chart', f'{symbol}_positions')

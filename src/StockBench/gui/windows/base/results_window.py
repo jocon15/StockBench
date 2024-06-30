@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import QWidget, QProgressBar, QTabWidget, QVBoxLayout
 from PyQt6.QtCore import QTimer, QThreadPool
 from PyQt6 import QtGui
 from StockBench.gui.palette.palette import Palette
+from StockBench.simulator import Simulator
 
 log = logging.getLogger()
 
@@ -29,7 +30,7 @@ class SimulationResultsWindow(QWidget):
     """
 
     def __init__(self, strategy, initial_balance, simulator, progress_observer, worker, logging_on=False,
-                 reporting_on=False, unique_chart_saving_on=False):
+                 reporting_on=False, unique_chart_saving_on=False, results_depth=Simulator.CHARTS_AND_DATA):
         super().__init__()
         self.strategy = strategy
         self.simulator = simulator(initial_balance)  # instantiate the class reference
@@ -38,6 +39,7 @@ class SimulationResultsWindow(QWidget):
         self.logging = logging_on
         self.reporting = reporting_on
         self.unique_chart_saving = unique_chart_saving_on
+        self.results_depth = results_depth
 
         # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
         self.threadpool = QThreadPool()

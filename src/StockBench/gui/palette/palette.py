@@ -41,6 +41,8 @@ class Palette:
     COMBOBOX_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
             text-indent:3px;"""
 
+    RADIO_BTN_STYLESHEET = """color: #fff; margin-left: 15px;"""
+
     LINE_EDIT_STYLESHEET = """background-color:#303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
             text-indent:5px;"""
 

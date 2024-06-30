@@ -10,7 +10,7 @@ class MultipleDisplay(Display):
     """This class defines a display object for a simulation where multiple stocks were simulated."""
 
     @staticmethod
-    def chart_overview(data, show=True, save_option=Display.TEMP_SAVE) -> str:
+    def chart_overview(data, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
         cols = 2
 
@@ -42,9 +42,6 @@ class MultipleDisplay(Display):
         fig.update_layout(template='plotly_dark', title=f'Simulation Results for {len(data)} Symbols',
                           xaxis_rangeslider_visible=False, showlegend=False)
 
-        if show:
-            fig.show()
-
         # format the chart (remove plotly white border)
         formatted_fig = Display.format_chart(fig)
 
@@ -52,7 +49,7 @@ class MultipleDisplay(Display):
         return Display.handle_save_chart(formatted_fig, save_option, 'temp_overview_chart', 'multi')
 
     @staticmethod
-    def chart_buy_rules_analysis(positions, show=True, save_option=Display.TEMP_SAVE) -> str:
+    def chart_buy_rules_analysis(positions, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
         cols = 1
 
@@ -80,9 +77,6 @@ class MultipleDisplay(Display):
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
 
-        if show:
-            fig.show()
-
         # format the chart (remove plotly white border)
         formatted_fig = Display.format_chart(fig)
 
@@ -90,7 +84,7 @@ class MultipleDisplay(Display):
         return Display.handle_save_chart(formatted_fig, save_option, 'temp_buy_chart', 'multi_buy_rules')
 
     @staticmethod
-    def chart_sell_rules_analysis(positions, show=True, save_option=Display.TEMP_SAVE) -> str:
+    def chart_sell_rules_analysis(positions, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
         cols = 1
 
@@ -118,9 +112,6 @@ class MultipleDisplay(Display):
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
 
-        if show:
-            fig.show()
-
         # format the chart (remove plotly white border)
         formatted_fig = Display.format_chart(fig)
 
@@ -129,7 +120,7 @@ class MultipleDisplay(Display):
                                          'temp_sell_chart', 'multi_sell_rules')
 
     @staticmethod
-    def chart_positions_analysis(positions, show=True, save_option=Display.TEMP_SAVE) -> str:
+    def chart_positions_analysis(positions, save_option=Display.TEMP_SAVE) -> str:
         rows = 1
         cols = 1
 
@@ -155,9 +146,6 @@ class MultipleDisplay(Display):
 
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
-
-        if show:
-            fig.show()
 
         # format the chart (remove plotly white border)
         formatted_fig = Display.format_chart(fig)

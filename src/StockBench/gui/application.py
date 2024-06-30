@@ -19,7 +19,7 @@ from StockBench.simulator import Simulator
 
 class ConfigMainWindow(QMainWindow):
     WIDTH = 400
-    HEIGHT = 680
+    HEIGHT = 650
 
     def __init__(self, splash):
         super().__init__()

@@ -11,9 +11,8 @@ from StockBench.function_tools.nonce import datetime_timestamp
 class Display:
     """Base class for a display."""
 
-    NO_SAVE = 0
-    TEMP_SAVE = 1
-    UNIQUE_SAVE = 2
+    TEMP_SAVE = 0
+    UNIQUE_SAVE = 1
 
     PLOTLY_CHART_MARGIN_TOP = 50
     PLOTLY_CHART_MARGIN_BOTTOM = 60

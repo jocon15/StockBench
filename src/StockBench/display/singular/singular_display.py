@@ -16,14 +16,13 @@ class SingularDisplay(Display):
     SUBPLOT_VERTICAL_SPACING = 0.05
 
     @staticmethod
-    def chart_overview(df, symbol, indicators, show=True, save_option=Display.TEMP_SAVE) -> str:
+    def chart_overview(df, symbol, indicators, save_option=Display.TEMP_SAVE) -> str:
         """Chart the data.
 
         Args:
             df (DataFrame): The full DataFrame post-simulation.
             symbol (str): The symbol the simulation was run on.
             indicators (any): The list of indicators.
-            show (bool): Show the chart.
             save_option (int): Save the chart.
 
         Return:
@@ -115,9 +114,6 @@ class SingularDisplay(Display):
                                           t=SingularDisplay.PLOTLY_CHART_MARGIN_TOP,
                                           b=SingularDisplay.PLOTLY_CHART_MARGIN_BOTTOM))
 
-        if show:
-            fig.show()
-
         # format the chart (remove plotly white border)
         formatted_fig = Display.format_chart(fig)
 
@@ -126,7 +122,7 @@ class SingularDisplay(Display):
                                          'temp_overview_chart', f'figure_{symbol}')
 
     @staticmethod
-    def chart_buy_rules_analysis(positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
+    def chart_buy_rules_analysis(positions, symbol, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
         cols = 1
 
@@ -154,9 +150,6 @@ class SingularDisplay(Display):
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
 
-        if show:
-            fig.show()
-
         # format the chart (remove plotly white border)
         formatted_fig = Display.format_chart(fig)
 
@@ -165,7 +158,7 @@ class SingularDisplay(Display):
                                          'temp_buy_chart', f'{symbol}_buy_rules')
 
     @staticmethod
-    def chart_sell_rules_analysis(positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
+    def chart_sell_rules_analysis(positions, symbol, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
         cols = 1
 
@@ -193,9 +186,6 @@ class SingularDisplay(Display):
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
 
-        if show:
-            fig.show()
-
         # format the chart (remove plotly white border)
         formatted_fig = Display.format_chart(fig)
 
@@ -203,7 +193,7 @@ class SingularDisplay(Display):
         return Display.handle_save_chart(formatted_fig, save_option, 'temp_sell_chart', f'{symbol}_sell_rules')
 
     @staticmethod
-    def chart_positions_analysis(positions, symbol, show=True, save_option=Display.TEMP_SAVE) -> str:
+    def chart_positions_analysis(positions, symbol, save_option=Display.TEMP_SAVE) -> str:
         rows = 1
         cols = 1
 
@@ -229,9 +219,6 @@ class SingularDisplay(Display):
 
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
-
-        if show:
-            fig.show()
 
         # format the chart (remove plotly white border)
         formatted_fig = Display.format_chart(fig)

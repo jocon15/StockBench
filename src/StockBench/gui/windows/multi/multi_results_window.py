@@ -8,9 +8,9 @@ class MultiResultsWindow(SimulationResultsWindow):
     """Simulation results window for a simulation on multiple symbols."""
 
     def __init__(self, symbols, strategy, initial_balance, simulator, progress_observer, worker, logging_on, 
-                 reporting_on, unique_chart_saving_on):
+                 reporting_on, unique_chart_saving_on, results_depth):
         super().__init__(strategy, initial_balance, simulator, progress_observer, worker, logging_on, reporting_on,
-                         unique_chart_saving_on)
+                         unique_chart_saving_on, results_depth)
         self.symbols = symbols
 
         # add components to the layout
@@ -35,7 +35,7 @@ class MultiResultsWindow(SimulationResultsWindow):
 
     def _run_simulation(self, save_option) -> dict:
         """Implementation of running the simulation for multi-symbol simulation."""
-        return self.simulator.run_multiple(self.symbols, show_chart=False, save_option=save_option,
+        return self.simulator.run_multiple(self.symbols, results_depth=self.results_depth, save_option=save_option,
                                            progress_observer=self.progress_observer)
 
     def _render_data(self, simulation_results: dict):

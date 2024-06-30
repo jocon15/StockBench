@@ -3,7 +3,7 @@ import json
 import time
 
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTabWidget, QHBoxLayout, QLabel, QPushButton, QComboBox
-from PyQt6.QtWidgets import QFileDialog, QLineEdit
+from PyQt6.QtWidgets import QFileDialog, QLineEdit, QRadioButton
 from PyQt6.QtCore import Qt, QPoint
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6 import QtGui
@@ -14,11 +14,12 @@ from StockBench.gui.windows.multi.multi_results_window import MultiResultsWindow
 from StockBench.constants import *
 from StockBench.gui.windows.strategy_studio import StrategyStudioWindow
 from StockBench.gui.palette.palette import Palette
+from StockBench.simulator import Simulator
 
 
 class ConfigMainWindow(QMainWindow):
     WIDTH = 400
-    HEIGHT = 600
+    HEIGHT = 650
 
     def __init__(self, splash):
         super().__init__()
@@ -160,6 +161,21 @@ class SingularConfigTab(ConfigTab):
         self.show_sim_results_btn.clicked.connect(self.on_show_results_btn_clicked)  # noqa
         self.layout.addWidget(self.show_sim_results_btn)
 
+        label = QLabel()
+        label.setText('Results Depth:')
+        label.setStyleSheet("""color: #FFF;""")
+        self.layout.addWidget(label)
+
+        self.data_and_charts_radio_btn = QRadioButton("Data and Charts")
+        self.data_and_charts_radio_btn.toggled.connect(self.data_and_charts_btn_selected)  # noqa
+        self.data_and_charts_radio_btn.setStyleSheet(Palette.RADIO_BTN_STYLESHEET)
+        self.data_and_charts_radio_btn.toggle()  # set data and charts as default
+        self.layout.addWidget(self.data_and_charts_radio_btn)
+        self.data_only_radio_btn = QRadioButton("Data Only")
+        self.data_only_radio_btn.toggled.connect(self.data_only_btn_selected)  # noqa
+        self.layout.addWidget(self.data_only_radio_btn)
+        self.data_only_radio_btn.setStyleSheet(Palette.RADIO_BTN_STYLESHEET)
+
         self.run_btn = QPushButton()
         self.run_btn.setFixedSize(60, 30)
         self.run_btn.setText('RUN')
@@ -234,6 +250,14 @@ class SingularConfigTab(ConfigTab):
         elif index == 2:
             self.simulation_length = SECONDS_5_YEAR
 
+    def data_and_charts_btn_selected(self, selected):
+        if selected:
+            self.results_depth = Simulator.CHARTS_AND_DATA
+
+    def data_only_btn_selected(self, selected):
+        if selected:
+            self.results_depth = Simulator.DATA_ONLY
+
     def on_run_btn_clicked(self):
         # load the strategy from the JSON file into a strategy python dict
 
@@ -278,7 +302,8 @@ class SingularConfigTab(ConfigTab):
             self.worker,
             self.simulation_logging,
             self.simulation_reporting,
-            self.simulation_unique_chart_saving)
+            self.simulation_unique_chart_saving,
+            self.results_depth)
 
         # all error checks have passed, can now clear the error message box
         self.error_message_box.setText('')
@@ -398,6 +423,21 @@ class MultiConfigTab(ConfigTab):
         self.show_sim_results_btn.clicked.connect(self.on_show_results_btn_clicked)  # noqa
         self.layout.addWidget(self.show_sim_results_btn)
 
+        label = QLabel()
+        label.setText('Results Depth:')
+        label.setStyleSheet("""color: #FFF;""")
+        self.layout.addWidget(label)
+
+        self.data_and_charts_radio_btn = QRadioButton("Data and Charts")
+        self.data_and_charts_radio_btn.toggled.connect(self.data_and_charts_btn_selected)  # noqa
+        self.data_and_charts_radio_btn.setStyleSheet(Palette.RADIO_BTN_STYLESHEET)
+        self.data_and_charts_radio_btn.toggle()  # set data and charts as default
+        self.layout.addWidget(self.data_and_charts_radio_btn)
+        self.data_only_radio_btn = QRadioButton("Data Only")
+        self.data_only_radio_btn.toggled.connect(self.data_only_btn_selected)  # noqa
+        self.layout.addWidget(self.data_only_radio_btn)
+        self.data_only_radio_btn.setStyleSheet(Palette.RADIO_BTN_STYLESHEET)
+
         self.run_btn = QPushButton()
         self.run_btn.setFixedSize(60, 30)
         self.run_btn.setText('RUN')
@@ -472,6 +512,14 @@ class MultiConfigTab(ConfigTab):
         elif index == 2:
             self.simulation_length = SECONDS_5_YEAR
 
+    def data_and_charts_btn_selected(self, selected):
+        if selected:
+            self.results_depth = Simulator.CHARTS_AND_DATA
+
+    def data_only_btn_selected(self, selected):
+        if selected:
+            self.results_depth = Simulator.DATA_ONLY
+
     def on_run_btn_clicked(self):
         # load the strategy from the JSON file into a strategy python dict
         strategy_filepath = self.strategy_selection_box.filepath_box.text()
@@ -518,7 +566,8 @@ class MultiConfigTab(ConfigTab):
             self.worker,
             self.simulation_logging,
             self.simulation_reporting,
-            self.simulation_unique_chart_saving)
+            self.simulation_unique_chart_saving,
+            self.results_depth)
 
         # all error checks have passed, can now clear the error message box
         self.error_message_box.setText('')

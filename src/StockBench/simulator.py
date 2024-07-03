@@ -622,7 +622,7 @@ class Simulator:
         position.close_position(sell_price, current_day_index, rule)
 
         if self.__is_stock_split(position, sell_price):
-            gui_terminal_log.info(f'Stock split avoided at day: {current_day_index}')
+            gui_terminal_log.warning(f'Stock split avoided at day: {current_day_index}')
             log.info('Position excluded due to stock split!')
             # deposit the initial investment amount (undoing the withdrawal)
             self.__account.deposit(position.get_buy_price() * position.get_share_count())

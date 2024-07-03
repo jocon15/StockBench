@@ -94,7 +94,10 @@ class OverviewSideBar(QWidget):
         messages = self.progress_observer.get_messages()
         for message in messages:
             list_item = QListWidgetItem(str(message.msg))
-            list_item.setForeground(QColor('grey'))
+            if message.levelname == 'WARNING':
+                list_item.setForeground(QColor('yellow'))
+            else:
+                list_item.setForeground(QColor('grey'))
             self.output_box.addItem(list_item)
         # scroll the output box to the bottom
         self.output_box.scrollToBottom()

@@ -131,13 +131,7 @@ class SingularResultsOverviewTable(OverviewTable):
         super().__init__()
         # elapsed time header
         row = 1
-        label = QLabel()
-        label.setText('Elapsed Time')
-        label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
-        self.layout.addWidget(label, row, 1)
-        # elapsed time data label
-        self.elapsed_time_data_label = QLabel()
-        self.elapsed_time_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        self.layout.addWidget(self.elapsed_time_label, row, 1)
         self.layout.addWidget(self.elapsed_time_data_label, row, 2)
 
         # trades made header

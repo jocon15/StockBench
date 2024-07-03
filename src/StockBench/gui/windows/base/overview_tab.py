@@ -153,6 +153,19 @@ class OverviewTable(QFrame):
         # define the layout
         self.layout = QGridLayout()
 
+        # ========================= Shared ================================
+        self.elapsed_time_label = QLabel()
+        self.elapsed_time_label.setText('Elapsed Time')
+        self.elapsed_time_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        # elapsed time data label
+        self.elapsed_time_data_label = QLabel()
+        self.elapsed_time_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+
+
+
+
+        # ========================= Shared ================================
+
         self.setStyleSheet(self.TABLE_STYLESHEET)
 
     @abstractmethod

@@ -141,6 +141,7 @@ class SingularResultsOverviewTable(OverviewTable):
         self.layout.addWidget(self.elapsed_time_data_label, row, 2)
 
         # trades made header
+        row += 1
         label = QLabel()
         label.setText('Trades Made')
         label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)

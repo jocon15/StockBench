@@ -45,6 +45,11 @@ class OverviewSideBar(QWidget):
         # define layout type
         self.layout = QVBoxLayout()
 
+        # metadata header
+        self.metadata_header = QLabel()
+        self.metadata_header.setText('Metadata')
+        self.metadata_header.setStyleSheet(self.HEADER_STYLESHEET)
+
         # results header
         self.results_header = QLabel()
         self.results_header.setText('Simulation Results')
@@ -153,7 +158,23 @@ class OverviewTable(QFrame):
         # define the layout
         self.layout = QGridLayout()
 
-        # ========================= Shared ================================
+        # ========================= Shared Metadata ================================
+        # strategy label
+        self.strategy_label = QLabel()
+        self.strategy_label.setText('Strategy')
+        self.strategy_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        # strategy data label
+        self.strategy_data_label = QLabel()
+        self.strategy_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+
+        # trade-able days label
+        self.trade_able_days_label = QLabel()
+        self.trade_able_days_label.setText('Length')
+        self.trade_able_days_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        # trade-able days data label
+        self.trade_able_days_data_label = QLabel()
+        self.trade_able_days_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+
         # elapsed time label
         self.elapsed_time_label = QLabel()
         self.elapsed_time_label.setText('Elapsed Time')
@@ -162,6 +183,7 @@ class OverviewTable(QFrame):
         self.elapsed_time_data_label = QLabel()
         self.elapsed_time_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
+        # ========================= Shared Results ================================
         # trades made label
         self.trades_made_label = QLabel()
         self.trades_made_label.setText('Trades Made')
@@ -209,8 +231,7 @@ class OverviewTable(QFrame):
         # stddev data label
         self.stddev_pl_data_label = QLabel()
         self.stddev_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
-
-        # ========================= Shared ================================
+        # =================================================================
 
         self.setStyleSheet(self.TABLE_STYLESHEET)
 

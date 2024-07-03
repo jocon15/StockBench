@@ -507,6 +507,7 @@ class Simulator:
 
         return {
             'strategy': self.__strategy_filename,
+            'trade_able_days': results[0]["trade_able_days"],
             'elapsed_time': elapsed_time,
             'trades_made': analyzer.total_trades(),
             'effectiveness': analyzer.effectiveness(),

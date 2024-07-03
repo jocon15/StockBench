@@ -1,4 +1,4 @@
-from StockBench.gui.windows.base.base.tab import Tab
+from StockBench.gui.windows.base.base.result_tab import Tab
 
 
 class PositionsTab(Tab):

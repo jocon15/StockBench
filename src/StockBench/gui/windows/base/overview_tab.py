@@ -154,6 +154,7 @@ class OverviewTable(QFrame):
         self.layout = QGridLayout()
 
         # ========================= Shared ================================
+        # elapsed time label
         self.elapsed_time_label = QLabel()
         self.elapsed_time_label.setText('Elapsed Time')
         self.elapsed_time_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
@@ -161,8 +162,53 @@ class OverviewTable(QFrame):
         self.elapsed_time_data_label = QLabel()
         self.elapsed_time_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
+        # trades made label
+        self.trades_made_label = QLabel()
+        self.trades_made_label.setText('Trades Made')
+        self.trades_made_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        # trades made data label
+        self.trades_made_data_label = QLabel()
+        self.trades_made_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
+        # effectiveness label
+        self.effectiveness_label = QLabel()
+        self.effectiveness_label.setText('Effectiveness')
+        self.effectiveness_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        # effectiveness data label
+        self.effectiveness_data_label = QLabel()
+        self.effectiveness_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
+        # total P/L label
+        self.total_pl_label = QLabel()
+        self.total_pl_label.setText('Total P/L')
+        self.total_pl_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        # total P/L data label
+        self.total_pl_data_label = QLabel()
+        self.total_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+
+        # average P/L label
+        self.average_pl_label = QLabel()
+        self.average_pl_label.setText('Average P/L')
+        self.average_pl_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        # average P/L data label
+        self.average_pl_data_label = QLabel()
+        self.average_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+
+        # median P/L label
+        self.median_pl_label = QLabel()
+        self.median_pl_label.setText('Median P/L')
+        self.median_pl_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        # median data label
+        self.median_pl_data_label = QLabel()
+        self.median_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+
+        # stddev P/L label
+        self.stddev_pl_label = QLabel()
+        self.stddev_pl_label.setText('Stddev P/L')
+        self.stddev_pl_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        # stddev data label
+        self.stddev_pl_data_label = QLabel()
+        self.stddev_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
         # ========================= Shared ================================
 

@@ -190,9 +190,6 @@ class SingularConfigTab(ConfigTab):
 
         self.setLayout(self.layout)
 
-        # render the window
-        self.show()
-
     def on_strategy_studio_btn_clicked(self):
         # launch the strategy studio window injecting the filepath from the filepath box into the strategy editor
         coordinates = self.mapToGlobal(QPoint(0, 0))
@@ -452,9 +449,6 @@ class MultiConfigTab(ConfigTab):
 
         self.setLayout(self.layout)
 
-        # render the window
-        self.show()
-
     def on_strategy_studio_btn_clicked(self):
         # launch the strategy studio window injecting the filepath from the filepath box into the strategy editor
         coordinates = self.mapToGlobal(QPoint(0, 0))
@@ -596,9 +590,6 @@ class HeadToHeadConfigTab(ConfigTab):
 
         # add the layout to the widget
         self.setLayout(self.layout)
-
-        # render the widget
-        self.show()
 
 
     def on_run_multiple_btn_clicked(self):

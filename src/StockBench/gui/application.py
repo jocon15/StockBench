@@ -446,13 +446,6 @@ class MultiConfigTab(ConfigTab):
         self.run_btn.setStyleSheet(Palette.RUN_BTN_STYLESHEET)
         self.layout.addWidget(self.run_btn, alignment=Qt.AlignmentFlag.AlignRight)
 
-        self.run_multiple_btn = QPushButton()
-        self.run_multiple_btn.setFixedSize(60, 30)
-        self.run_multiple_btn.setText('RUN MULTIPLE')
-        self.run_multiple_btn.clicked.connect(self.on_run_multiple_btn_clicked)  # noqa
-        self.run_multiple_btn.setStyleSheet(Palette.RUN_BTN_STYLESHEET)
-        self.layout.addWidget(self.run_multiple_btn, alignment=Qt.AlignmentFlag.AlignRight)
-
         self.error_message_box = QLabel()
         self.error_message_box.setStyleSheet(Palette.ERROR_LABEL_STYLESHEET)
         self.layout.addWidget(self.error_message_box)
@@ -586,6 +579,27 @@ class MultiConfigTab(ConfigTab):
         if self.simulation_show_results_window:
             # show the results window if option is checked
             self.simulation_result_window.showMaximized()
+
+
+class HeadToHeadConfigTab(ConfigTab):
+    def __init__(self):
+        super().__init__()
+        # layout type
+        self.layout = QVBoxLayout()
+
+        self.run_multiple_btn = QPushButton()
+        self.run_multiple_btn.setFixedSize(60, 30)
+        self.run_multiple_btn.setText('RUN MULTIPLE')
+        self.run_multiple_btn.clicked.connect(self.on_run_multiple_btn_clicked)  # noqa
+        self.run_multiple_btn.setStyleSheet(Palette.RUN_BTN_STYLESHEET)
+        self.layout.addWidget(self.run_multiple_btn, alignment=Qt.AlignmentFlag.AlignRight)
+
+        # add the layout to the widget
+        self.setLayout(self.layout)
+
+        # render the widget
+        self.show()
+
 
     def on_run_multiple_btn_clicked(self):
         # load the strategy from the JSON file into a strategy python dict

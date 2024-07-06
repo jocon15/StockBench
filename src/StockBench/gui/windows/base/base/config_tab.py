@@ -31,6 +31,7 @@ class ConfigTab(QWidget):
         self.simulation_reporting = False
         self.simulation_unique_chart_saving = False
         self.simulation_show_results_window = True
+        self.head_to_head_window = None
         self.results_depth = Simulator.CHARTS_AND_DATA
 
         self.layout = QVBoxLayout()

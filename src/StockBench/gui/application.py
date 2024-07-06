@@ -15,6 +15,7 @@ from StockBench.constants import *
 from StockBench.gui.windows.strategy_studio import StrategyStudioWindow
 from StockBench.gui.palette.palette import Palette
 from StockBench.simulator import Simulator
+from StockBench.gui.windows.head_to_head.head_to_head_window import HeadToHeadWindow
 
 
 class ConfigMainWindow(QMainWindow):
@@ -445,6 +446,13 @@ class MultiConfigTab(ConfigTab):
         self.run_btn.setStyleSheet(Palette.RUN_BTN_STYLESHEET)
         self.layout.addWidget(self.run_btn, alignment=Qt.AlignmentFlag.AlignRight)
 
+        self.run_multiple_btn = QPushButton()
+        self.run_multiple_btn.setFixedSize(60, 30)
+        self.run_multiple_btn.setText('RUN MULTIPLE')
+        self.run_multiple_btn.clicked.connect(self.on_run_multiple_btn_clicked)  # noqa
+        self.run_multiple_btn.setStyleSheet(Palette.RUN_BTN_STYLESHEET)
+        self.layout.addWidget(self.run_multiple_btn, alignment=Qt.AlignmentFlag.AlignRight)
+
         self.error_message_box = QLabel()
         self.error_message_box.setStyleSheet(Palette.ERROR_LABEL_STYLESHEET)
         self.layout.addWidget(self.error_message_box)
@@ -578,6 +586,78 @@ class MultiConfigTab(ConfigTab):
         if self.simulation_show_results_window:
             # show the results window if option is checked
             self.simulation_result_window.showMaximized()
+
+    def on_run_multiple_btn_clicked(self):
+        # load the strategy from the JSON file into a strategy python dict
+        strategy_filepath = self.strategy_selection_box.filepath_box.text()
+        if strategy_filepath is None or strategy_filepath == '':
+            self.error_message_box.setText('You must select a strategy file!')
+            return
+        try:
+            with open(strategy_filepath, 'r') as file:
+                strategy = json.load(file)
+        except FileNotFoundError:
+            self.error_message_box.setText('Strategy file not found!')
+            return
+        except Exception as e:
+            self.error_message_box.setText(f'Uncaught error parsing strategy file: {e}')
+            return
+
+        # cache the strategy filepath (create if it does not already exist)
+        self.cache_strategy_filepath(strategy_filepath)
+
+        # inject the unix equivalent dates from the combobox to the dict
+        strategy['strategy_filepath'] = strategy_filepath
+        strategy['start'] = int(time.time()) - self.simulation_length
+        strategy['end'] = int(time.time())
+
+        # gather other data from UI components
+        raw_simulation_symbols = self.symbol_tbox.text().split(',')
+        simulation_symbols = []
+        for symbol in raw_simulation_symbols:
+            simulation_symbols.append(symbol.upper().strip())
+        simulation_balance = float(self.balance_tbox.text())
+
+        # check the balance for negative numbers
+        if simulation_balance <= 0:
+            self.error_message_box.setText('Initial account balance must be a positive number!')
+            return
+
+        # reminder: h2h will store the references of these simulations, so we do not need to attribute them with self
+        # also, h2h will call the begin functions
+
+        # create simulation number 1
+        simulation_result_window_1 = MultiResultsWindow(
+            simulation_symbols,
+            strategy,
+            simulation_balance,
+            self.simulator,
+            self.progress_bar_observer,
+            self.worker,
+            self.simulation_logging,
+            self.simulation_reporting,
+            self.simulation_unique_chart_saving,
+            self.results_depth)
+
+        # create simulation number 2
+        simulation_result_window_2 = MultiResultsWindow(
+            simulation_symbols,
+            strategy,
+            simulation_balance,
+            self.simulator,
+            self.progress_bar_observer,
+            self.worker,
+            self.simulation_logging,
+            self.simulation_reporting,
+            self.simulation_unique_chart_saving,
+            self.results_depth)
+
+        # create the h2h window - passing the simulations into the constructor
+        self.head_to_head_window = HeadToHeadWindow(simulation_result_window_1, simulation_result_window_2)
+
+        if self.simulation_show_results_window:
+            # show the results window if option is checked
+            self.head_to_head_window.showMaximized()
 
 
 class StrategySelection(QWidget):

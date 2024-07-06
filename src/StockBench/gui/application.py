@@ -37,7 +37,7 @@ class ConfigMainWindow(QMainWindow):
         self.tab_widget = QTabWidget()
         self.tab_widget.addTab(SingularConfigTab(), "Single")
         self.tab_widget.addTab(MultiConfigTab(), "Multi")
-        self.tab_widget.addTab(HeadToHeadConfigTab(), "Compare")
+        self.tab_widget.addTab(HeadToHeadConfigTab(), "Compare (beta)")
         self.tab_widget.setStyleSheet(Palette.TAB_WIDGET_STYLESHEET)
         self.layout.addWidget(self.tab_widget)
 
@@ -673,17 +673,17 @@ class HeadToHeadConfigTab(ConfigTab):
         self.reporting_btn.clicked.connect(self.on_reporting_btn_clicked)  # noqa
         self.layout.addWidget(self.reporting_btn)
 
-        label = QLabel()
-        label.setText('Save Unique Charts:')
-        label.setStyleSheet("""color: #FFF;""")
-        self.layout.addWidget(label)
-
-        self.unique_chart_save_btn = QPushButton()
-        self.unique_chart_save_btn.setCheckable(True)
-        self.unique_chart_save_btn.setText('OFF')
-        self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
-        self.unique_chart_save_btn.clicked.connect(self.on_chart_saving_btn_clicked)  # noqa
-        self.layout.addWidget(self.unique_chart_save_btn)
+        # label = QLabel()
+        # label.setText('Save Unique Charts:')
+        # label.setStyleSheet("""color: #FFF;""")
+        # self.layout.addWidget(label)
+        #
+        # self.unique_chart_save_btn = QPushButton()
+        # self.unique_chart_save_btn.setCheckable(True)
+        # self.unique_chart_save_btn.setText('OFF')
+        # self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
+        # self.unique_chart_save_btn.clicked.connect(self.on_chart_saving_btn_clicked)  # noqa
+        # self.layout.addWidget(self.unique_chart_save_btn)
 
         label = QLabel()
         label.setText('Show Results:')
@@ -766,15 +766,15 @@ class HeadToHeadConfigTab(ConfigTab):
             self.reporting_btn.setText('OFF')
             self.reporting_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
-    def on_chart_saving_btn_clicked(self):
-        if self.unique_chart_save_btn.isChecked():
-            self.simulation_unique_chart_saving = True
-            self.unique_chart_save_btn.setText('ON')
-            self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
-        else:
-            self.simulation_unique_chart_saving = False
-            self.unique_chart_save_btn.setText('OFF')
-            self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
+    # def on_chart_saving_btn_clicked(self):
+    #     if self.unique_chart_save_btn.isChecked():
+    #         self.simulation_unique_chart_saving = True
+    #         self.unique_chart_save_btn.setText('ON')
+    #         self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
+    #     else:
+    #         self.simulation_unique_chart_saving = False
+    #         self.unique_chart_save_btn.setText('OFF')
+    #         self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def on_show_results_btn_clicked(self):
         if self.show_sim_results_btn.isChecked():
@@ -802,29 +802,39 @@ class HeadToHeadConfigTab(ConfigTab):
         if selected:
             self.results_depth = Simulator.DATA_ONLY
 
-    def on_run_multiple_btn_clicked(self):
-        # load the strategy from the JSON file into a strategy python dict
-        strategy_filepath = self.strategy_1_selection_box.filepath_box.text()
-        if strategy_filepath is None or strategy_filepath == '':
+    def load_strategy(self, filepath):
+        # FIXME: this should be abstracted to config tab base class and used by the other children
+        if filepath is None or filepath == '':
             self.error_message_box.setText('You must select a strategy file!')
-            return
+            return None
         try:
-            with open(strategy_filepath, 'r') as file:
+            with open(filepath, 'r') as file:
                 strategy = json.load(file)
         except FileNotFoundError:
             self.error_message_box.setText('Strategy file not found!')
-            return
+            return None
         except Exception as e:
             self.error_message_box.setText(f'Uncaught error parsing strategy file: {e}')
-            return
+            return None
 
         # cache the strategy filepath (create if it does not already exist)
-        self.cache_strategy_filepath(strategy_filepath)
+        self.cache_strategy_filepath(filepath)
 
         # inject the unix equivalent dates from the combobox to the dict
-        strategy['strategy_filepath'] = strategy_filepath
+        strategy['strategy_filepath'] = filepath
         strategy['start'] = int(time.time()) - self.simulation_length
         strategy['end'] = int(time.time())
+
+        return strategy
+
+    def on_run_multiple_btn_clicked(self):
+        # load the strategy from the JSON file into a strategy python dict
+        strategy1 = self.load_strategy(self.strategy_1_selection_box.filepath_box.text())
+        strategy2 = self.load_strategy(self.strategy_2_selection_box.filepath_box.text())
+
+        if strategy1 is None or strategy2 is None:
+            # either strategy load failed
+            return
 
         # gather other data from UI components
         raw_simulation_symbols = self.symbol_tbox.text().split(',')
@@ -844,7 +854,7 @@ class HeadToHeadConfigTab(ConfigTab):
         # create simulation number 1
         simulation_result_window_1 = MultiResultsWindow(
             simulation_symbols,
-            strategy,
+            strategy1,
             simulation_balance,
             self.simulator,
             self.progress_bar_observer,
@@ -854,17 +864,22 @@ class HeadToHeadConfigTab(ConfigTab):
             self.simulation_unique_chart_saving,
             self.results_depth)
 
+        # FIXME: the reason we are seeing the same charts is because both sims are returning the same filepath
+        #   and then loading it, so the chart at that location is the one that gets rendered
+
+        # FIXME: need to also fix the cache
+
         # create simulation number 2
         simulation_result_window_2 = MultiResultsWindow(
             simulation_symbols,
-            strategy,
+            strategy2,
             simulation_balance,
             self.simulator,
             self.progress_bar_observer,
             self.worker,
             self.simulation_logging,
             self.simulation_reporting,
-            self.simulation_unique_chart_saving,
+            True,  # prevent the second chart from loading the temp chart (being used by sim 1)
             self.results_depth)
 
         # create the h2h window - passing the simulations into the constructor

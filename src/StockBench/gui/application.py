@@ -3,13 +3,12 @@ import json
 
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QTabWidget, QLabel, QPushButton, QLineEdit
 from PyQt6.QtWidgets import QFileDialog
-from PyQt6.QtCore import Qt, QPoint
+from PyQt6.QtCore import Qt
 from PyQt6 import QtGui
 
 from StockBench.gui.windows.base.base.config_tab import ConfigTab
 from StockBench.gui.windows.singular.singular_results_window import SingularResultsWindow
 from StockBench.gui.windows.multi.multi_results_window import MultiResultsWindow
-from StockBench.gui.windows.strategy_studio import StrategyStudioWindow
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.windows.head_to_head.head_to_head_window import HeadToHeadWindow
 
@@ -67,7 +66,8 @@ class SingularConfigTab(ConfigTab):
 
         self.strategy_studio_btn = QPushButton()
         self.strategy_studio_btn.setText('Strategy Studio (beta)')
-        self.strategy_studio_btn.clicked.connect(self.on_strategy_studio_btn_clicked)  # noqa
+        self.strategy_studio_btn.clicked.connect(lambda: self.on_strategy_studio_btn_clicked(  # noqa
+                                                 self.strategy_selection_box.filepath_box.text()))
         self.strategy_studio_btn.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
         self.layout.addWidget(self.strategy_studio_btn)
 
@@ -124,16 +124,6 @@ class SingularConfigTab(ConfigTab):
         self.layout.addWidget(self.error_message_box)
 
         self.setLayout(self.layout)
-
-    def on_strategy_studio_btn_clicked(self):
-        # launch the strategy studio window injecting the filepath from the filepath box into the strategy editor
-        coordinates = self.mapToGlobal(QPoint(0, 0))
-        self.strategy_studio_window = StrategyStudioWindow(
-            self.strategy_selection_box.filepath_box.text(),
-            coordinates,
-            self.width()
-        )
-        self.strategy_studio_window.show()
 
     def on_chart_saving_btn_clicked(self):
         if self.unique_chart_save_btn.isChecked():
@@ -200,7 +190,8 @@ class MultiConfigTab(ConfigTab):
 
         self.strategy_studio_btn = QPushButton()
         self.strategy_studio_btn.setText('Strategy Studio (beta)')
-        self.strategy_studio_btn.clicked.connect(self.on_strategy_studio_btn_clicked)  # noqa
+        self.strategy_studio_btn.clicked.connect(lambda: self.on_strategy_studio_btn_clicked(  # noqa
+                                                 self.strategy_selection_box.filepath_box.text()))
         self.strategy_studio_btn.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
         self.layout.addWidget(self.strategy_studio_btn)
 
@@ -257,16 +248,6 @@ class MultiConfigTab(ConfigTab):
         self.layout.addWidget(self.error_message_box)
 
         self.setLayout(self.layout)
-
-    def on_strategy_studio_btn_clicked(self):
-        # launch the strategy studio window injecting the filepath from the filepath box into the strategy editor
-        coordinates = self.mapToGlobal(QPoint(0, 0))
-        self.strategy_studio_window = StrategyStudioWindow(
-            self.strategy_selection_box.filepath_box.text(),
-            coordinates,
-            self.width()
-        )
-        self.strategy_studio_window.show()
 
     def on_chart_saving_btn_clicked(self):
         if self.unique_chart_save_btn.isChecked():
@@ -337,7 +318,8 @@ class HeadToHeadConfigTab(ConfigTab):
 
         self.strategy_1_studio_btn = QPushButton()
         self.strategy_1_studio_btn.setText('Strategy Studio (beta)')
-        self.strategy_1_studio_btn.clicked.connect(self.on_strategy_1_studio_btn_clicked)  # noqa
+        self.strategy_1_studio_btn.clicked.connect(lambda: self.on_strategy_studio_btn_clicked(  # noqa
+                                                   self.strategy_1_selection_box.filepath_box.text()))
         self.strategy_1_studio_btn.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
         self.layout.addWidget(self.strategy_1_studio_btn)
 
@@ -352,7 +334,8 @@ class HeadToHeadConfigTab(ConfigTab):
 
         self.strategy_2_studio_btn = QPushButton()
         self.strategy_2_studio_btn.setText('Strategy Studio (beta)')
-        self.strategy_2_studio_btn.clicked.connect(self.on_strategy_2_studio_btn_clicked)  # noqa
+        self.strategy_2_studio_btn.clicked.connect(lambda: self.on_strategy_studio_btn_clicked(  # noqa
+                                                   self.strategy_2_selection_box.filepath_box.text()))
         self.strategy_2_studio_btn.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
         self.layout.addWidget(self.strategy_2_studio_btn)
 
@@ -398,26 +381,6 @@ class HeadToHeadConfigTab(ConfigTab):
 
         # add the layout to the widget
         self.setLayout(self.layout)
-
-    def on_strategy_1_studio_btn_clicked(self):
-        # launch the strategy studio window injecting the filepath from the filepath box into the strategy editor
-        coordinates = self.mapToGlobal(QPoint(0, 0))
-        self.strategy_studio_window = StrategyStudioWindow(
-            self.strategy_1_selection_box.filepath_box.text(),
-            coordinates,
-            self.width()
-        )
-        self.strategy_studio_window.show()
-
-    def on_strategy_2_studio_btn_clicked(self):
-        # launch the strategy studio window injecting the filepath from the filepath box into the strategy editor
-        coordinates = self.mapToGlobal(QPoint(0, 0))
-        self.strategy_studio_window = StrategyStudioWindow(
-            self.strategy_2_selection_box.filepath_box.text(),
-            coordinates,
-            self.width()
-        )
-        self.strategy_studio_window.show()
 
     def on_run_btn_clicked(self):
         # load the strategy from the JSON file into a strategy python dict

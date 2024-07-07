@@ -4,10 +4,12 @@ from abc import abstractmethod
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QRadioButton, QComboBox
 from PyQt6.QtCore import QThreadPool
 from PyQt6.QtGui import QDoubleValidator
+from PyQt6.QtCore import QPoint
 
 from StockBench.gui.worker.worker import Worker
 from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.gui.palette.palette import Palette
+from StockBench.gui.windows.strategy_studio import StrategyStudioWindow
 from StockBench.constants import *
 from StockBench.simulator import Simulator
 
@@ -117,6 +119,16 @@ class ConfigTab(QWidget):
         self.error_message_box.setStyleSheet(Palette.ERROR_LABEL_STYLESHEET)
 
         self.layout = QVBoxLayout()
+
+    def on_strategy_studio_btn_clicked(self, filepath):
+        # launch the strategy studio window injecting the filepath from the filepath box into the strategy editor
+        coordinates = self.mapToGlobal(QPoint(0, 0))
+        self.strategy_studio_window = StrategyStudioWindow(
+            filepath,
+            coordinates,
+            self.width()
+        )
+        self.strategy_studio_window.show()
 
     def on_simulation_length_cbox_index_changed(self, index):
         if index == 0:

@@ -42,10 +42,14 @@ class ConfigTab(QWidget):
         self.results_depth = Simulator.CHARTS_AND_DATA
 
         # ========================= Shared Components ================================
+        # define the layout
+        self.layout = QVBoxLayout()
+
+        # simulation length label
         self.simulation_length_label = QLabel()
         self.simulation_length_label.setText('Simulation Length:')
         self.simulation_length_label.setStyleSheet("""color: #FFF;""")
-
+        # simulation length input
         self.simulation_length_cbox = QComboBox()
         self.simulation_length_cbox.addItem('1 Year')
         self.simulation_length_cbox.addItem('2 Year')
@@ -56,69 +60,74 @@ class ConfigTab(QWidget):
         self.simulation_length_cbox.setStyleSheet(Palette.COMBOBOX_STYLESHEET)
         self.simulation_length_cbox.currentIndexChanged.connect(self.on_simulation_length_cbox_index_changed)  # noqa
 
+        # initial balance label
         self.initial_balance_label = QLabel()
         self.initial_balance_label.setText('Initial Balance:')
         self.initial_balance_label.setStyleSheet("""color: #FFF;""")
-
+        # initial balance input
         self.initial_balance_tbox = QLineEdit()
         self.initial_balance_tbox.setText('1000.0')
         self.onlyFloat = QDoubleValidator()
         self.initial_balance_tbox.setValidator(self.onlyFloat)
         self.initial_balance_tbox.setStyleSheet(Palette.LINE_EDIT_STYLESHEET)
 
+        # logging label
         self.logging_label = QLabel()
         self.logging_label.setText('Logging:')
         self.logging_label.setStyleSheet("""color: #FFF;""")
-
+        # logging button
         self.logging_btn = QPushButton()
         self.logging_btn.setCheckable(True)
         self.logging_btn.setText('OFF')
         self.logging_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
         self.logging_btn.clicked.connect(self.on_logging_btn_clicked)  # noqa
 
+        # reporting label
         self.reporting_label = QLabel()
         self.reporting_label.setText('Reporting:')
         self.reporting_label.setStyleSheet("""color: #FFF;""")
-
+        # reporting button
         self.reporting_btn = QPushButton()
         self.reporting_btn.setCheckable(True)
         self.reporting_btn.setText('OFF')
         self.reporting_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
         self.reporting_btn.clicked.connect(self.on_reporting_btn_clicked)  # noqa
 
+        # show results label
         self.show_results_label = QLabel()
         self.show_results_label.setText('Show Results:')
         self.show_results_label.setStyleSheet("""color: #FFF;""")
-
+        # show results button
         self.show_sim_results_btn = QPushButton()
         self.show_sim_results_btn.setCheckable(True)
         self.show_sim_results_btn.setText('ON')
         self.show_sim_results_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         self.show_sim_results_btn.clicked.connect(self.on_show_results_btn_clicked)  # noqa
 
-        self.result_depth_label = QLabel()
-        self.result_depth_label.setText('Results Depth:')
-        self.result_depth_label.setStyleSheet("""color: #FFF;""")
-
+        # results depth label
+        self.results_depth_label = QLabel()
+        self.results_depth_label.setText('Results Depth:')
+        self.results_depth_label.setStyleSheet("""color: #FFF;""")
+        # results depth radio button
         self.data_and_charts_radio_btn = QRadioButton("Data and Charts")
         self.data_and_charts_radio_btn.toggled.connect(self.data_and_charts_btn_selected)  # noqa
         self.data_and_charts_radio_btn.setStyleSheet(Palette.RADIO_BTN_STYLESHEET)
         self.data_and_charts_radio_btn.toggle()  # set data and charts as default
-
+        # results depth radio button
         self.data_only_radio_btn = QRadioButton("Data Only")
         self.data_only_radio_btn.toggled.connect(self.data_only_btn_selected)  # noqa
         self.data_only_radio_btn.setStyleSheet(Palette.RADIO_BTN_STYLESHEET)
 
+        # run button
         self.run_btn = QPushButton()
         self.run_btn.setFixedSize(60, 30)
         self.run_btn.setText('RUN')
         self.run_btn.clicked.connect(self.on_run_btn_clicked)  # noqa
         self.run_btn.setStyleSheet(Palette.RUN_BTN_STYLESHEET)
 
+        # error message box
         self.error_message_box = QLabel()
         self.error_message_box.setStyleSheet(Palette.ERROR_LABEL_STYLESHEET)
-
-        self.layout = QVBoxLayout()
 
     def on_strategy_studio_btn_clicked(self, filepath):
         # launch the strategy studio window injecting the filepath from the filepath box into the strategy editor

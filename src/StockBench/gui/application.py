@@ -113,7 +113,7 @@ class SingularConfigTab(ConfigTab):
 
         self.layout.addWidget(self.show_sim_results_btn)
 
-        self.layout.addWidget(self.result_depth_label)
+        self.layout.addWidget(self.results_depth_label)
 
         self.layout.addWidget(self.data_and_charts_radio_btn)
 
@@ -237,7 +237,7 @@ class MultiConfigTab(ConfigTab):
 
         self.layout.addWidget(self.show_sim_results_btn)
 
-        self.layout.addWidget(self.result_depth_label)
+        self.layout.addWidget(self.results_depth_label)
 
         self.layout.addWidget(self.data_and_charts_radio_btn)
 
@@ -369,7 +369,7 @@ class HeadToHeadConfigTab(ConfigTab):
 
         self.layout.addWidget(self.show_sim_results_btn)
 
-        self.layout.addWidget(self.result_depth_label)
+        self.layout.addWidget(self.results_depth_label)
 
         self.layout.addWidget(self.data_and_charts_radio_btn)
 

@@ -15,6 +15,10 @@ from StockBench.simulator import Simulator
 
 
 class ConfigTab(QWidget):
+    CACHE_FILE_FILEPATH = 'cache.json'
+
+    DEFAULT_CACHE_KEY = 'cached_strategy_filepath'
+
     def __init__(self):
         super().__init__()
         # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
@@ -185,7 +189,7 @@ class ConfigTab(QWidget):
         if selected:
             self.results_depth = Simulator.DATA_ONLY
 
-    def load_strategy(self, filepath):
+    def load_strategy(self, filepath, cache_key=None):
         if filepath is None or filepath == '':
             self.error_message_box.setText('You must select a strategy file!')
             return None
@@ -200,7 +204,7 @@ class ConfigTab(QWidget):
             return None
 
         # cache the strategy filepath (create if it does not already exist)
-        self.cache_strategy_filepath(filepath)
+        self.cache_strategy_filepath(filepath, cache_key)
 
         # inject the unix equivalent dates from the combobox to the dict
         strategy['strategy_filepath'] = filepath
@@ -209,13 +213,24 @@ class ConfigTab(QWidget):
 
         return strategy
 
+    def cache_strategy_filepath(self, strategy_filepath, cache_key=None):
+        # cache the strategy filepath (create if it does not already exist)
+
+        key = self.DEFAULT_CACHE_KEY
+        if cache_key:
+            key = cache_key
+
+        # get the existing cache data
+        with open(self.CACHE_FILE_FILEPATH, 'r') as file:
+            data = json.load(file)
+
+        # add the filepath to the cache data
+        data[key] = strategy_filepath
+
+        # write the cache data
+        with open(self.CACHE_FILE_FILEPATH, 'w+') as file:
+            json.dump(data, file)
+
     @abstractmethod
     def on_run_btn_clicked(self):
         raise NotImplementedError('You need to implement this method!')
-
-    @staticmethod
-    def cache_strategy_filepath(strategy_filepath):
-        # cache the strategy filepath (create if it does not already exist)
-        data = {'cached_strategy_filepath': strategy_filepath}
-        with open('cache.json', 'w+') as file:
-            json.dump(data, file)

@@ -304,6 +304,10 @@ class MultiConfigTab(ConfigTab):
 
 
 class HeadToHeadConfigTab(ConfigTab):
+    STRATEGY_1_CACHE_KEY = 'cached_h2h_strategy_1_filepath'
+
+    STRATEGY_2_CACHE_KEY = 'cached_h2h_strategy_2_filepath'
+
     def __init__(self):
         super().__init__()
         # add components to the layout
@@ -312,7 +316,7 @@ class HeadToHeadConfigTab(ConfigTab):
         label.setStyleSheet("""color: #FFF;""")
         self.layout.addWidget(label)
 
-        self.strategy_1_selection_box = StrategySelection()
+        self.strategy_1_selection_box = StrategySelection(self.STRATEGY_1_CACHE_KEY)
         self.strategy_1_selection_box.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
         self.layout.addWidget(self.strategy_1_selection_box)
 
@@ -328,7 +332,7 @@ class HeadToHeadConfigTab(ConfigTab):
         label.setStyleSheet("""color: #FFF;""")
         self.layout.addWidget(label)
 
-        self.strategy_2_selection_box = StrategySelection()
+        self.strategy_2_selection_box = StrategySelection(self.STRATEGY_2_CACHE_KEY)
         self.strategy_2_selection_box.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
         self.layout.addWidget(self.strategy_2_selection_box)
 
@@ -384,8 +388,8 @@ class HeadToHeadConfigTab(ConfigTab):
 
     def on_run_btn_clicked(self):
         # load the strategy from the JSON file into a strategy python dict
-        strategy1 = self.load_strategy(self.strategy_1_selection_box.filepath_box.text())
-        strategy2 = self.load_strategy(self.strategy_2_selection_box.filepath_box.text())
+        strategy1 = self.load_strategy(self.strategy_1_selection_box.filepath_box.text(), self.STRATEGY_1_CACHE_KEY)
+        strategy2 = self.load_strategy(self.strategy_2_selection_box.filepath_box.text(), self.STRATEGY_2_CACHE_KEY)
 
         if strategy1 is None or strategy2 is None:
             # either strategy load failed
@@ -447,7 +451,11 @@ class StrategySelection(QWidget):
 
     SELECT_FILE_BTN_STYLESHEET = """background-color: #303134;color: #FFF;"""
 
-    def __init__(self):
+    CACHE_FILE_FILEPATH = 'cache.json'
+
+    DEFAULT_CACHE_KEY = 'cached_strategy_filepath'
+
+    def __init__(self, cache_key=None):
         super().__init__()
 
         self.layout = QHBoxLayout()
@@ -455,7 +463,7 @@ class StrategySelection(QWidget):
         self.filepath_box = QLabel()
         self.filepath_box.setStyleSheet(self.FILEPATH_BOX_STYLESHEET)
         self.layout.addWidget(self.filepath_box)
-        self.add_cached_strategy_filepath()
+        self.add_cached_strategy_filepath(cache_key)
 
         self.select_file_btn = QPushButton()
         self.select_file_btn.setText('Select File')
@@ -465,13 +473,18 @@ class StrategySelection(QWidget):
 
         self.setLayout(self.layout)
 
-    def add_cached_strategy_filepath(self):
-        filepath = 'cache.json'
-        if os.path.exists(filepath):
-            with open(filepath, 'r') as file:
+    def add_cached_strategy_filepath(self, cache_key=None):
+        if os.path.exists(self.CACHE_FILE_FILEPATH):
+            with open(self.CACHE_FILE_FILEPATH, 'r') as file:
                 data = json.load(file)
-            if 'cached_strategy_filepath' in data.keys():
-                self.filepath_box.setText(data['cached_strategy_filepath'])
+
+            # swap the key to the passed key if one was entered (used when using h2h cached keys)
+            key = self.DEFAULT_CACHE_KEY
+            if cache_key:
+                key = cache_key
+
+            if key in data.keys():
+                self.filepath_box.setText(data[key])
 
     def on_select_file_btn_click(self):
         dlg = QFileDialog()

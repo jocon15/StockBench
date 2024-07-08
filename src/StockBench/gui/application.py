@@ -423,8 +423,6 @@ class HeadToHeadConfigTab(ConfigTab):
             self.simulation_unique_chart_saving,
             self.results_depth)
 
-        # FIXME: need to also fix the cache
-
         # create simulation number 2
         simulation_result_window_2 = MultiResultsWindow(
             simulation_symbols,

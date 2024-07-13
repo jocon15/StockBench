@@ -30,6 +30,19 @@ def test_withdraw():
     assert int(actual) == 900
 
 
+def test_get_initial_balance():
+    # ============= Arrange ==============
+    test_object = UserAccount(1000.0)
+
+    # ============= Act ==================
+    test_object.withdraw(200.0)
+
+    actual = test_object.get_initial_balance()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert int(actual) == 1000
+
 def test_get_balance():
     # ============= Arrange ==============
     test_object = UserAccount(1000.0)

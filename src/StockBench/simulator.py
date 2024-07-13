@@ -479,7 +479,8 @@ class Simulator:
         if results_depth == self.CHARTS_AND_DATA:
             with ProcessPoolExecutor() as executor:
                 gui_terminal_log.info('Building overview chart...')
-                future1 = executor.submit(MultipleDisplay.chart_overview, results, save_option)
+                future1 = executor.submit(MultipleDisplay.chart_overview, results, self.__account.get_initial_balance(),
+                                          save_option)
 
                 gui_terminal_log.info('Building buy rules analysis chart...')
                 future2 = executor.submit(MultipleDisplay.chart_buy_rules_analysis,

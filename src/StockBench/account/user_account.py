@@ -34,6 +34,14 @@ class UserAccount:
         """Reset the account balance to the initial amount."""
         self.__balance = self.__initial_balance
 
+    def get_initial_balance(self) -> float:
+        """Get the initial balance of the account.
+
+        returns:
+            float: The balance of the account.
+        """
+        return round(self.__initial_balance, 2)
+
     def get_balance(self) -> float:
         """Get the current balance of the account.
 

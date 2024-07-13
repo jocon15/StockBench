@@ -10,7 +10,7 @@ class MultipleDisplay(Display):
     """This class defines a display object for a simulation where multiple stocks were simulated."""
 
     @staticmethod
-    def chart_overview(data, save_option=Display.TEMP_SAVE) -> str:
+    def chart_overview(data, initial_balance, save_option=Display.TEMP_SAVE) -> str:
         rows = 2
         cols = 2
 
@@ -29,14 +29,14 @@ class MultipleDisplay(Display):
         # Profit/Loss Bar
         fig.add_trace(MultipleDisplay.__overview_profit_loss_bar(data), row=1, col=1)
 
-        # Avg Profit/Loss Gauge
+        # Avg effectiveness Gauge
         fig.add_trace(MultipleDisplay.__overview_avg_effectiveness_gauge(data), row=1, col=2)
 
         # Total Trades Made Bar
         fig.add_trace(MultipleDisplay.__overview_trades_made_bar(data), row=2, col=1)
 
         # Avg Profit/Loss Gauge
-        fig.add_trace(MultipleDisplay.__overview_avg_profit_loss_gauge(data), row=2, col=2)
+        fig.add_trace(MultipleDisplay.__overview_avg_profit_loss_gauge(data, initial_balance), row=2, col=2)
 
         # set the layout
         fig.update_layout(template='plotly_dark', title=f'Simulation Results for {len(data)} Symbols',
@@ -191,8 +191,11 @@ class MultipleDisplay(Display):
                        {'range': [50, 100], 'color': PLOTLY_DARK_BACKGROUND}]})
 
     @staticmethod
-    def __overview_avg_profit_loss_gauge(data):
+    def __overview_avg_profit_loss_gauge(data, initial_balance):
         indicator_value = MultipleDisplay.__get_avg_pl(data)
+        upper_bound = initial_balance
+        lower_bound = -initial_balance
+
         if indicator_value > 0:
             bar_color = 'green'
         else:
@@ -204,11 +207,11 @@ class MultipleDisplay(Display):
             number={"font": {"size": 55}},
             mode="gauge+number",
             title={'text': "Average Total Profit/Loss per Symbol ($)"},
-            gauge={'axis': {'range': [-1000, 1000]},
+            gauge={'axis': {'range': [lower_bound, upper_bound]},
                    'bar': {'color': bar_color},
                    'steps': [
-                       {'range': [-1000, 0], 'color': PLOTLY_DARK_BACKGROUND},
-                       {'range': [0, 1000], 'color': PLOTLY_DARK_BACKGROUND}]})
+                       {'range': [lower_bound, 0], 'color': PLOTLY_DARK_BACKGROUND},
+                       {'range': [0, upper_bound], 'color': PLOTLY_DARK_BACKGROUND}]})
 
     @staticmethod
     def __overview_trades_made_bar(data):

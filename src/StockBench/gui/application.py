@@ -32,7 +32,7 @@ class ConfigMainWindow(QMainWindow):
         self.tab_widget = QTabWidget()
         self.tab_widget.addTab(SingularConfigTab(), "Single")
         self.tab_widget.addTab(MultiConfigTab(), "Multi")
-        self.tab_widget.addTab(HeadToHeadConfigTab(), "Compare (beta)")
+        self.tab_widget.addTab(HeadToHeadConfigTab(), "Compare")
         self.tab_widget.setStyleSheet(Palette.TAB_WIDGET_STYLESHEET)
         self.layout.addWidget(self.tab_widget)
 

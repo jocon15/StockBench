@@ -33,6 +33,7 @@ class ConfigMainWindow(QMainWindow):
         self.tab_widget.addTab(SingularConfigTab(), "Single")
         self.tab_widget.addTab(MultiConfigTab(), "Multi")
         self.tab_widget.addTab(HeadToHeadConfigTab(), "Compare")
+        self.tab_widget.addTab(FolderConfigTab(), "Folder")
         self.tab_widget.setStyleSheet(Palette.TAB_WIDGET_STYLESHEET)
         self.layout.addWidget(self.tab_widget)
 
@@ -444,6 +445,74 @@ class HeadToHeadConfigTab(ConfigTab):
             self.head_to_head_window.showMaximized()
 
 
+class FolderConfigTab(ConfigTab):
+    def __init__(self):
+        super().__init__()
+        # add components to the layout
+        label = QLabel()
+        label.setText('Folder:')
+        label.setStyleSheet("""color: #FFF;""")
+        self.layout.addWidget(label)
+
+        self.strategy_selection_box = FolderSelection()
+        self.strategy_selection_box.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
+        self.layout.addWidget(self.strategy_selection_box)
+
+        self.layout.addWidget(self.simulation_length_label)
+
+        self.layout.addWidget(self.simulation_length_cbox)
+
+        label = QLabel()
+        label.setText('Simulation Symbols:')
+        label.setStyleSheet("""color: #FFF;""")
+        self.layout.addWidget(label)
+
+        self.symbol_tbox = QLineEdit()
+        self.symbol_tbox.setText("MSFT, AAPL")
+        self.symbol_tbox.setStyleSheet(Palette.LINE_EDIT_STYLESHEET)
+        self.layout.addWidget(self.symbol_tbox)
+
+        self.layout.addWidget(self.initial_balance_label)
+
+        self.layout.addWidget(self.initial_balance_tbox)
+
+        self.layout.addWidget(self.logging_label)
+
+        self.layout.addWidget(self.logging_btn)
+
+        self.layout.addWidget(self.reporting_label)
+
+        self.layout.addWidget(self.reporting_btn)
+
+        label = QLabel()
+        label.setText('Save Unique Charts:')
+        label.setStyleSheet("""color: #FFF;""")
+        self.layout.addWidget(label)
+
+        self.unique_chart_save_btn = QPushButton()
+        self.unique_chart_save_btn.setCheckable(True)
+        self.unique_chart_save_btn.setText('OFF')
+        self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
+        # self.unique_chart_save_btn.clicked.connect(self.on_chart_saving_btn_clicked)  # noqa
+        self.layout.addWidget(self.unique_chart_save_btn)
+
+        self.layout.addWidget(self.show_results_label)
+
+        self.layout.addWidget(self.show_sim_results_btn)
+
+        self.layout.addWidget(self.results_depth_label)
+
+        self.layout.addWidget(self.data_and_charts_radio_btn)
+
+        self.layout.addWidget(self.data_only_radio_btn)
+
+        self.layout.addWidget(self.run_btn, alignment=Qt.AlignmentFlag.AlignRight)
+
+        self.layout.addWidget(self.error_message_box)
+
+        self.setLayout(self.layout)
+
+
 class StrategySelection(QWidget):
     FILEPATH_BOX_STYLESHEET = """background-color: #303134;color: #FFF;"""
 
@@ -491,3 +560,27 @@ class StrategySelection(QWidget):
         if dlg.exec():
             filenames = dlg.selectedFiles()
             self.filepath_box.setText(filenames[0])
+
+
+class FolderSelection(QWidget):
+    FILEPATH_BOX_STYLESHEET = """background-color: #303134;color: #FFF;"""
+
+    SELECT_FILE_BTN_STYLESHEET = """background-color: #303134;color: #FFF;"""
+
+    def __init__(self):
+        super().__init__()
+
+        self.layout = QHBoxLayout()
+
+        self.filepath_box = QLabel()
+        self.filepath_box.setStyleSheet(self.FILEPATH_BOX_STYLESHEET)
+        self.layout.addWidget(self.filepath_box)
+        # self.add_cached_strategy_filepath(cache_key)
+
+        self.select_file_btn = QPushButton()
+        self.select_file_btn.setText('Select Folder')
+        # self.select_file_btn.clicked.connect(self.on_select_file_btn_click)  # noqa
+        self.select_file_btn.setStyleSheet(self.SELECT_FILE_BTN_STYLESHEET)
+        self.layout.addWidget(self.select_file_btn)
+
+        self.setLayout(self.layout)

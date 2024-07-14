@@ -11,6 +11,7 @@ from StockBench.gui.windows.singular.singular_results_window import SingularResu
 from StockBench.gui.windows.multi.multi_results_window import MultiResultsWindow
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.windows.head_to_head.head_to_head_window import HeadToHeadWindow
+from StockBench.gui.windows.folder.folder_window import FolderResultsWindow
 
 
 class ConfigMainWindow(QMainWindow):
@@ -447,6 +448,8 @@ class HeadToHeadConfigTab(ConfigTab):
 
 
 class FolderConfigTab(ConfigTab):
+    FOLDER_CACHE_KEY = 'cached_folder_filepath'
+
     def __init__(self):
         super().__init__()
         # add components to the layout
@@ -530,14 +533,38 @@ class FolderConfigTab(ConfigTab):
             return
 
         # create a list of simulations
-        strategy_filepaths = []
+        strategies = []
 
-        # iterate through all files in the folder
+        # iterate through all files in the folder, loading the strategies into a list
         for filename in os.listdir(folderpath):
+            filepath = os.path.join(folderpath, filename)
 
-            strategy_filepaths.append(os.path.join(folderpath, filename))
+            strategy = self.load_strategy(filepath, self.FOLDER_CACHE_KEY)
 
+            strategies.append(strategy)
 
+        # create a new simulations results window
+        self.simulation_result_window = FolderResultsWindow(
+            strategies,
+            simulation_symbols,
+            simulation_balance,
+            self.simulator,
+            self.progress_bar_observer,
+            self.worker,
+            self.simulation_logging,
+            self.simulation_reporting,
+            self.simulation_unique_chart_saving,
+            self.results_depth)
+
+        # all error checks have passed, can now clear the error message box
+        self.error_message_box.setText('')
+
+        # begin the simulation and progress checking timer
+        self.simulation_result_window.begin()
+
+        if self.simulation_show_results_window:
+            # show the results window if option is checked
+            self.simulation_result_window.showMaximized()
 
 
 class StrategySelection(QWidget):

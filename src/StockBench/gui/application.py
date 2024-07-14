@@ -393,6 +393,7 @@ class HeadToHeadConfigTab(ConfigTab):
         strategy2 = self.load_strategy(self.strategy_2_selection_box.filepath_box.text(), self.STRATEGY_2_CACHE_KEY)
 
         if strategy1 is None or strategy2 is None:
+            # FIXME: put error message here?
             # either strategy load failed
             return
 
@@ -454,9 +455,9 @@ class FolderConfigTab(ConfigTab):
         label.setStyleSheet("""color: #FFF;""")
         self.layout.addWidget(label)
 
-        self.strategy_selection_box = FolderSelection()
-        self.strategy_selection_box.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
-        self.layout.addWidget(self.strategy_selection_box)
+        self.folder_selection = FolderSelection()
+        self.folder_selection.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
+        self.layout.addWidget(self.folder_selection)
 
         self.layout.addWidget(self.simulation_length_label)
 
@@ -511,6 +512,32 @@ class FolderConfigTab(ConfigTab):
         self.layout.addWidget(self.error_message_box)
 
         self.setLayout(self.layout)
+
+    def on_run_btn_clicked(self):
+        # extract the folder path from the input
+        folderpath = self.folder_selection.folderpath_box.text()
+
+        # gather other data from UI components
+        raw_simulation_symbols = self.symbol_tbox.text().split(',')
+        simulation_symbols = []
+        for symbol in raw_simulation_symbols:
+            simulation_symbols.append(symbol.upper().strip())
+        simulation_balance = float(self.initial_balance_tbox.text())
+
+        # check the balance for negative numbers
+        if simulation_balance <= 0:
+            self.error_message_box.setText('Initial account balance must be a positive number!')
+            return
+
+        # create a list of simulations
+        strategy_filepaths = []
+
+        # iterate through all files in the folder
+        for filename in os.listdir(folderpath):
+
+            strategy_filepaths.append(os.path.join(folderpath, filename))
+
+
 
 
 class StrategySelection(QWidget):

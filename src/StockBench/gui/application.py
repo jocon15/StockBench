@@ -530,17 +530,17 @@ class StrategySelection(QWidget):
         self.filepath_box = QLabel()
         self.filepath_box.setStyleSheet(self.FILEPATH_BOX_STYLESHEET)
         self.layout.addWidget(self.filepath_box)
-        self.add_cached_strategy_filepath(cache_key)
+        self.apply_cached_strategy_filepath(cache_key)
 
         self.select_file_btn = QPushButton()
         self.select_file_btn.setText('Select File')
-        self.select_file_btn.clicked.connect(self.on_select_file_btn_click)  # noqa
+        self.select_file_btn.clicked.connect(self.on_select_file_btn_clicked)  # noqa
         self.select_file_btn.setStyleSheet(self.SELECT_FILE_BTN_STYLESHEET)
         self.layout.addWidget(self.select_file_btn)
 
         self.setLayout(self.layout)
 
-    def add_cached_strategy_filepath(self, cache_key=None):
+    def apply_cached_strategy_filepath(self, cache_key=None):
         if os.path.exists(self.CACHE_FILE_FILEPATH):
             with open(self.CACHE_FILE_FILEPATH, 'r') as file:
                 data = json.load(file)
@@ -553,7 +553,7 @@ class StrategySelection(QWidget):
             if key in data.keys():
                 self.filepath_box.setText(data[key])
 
-    def on_select_file_btn_click(self):
+    def on_select_file_btn_clicked(self):
         dlg = QFileDialog()
         dlg.setFileMode(QFileDialog.FileMode.ExistingFiles)
         dlg.setNameFilter("JSON (*.json)")
@@ -567,20 +567,40 @@ class FolderSelection(QWidget):
 
     SELECT_FILE_BTN_STYLESHEET = """background-color: #303134;color: #FFF;"""
 
+    CACHE_FILE_FILEPATH = 'cache.json'
+
+    DEFAULT_CACHE_KEY = 'cached_folderpath'
+
     def __init__(self):
         super().__init__()
 
         self.layout = QHBoxLayout()
 
-        self.filepath_box = QLabel()
-        self.filepath_box.setStyleSheet(self.FILEPATH_BOX_STYLESHEET)
-        self.layout.addWidget(self.filepath_box)
-        # self.add_cached_strategy_filepath(cache_key)
+        self.folderpath_box = QLabel()
+        self.folderpath_box.setStyleSheet(self.FILEPATH_BOX_STYLESHEET)
+        self.layout.addWidget(self.folderpath_box)
+        self.apply_cached_folderpath()
 
-        self.select_file_btn = QPushButton()
-        self.select_file_btn.setText('Select Folder')
-        # self.select_file_btn.clicked.connect(self.on_select_file_btn_click)  # noqa
-        self.select_file_btn.setStyleSheet(self.SELECT_FILE_BTN_STYLESHEET)
-        self.layout.addWidget(self.select_file_btn)
+        self.select_folder_btn = QPushButton()
+        self.select_folder_btn.setText('Select Folder')
+        self.select_folder_btn.clicked.connect(self.on_select_folder_btn_clicked)  # noqa
+        self.select_folder_btn.setStyleSheet(self.SELECT_FILE_BTN_STYLESHEET)
+        self.layout.addWidget(self.select_folder_btn)
 
         self.setLayout(self.layout)
+
+    def apply_cached_folderpath(self):
+        if os.path.exists(self.CACHE_FILE_FILEPATH):
+            with open(self.CACHE_FILE_FILEPATH, 'r') as file:
+                data = json.load(file)
+
+            if self.DEFAULT_CACHE_KEY in data.keys():
+                self.folderpath_box.setText(data[self.DEFAULT_CACHE_KEY])
+
+    def on_select_folder_btn_clicked(self):
+        dlg = QFileDialog()
+        dlg.setFileMode(QFileDialog.FileMode.Directory)
+        dlg.setNameFilter("JSON (*.json)")
+        if dlg.exec():
+            filenames = dlg.selectedFiles()
+            self.folderpath_box.setText(filenames[0])

@@ -20,7 +20,6 @@ class FolderResultsTab(OverviewTab):
         self.setLayout(self.layout)
 
     def render_data(self, simulation_results):
-        self.render_chart(simulation_results)
         self.overview_side_bar.render_data(simulation_results)
         self.results_table.render_data(simulation_results)
 
@@ -182,8 +181,8 @@ class FolderOverviewSidebar(QWidget):
     def render_data(self, simulation_results):
         # extract the results list
         results = simulation_results['results']
-        # select the first result to use
+        # select the first result to use as a template
         result_to_use = results[0]
-        # edit the elapsed time
-        result_to_use['elapsed_time'] = 'N/A'
+        # extract the elapsed time and inject it into the result to use (represents the entire sim time)
+        result_to_use['elapsed_time'] = simulation_results['elapsed_time']
         self.metadata_table.render_data(result_to_use)

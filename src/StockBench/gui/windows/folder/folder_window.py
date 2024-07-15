@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QProgressBar, QLabel, QTableWidget, QTableWidgetItem
 from PyQt6.QtGui import QBrush, QColor
+from time import perf_counter
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.windows.base.results_window import SimulationResultsWindow
 from StockBench.gui.windows.folder.tabs.folder_overview_tab import FolderResultsTab
@@ -71,6 +72,7 @@ class FolderResultsWindow(SimulationResultsWindow):
     def _run_simulation(self, save_option) -> dict:
         results = []
 
+        start_time = perf_counter()
         # run all simulations (using matched progress observer)
         for i, strategy in enumerate(self.strategies):
             # __run_simulation sets the simulator to use self.strategy
@@ -83,7 +85,9 @@ class FolderResultsWindow(SimulationResultsWindow):
                                                        save_option=save_option,
                                                        progress_observer=self.progress_observers[i]))
 
-        return {"results": results}
+        elapsed_time = round(perf_counter() - start_time, 2)
+
+        return {"results": results, 'elapsed_time': elapsed_time}
 
     def _render_data(self, simulation_results: dict):
         self.results_frame.render_data(simulation_results)

@@ -189,7 +189,7 @@ class ConfigTab(QWidget):
         if selected:
             self.results_depth = Simulator.DATA_ONLY
 
-    def load_strategy(self, filepath, cache_key=None):
+    def load_strategy(self, filepath, cache_key=None, cache_value=None):
         if filepath is None or filepath == '':
             self.error_message_box.setText('You must select a strategy file!')
             return None
@@ -204,7 +204,7 @@ class ConfigTab(QWidget):
             return None
 
         # cache the strategy filepath (create if it does not already exist)
-        self.cache_strategy_filepath(filepath, cache_key)
+        self.cache_strategy_filepath(filepath, cache_key, cache_value)
 
         # inject the unix equivalent dates from the combobox to the dict
         strategy['strategy_filepath'] = filepath
@@ -213,7 +213,7 @@ class ConfigTab(QWidget):
 
         return strategy
 
-    def cache_strategy_filepath(self, strategy_filepath, cache_key=None):
+    def cache_strategy_filepath(self, strategy_filepath, cache_key=None, cache_value=None):
         # cache the strategy filepath (create if it does not already exist)
 
         key = self.DEFAULT_CACHE_KEY
@@ -225,7 +225,10 @@ class ConfigTab(QWidget):
             data = json.load(file)
 
         # add the filepath to the cache data
-        data[key] = strategy_filepath
+        if cache_value:
+            data[key] = cache_value
+        else:
+            data[key] = strategy_filepath
 
         # write the cache data
         with open(self.CACHE_FILE_FILEPATH, 'w+') as file:

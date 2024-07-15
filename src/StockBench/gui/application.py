@@ -448,7 +448,7 @@ class HeadToHeadConfigTab(ConfigTab):
 
 
 class FolderConfigTab(ConfigTab):
-    FOLDER_CACHE_KEY = 'cached_folder_filepath'
+    FOLDER_CACHE_KEY = 'cached_folderpath'
 
     def __init__(self):
         super().__init__()
@@ -539,7 +539,7 @@ class FolderConfigTab(ConfigTab):
         for filename in os.listdir(folderpath):
             filepath = os.path.join(folderpath, filename)
 
-            strategy = self.load_strategy(filepath, self.FOLDER_CACHE_KEY)
+            strategy = self.load_strategy(filepath, self.FOLDER_CACHE_KEY, folderpath)
 
             strategies.append(strategy)
 

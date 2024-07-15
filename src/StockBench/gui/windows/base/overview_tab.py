@@ -2,10 +2,9 @@ import subprocess
 from PyQt6.QtWidgets import QFrame
 from StockBench.gui.windows.base.base.result_tab import Tab
 from abc import abstractmethod
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer, QThreadPool
 from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QGridLayout, QPushButton
-from PyQt6.QtCore import QTimer, QThreadPool
 
 
 class OverviewTab(Tab):

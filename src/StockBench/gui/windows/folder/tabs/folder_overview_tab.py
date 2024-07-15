@@ -42,6 +42,7 @@ class FolderResultsTable(QWidget):
         self.table.setRowCount(len(strategies))
         self.table.setColumnCount(7)
         self.table.setHorizontalHeaderLabels(self.TABLE_HEADERS)
+        self.table.verticalHeader().setVisible(False)
         self.layout.addWidget(self.table)
 
         self.setLayout(self.layout)

@@ -1,5 +1,4 @@
-from PyQt6.QtWidgets import QProgressBar, QLabel, QTableWidget, QTableWidgetItem
-from PyQt6.QtGui import QBrush, QColor
+from PyQt6.QtWidgets import QProgressBar, QLabel
 from time import perf_counter
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.windows.base.results_window import SimulationResultsWindow
@@ -29,6 +28,7 @@ class FolderResultsWindow(SimulationResultsWindow):
         # add elements to the layout
 
         # create a list of progress bars for each strategy
+        self.strategy_labels = [QLabel() for _ in strategies]
         self.progress_bars = [QProgressBar() for _ in strategies]
         # set up the progress bars and add them to the layout
         self.__setup_progress_bars()
@@ -47,12 +47,20 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.error_message_label.setText(message)
 
     def __setup_progress_bars(self):
-        for progress_bar in self.progress_bars:
-            progress_bar.setRange(0, 100)
-            progress_bar.setFixedHeight(5)
-            progress_bar.setTextVisible(False)
-            progress_bar.setStyleSheet(Palette.PROGRESS_BAR_STYLESHEET)
-            self.layout.addWidget(progress_bar)
+        for i, strategy in enumerate(self.strategies):
+            # set the label to the name of the strategy
+            self.strategy_labels[i].setText(self._get_strategy_name(strategy['strategy_filepath']))
+            self.strategy_labels[i].setStyleSheet("""color: #FFF;""")
+
+            # initialize the progress bar
+            self.progress_bars[i].setRange(0, 100)
+            self.progress_bars[i].setFixedHeight(5)
+            self.progress_bars[i].setTextVisible(False)
+            self.progress_bars[i].setStyleSheet(Palette.PROGRESS_BAR_STYLESHEET)
+
+            # add the label and the progress bar to the layout
+            self.layout.addWidget(self.strategy_labels[i])
+            self.layout.addWidget(self.progress_bars[i])
 
     def _update_progress_bar(self):
         all_bars_complete = True
@@ -91,3 +99,8 @@ class FolderResultsWindow(SimulationResultsWindow):
 
     def _render_data(self, simulation_results: dict):
         self.results_frame.render_data(simulation_results)
+
+    @staticmethod
+    def _get_strategy_name(filepath: str):
+        filepath = filepath.replace('\\', '/')
+        return filepath.split('/')[-1].split('.')[0]

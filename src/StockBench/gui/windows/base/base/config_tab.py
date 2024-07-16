@@ -52,7 +52,7 @@ class ConfigTab(QWidget):
         # simulation length label
         self.simulation_length_label = QLabel()
         self.simulation_length_label.setText('Simulation Length:')
-        self.simulation_length_label.setStyleSheet("""color: #FFF;""")
+        self.simulation_length_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # simulation length input
         self.simulation_length_cbox = QComboBox()
         self.simulation_length_cbox.addItem('1 Year')
@@ -67,7 +67,7 @@ class ConfigTab(QWidget):
         # initial balance label
         self.initial_balance_label = QLabel()
         self.initial_balance_label.setText('Initial Balance:')
-        self.initial_balance_label.setStyleSheet("""color: #FFF;""")
+        self.initial_balance_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # initial balance input
         self.initial_balance_tbox = QLineEdit()
         self.initial_balance_tbox.setText('1000.0')
@@ -78,7 +78,7 @@ class ConfigTab(QWidget):
         # logging label
         self.logging_label = QLabel()
         self.logging_label.setText('Logging:')
-        self.logging_label.setStyleSheet("""color: #FFF;""")
+        self.logging_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # logging button
         self.logging_btn = QPushButton()
         self.logging_btn.setCheckable(True)
@@ -89,7 +89,7 @@ class ConfigTab(QWidget):
         # reporting label
         self.reporting_label = QLabel()
         self.reporting_label.setText('Reporting:')
-        self.reporting_label.setStyleSheet("""color: #FFF;""")
+        self.reporting_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # reporting button
         self.reporting_btn = QPushButton()
         self.reporting_btn.setCheckable(True)
@@ -100,7 +100,7 @@ class ConfigTab(QWidget):
         # show results label
         self.show_results_label = QLabel()
         self.show_results_label.setText('Show Results:')
-        self.show_results_label.setStyleSheet("""color: #FFF;""")
+        self.show_results_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # show results button
         self.show_sim_results_btn = QPushButton()
         self.show_sim_results_btn.setCheckable(True)
@@ -111,7 +111,7 @@ class ConfigTab(QWidget):
         # results depth label
         self.results_depth_label = QLabel()
         self.results_depth_label.setText('Results Depth:')
-        self.results_depth_label.setStyleSheet("""color: #FFF;""")
+        self.results_depth_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # results depth radio button
         self.data_and_charts_radio_btn = QRadioButton("Data and Charts")
         self.data_and_charts_radio_btn.toggled.connect(self.data_and_charts_btn_selected)  # noqa

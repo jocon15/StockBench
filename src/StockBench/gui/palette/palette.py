@@ -32,6 +32,8 @@ class Palette:
                 background-color: #323338;
             }"""
 
+    INPUT_LABEL_STYLESHEET = """color: #FFF;"""
+
     TEXT_BOX_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
             text-indent:3px;"""
 

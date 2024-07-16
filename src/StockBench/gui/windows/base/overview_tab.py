@@ -1,6 +1,7 @@
 import subprocess
 from PyQt6.QtWidgets import QFrame
 from StockBench.gui.windows.base.base.result_tab import Tab
+from StockBench.gui.palette.palette import Palette
 from abc import abstractmethod
 from PyQt6.QtCore import Qt, QTimer, QThreadPool
 from PyQt6.QtGui import QColor
@@ -161,7 +162,7 @@ class OverviewTable(QFrame):
         # strategy label
         self.strategy_label = QLabel()
         self.strategy_label.setText('Strategy')
-        self.strategy_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        self.strategy_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # strategy data label
         self.strategy_data_label = QLabel()
         self.strategy_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
@@ -169,7 +170,7 @@ class OverviewTable(QFrame):
         # trade-able days label
         self.trade_able_days_label = QLabel()
         self.trade_able_days_label.setText('Length')
-        self.trade_able_days_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        self.trade_able_days_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # trade-able days data label
         self.trade_able_days_data_label = QLabel()
         self.trade_able_days_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
@@ -177,7 +178,7 @@ class OverviewTable(QFrame):
         # elapsed time label
         self.elapsed_time_label = QLabel()
         self.elapsed_time_label.setText('Elapsed Time')
-        self.elapsed_time_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        self.elapsed_time_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # elapsed time data label
         self.elapsed_time_data_label = QLabel()
         self.elapsed_time_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
@@ -186,7 +187,7 @@ class OverviewTable(QFrame):
         # trades made label
         self.trades_made_label = QLabel()
         self.trades_made_label.setText('Trades Made')
-        self.trades_made_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        self.trades_made_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # trades made data label
         self.trades_made_data_label = QLabel()
         self.trades_made_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
@@ -194,7 +195,7 @@ class OverviewTable(QFrame):
         # effectiveness label
         self.effectiveness_label = QLabel()
         self.effectiveness_label.setText('Effectiveness')
-        self.effectiveness_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        self.effectiveness_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # effectiveness data label
         self.effectiveness_data_label = QLabel()
         self.effectiveness_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
@@ -202,7 +203,7 @@ class OverviewTable(QFrame):
         # total P/L label
         self.total_pl_label = QLabel()
         self.total_pl_label.setText('Total P/L')
-        self.total_pl_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        self.total_pl_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # total P/L data label
         self.total_pl_data_label = QLabel()
         self.total_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
@@ -210,7 +211,7 @@ class OverviewTable(QFrame):
         # average P/L label
         self.average_pl_label = QLabel()
         self.average_pl_label.setText('Average P/L')
-        self.average_pl_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        self.average_pl_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # average P/L data label
         self.average_pl_data_label = QLabel()
         self.average_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
@@ -218,7 +219,7 @@ class OverviewTable(QFrame):
         # median P/L label
         self.median_pl_label = QLabel()
         self.median_pl_label.setText('Median P/L')
-        self.median_pl_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        self.median_pl_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # median data label
         self.median_pl_data_label = QLabel()
         self.median_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
@@ -226,7 +227,7 @@ class OverviewTable(QFrame):
         # stddev P/L label
         self.stddev_pl_label = QLabel()
         self.stddev_pl_label.setText('Stddev P/L')
-        self.stddev_pl_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+        self.stddev_pl_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # stddev data label
         self.stddev_pl_data_label = QLabel()
         self.stddev_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)

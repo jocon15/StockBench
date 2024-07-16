@@ -50,7 +50,7 @@ class FolderResultsWindow(SimulationResultsWindow):
         for i, strategy in enumerate(self.strategies):
             # set the label to the name of the strategy
             self.strategy_labels[i].setText(self._get_strategy_name(strategy['strategy_filepath']))
-            self.strategy_labels[i].setStyleSheet("""color: #FFF;""")
+            self.strategy_labels[i].setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
 
             # initialize the progress bar
             self.progress_bars[i].setRange(0, 100)

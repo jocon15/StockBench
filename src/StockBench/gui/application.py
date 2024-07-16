@@ -59,7 +59,7 @@ class SingularConfigTab(ConfigTab):
         # add components to the layout
         label = QLabel()
         label.setText('Strategy:')
-        label.setStyleSheet("""color: #FFF;""")
+        label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
         self.strategy_selection_box = StrategySelection()
@@ -79,7 +79,7 @@ class SingularConfigTab(ConfigTab):
 
         label = QLabel()
         label.setText('Simulation Symbol:')
-        label.setStyleSheet("""color: #FFF;""")
+        label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
         self.symbol_tbox = QLineEdit()
@@ -101,7 +101,7 @@ class SingularConfigTab(ConfigTab):
 
         label = QLabel()
         label.setText('Save Unique Chart:')
-        label.setStyleSheet("""color: #FFF;""")
+        label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
         self.unique_chart_save_btn = QPushButton()
@@ -183,7 +183,7 @@ class MultiConfigTab(ConfigTab):
         # add components to the layout
         label = QLabel()
         label.setText('Strategy:')
-        label.setStyleSheet("""color: #FFF;""")
+        label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
         self.strategy_selection_box = StrategySelection()
@@ -203,7 +203,7 @@ class MultiConfigTab(ConfigTab):
 
         label = QLabel()
         label.setText('Simulation Symbols:')
-        label.setStyleSheet("""color: #FFF;""")
+        label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
         self.symbol_tbox = QLineEdit()
@@ -225,7 +225,7 @@ class MultiConfigTab(ConfigTab):
 
         label = QLabel()
         label.setText('Save Unique Charts:')
-        label.setStyleSheet("""color: #FFF;""")
+        label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
         self.unique_chart_save_btn = QPushButton()
@@ -315,7 +315,7 @@ class HeadToHeadConfigTab(ConfigTab):
         # add components to the layout
         label = QLabel()
         label.setText('Strategy 1:')
-        label.setStyleSheet("""color: #FFF;""")
+        label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
         self.strategy_1_selection_box = StrategySelection(self.STRATEGY_1_CACHE_KEY)
@@ -331,7 +331,7 @@ class HeadToHeadConfigTab(ConfigTab):
 
         label = QLabel()
         label.setText('Strategy 2:')
-        label.setStyleSheet("""color: #FFF;""")
+        label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
         self.strategy_2_selection_box = StrategySelection(self.STRATEGY_2_CACHE_KEY)
@@ -351,7 +351,7 @@ class HeadToHeadConfigTab(ConfigTab):
 
         label = QLabel()
         label.setText('Simulation Symbols:')
-        label.setStyleSheet("""color: #FFF;""")
+        label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
         self.symbol_tbox = QLineEdit()
@@ -455,7 +455,7 @@ class FolderConfigTab(ConfigTab):
         # add components to the layout
         label = QLabel()
         label.setText('Folder:')
-        label.setStyleSheet("""color: #FFF;""")
+        label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
         self.folder_selection = FolderSelection()
@@ -468,7 +468,7 @@ class FolderConfigTab(ConfigTab):
 
         label = QLabel()
         label.setText('Simulation Symbols:')
-        label.setStyleSheet("""color: #FFF;""")
+        label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
         self.symbol_tbox = QLineEdit()
@@ -490,7 +490,7 @@ class FolderConfigTab(ConfigTab):
 
         label = QLabel()
         label.setText('Save Unique Charts:')
-        label.setStyleSheet("""color: #FFF;""")
+        label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
         self.unique_chart_save_btn = QPushButton()

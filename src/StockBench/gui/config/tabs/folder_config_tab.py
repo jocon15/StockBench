@@ -46,16 +46,8 @@ class FolderConfigTab(ConfigTab):
 
         self.layout.addWidget(self.logging_btn)
 
-        label = QLabel()
-        label.setText('Save Unique Charts:')
-        label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
-        self.layout.addWidget(label)
+        self.layout.addWidget(self.unique_chart_save_label)
 
-        self.unique_chart_save_btn = QPushButton()
-        self.unique_chart_save_btn.setCheckable(True)
-        self.unique_chart_save_btn.setText('OFF')
-        self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
-        self.unique_chart_save_btn.clicked.connect(self.on_chart_saving_btn_clicked)  # noqa
         self.layout.addWidget(self.unique_chart_save_btn)
 
         self.layout.addWidget(self.show_results_label)
@@ -117,13 +109,3 @@ class FolderConfigTab(ConfigTab):
         if self.simulation_show_results_window:
             # show the results window if option is checked
             self.simulation_result_window.showMaximized()
-
-    def on_chart_saving_btn_clicked(self):
-        if self.unique_chart_save_btn.isChecked():
-            self.simulation_unique_chart_saving = True
-            self.unique_chart_save_btn.setText('ON')
-            self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
-        else:
-            self.simulation_unique_chart_saving = False
-            self.unique_chart_save_btn.setText('OFF')
-            self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)

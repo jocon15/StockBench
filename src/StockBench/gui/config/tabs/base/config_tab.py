@@ -97,6 +97,17 @@ class ConfigTab(QWidget):
         self.reporting_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
         self.reporting_btn.clicked.connect(self.on_reporting_btn_clicked)  # noqa
 
+        # unique chart saving
+        self.unique_chart_save_label = QLabel()
+        self.unique_chart_save_label.setText('Save Unique Charts:')
+        self.unique_chart_save_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
+
+        self.unique_chart_save_btn = QPushButton()
+        self.unique_chart_save_btn.setCheckable(True)
+        self.unique_chart_save_btn.setText('OFF')
+        self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
+        self.unique_chart_save_btn.clicked.connect(self.on_chart_saving_btn_clicked)  # noqa
+
         # show results label
         self.show_results_label = QLabel()
         self.show_results_label.setText('Show Results:')
@@ -170,6 +181,16 @@ class ConfigTab(QWidget):
             self.simulation_reporting = False
             self.reporting_btn.setText('OFF')
             self.reporting_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
+
+    def on_chart_saving_btn_clicked(self):
+        if self.unique_chart_save_btn.isChecked():
+            self.simulation_unique_chart_saving = True
+            self.unique_chart_save_btn.setText('ON')
+            self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
+        else:
+            self.simulation_unique_chart_saving = False
+            self.unique_chart_save_btn.setText('OFF')
+            self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def on_show_results_btn_clicked(self):
         if self.show_sim_results_btn.isChecked():

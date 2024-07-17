@@ -53,16 +53,10 @@ class SingularConfigTab(ConfigTab):
 
         self.layout.addWidget(self.reporting_btn)
 
-        label = QLabel()
-        label.setText('Save Unique Chart:')
-        label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
-        self.layout.addWidget(label)
+        # update the label to remove plural
+        self.unique_chart_save_label.setText('Save Unique Chart:')
+        self.layout.addWidget(self.unique_chart_save_label)
 
-        self.unique_chart_save_btn = QPushButton()
-        self.unique_chart_save_btn.setCheckable(True)
-        self.unique_chart_save_btn.setText('OFF')
-        self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
-        self.unique_chart_save_btn.clicked.connect(self.on_chart_saving_btn_clicked)  # noqa
         self.layout.addWidget(self.unique_chart_save_btn)
 
         self.layout.addWidget(self.show_results_label)
@@ -80,16 +74,6 @@ class SingularConfigTab(ConfigTab):
         self.layout.addWidget(self.error_message_box)
 
         self.setLayout(self.layout)
-
-    def on_chart_saving_btn_clicked(self):
-        if self.unique_chart_save_btn.isChecked():
-            self.simulation_unique_chart_saving = True
-            self.unique_chart_save_btn.setText('ON')
-            self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
-        else:
-            self.simulation_unique_chart_saving = False
-            self.unique_chart_save_btn.setText('OFF')
-            self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def on_run_btn_clicked(self):
         # load the strategy from the JSON file into a strategy python dict

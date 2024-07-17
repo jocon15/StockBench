@@ -3,12 +3,12 @@ from PyQt6.QtCore import Qt
 
 from StockBench.gui.config.tabs.base.config_tab import ConfigTab
 from StockBench.gui.results.multi.multi_results_window import MultiResultsWindow
-from StockBench.gui.results.head_to_head.head_to_head_window import HeadToHeadWindow
+from StockBench.gui.results.compare.compare_results_window import CompareResultsWindow
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.config.components.strategy_selection import StrategySelection
 
 
-class HeadToHeadConfigTab(ConfigTab):
+class CompareConfigTab(ConfigTab):
     STRATEGY_1_CACHE_KEY = 'cached_h2h_strategy_1_filepath'
 
     STRATEGY_2_CACHE_KEY = 'cached_h2h_strategy_2_filepath'
@@ -143,7 +143,7 @@ class HeadToHeadConfigTab(ConfigTab):
             self.results_depth)
 
         # create the h2h window - passing the simulations into the constructor
-        self.head_to_head_window = HeadToHeadWindow(simulation_result_window_1, simulation_result_window_2)
+        self.head_to_head_window = CompareResultsWindow(simulation_result_window_1, simulation_result_window_2)
 
         if self.simulation_show_results_window:
             # show the results window if option is checked

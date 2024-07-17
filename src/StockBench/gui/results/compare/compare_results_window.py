@@ -3,7 +3,7 @@ from StockBench.gui.palette.palette import Palette
 from StockBench.gui.results.multi.multi_results_window import MultiResultsWindow
 
 
-class HeadToHeadWindow(QWidget):
+class CompareResultsWindow(QWidget):
     def __init__(self, simulation1: MultiResultsWindow, simulation2: MultiResultsWindow):
         super().__init__()
 

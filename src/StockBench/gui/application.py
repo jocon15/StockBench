@@ -6,7 +6,7 @@ from PyQt6 import QtGui
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.config.tabs.singular_config_tab import SingularConfigTab
 from StockBench.gui.config.tabs.multi_config_tab import MultiConfigTab
-from StockBench.gui.config.tabs.head_to_head_config_tab import HeadToHeadConfigTab
+from StockBench.gui.config.tabs.compare_config_tab import CompareConfigTab
 from StockBench.gui.config.tabs.folder_config_tab import FolderConfigTab
 
 
@@ -29,7 +29,7 @@ class ConfigMainWindow(QMainWindow):
         self.tab_widget = QTabWidget()
         self.tab_widget.addTab(SingularConfigTab(), "Single")
         self.tab_widget.addTab(MultiConfigTab(), "Multi")
-        self.tab_widget.addTab(HeadToHeadConfigTab(), "Compare")
+        self.tab_widget.addTab(CompareConfigTab(), "Compare")
         self.tab_widget.addTab(FolderConfigTab(), "Folder")
         self.tab_widget.setStyleSheet(Palette.TAB_WIDGET_STYLESHEET)
         self.layout.addWidget(self.tab_widget)

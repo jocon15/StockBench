@@ -1,9 +1,9 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
+from PyQt6.QtWidgets import QWidget, QHBoxLayout
 from StockBench.gui.palette.palette import Palette
-from StockBench.gui.windows.multi.multi_results_window import MultiResultsWindow
+from StockBench.gui.results.multi.multi_results_window import MultiResultsWindow
 
 
-class HeadToHeadWindow(QWidget):
+class CompareResultsWindow(QWidget):
     def __init__(self, simulation1: MultiResultsWindow, simulation2: MultiResultsWindow):
         super().__init__()
 

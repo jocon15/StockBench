@@ -1,4 +1,4 @@
-from StockBench.gui.windows.base.rules_tab import RulesTab
+from StockBench.gui.results.base.rules_tab import RulesTab
 
 
 class SingularRulesTab(RulesTab):

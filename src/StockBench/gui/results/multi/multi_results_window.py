@@ -1,7 +1,7 @@
-from StockBench.gui.windows.base.results_window import SimulationResultsWindow
-from StockBench.gui.windows.multi.tabs.multi_rules_tab import MultiRulesTab
-from StockBench.gui.windows.multi.tabs.multi_overview_tab import MultiOverviewTab
-from StockBench.gui.windows.base.positions_tab import PositionsTab
+from StockBench.gui.results.base.results_window import SimulationResultsWindow
+from StockBench.gui.results.multi.tabs.multi_rules_tab import MultiRulesTab
+from StockBench.gui.results.multi.tabs.multi_overview_tab import MultiOverviewTab
+from StockBench.gui.results.base.positions_tab import PositionsTab
 
 
 class MultiResultsWindow(SimulationResultsWindow):

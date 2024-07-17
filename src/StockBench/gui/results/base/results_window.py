@@ -74,10 +74,10 @@ class SimulationResultsWindow(QWidget):
 
         # start the timer to update the progress bar every 100ms
         self.timer.setInterval(100)
-        self.timer.timeout.connect(self.__update_progress_bar)  # noqa
+        self.timer.timeout.connect(self._update_progress_bar)  # noqa
         self.timer.start()
 
-    def __update_progress_bar(self):
+    def _update_progress_bar(self):
         """Update the progress bar."""
         if self.progress_observer.is_simulation_completed():
             # mark the progress bar as completed

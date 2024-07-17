@@ -11,7 +11,7 @@ from StockBench.gui.windows.singular.singular_results_window import SingularResu
 from StockBench.gui.windows.multi.multi_results_window import MultiResultsWindow
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.windows.head_to_head.head_to_head_window import HeadToHeadWindow
-from StockBench.gui.windows.folder.folder_window import FolderResultsWindow
+from StockBench.gui.windows.folder.folder_results_window import FolderResultsWindow
 
 
 class ConfigMainWindow(QMainWindow):
@@ -484,10 +484,6 @@ class FolderConfigTab(ConfigTab):
 
         self.layout.addWidget(self.logging_btn)
 
-        self.layout.addWidget(self.reporting_label)
-
-        self.layout.addWidget(self.reporting_btn)
-
         label = QLabel()
         label.setText('Save Unique Charts:')
         label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -497,18 +493,12 @@ class FolderConfigTab(ConfigTab):
         self.unique_chart_save_btn.setCheckable(True)
         self.unique_chart_save_btn.setText('OFF')
         self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
-        # self.unique_chart_save_btn.clicked.connect(self.on_chart_saving_btn_clicked)  # noqa
+        self.unique_chart_save_btn.clicked.connect(self.on_chart_saving_btn_clicked)  # noqa
         self.layout.addWidget(self.unique_chart_save_btn)
 
         self.layout.addWidget(self.show_results_label)
 
         self.layout.addWidget(self.show_sim_results_btn)
-
-        self.layout.addWidget(self.results_depth_label)
-
-        self.layout.addWidget(self.data_and_charts_radio_btn)
-
-        self.layout.addWidget(self.data_only_radio_btn)
 
         self.layout.addWidget(self.run_btn, alignment=Qt.AlignmentFlag.AlignRight)
 
@@ -554,7 +544,7 @@ class FolderConfigTab(ConfigTab):
             self.simulation_logging,
             self.simulation_reporting,
             self.simulation_unique_chart_saving,
-            self.results_depth)
+            None)
 
         # all error checks have passed, can now clear the error message box
         self.error_message_box.setText('')
@@ -565,6 +555,16 @@ class FolderConfigTab(ConfigTab):
         if self.simulation_show_results_window:
             # show the results window if option is checked
             self.simulation_result_window.showMaximized()
+
+    def on_chart_saving_btn_clicked(self):
+        if self.unique_chart_save_btn.isChecked():
+            self.simulation_unique_chart_saving = True
+            self.unique_chart_save_btn.setText('ON')
+            self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
+        else:
+            self.simulation_unique_chart_saving = False
+            self.unique_chart_save_btn.setText('OFF')
+            self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
 
 class StrategySelection(QWidget):

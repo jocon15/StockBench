@@ -89,7 +89,7 @@ class FolderResultsWindow(SimulationResultsWindow):
             self.simulator.load_strategy(strategy)
 
             results.append(self.simulator.run_multiple(self.symbols,
-                                                       results_depth=self.results_depth,
+                                                       results_depth=self.simulator.DATA_ONLY,
                                                        save_option=save_option,
                                                        progress_observer=self.progress_observers[i]))
 

@@ -1,6 +1,6 @@
 import subprocess
 from PyQt6.QtWidgets import QFrame
-from StockBench.gui.windows.base.base.result_tab import Tab
+from StockBench.gui.results.base.base.result_tab import Tab
 from StockBench.gui.palette.palette import Palette
 from abc import abstractmethod
 from PyQt6.QtCore import Qt, QTimer, QThreadPool

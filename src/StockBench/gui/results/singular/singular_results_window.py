@@ -1,7 +1,7 @@
-from StockBench.gui.windows.base.results_window import SimulationResultsWindow
-from StockBench.gui.windows.singular.tabs.singular_overview_tab import SingularOverviewTab
-from StockBench.gui.windows.singular.tabs.singular_rules_tab import SingularRulesTab
-from StockBench.gui.windows.base.positions_tab import PositionsTab
+from StockBench.gui.results.base.results_window import SimulationResultsWindow
+from StockBench.gui.results.singular.tabs.singular_overview_tab import SingularOverviewTab
+from StockBench.gui.results.singular.tabs.singular_rules_tab import SingularRulesTab
+from StockBench.gui.results.base.positions_tab import PositionsTab
 
 
 class SingularResultsWindow(SimulationResultsWindow):

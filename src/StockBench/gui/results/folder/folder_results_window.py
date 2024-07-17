@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import QProgressBar, QLabel
 from time import perf_counter
 from StockBench.gui.palette.palette import Palette
-from StockBench.gui.windows.base.results_window import SimulationResultsWindow
-from StockBench.gui.windows.folder.tabs.folder_overview_tab import FolderResultsTab
+from StockBench.gui.results.base.results_window import SimulationResultsWindow
+from StockBench.gui.results.folder.tabs.folder_overview_tab import FolderResultsTab
 
 
 class FolderResultsWindow(SimulationResultsWindow):

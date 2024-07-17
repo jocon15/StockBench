@@ -9,7 +9,7 @@ from PyQt6.QtCore import QPoint
 from StockBench.gui.worker.worker import Worker
 from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.gui.palette.palette import Palette
-from StockBench.gui.windows.strategy_studio import StrategyStudioWindow
+from StockBench.gui.studio.strategy_studio import StrategyStudioWindow
 from StockBench.constants import *
 from StockBench.simulator import Simulator
 

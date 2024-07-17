@@ -2,8 +2,8 @@ from PyQt6.QtWidgets import QLabel, QTableWidget, QTableWidgetItem, QWidget, QVB
 from PyQt6.QtWidgets import QListWidget, QListWidgetItem
 from PyQt6.QtGui import QBrush, QColor
 from PyQt6.QtCore import Qt, QTimer
-from StockBench.gui.windows.base.overview_tab import OverviewTab
-from StockBench.gui.windows.multi.tabs.multi_overview_tab import MultiMetadataOverviewTable
+from StockBench.gui.results.base.overview_tab import OverviewTab
+from StockBench.gui.results.multi.tabs.multi_overview_tab import MultiMetadataOverviewTable
 
 
 class FolderResultsTab(OverviewTab):

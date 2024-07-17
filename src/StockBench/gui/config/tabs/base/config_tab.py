@@ -1,6 +1,7 @@
 import json
 import time
 from abc import abstractmethod
+
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QRadioButton, QComboBox
 from PyQt6.QtCore import QThreadPool
 from PyQt6.QtGui import QDoubleValidator

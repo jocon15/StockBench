@@ -97,8 +97,7 @@ class CompareConfigTab(ConfigTab):
         strategy2 = self.load_strategy(self.strategy_2_selection_box.filepath_box.text(), self.STRATEGY_2_CACHE_KEY)
 
         if strategy1 is None or strategy2 is None:
-            # FIXME: put error message here?
-            # either strategy load failed
+            self.error_message_box.setText('Error trying to load strategy 1 or strategy 2!')
             return
 
         # gather other data from UI components

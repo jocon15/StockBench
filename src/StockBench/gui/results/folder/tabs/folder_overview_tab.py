@@ -4,6 +4,7 @@ from PyQt6.QtGui import QBrush, QColor
 from PyQt6.QtCore import Qt, QTimer
 from StockBench.gui.results.base.overview_tab import OverviewTab
 from StockBench.gui.results.multi.tabs.multi_overview_tab import MultiMetadataOverviewTable
+from StockBench.gui.results.base.overview_tab import OverviewSideBar
 
 
 class FolderResultsTab(OverviewTab):
@@ -86,6 +87,8 @@ class FolderOverviewSidebar(QWidget):
 
     def __init__(self, progress_observers):
         super().__init__()
+        self.simulation_results_to_export = {}
+
         self.progress_observers = progress_observers
 
         # define layout type
@@ -105,7 +108,7 @@ class FolderOverviewSidebar(QWidget):
         self.export_json_btn = QPushButton()
         self.export_json_btn.setText('Export to Clipboard (JSON)')
         self.export_json_btn.setStyleSheet(self.EXPORT_BTN_STYLESHEET)
-        # self.export_json_btn.clicked.connect(self.on_export_json_btn_clicked)  # noqa
+        self.export_json_btn.clicked.connect(self.on_export_json_btn_clicked)  # noqa
 
         # export excel button
         self.export_excel_btn = QPushButton()
@@ -158,6 +161,34 @@ class FolderOverviewSidebar(QWidget):
         list_item.setForeground(QColor('red'))
         self.output_box.addItem(list_item)
 
+    def on_export_json_btn_clicked(self):
+        # FIXME: need an algorithm to convert the table of values to something that can be
+        #   copied to clipboard.
+        #   Nested for loops through row and col of the table assemble it into csv string
+        #   s1, 123, 123, 123, 123, 123
+        #   s2, 123, 123, 123, 123, 123
+        #   If I recall correctly, there was an issue with the clipboard copy not copying \n characters
+        string_to_export = ''
+        for result in self.simulation_results_to_export['results']:
+            result_string = ''
+            result_string += result['strategy']
+            # FIXME: add the rest of the results from the individual simulation...
+
+            # FIXME: add the rest of the results...
+            string_to_export += result_string + '\n'
+
+        # FIXME: should this class inherit from overview tab???????
+        #   looks like it shares a lot of common code
+        #   it doesnt need to display results in the sidebar but most of the logic is the same
+        #   some of the components of the side bar are subclassed items
+
+        # FIXME: ^^^^ SO you can use inheritance here but you need to override the subclass definitions for the
+        #   on_export_json_btn_clicked() and on_export_excel_btn_clicked() functions as their base implementations
+        #   have simulation results as a simple dict and not a dict with a list of dicts for the multiple strategy
+        #   simulations that we have when we do this multi-simulation.
+        #   So in this subclass we would need to override these 2 methods with that nested for loop logic.
+        pass
+
     def __update_output_box(self):
         """Update the output box with messages from the progress observer."""
         all_observers_complete = True
@@ -180,6 +211,8 @@ class FolderOverviewSidebar(QWidget):
             self.timer.stop()
 
     def render_data(self, simulation_results):
+        # save the results to allow exporting
+        self.simulation_results_to_export = simulation_results
         # extract the results list
         results = simulation_results['results']
         # select the first result to use as a template

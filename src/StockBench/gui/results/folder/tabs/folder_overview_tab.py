@@ -126,6 +126,9 @@ class FolderOverviewSidebar(OverviewSideBar):
 
     def on_export_excel_btn_clicked(self):
         # FIXME: implement this
+        #   Potentially need a destination path input box component.
+        #   Use xlsx writer to create a new xlsx file and dump the values into it.
+        #   Just give it a folder path? And then paste the xlsx file with the unique timestamp filename.
         pass
 
     def _update_output_box(self):

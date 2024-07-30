@@ -82,7 +82,7 @@ class OverviewSideBar(QWidget):
         self.timer = QTimer()
         # start the timer to update the output box every 100ms
         self.timer.setInterval(100)
-        self.timer.timeout.connect(self.__update_output_box)  # noqa
+        self.timer.timeout.connect(self._update_output_box)  # noqa
         self.timer.start()
 
     def update_error_message(self, message):
@@ -91,7 +91,7 @@ class OverviewSideBar(QWidget):
         list_item.setForeground(QColor('red'))
         self.output_box.addItem(list_item)
 
-    def __update_output_box(self):
+    def _update_output_box(self):
         """Update the output box with messages from the progress observer."""
         if self.progress_observer.is_analytics_completed():
             # stop the timer

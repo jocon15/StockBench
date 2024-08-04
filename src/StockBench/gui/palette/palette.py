@@ -1,3 +1,6 @@
+import os
+
+
 class Palette:
     """Data class for storing shared style items.
 
@@ -5,6 +8,11 @@ class Palette:
     classes with shared style code, inheritance cannot be done. Palette as a static class allows unrelated
     classes to share common style code.
     """
+    # ============================= Icons ========================================
+    CANDLE_ICON = os.path.join('resources', 'images', 'candle.ico')
+
+    # ============================= Stylesheets ==================================
+
     WINDOW_STYLESHEET = """background-color:#202124;"""
 
     PROGRESS_BAR_STYLESHEET = """

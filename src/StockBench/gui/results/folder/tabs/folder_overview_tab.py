@@ -6,6 +6,8 @@ from StockBench.gui.results.base.overview_tab import OverviewSideBar
 from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.gui.results.folder.components.folder_selector import FolderSelector
 from StockBench.export.folder_results_exporter import FolderResultsExporter
+from StockBench.gui.palette.palette import Palette
+from PyQt6 import QtGui
 
 
 class FolderResultsTab(OverviewTab):
@@ -31,7 +33,8 @@ class FolderResultsTab(OverviewTab):
 
 
 class FolderResultsTable(QWidget):
-    TABLE_HEADERS = ['strategy', 'Trades Made', 'Effectiveness', 'Total P/L', 'Average P/L', 'Median P/L', 'Stddev']
+    TABLE_HEADERS = ['Strategy', 'Trades Made', 'Effectiveness', 'Total P/L', 'Average P/L', 'Median P/L',
+                     'Stddev(P) P/L']
 
     CELL_TEXT_COLOR = QColor(255, 255, 255)
 
@@ -139,8 +142,9 @@ class FolderOverviewSidebar(OverviewSideBar):
 
         # show a message box indicating the file was saved
         msgbox = QMessageBox()
+        msgbox.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
         msgbox.setText(f'File has been saved to {filepath}')
-        msgbox.setWindowTitle("Information MessageBox")
+        msgbox.setWindowTitle("Export Notification")
         msgbox.exec()
 
     def _update_output_box(self):

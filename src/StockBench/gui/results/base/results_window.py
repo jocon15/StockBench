@@ -1,4 +1,3 @@
-import os
 import logging
 from abc import abstractmethod
 
@@ -48,7 +47,7 @@ class SimulationResultsWindow(QWidget):
         self.results_frame = None
 
         self.setWindowTitle('Simulation Results')
-        self.setWindowIcon(QtGui.QIcon(os.path.join('resources', 'images', 'candle.ico')))
+        self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
         self.setStyleSheet(Palette.WINDOW_STYLESHEET)
 
         # define layout type

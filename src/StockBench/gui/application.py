@@ -1,5 +1,3 @@
-import os
-
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTabWidget
 from PyQt6 import QtGui
 
@@ -19,7 +17,7 @@ class ConfigMainWindow(QMainWindow):
         self.splash = splash
 
         # main window styling (do it first to prevent window shifting)
-        self.setWindowIcon(QtGui.QIcon(os.path.join('resources', 'images', 'candle.ico')))
+        self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
         self.setWindowTitle('Configuration')
         # set window geometry
         self.__set_geometry()

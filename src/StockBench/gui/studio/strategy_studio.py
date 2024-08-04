@@ -1,4 +1,3 @@
-import os
 import json
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QPushButton, QLabel, QFileDialog
@@ -19,7 +18,7 @@ class StrategyStudioWindow(QWidget):
         self.filepath = filepath
 
         # header
-        self.setWindowIcon(QtGui.QIcon(os.path.join('resources', 'images', 'candle.ico')))
+        self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
         self.setWindowTitle('Strategy Studio (beta)')
 
         # layout type

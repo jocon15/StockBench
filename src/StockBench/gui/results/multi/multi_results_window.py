@@ -13,7 +13,7 @@ class MultiResultsWindow(SimulationResultsWindow):
                          unique_chart_saving_on, results_depth)
         self.symbols = symbols
 
-        # add components to the layout
+        # add shared_components to the layout
         # progress bar
         self.layout.addWidget(self.progress_bar)
         # simulation results frame (gets added to layout via tab widget)
@@ -39,7 +39,7 @@ class MultiResultsWindow(SimulationResultsWindow):
                                            progress_observer=self.progress_observer)
 
     def _render_data(self, simulation_results: dict):
-        """Render the updated data in the window's components."""
+        """Render the updated data in the window's shared_components."""
         self.results_frame.render_data(simulation_results)
         self.buy_rules_tab.render_chart(simulation_results)
         self.sell_rules_tab.render_chart(simulation_results)

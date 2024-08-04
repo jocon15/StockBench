@@ -22,7 +22,7 @@ class HTMLViewer(QFrame):
         # define the layout type
         self.layout = QVBoxLayout()
 
-        # add components to the layout
+        # add shared_components to the layout
         self.web_engine = QtWebEngineWidgets.QWebEngineView()
         self.layout.addWidget(self.web_engine)
 

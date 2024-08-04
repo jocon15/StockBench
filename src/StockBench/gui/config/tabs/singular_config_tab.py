@@ -10,7 +10,7 @@ from StockBench.gui.config.components.strategy_selection import StrategySelectio
 class SingularConfigTab(ConfigTab):
     def __init__(self):
         super().__init__()
-        # add components to the layout
+        # add shared_components to the layout
         label = QLabel()
         label.setText('Strategy:')
         label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -83,7 +83,7 @@ class SingularConfigTab(ConfigTab):
             # strategy load failed
             return
 
-        # gather other data from UI components
+        # gather other data from UI shared_components
         simulation_symbol = self.symbol_tbox.text().upper().strip()
         simulation_balance = float(self.initial_balance_tbox.text())
 

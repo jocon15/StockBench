@@ -24,7 +24,7 @@ class StrategyStudioWindow(QWidget):
         # layout type
         self.layout = QVBoxLayout()
 
-        # add components to the layout
+        # add shared_components to the layout
         self.status = QLabel()
         self.status.setStyleSheet(self.STATUS_STYLESHEET)
         self.layout.addWidget(self.status)

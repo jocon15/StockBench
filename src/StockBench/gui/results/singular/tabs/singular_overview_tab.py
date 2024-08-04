@@ -6,7 +6,7 @@ class SingularOverviewTab(OverviewTab):
     """Tab showing simulation overview for single-symbol simulation results."""
     def __init__(self, progress_observer):
         super().__init__()
-        # add components to the layout
+        # add shared_components to the layout
         self.results_table = SingularOverviewSideBar(progress_observer)
         self.layout.addWidget(self.results_table)
         self.results_table.setMaximumWidth(300)
@@ -28,7 +28,7 @@ class SingularOverviewSideBar(OverviewSideBar):
     """Sidebar that stands next to the overview chart."""
     def __init__(self, progress_observer):
         super().__init__(progress_observer)
-        # add components to the layout
+        # add shared_components to the layout
         self.layout.addWidget(self.metadata_header)
 
         self.metadata_table = SingularMetadataOverviewTable()
@@ -55,7 +55,7 @@ class SingularOverviewSideBar(OverviewSideBar):
     def render_data(self, simulation_results: dict):
         # save the results to allow exporting
         self.simulation_results_to_export = simulation_results
-        # render data in child components
+        # render data in child shared_components
         self.metadata_table.render_data(simulation_results)
         self.results_table.render_data(simulation_results)
 

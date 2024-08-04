@@ -15,7 +15,7 @@ class CompareConfigTab(ConfigTab):
 
     def __init__(self):
         super().__init__()
-        # add components to the layout
+        # add shared_components to the layout
         label = QLabel()
         label.setText('Strategy 1:')
         label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -100,7 +100,7 @@ class CompareConfigTab(ConfigTab):
             self.error_message_box.setText('Error trying to load strategy 1 or strategy 2!')
             return
 
-        # gather other data from UI components
+        # gather other data from UI shared_components
         raw_simulation_symbols = self.symbol_tbox.text().split(',')
         simulation_symbols = []
         for symbol in raw_simulation_symbols:

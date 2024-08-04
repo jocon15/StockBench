@@ -14,7 +14,7 @@ class FolderConfigTab(ConfigTab):
 
     def __init__(self):
         super().__init__()
-        # add components to the layout
+        # add shared_components to the layout
         label = QLabel()
         label.setText('Folder:')
         label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -64,7 +64,7 @@ class FolderConfigTab(ConfigTab):
         # extract the folder path from the input
         folderpath = self.folder_selection.folderpath_box.text()
 
-        # gather other data from UI components
+        # gather other data from UI shared_components
         raw_simulation_symbols = self.symbol_tbox.text().split(',')
         simulation_symbols = []
         for symbol in raw_simulation_symbols:

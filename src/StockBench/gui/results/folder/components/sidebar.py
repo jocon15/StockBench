@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QListWidgetItem, QMessageBox
 from PyQt6.QtGui import QColor
-from StockBench.gui.results.multi.tabs.multi_overview_tab import MultiMetadataOverviewTable
+from StockBench.gui.results.multi.tabs.multi_overview_tab import MultiMetadataTable
 from StockBench.gui.results.base.overview_tab import OverviewSideBar
 from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.gui.results.folder.components.folder_selector import FolderSelector
@@ -19,10 +19,10 @@ class FolderOverviewSidebar(OverviewSideBar):
 
         self.progress_observers = progress_observers
 
-        # add components to the layout
+        # add shared_components to the layout
         self.layout.addWidget(self.metadata_header)
 
-        self.metadata_table = MultiMetadataOverviewTable()
+        self.metadata_table = MultiMetadataTable()
         self.layout.addWidget(self.metadata_table)
 
         self.layout.addWidget(self.results_header)

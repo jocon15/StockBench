@@ -12,8 +12,9 @@ class Palette:
     CANDLE_ICON = os.path.join('resources', 'images', 'candle.ico')
 
     # ============================= Stylesheets ==================================
+    BACKGROUND_COLOR = "#202124"
 
-    WINDOW_STYLESHEET = """background-color:#202124;"""
+    WINDOW_STYLESHEET = f"""background-color:{BACKGROUND_COLOR};"""
 
     PROGRESS_BAR_STYLESHEET = """
             QProgressBar{

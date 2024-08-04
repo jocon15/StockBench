@@ -43,5 +43,11 @@ class ConfigMainWindow(QMainWindow):
         # close the splash window
         self.splash.close()
 
+    def _reload_with_new_palette(self):
+        self.palette = Palette  # set a new palette
+
+        # each element has to have its sytlesheet reset
+        self.tab_widget.setStyleSheet(self.palette.)
+
     def __set_geometry(self):
         self.setFixedSize(self.WIDTH, self.HEIGHT)

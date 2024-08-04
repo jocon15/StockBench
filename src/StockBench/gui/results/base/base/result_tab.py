@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QFrame, QHBoxLayout
-from StockBench.gui.results.shared_components.html_viewer import HTMLViewer
+from StockBench.gui.results.base.html_viewer import HTMLViewer
 
 
 class Tab(QFrame):

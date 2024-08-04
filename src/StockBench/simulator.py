@@ -8,7 +8,7 @@ from time import perf_counter
 from datetime import datetime
 from StockBench.constants import *
 from StockBench.broker.broker import Broker
-from StockBench.export.export import Exporter
+from StockBench.export.window_data_exporter import WindowDataExporter
 from StockBench.display.display import Display
 from StockBench.position.position import Position
 from concurrent.futures import ProcessPoolExecutor
@@ -395,7 +395,7 @@ class Simulator:
 
         if self.__reporting_on:
             # create an export object
-            exporter = Exporter()
+            exporter = WindowDataExporter()
             # synchronous charting
             exporter.export(chopped_temp_df, symbol)
 

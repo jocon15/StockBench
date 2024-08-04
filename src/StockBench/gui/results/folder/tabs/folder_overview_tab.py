@@ -1,9 +1,11 @@
-from PyQt6.QtWidgets import QLabel, QTableWidget, QTableWidgetItem, QWidget, QVBoxLayout, QPushButton
-from PyQt6.QtWidgets import QListWidget, QListWidgetItem
+from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QWidget, QVBoxLayout, QListWidgetItem, QMessageBox
 from PyQt6.QtGui import QBrush, QColor
-from PyQt6.QtCore import Qt, QTimer
 from StockBench.gui.results.base.overview_tab import OverviewTab
 from StockBench.gui.results.multi.tabs.multi_overview_tab import MultiMetadataOverviewTable
+from StockBench.gui.results.base.overview_tab import OverviewSideBar
+from StockBench.observers.progress_observer import ProgressObserver
+from StockBench.gui.results.folder.components.folder_selector import FolderSelector
+from StockBench.export.folder_results_exporter import FolderResultsExporter
 
 
 class FolderResultsTab(OverviewTab):
@@ -76,53 +78,15 @@ class FolderResultsTable(QWidget):
             self.table.setItem(row, 6, stddev_pl_cell)
 
 
-class FolderOverviewSidebar(QWidget):
-    OUTPUT_BOX_STYLESHEET = """color: #fff; background-color: #303136; border-radius: 8px;border: 0px; padding: 5px; 
-        max-height: 300px;"""
-
-    EXPORT_BTN_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;"""
-
-    HEADER_STYLESHEET = """max-height:45px; color:#FFF;font-size:20px;font-weight:bold;"""
-
+class FolderOverviewSidebar(OverviewSideBar):
     def __init__(self, progress_observers):
-        super().__init__()
+        # pass a summy progress observer to the superclass as we are overriding the
+        # update output box function now that we have a list of progress observers
+        dummy_progress_observer = ProgressObserver()
+        super().__init__(dummy_progress_observer)
+        self.simulation_results_to_export = {}
+
         self.progress_observers = progress_observers
-
-        # define layout type
-        self.layout = QVBoxLayout()
-
-        # metadata header
-        self.metadata_header = QLabel()
-        self.metadata_header.setText('Metadata')
-        self.metadata_header.setStyleSheet(self.HEADER_STYLESHEET)
-
-        # results header
-        self.results_header = QLabel()
-        self.results_header.setText('Simulation Results')
-        self.results_header.setStyleSheet(self.HEADER_STYLESHEET)
-
-        # export JSON button
-        self.export_json_btn = QPushButton()
-        self.export_json_btn.setText('Export to Clipboard (JSON)')
-        self.export_json_btn.setStyleSheet(self.EXPORT_BTN_STYLESHEET)
-        # self.export_json_btn.clicked.connect(self.on_export_json_btn_clicked)  # noqa
-
-        # export excel button
-        self.export_excel_btn = QPushButton()
-        self.export_excel_btn.setText('Export to ClipBoard (excel)')
-        self.export_excel_btn.setStyleSheet(self.EXPORT_BTN_STYLESHEET)
-        # self.export_excel_btn.clicked.connect(self.on_export_excel_btn_clicked)  # noqa
-
-        # output box (terminal)
-        self.output_box = QListWidget()
-        self.output_box.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.output_box.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.output_box.setStyleSheet(self.OUTPUT_BOX_STYLESHEET)
-
-        # status header
-        self.status_header = QLabel()
-        self.status_header.setText('Status')
-        self.status_header.setStyleSheet(self.HEADER_STYLESHEET)
 
         # add components to the layout
         self.layout.addWidget(self.metadata_header)
@@ -134,31 +98,52 @@ class FolderOverviewSidebar(QWidget):
 
         self.layout.addWidget(self.export_json_btn)
 
+        self.folder_selection = FolderSelector()
+        self.layout.addWidget(self.folder_selection)
+
         self.layout.addWidget(self.export_excel_btn)
 
         # pushes the status header and output box to the bottom
         self.layout.addStretch()
 
         self.layout.addWidget(self.status_header)
+
         self.layout.addWidget(self.output_box)
 
         # apply the layout
         self.setLayout(self.layout)
 
-        # timer to periodically read from the progress observer and update output box
-        self.timer = QTimer()
-        # start the timer to update the output box every 100ms
-        self.timer.setInterval(100)
-        self.timer.timeout.connect(self.__update_output_box)  # noqa
-        self.timer.start()
+    def on_export_json_btn_clicked(self):
+        if self.simulation_results_to_export:
+            export_string = ''
+            for result in self.simulation_results_to_export['results']:
+                # copy and clean the results info
+                result_dict = self._remove_extraneous_info(result)
+                result_values = ''
+                for key in result_dict.keys():
+                    result_values += f'{result_dict[key]},'
+                export_string += result_values + ' '
 
-    def update_error_message(self, message):
-        # handle the passed down error message by adding it to the output box
-        list_item = QListWidgetItem(message)
-        list_item.setForeground(QColor('red'))
-        self.output_box.addItem(list_item)
+            # remove last comma from string
+            export_string = export_string.rsplit(',', 1)[0]
+            self._copy_to_clipboard(export_string)
+        # if no results are available yet, nothing gets copied to the clipboard
 
-    def __update_output_box(self):
+    def on_export_excel_btn_clicked(self):
+        # get the filepath from the ui component
+        folder_path = self.folder_selection.folderpath_box.text()
+
+        # export the data to the xlsx file
+        exporter = FolderResultsExporter()
+        filepath = exporter.export(self.simulation_results_to_export['results'], folder_path, 'FolderResults')
+
+        # show a message box indicating the file was saved
+        msgbox = QMessageBox()
+        msgbox.setText(f'File has been saved to {filepath}')
+        msgbox.setWindowTitle("Information MessageBox")
+        msgbox.exec()
+
+    def _update_output_box(self):
         """Update the output box with messages from the progress observer."""
         all_observers_complete = True
         for progress_observer in self.progress_observers:
@@ -179,7 +164,22 @@ class FolderOverviewSidebar(QWidget):
             # stop the timer
             self.timer.stop()
 
+    def _remove_extraneous_info(self, results: dict) -> dict:
+        """Remove info from the simulation results that is not relevant to exporting."""
+        export_dict = results.copy()
+
+        # remove extraneous data from exported results
+        export_dict.pop('elapsed_time')
+        export_dict.pop('buy_rule_analysis_chart_filepath')
+        export_dict.pop('sell_rule_analysis_chart_filepath')
+        export_dict.pop('position_analysis_chart_filepath')
+        export_dict.pop('overview_chart_filepath')
+
+        return export_dict
+
     def render_data(self, simulation_results):
+        # save the results to allow exporting
+        self.simulation_results_to_export = simulation_results
         # extract the results list
         results = simulation_results['results']
         # select the first result to use as a template

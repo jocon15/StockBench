@@ -63,7 +63,7 @@ class OverviewSideBar(QWidget):
 
         # export excel button
         self.export_excel_btn = QPushButton()
-        self.export_excel_btn.setText('Export to ClipBoard (excel)')
+        self.export_excel_btn.setText('Export to Excel (.xlsx)')
         self.export_excel_btn.setStyleSheet(self.EXPORT_BTN_STYLESHEET)
         self.export_excel_btn.clicked.connect(self.on_export_excel_btn_clicked)  # noqa
 
@@ -82,7 +82,7 @@ class OverviewSideBar(QWidget):
         self.timer = QTimer()
         # start the timer to update the output box every 100ms
         self.timer.setInterval(100)
-        self.timer.timeout.connect(self.__update_output_box)  # noqa
+        self.timer.timeout.connect(self._update_output_box)  # noqa
         self.timer.start()
 
     def update_error_message(self, message):
@@ -91,7 +91,7 @@ class OverviewSideBar(QWidget):
         list_item.setForeground(QColor('red'))
         self.output_box.addItem(list_item)
 
-    def __update_output_box(self):
+    def _update_output_box(self):
         """Update the output box with messages from the progress observer."""
         if self.progress_observer.is_analytics_completed():
             # stop the timer

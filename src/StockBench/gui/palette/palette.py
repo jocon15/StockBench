@@ -1,4 +1,3 @@
-
 class Palette:
     """Data class for storing shared style items.
 

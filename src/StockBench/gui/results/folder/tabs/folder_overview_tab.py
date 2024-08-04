@@ -1,9 +1,11 @@
-from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QWidget, QVBoxLayout, QListWidgetItem
+from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QWidget, QVBoxLayout, QListWidgetItem, QMessageBox
 from PyQt6.QtGui import QBrush, QColor
 from StockBench.gui.results.base.overview_tab import OverviewTab
 from StockBench.gui.results.multi.tabs.multi_overview_tab import MultiMetadataOverviewTable
 from StockBench.gui.results.base.overview_tab import OverviewSideBar
 from StockBench.observers.progress_observer import ProgressObserver
+from StockBench.gui.results.folder.components.folder_selection import FolderSelection
+from StockBench.export.folder_results_exporter import FolderResultsExporter
 
 
 class FolderResultsTab(OverviewTab):
@@ -96,6 +98,9 @@ class FolderOverviewSidebar(OverviewSideBar):
 
         self.layout.addWidget(self.export_json_btn)
 
+        self.folder_selection = FolderSelection()
+        self.layout.addWidget(self.folder_selection)
+
         self.layout.addWidget(self.export_excel_btn)
 
         # pushes the status header and output box to the bottom
@@ -125,11 +130,18 @@ class FolderOverviewSidebar(OverviewSideBar):
         # if no results are available yet, nothing gets copied to the clipboard
 
     def on_export_excel_btn_clicked(self):
-        # FIXME: implement this
-        #   Potentially need a destination path input box component.
-        #   Use xlsx writer to create a new xlsx file and dump the values into it.
-        #   Just give it a folder path? And then paste the xlsx file with the unique timestamp filename.
-        pass
+        # get the filepath from the ui component
+        folder_path = self.folder_selection.folderpath_box.text()
+
+        # export the data to the xlsx file
+        exporter = FolderResultsExporter()
+        filepath = exporter.export(self.simulation_results_to_export['results'], folder_path, 'FolderResults')
+
+        # show a message box indicating the file was saved
+        msgbox = QMessageBox()
+        msgbox.setText(f'File has been saved to {filepath}')
+        msgbox.setWindowTitle("Information MessageBox")
+        msgbox.exec()
 
     def _update_output_box(self):
         """Update the output box with messages from the progress observer."""

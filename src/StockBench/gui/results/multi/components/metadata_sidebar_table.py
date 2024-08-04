@@ -1,9 +1,8 @@
-import logging
 from PyQt6.QtWidgets import QLabel
-from StockBench.gui.results.base.overview_tab import OverviewTable
+from StockBench.gui.results.base.sidebar_results_table import SidebarResultsTable
 
 
-class MultiMetadataSidebarTable(OverviewTable):
+class MultiMetadataSidebarTable(SidebarResultsTable):
     """Table of overview metadata."""
     def __init__(self):
         super().__init__()

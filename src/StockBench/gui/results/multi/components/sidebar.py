@@ -1,4 +1,4 @@
-from StockBench.gui.results.base.overview_tab import OverviewSideBar
+from StockBench.gui.results.base.overview_sidebar import OverviewSideBar
 from StockBench.gui.results.multi.components.metadata_sidebar_table import MultiMetadataSidebarTable
 from StockBench.gui.results.multi.components.results_sidebar_table import MultiResultsSidebarTable
 

@@ -1,7 +1,7 @@
-from StockBench.gui.results.base.overview_tab import OverviewTable
+from StockBench.gui.results.base.sidebar_results_table import SidebarResultsTable
 
 
-class MultiResultsSidebarTable(OverviewTable):
+class MultiResultsSidebarTable(SidebarResultsTable):
     """Widget that houses the numerical results table."""
 
     def __init__(self):

@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import QLabel
-from StockBench.gui.results.base.overview_tab import OverviewTable
+from StockBench.gui.results.base.sidebar_results_table import SidebarResultsTable
 
 
-class SingularResultsSidebarTable(OverviewTable):
+class SingularResultsSidebarTable(SidebarResultsTable):
     """Table of overview results data."""
     def __init__(self):
         super().__init__()

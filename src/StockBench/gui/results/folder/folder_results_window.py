@@ -43,7 +43,6 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.setLayout(self.layout)
 
     def update_error_message(self, message: str):
-        # pass the error down
         self.error_message_label.setText(message)
 
     def __setup_progress_bars(self):
@@ -97,7 +96,13 @@ class FolderResultsWindow(SimulationResultsWindow):
 
         return {"results": results, 'elapsed_time': elapsed_time}
 
+    def _teardown_progress_bars(self):
+        for i in range(len(self.strategies)):
+            self.layout.removeWidget(self.strategy_labels[i])
+            self.layout.removeWidget(self.progress_bars[i])
+
     def _render_data(self, simulation_results: dict):
+        self._teardown_progress_bars()
         self.results_frame.render_data(simulation_results)
 
     @staticmethod

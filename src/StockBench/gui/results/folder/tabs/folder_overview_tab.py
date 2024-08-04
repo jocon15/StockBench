@@ -4,7 +4,7 @@ from StockBench.gui.results.base.overview_tab import OverviewTab
 from StockBench.gui.results.multi.tabs.multi_overview_tab import MultiMetadataOverviewTable
 from StockBench.gui.results.base.overview_tab import OverviewSideBar
 from StockBench.observers.progress_observer import ProgressObserver
-from StockBench.gui.results.folder.components.folder_selection import FolderSelection
+from StockBench.gui.results.folder.components.folder_selector import FolderSelector
 from StockBench.export.folder_results_exporter import FolderResultsExporter
 
 
@@ -98,7 +98,7 @@ class FolderOverviewSidebar(OverviewSideBar):
 
         self.layout.addWidget(self.export_json_btn)
 
-        self.folder_selection = FolderSelection()
+        self.folder_selection = FolderSelector()
         self.layout.addWidget(self.folder_selection)
 
         self.layout.addWidget(self.export_excel_btn)

@@ -63,7 +63,7 @@ class OverviewSideBar(QWidget):
 
         # export excel button
         self.export_excel_btn = QPushButton()
-        self.export_excel_btn.setText('Export to ClipBoard (excel)')
+        self.export_excel_btn.setText('Export to Excel (.xlsx)')
         self.export_excel_btn.setStyleSheet(self.EXPORT_BTN_STYLESHEET)
         self.export_excel_btn.clicked.connect(self.on_export_excel_btn_clicked)  # noqa
 

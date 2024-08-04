@@ -6,7 +6,7 @@ from PyQt6.QtCore import Qt
 from StockBench.gui.config.tabs.base.config_tab import ConfigTab
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.results.folder.folder_results_window import FolderResultsWindow
-from StockBench.gui.config.components.folder_selection import FolderSelection
+from StockBench.gui.config.components.cached_folder_selector import CachedFolderSelector
 
 
 class FolderConfigTab(ConfigTab):
@@ -20,7 +20,7 @@ class FolderConfigTab(ConfigTab):
         label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
-        self.folder_selection = FolderSelection()
+        self.folder_selection = CachedFolderSelector()
         self.folder_selection.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
         self.layout.addWidget(self.folder_selection)
 

@@ -1,28 +1,21 @@
-import os
-import json
-
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton
-from PyQt6.QtWidgets import QFileDialog
+from StockBench.gui.palette.palette import Palette
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton, QFileDialog
 
 
-class FolderSelection(QWidget):
-    FILEPATH_BOX_STYLESHEET = """background-color: #303134;color: #FFF;"""
-
-    SELECT_FILE_BTN_STYLESHEET = """background-color: #303134;color: #FFF;"""
-
+class FolderSelector(QWidget):
     def __init__(self):
         super().__init__()
 
         self.layout = QHBoxLayout()
 
         self.folderpath_box = QLabel()
-        self.folderpath_box.setStyleSheet(self.FILEPATH_BOX_STYLESHEET)
+        self.folderpath_box.setStyleSheet(Palette.TEXT_BOX_STYLESHEET)
         self.layout.addWidget(self.folderpath_box)
 
         self.select_folder_btn = QPushButton()
         self.select_folder_btn.setText('Select Folder')
         self.select_folder_btn.clicked.connect(self.on_select_folder_btn_clicked)  # noqa
-        self.select_folder_btn.setStyleSheet(self.SELECT_FILE_BTN_STYLESHEET)
+        self.select_folder_btn.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
         self.layout.addWidget(self.select_folder_btn)
 
         self.setLayout(self.layout)

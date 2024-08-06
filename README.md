@@ -8,7 +8,6 @@
 	<img src="https://github.com/jocon15/StockBench/blob/master/images/singular_v2.gif" />
 </p>
 
-
 # How it Works
 StockBench is a stock simulation suite designed for testing strategies on historical data. StockBench sources market data from [Alpaca Markets](https://alpaca.markets/).
 

@@ -5,8 +5,10 @@
 </p>
 
 ### A back-testing app for testing stock trading strategies with historical data.
+<p align="center">
+	![multi](https://github.com/jocon15/StockBench/blob/master/images/singular_v2.gif)
+</p>
 
-![multi](https://github.com/jocon15/StockBench/blob/master/images/singular_v2.gif)
 
 # How it Works
 
@@ -47,7 +49,9 @@ Or test your strategy on multiple symbols and see overview analytics:
 Strategy Studio allows you to create and update strategy .json files. You can edit existing files or create new ones from a template.
 
 ## Additional Results Analytics
-![additional analytics](https://github.com/jocon15/StockBench/blob/master/images/additional_analytics.gif)
+<p align="center">
+	![additional analytics](https://github.com/jocon15/StockBench/blob/master/images/additional_analytics.gif)
+</p>
 
 ## Diving Deeper
 

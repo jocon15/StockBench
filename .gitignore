@@ -12,6 +12,7 @@ offline_images/
 out/
 .idea/
 cache.json
+ignored_archive/
 
 # allowable files
 !src/resources/default/*

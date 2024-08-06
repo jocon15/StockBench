@@ -10,9 +10,9 @@
 
 # How it Works
 
-StockBench is a US security simulation suite designed for testing strategies on historical data. StockBench sources market data from [Alpaca Markets](https://alpaca.markets/).
+StockBench is a stock simulation suite designed for testing strategies on historical data. StockBench sources market data from [Alpaca Markets](https://alpaca.markets/).
 
-Begin by defining a strategy that you would like to test. StockBench allows for quite some freedom in defining a strategy. It can be simple or complex. Once you have a strategy picked out, you can play with the simulation settings. Check out the [StockBench Wiki](https://github.com/jocon15/StockBench/wiki) for more information on settings, indicators, and rules.
+StockBench is designed to test strategies that use technical analysis. StockBench allows for quite some freedom in defining a strategy. It can be simple or complex. Once you have a strategy picked out, you can play with the simulation settings. Check out the [StockBench Wiki](https://github.com/jocon15/StockBench/wiki) for more information on settings, indicators, and rules.
 
 Now that you have everything the way you like, you can start the simulation. The simulator will request the data relevant to your strategy. As expected, the simulator iterates over the data as if it were trading in real time. The simulator is allowed to access previous data, but never future data. The simulator makes artificial trades based on your strategy. Once the simulation is complete, the terminal will show the results of the simulation. A chart will then pop up showing the price data and any other indicators defined in the strategy.
 
@@ -47,9 +47,7 @@ Or test your strategy on multiple symbols and see overview analytics:
 Strategy Studio allows you to create and update strategy .json files. You can edit existing files or create new ones from a template.
 
 ## Additional Results Analytics
-| Buy Rules Tab                                                     | Positions Tab                                                                              |
-|:--------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------:|
-| ![buy rules tab](https://github.com/jocon15/StockBench/blob/master/images/buy_rules_tab.png) | ![positions tab](https://github.com/jocon15/StockBench/blob/master/images/positions_tab.png) |
+![additional analytics](https://github.com/jocon15/StockBench/blob/master/images/additional_analytics.gif)
 
 ## Diving Deeper
 

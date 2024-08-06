@@ -33,7 +33,7 @@ And just like that, you have simulated a strategy on historical data. Have fun!
 
 7. Run the simulation and view the results.
 
-| Setup                                                                                        | Results                                                                               |
+| Configuration                                                                         | Results                                                                               |
 |:--------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------:|
 | ![single](https://github.com/jocon15/StockBench/blob/master/images/configuration.png) | ![multi](https://github.com/jocon15/StockBench/blob/master/images/results.png) |
 
@@ -52,8 +52,7 @@ Simulation results are split up into different tabs within the results window, g
 </p>
 
 ## Diving Deeper
-If you're curious to see the underlying data used by the simulation, you can 
-StockBench allows users to generate a report of all the data used during the simulation. By enabling reporting, the simulation will generate an Excel (.xlsx) file.
+If you are curious to see the underlying data used by the simulation, you can choose to export the simulation data using the reporting option. When chosen, a report of all the data used during the simulation will be generated. The report will be an excel (.xlsx) file.
 ![report](https://github.com/jocon15/StockBench/blob/master/images/excel.png)
 
 # Roadmap

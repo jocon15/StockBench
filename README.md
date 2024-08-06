@@ -40,7 +40,9 @@ Or test your strategy on multiple symbols and see overview analytics:
 ![chart](https://github.com/jocon15/StockBench/blob/master/images/multi_display.png)
 
 ## Strategy Studio
-![strategy studio](https://github.com/jocon15/StockBench/blob/master/images/strategy_studio.png)
+<p align="center">
+	<img src="https://github.com/jocon15/StockBench/blob/master/images/strategy_studio.gif" />
+</p>
 
 Strategy Studio allows you to create and update strategy .json files. You can edit existing files or create new ones from a provided basic template.
 

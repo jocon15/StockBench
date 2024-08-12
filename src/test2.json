@@ -1,0 +1,16 @@
+{
+    "buy": {
+        "SMA20$slope4": ">10",
+        "price": ">200",
+        "color": {
+            "2": "red",
+            "1": "red",
+            "0": "green"
+        }
+    },
+    "sell": {
+        "price": "<200",
+        "RSI": ">60",
+        "stochastic": ">80"
+    }
+}

@@ -52,6 +52,12 @@ Simulation results are split up into different tabs within the results window, g
 	<img src="https://github.com/jocon15/StockBench/blob/master/images/additional_analytics.gif" />
 </p>
 
+## Head to Head
+Want to run 2 strategies side by side? We have you covered!
+<p align="center">
+	<img src="https://github.com/jocon15/StockBench/blob/master/images/compare.gif" />
+</p>
+
 ## Diving Deeper
 If you are curious to see the underlying data used by the simulation, you can choose to export the simulation data using the reporting option. When chosen, a report of all the data used during the simulation will be generated. The report will be an excel (.xlsx) file.
 ![report](https://github.com/jocon15/StockBench/blob/master/images/excel.png)

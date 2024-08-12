@@ -39,12 +39,11 @@ And just like that, you have simulated a strategy on historical data. Have fun!
 Or test your strategy on multiple symbols and see overview analytics:
 ![chart](https://github.com/jocon15/StockBench/blob/master/images/multi_display.png)
 
-## Strategy Studio
+## Head to Head
+Want to run 2 strategies side by side? We have you covered with the compare tab!
 <p align="center">
-	<img src="https://github.com/jocon15/StockBench/blob/master/images/strategy_studio.gif" />
+	<img src="https://github.com/jocon15/StockBench/blob/master/images/compare.gif" />
 </p>
-
-Strategy Studio allows you to create and update strategy .json files. You can edit existing files or create new ones from a provided basic template.
 
 ## Additional Results Analytics
 Simulation results are split up into different tabs within the results window, giving you an in-depth look at how your strategy performed.
@@ -52,10 +51,10 @@ Simulation results are split up into different tabs within the results window, g
 	<img src="https://github.com/jocon15/StockBench/blob/master/images/additional_analytics.gif" />
 </p>
 
-## Head to Head
-Want to run 2 strategies side by side? We have you covered!
+## Strategy Studio
+Strategy Studio allows you to create and update strategy .json files. You can edit existing files or create new ones from a provided basic template.
 <p align="center">
-	<img src="https://github.com/jocon15/StockBench/blob/master/images/compare.gif" />
+	<img src="https://github.com/jocon15/StockBench/blob/master/images/strategy_studio.gif" />
 </p>
 
 ## Diving Deeper

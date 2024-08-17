@@ -1,9 +1,9 @@
 """
-This file will hold an SMATrigger subclass that inherits from the trigger class and implements abstract methods.
+This file will hold an SMATrigger subclass that inherits from the algorithm class and implements abstract methods.
 
 The sma indicator class will instantiate an instance of this class as an attribute (member variable).
 
-Remember, this architecture allows both the subplot and the trigger functionality to be contained by the indicator
+Remember, this architecture allows both the subplot and the algorithm functionality to be contained by the indicator
 without forcing a complex [multiple] inheritance scheme. The currently used approach can be applied if new
 aspects of the indicator are added later on.
 """
@@ -66,26 +66,26 @@ class StochasticTrigger(Trigger):
         """Trigger logic for stochastic oscillator.
 
         Args:
-            key (str): The key value of the trigger.
-            value (str): The value of the trigger.
+            key (str): The key value of the algorithm.
+            value (str): The value of the algorithm.
             data_manager (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
 
         return:
-            bool: True if the trigger was hit.
+            bool: True if the algorithm was hit.
         """
-        log.debug(f'Checking stochastic oscillator trigger: {key}...')
+        log.debug(f'Checking stochastic oscillator algorithm: {key}...')
 
         # get the indicator value from the key
         indicator_value = self.__parse_key(key, data_manager, current_day_index)
 
-        # get the operator and trigger value from the value
+        # get the operator and algorithm value from the value
         operator, trigger_value = self._parse_value(key, value, data_manager, current_day_index)
 
-        log.debug(f'Stochastic oscillator trigger: {key} checked successfully')
+        log.debug(f'Stochastic oscillator algorithm: {key} checked successfully')
 
-        # trigger checks
+        # algorithm checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
     def __parse_key(self, key, data_manager, current_day_index) -> float:
@@ -167,10 +167,10 @@ class StochasticTrigger(Trigger):
 
     @staticmethod
     def __add_upper_stochastic(trigger_value, data_manager):
-        """Add upper stochastic trigger to the df.
+        """Add upper stochastic algorithm to the df.
 
         Args:
-            trigger_value (float): The trigger value for the upper stochastic.
+            trigger_value (float): The algorithm value for the upper stochastic.
             data_manager (any): The data object.
         """
         # if we already have values in the df, we don't need to add them again
@@ -178,7 +178,7 @@ class StochasticTrigger(Trigger):
             if 'stochastic_upper' in col_name.lower():
                 return
 
-        # create a list of the trigger value repeated
+        # create a list of the algorithm value repeated
         list_values = [trigger_value for _ in range(data_manager.get_data_length())]
 
         # add the list to the data
@@ -186,10 +186,10 @@ class StochasticTrigger(Trigger):
 
     @staticmethod
     def __add_lower_stochastic(trigger_value, data_manager):
-        """Add lower stochastic trigger to the df.
+        """Add lower stochastic algorithm to the df.
 
         Args:
-            trigger_value (float): The trigger value for the lower stochastic.
+            trigger_value (float): The algorithm value for the lower stochastic.
             data_manager (any): The data object.
         """
         # if we already have values in the df, we don't need to add them again
@@ -197,7 +197,7 @@ class StochasticTrigger(Trigger):
             if 'stochastic_lower' in col_name.lower():
                 return
 
-        # create a list of the trigger value repeated
+        # create a list of the algorithm value repeated
         list_values = [trigger_value for _ in range(data_manager.get_data_length())]
 
         # add the list to the data

@@ -19,3 +19,8 @@ SLOPE_SYMBOL = '$slope'
 DELAY_SECONDS_15MIN = 960
 
 STOCK_SPLIT_PLPC = 50
+
+
+# ========== Trading =====================
+BUY_SIDE = 'buy'
+SELL_SIDE = 'sell'

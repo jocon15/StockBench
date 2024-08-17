@@ -35,14 +35,14 @@ class VolumeTrigger(Trigger):
         """Trigger logic for volume.
 
         Args:
-            key (str): The key value of the trigger.
-            value (str): The value of the trigger.
+            key (str): The key value of the algorithm.
+            value (str): The value of the algorithm.
             data_manager (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
 
         return:
-            bool: True if the trigger was hit.
+            bool: True if the algorithm was hit.
         """
         volume = data_manager.get_data_point(data_manager.VOLUME, current_day_index)
 
@@ -55,12 +55,12 @@ class VolumeTrigger(Trigger):
                 trigger_value = Trigger.find_single_numeric_in_str(value)
                 operator = Trigger.find_operator_in_str(value)
             except ValueError:
-                # an exception occurred trying to parse trigger value or operator - skip trigger
+                # an exception occurred trying to parse algorithm value or operator - skip algorithm
                 return False
 
-        # trigger checks
+        # algorithm checks
         result = Trigger.basic_trigger_check(volume, operator, trigger_value)
 
-        log.debug('All volume trigger checked')
+        log.debug('All volume algorithm checked')
 
         return result

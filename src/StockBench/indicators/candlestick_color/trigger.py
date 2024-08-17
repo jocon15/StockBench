@@ -37,16 +37,16 @@ class CandlestickColorTrigger(Trigger):
         """Trigger logic for candlestick color.
 
         Args:
-            key (str): The key value of the trigger.
-            value (dict): The value of the trigger.
+            key (str): The key value of the algorithm.
+            value (dict): The value of the algorithm.
             data_manager (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
 
         return:
-            bool: True if the trigger was hit.
+            bool: True if the algorithm was hit.
         """
-        log.debug('Checking candle stick trigger...')
+        log.debug('Checking candle stick algorithm...')
 
         # find out how many keys there are (value is a dict)
         num_keys = len(value)
@@ -55,7 +55,7 @@ class CandlestickColorTrigger(Trigger):
         trigger_colors = []
         actual_colors = []
 
-        # build the trigger list
+        # build the algorithm list
         for value_key in sorted(value.keys()):
             trigger_colors.append(value[value_key])
 
@@ -63,12 +63,12 @@ class CandlestickColorTrigger(Trigger):
         for i in range(num_keys):
             actual_colors.append(data_manager.get_data_point(data_manager.COLOR, current_day_index-i))
 
-        # check for trigger
+        # check for algorithm
         if actual_colors == trigger_colors:
-            log.info('Candle stick trigger hit!')
+            log.info('Candle stick algorithm hit!')
             return True
 
-        log.debug('All candle stick trigger checked')
+        log.debug('All candle stick algorithm checked')
 
         # catch all case if nothing was hit (which is ok!)
         return False

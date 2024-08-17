@@ -50,26 +50,26 @@ class MACDTrigger(Trigger):
         """Trigger logic for EMA.
 
         Args:
-            key (str): The key value of the trigger.
-            value (str): The value of the trigger.
+            key (str): The key value of the algorithm.
+            value (str): The value of the algorithm.
             data_manager (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
 
         return:
-            bool: True if the trigger was hit.
+            bool: True if the algorithm was hit.
         """
-        log.debug(f'Checking MACD trigger: {key}...')
+        log.debug(f'Checking MACD algorithm: {key}...')
 
         # get the indicator value from the key
         indicator_value = self.__parse_key(key, data_manager, current_day_index)
 
-        # get the operator and trigger value from the value
+        # get the operator and algorithm value from the value
         operator, trigger_value = self._parse_value(key, value, data_manager, current_day_index)
 
-        log.debug(f'MACD trigger: {key} checked successfully')
+        log.debug(f'MACD algorithm: {key} checked successfully')
 
-        # trigger checks
+        # algorithm checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
     def __parse_key(self, key, data_manager, current_day_index) -> float:

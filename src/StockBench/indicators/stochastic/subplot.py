@@ -9,8 +9,8 @@ class StochasticSubplot(Subplot):
     A Stochastic object contains the subplot with stochastic oscillator data.
 
     Additional traces include:
-        - RSI upper trigger
-        - RSI lower trigger
+        - RSI upper algorithm
+        - RSI lower algorithm
     """
     def __init__(self):
         super().__init__('stochastic_oscillator', [{"type": "scatter"}], False)

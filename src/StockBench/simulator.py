@@ -6,7 +6,7 @@ import logging
 from tqdm import tqdm
 from time import perf_counter
 from datetime import datetime
-from StockBench.constants import *
+from StockBench.constants import BUY_SIDE, SELL_SIDE, SECONDS_1_DAY, STOCK_SPLIT_PLPC
 from StockBench.broker.broker import Broker
 from StockBench.export.window_data_exporter import WindowDataExporter
 from StockBench.display.display import Display
@@ -16,7 +16,7 @@ from StockBench.display.singular.singular_display import SingularDisplay
 from StockBench.display.multi.multiple_display import MultipleDisplay
 from StockBench.account.user_account import UserAccount
 from StockBench.analysis.analyzer import SimulationAnalyzer
-from StockBench.trigger.trigger_manager import TriggerManager
+from StockBench.algorithm.algorithm import Algorithm
 from StockBench.function_tools.nonce import datetime_timestamp
 from StockBench.simulation_data.data_manager import DataManager
 from StockBench.indicators.indicator_manager import IndicatorManager
@@ -45,13 +45,9 @@ class Simulator:
     |   OHLC   |
     ------------ - End of the simulation (user defined)
     """
-    BUY_SIDE = 'buy'
-    SELL_SIDE = 'sell'
 
     CHARTS_AND_DATA = 0
     DATA_ONLY = 1
-
-    FILEPATH_KEY = 'strategy_filepath'
 
     def __init__(self, balance: float):
         """
@@ -62,15 +58,11 @@ class Simulator:
         self.__account = UserAccount(balance)
         self.__broker = Broker()
         self.__data_manager = None  # gets constructed once we request the data
-        self.__trigger_manager = None  # gets constructed once we have the strategy
-        self.__indicators = IndicatorManager.load_indicators()
+        self.__algorithm = None  # gets constructed once we have the strategy
+        self.__available_indicators = IndicatorManager.load_indicators()
 
         # simulation settings
-        self.__strategy_filename = 'Unknown'
-        self.__strategy = None
-        self.__start_date_unix = None
-        self.__end_date_unix = None
-        self.__augmented_start_date_unix = None
+        self.__algorithm = None
 
         # positions storage during simulation
         self.__single_simulation_position_archive = []
@@ -166,17 +158,8 @@ class Simulator:
          Args:
              strategy (dict): The strategy as a dictionary.
          """
-        # extract filepath if available
-        if self.FILEPATH_KEY in strategy:
-            # extract filepath to class attribute
-            self.__strategy_filename = os.path.basename(strategy[self.FILEPATH_KEY])
-            # remove key from strategy
-            strategy.pop(self.FILEPATH_KEY)
-
-        # set strategy to class attribute
-        self.__strategy = strategy
-        # initialize the member object
-        self.__trigger_manager = TriggerManager(strategy, self.__indicators.values())
+        # build the algorithm using the strategy
+        self.__algorithm = Algorithm(strategy, self.__available_indicators.values())
 
     def run(self, symbol: str, results_depth=CHARTS_AND_DATA, save_option=Display.TEMP_SAVE,
             progress_observer=None) -> dict:
@@ -196,8 +179,8 @@ class Simulator:
                 gui_terminal_log.setLevel(logging.INFO)
                 gui_terminal_log.addHandler(ProgressMessageHandler(progress_observer))
 
-            log.info(f'Using strategy: {self.__strategy_filename}')
-            gui_terminal_log.info(f'Using strategy: {self.__strategy_filename}')
+            log.info(f'Using strategy: {self.__algorithm.strategy_filename}')
+            gui_terminal_log.info(f'Using strategy: {self.__algorithm.strategy_filename}')
 
         log.info(f'Starting simulation for symbol: {symbol}...')
         gui_terminal_log.info(f'Starting simulation for {symbol}...')
@@ -245,8 +228,8 @@ class Simulator:
 
         gui_terminal_log.info('Beginning multiple symbol simulation...')
 
-        log.info(f'Using strategy: {self.__strategy_filename}')
-        gui_terminal_log.info(f'Using strategy: {self.__strategy_filename}')
+        log.info(f'Using strategy: {self.__algorithm.strategy_filename}')
+        gui_terminal_log.info(f'Using strategy: {self.__algorithm.strategy_filename}')
 
         progress_bar_increment = self.__multi_pre_process(symbols, progress_observer)
 
@@ -288,29 +271,27 @@ class Simulator:
         # reset the attributes()
         self.__reset_singular_attributes()
 
-        # check the strategy for errors
-        self.__basic_error_check_strategy()
-
-        # parse the strategy for timestamps, so we know what the user wants
-        self.__check_strategy_timestamps()
+        # parse the strategy for timestamps
+        start_date_unix, end_date_unix, additional_days = self.__algorithm.get_window()
+        augmented_start_date_unix = start_date_unix - (additional_days * SECONDS_1_DAY)
 
         # get the data from the broker
-        temp_df = self.__broker.get_daily_data(symbol,
-                                               self.__augmented_start_date_unix,
-                                               self.__end_date_unix)
+        temp_df = self.__broker.get_daily_data(symbol, augmented_start_date_unix, end_date_unix)
 
         # initialize the data api with the broker data
         self.__data_manager = DataManager(temp_df)
 
         # add indicators to the data based on strategy
-        self.__trigger_manager.add_indicator_data(self.__data_manager)
+        self.__algorithm.add_indicator_data(self.__data_manager)
 
         # print the header if necessary
         if not self.__running_multiple:
             self.__print_header(symbol)
 
         # calculate the simulation window
-        total_days, days_in_focus, sim_window_start_day, trade_able_days = self.__calculate_simulation_window()
+        total_days, days_in_focus, sim_window_start_day, trade_able_days = (
+            self.__calculate_simulation_window(start_date_unix, end_date_unix, augmented_start_date_unix,
+                                               self.__data_manager))
 
         # calculate the increment for the progress bar
         increment = 1.0  # must supply default value
@@ -319,8 +300,8 @@ class Simulator:
 
         log.info(f'Setup for symbol: {symbol} complete')
 
-        self.__log_details(self.__strategy_filename, symbol, self.__unix_to_string(self.__start_date_unix),
-                           self.__unix_to_string(self.__end_date_unix), days_in_focus, trade_able_days,
+        self.__log_details(self.__algorithm.strategy_filename, symbol, self.__unix_to_string(start_date_unix),
+                           self.__unix_to_string(end_date_unix), days_in_focus, trade_able_days,
                            self.__account.get_balance())
 
         return sim_window_start_day, trade_able_days, increment
@@ -339,8 +320,8 @@ class Simulator:
         else:
             # current day is not the end of the simulation (free to buy and sell)
             if buy_mode:
-                was_triggered, rule = self.__trigger_manager.check_triggers_by_side(self.BUY_SIDE, self.__data_manager,
-                                                                                    current_day_index, None)
+                was_triggered, rule = self.__algorithm.check_triggers_by_side(BUY_SIDE, self.__data_manager,
+                                                                              current_day_index, None)
                 if was_triggered:
                     # create a position
                     position = self.__create_position(current_day_index, rule)
@@ -348,8 +329,8 @@ class Simulator:
                     buy_mode = False
             else:
                 # sell mode
-                was_triggered, rule = self.__trigger_manager.check_triggers_by_side(self.SELL_SIDE, self.__data_manager,
-                                                                                    current_day_index, position)
+                was_triggered, rule = self.__algorithm.check_triggers_by_side(SELL_SIDE, self.__data_manager,
+                                                                              current_day_index, position)
                 if was_triggered:
                     # close the position
                     self.__liquidate_position(position, current_day_index, rule)
@@ -407,7 +388,7 @@ class Simulator:
             # faster to do it synchronously for singular
             gui_terminal_log.info('Building overview chart...')
             overview_chart_filepath = SingularDisplay.chart_overview(chopped_temp_df, symbol,
-                                                                     self.__indicators.values(), save_option)
+                                                                     self.__available_indicators.values(), save_option)
             gui_terminal_log.info('Building buy rules analysis chart...')
             buy_rule_analysis_chart_filepath = SingularDisplay.chart_buy_rules_analysis(
                 self.__single_simulation_position_archive, symbol, save_option)
@@ -429,7 +410,7 @@ class Simulator:
             gui_terminal_log.info(f'Analytics for {symbol} complete')
 
         return {
-            'strategy': self.__strategy_filename,
+            'strategy': self.__algorithm.strategy_filename,
             'symbol': symbol,
             'trade_able_days': trade_able_days,
             'elapsed_time': elapsed_time,
@@ -507,7 +488,7 @@ class Simulator:
             progress_observer.set_analytics_complete()
 
         return {
-            'strategy': self.__strategy_filename,
+            'strategy': self.__algorithm.strategy_filename,
             'trade_able_days': results[0]["trade_able_days"],
             'elapsed_time': elapsed_time,
             'trades_made': analyzer.total_trades(),
@@ -526,55 +507,6 @@ class Simulator:
         """Clear singular simulation stored data."""
         self.__account.reset()
         self.__single_simulation_position_archive = []
-
-    def __basic_error_check_strategy(self):
-        """Check the strategy for errors"""
-        log.debug('Checking strategy for errors...')
-        if not self.__strategy:
-            log.critical('No strategy uploaded')
-            raise Exception('No strategy uploaded')
-        if 'start' not in self.__strategy.keys():
-            log.critical("Strategy missing 'start' key")
-            raise Exception("Strategy missing 'start' key")
-        if 'end' not in self.__strategy.keys():
-            log.critical("Strategy missing 'end' key")
-            raise Exception("Strategy missing 'end' key")
-        if self.BUY_SIDE not in self.__strategy.keys():
-            log.critical(f"Strategy missing '{self.BUY_SIDE}' key")
-            raise Exception(f"Strategy missing '{self.BUY_SIDE}' key")
-        if self.SELL_SIDE not in self.__strategy.keys():
-            log.critical(f"Strategy missing '{self.SELL_SIDE}' key")
-            raise Exception(f"Strategy missing '{self.SELL_SIDE}' key")
-        log.debug('No errors found in the strategy')
-
-    def __check_strategy_timestamps(self):
-        """Parse the strategy for relevant information needed to make the API request."""
-        log.debug('Parsing strategy for timestamps...')
-        if 'start' in self.__strategy.keys():
-            self.__start_date_unix = int(self.__strategy['start'])
-        if 'end' in self.__strategy.keys():
-            self.__end_date_unix = int(self.__strategy['end'])
-
-        additional_days = self.__trigger_manager.get_additional_days()
-
-        # add a buffer
-        if additional_days != 0:
-            # we figure 2 weekdays and a holiday for every week of additional days
-            # since it gets cast to int, the decimal is cut off -> it's usually < 3 per week after cast
-            additional_days += int((additional_days / 7) * 3)
-        # now, we should always have enough days to supply the indicators that the user requires
-
-        self.__error_check_timestamps(self.__start_date_unix, self.__end_date_unix)
-        self.__augmented_start_date_unix = self.__start_date_unix - (additional_days * SECONDS_1_DAY)
-
-    def __calculate_simulation_window(self) -> tuple:
-        """Calculate window dimensions."""
-        total_days = int((self.__end_date_unix - self.__augmented_start_date_unix) / SECONDS_1_DAY)
-        days_in_focus = int((self.__end_date_unix - self.__start_date_unix) / SECONDS_1_DAY)
-        sim_window_start_day = total_days - days_in_focus
-        trade_able_days = self.__data_manager.get_data_length() - sim_window_start_day
-
-        return total_days, days_in_focus, sim_window_start_day, trade_able_days
 
     def __create_position(self, current_day_index: int, rule: str) -> Position:
         """Creates a position and updates the account.
@@ -653,6 +585,17 @@ class Simulator:
         # add the columns to the data
         self.__data_manager.add_column('Buy', acquisition_price_list)
         self.__data_manager.add_column('Sell', liquidation_price_list)
+
+    @staticmethod
+    def __calculate_simulation_window(start_date_unix: int, end_date_unix: int, augmented_start_date_unix: int,
+                                      data_manager: DataManager) -> tuple:
+        """Calculate window dimensions."""
+        total_days = int((end_date_unix - augmented_start_date_unix) / SECONDS_1_DAY)
+        days_in_focus = int((end_date_unix - start_date_unix) / SECONDS_1_DAY)
+        sim_window_start_day = total_days - days_in_focus
+        trade_able_days = data_manager.get_data_length() - sim_window_start_day
+
+        return total_days, days_in_focus, sim_window_start_day, trade_able_days
 
     @staticmethod
     def __is_stock_split(position: Position, sell_price: float) -> bool:

@@ -27,7 +27,7 @@ class StopLossTrigger(Trigger):
             side (str): The side (buy/sell).
             data_manager (any): The data object.
         """
-        # note stop loss trigger is not an additional indicator and does not
+        # note stop loss algorithm is not an additional indicator and does not
         # require any additional data to be added to the data
         return
 
@@ -35,16 +35,16 @@ class StopLossTrigger(Trigger):
         """Trigger logic for stop loss.
 
         Args:
-            key (str): The key value of the trigger.
-            value (str): The value of the trigger.
+            key (str): The key value of the algorithm.
+            value (str): The value of the algorithm.
             data_manager (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
 
         return:
-            bool: True if the trigger was hit.
+            bool: True if the algorithm was hit.
         """
-        log.debug('Checking stop loss trigger...')
+        log.debug('Checking stop loss algorithm...')
 
         # get the current price
         current_price = data_manager.get_data_point(data_manager.CLOSE, current_day_index)
@@ -66,16 +66,16 @@ class StopLossTrigger(Trigger):
                     # use value percent stats
                     nums = self.find_all_nums_in_str(value)
                     trigger_value = float(nums[0])
-                    # check trigger
+                    # check algorithm
                     if abs(intraday_plpc) >= trigger_value:
-                        log.info('Stop loss trigger hit!')
+                        log.info('Stop loss algorithm hit!')
                         return True
                 else:
                     # use value stats
                     trigger_value = float(value)
-                    # check trigger
+                    # check algorithm
                     if abs(intraday_pl) >= trigger_value:
-                        log.info('Stop loss trigger hit!')
+                        log.info('Stop loss algorithm hit!')
                         return True
         else:
             # use lifetime stats
@@ -85,19 +85,19 @@ class StopLossTrigger(Trigger):
                     # use value percent stats
                     nums = self.find_all_nums_in_str(value)
                     trigger_value = float(nums[0])
-                    # check trigger
+                    # check algorithm
                     if abs(lifetime_plpc) >= trigger_value:
-                        log.info('Stop loss trigger hit!')
+                        log.info('Stop loss algorithm hit!')
                         return True
                 else:
                     # use value stats
                     trigger_value = float(value)
-                    # check trigger
+                    # check algorithm
                     if abs(lifetime_pl) >= trigger_value:
-                        log.info('Stop loss trigger hit!')
+                        log.info('Stop loss algorithm hit!')
                         return True
 
-        log.debug('Stop loss trigger checked')
+        log.debug('Stop loss algorithm checked')
 
-        # trigger was not hit
+        # algorithm was not hit
         return False

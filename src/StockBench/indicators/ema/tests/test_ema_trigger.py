@@ -274,9 +274,9 @@ def logger_side_effect(*args):
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
-@patch('StockBench.trigger.trigger.Trigger.find_single_numeric_in_str')
-@patch('StockBench.trigger.trigger.Trigger.find_operator_in_str')
-@patch('StockBench.trigger.trigger.Trigger.basic_trigger_check')
+@patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')
+@patch('StockBench.algorithm.algorithm.Trigger.find_operator_in_str')
+@patch('StockBench.algorithm.algorithm.Trigger.basic_trigger_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============
@@ -288,10 +288,10 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
     # ============= Act ==================
 
     # ============= Assert ===============
-    # simple trigger not hit case
+    # simple algorithm not hit case
     assert test_object.check_trigger('EMA20', '>60', data_mocker, None, 0) is False
 
-    # simple trigger hit case
+    # simple algorithm hit case
     basic_trigger_mocker.return_value = True
     assert test_object.check_trigger('EMA20', '>60', data_mocker, None, 0) is True
 
@@ -305,7 +305,7 @@ def test_check_trigger_value_error(data_mocker, test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    # simple trigger not hit case
+    # simple algorithm not hit case
     try:
         test_object.check_trigger('EMA', '>60', data_mocker, None, 0)
         assert False
@@ -314,9 +314,9 @@ def test_check_trigger_value_error(data_mocker, test_object):
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
-@patch('StockBench.trigger.trigger.Trigger.find_single_numeric_in_str')
-@patch('StockBench.trigger.trigger.Trigger.find_operator_in_str')
-@patch('StockBench.trigger.trigger.Trigger.basic_trigger_check')
+@patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')
+@patch('StockBench.algorithm.algorithm.Trigger.find_operator_in_str')
+@patch('StockBench.algorithm.algorithm.Trigger.basic_trigger_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker,
                                                  test_object):
@@ -330,7 +330,7 @@ def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mock
     # ============= Act ==================
 
     # ============= Assert ===============
-    # simple trigger not hit case
+    # simple algorithm not hit case
     assert test_object.check_trigger('EMA20', '>$price', data_mocker, None, 0) is False
 
 
@@ -357,9 +357,9 @@ def test_check_trigger_2_numbers_present_bad_format(test_object):
         assert True
 
 
-@patch('StockBench.trigger.trigger.Trigger.find_single_numeric_in_str')
-@patch('StockBench.trigger.trigger.Trigger.find_operator_in_str')
-@patch('StockBench.trigger.trigger.Trigger.basic_trigger_check')
+@patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')
+@patch('StockBench.algorithm.algorithm.Trigger.find_operator_in_str')
+@patch('StockBench.algorithm.algorithm.Trigger.basic_trigger_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============
@@ -371,10 +371,10 @@ def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mo
     # ============= Act ==================
 
     # ============= Assert ===============
-    # slope used trigger not hit case
+    # slope used algorithm not hit case
     assert test_object.check_trigger('EMA20$slope2', '>50', data_mocker, None, 2) is False
 
-    # slope used trigger hit case
+    # slope used algorithm hit case
     basic_trigger_mocker.return_value = True
     assert test_object.check_trigger('EMA20$slope2', '>50', data_mocker, None, 2) is True
 
@@ -396,7 +396,7 @@ def test_check_trigger_slope_value_error(data_mocker, test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    # simple trigger not hit case
+    # simple algorithm not hit case
     try:
         test_object.check_trigger('EMA20$slope', '>60', data_mocker, None, 0)
         assert False

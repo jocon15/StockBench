@@ -27,7 +27,7 @@ class StopProfitTrigger(Trigger):
             side (str): The side (buy/sell).
             data_manager (any): The data object.
         """
-        # note stop profit trigger is not an additional indicator and does not
+        # note stop profit algorithm is not an additional indicator and does not
         # require any additional data to be added to the data
         return
 
@@ -35,16 +35,16 @@ class StopProfitTrigger(Trigger):
         """Trigger logic for stop profit.
 
         Args:
-            key (str): The key value of the trigger.
-            value (str): The value of the trigger.
+            key (str): The key value of the algorithm.
+            value (str): The value of the algorithm.
             data_manager (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
 
         return:
-            bool: True if the trigger was hit.
+            bool: True if the algorithm was hit.
         """
-        log.debug('Checking stop profit trigger...')
+        log.debug('Checking stop profit algorithm...')
 
         # get the current price
         current_price = data_manager.get_data_point(data_manager.CLOSE, current_day_index)
@@ -66,16 +66,16 @@ class StopProfitTrigger(Trigger):
                     # use value percent stats
                     nums = self.find_all_nums_in_str(value)
                     trigger_value = float(nums[0])
-                    # check trigger
+                    # check algorithm
                     if intraday_plpc >= trigger_value:
-                        log.info('Stop profit trigger hit!')
+                        log.info('Stop profit algorithm hit!')
                         return True
                 else:
                     # use value stats
                     trigger_value = float(value)
-                    # check trigger
+                    # check algorithm
                     if intraday_pl >= trigger_value:
-                        log.info('Stop profit trigger hit!')
+                        log.info('Stop profit algorithm hit!')
                         return True
         else:
             if lifetime_pl > 0:
@@ -85,19 +85,19 @@ class StopProfitTrigger(Trigger):
                     # use value percent stats
                     nums = self.find_all_nums_in_str(value)
                     trigger_value = float(nums[0])
-                    # check trigger
+                    # check algorithm
                     if lifetime_plpc >= trigger_value:
-                        log.info('Stop profit trigger hit!')
+                        log.info('Stop profit algorithm hit!')
                         return True
                 else:
                     # use value stats
                     trigger_value = float(value)
-                    # check trigger
+                    # check algorithm
                     if lifetime_pl >= trigger_value:
-                        log.info('Stop profit trigger hit!')
+                        log.info('Stop profit algorithm hit!')
                         return True
 
-        log.debug('Stop profit trigger checked')
+        log.debug('Stop profit algorithm checked')
 
-        # trigger was not hit
+        # algorithm was not hit
         return False

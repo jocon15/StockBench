@@ -9,8 +9,8 @@ class RSISubplot(Subplot):
     An RSI object contains the subplot with RSI data.
 
     Additional traces include:
-        - RSI upper trigger
-        - RSI lower trigger
+        - RSI upper algorithm
+        - RSI lower algorithm
     """
 
     def __init__(self):

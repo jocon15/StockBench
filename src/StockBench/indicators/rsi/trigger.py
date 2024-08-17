@@ -58,26 +58,26 @@ class RSITrigger(Trigger):
         """Trigger logic for RSI.
 
         Args:
-            key (str): The key value of the trigger.
-            value (str): The value of the trigger.
+            key (str): The key value of the algorithm.
+            value (str): The value of the algorithm.
             data_manager (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
 
         return:
-            bool: True if the trigger was hit.
+            bool: True if the algorithm was hit.
         """
-        log.debug(f'Checking RSI trigger: {key}...')
+        log.debug(f'Checking RSI algorithm: {key}...')
 
         # get the indicator value from the key
         indicator_value = self.__parse_key(key, data_manager, current_day_index)
 
-        # get the operator and trigger value from the value
+        # get the operator and algorithm value from the value
         operator, trigger_value = self._parse_value(key, value, data_manager, current_day_index)
 
-        log.debug(f'RSI trigger: {key} checked successfully')
+        log.debug(f'RSI algorithm: {key} checked successfully')
 
-        # trigger checks
+        # algorithm checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
     def __parse_key(self, key, data_manager, current_day_index) -> float:
@@ -157,10 +157,10 @@ class RSITrigger(Trigger):
 
     @staticmethod
     def __add_upper_rsi(trigger_value, data_manager):
-        """Add upper RSI trigger to the df.
+        """Add upper RSI algorithm to the df.
 
         Args:
-            trigger_value (float): The trigger value for the upper RSI.
+            trigger_value (float): The algorithm value for the upper RSI.
             data_manager (any): The data object.
         """
         # if we already have RSI upper values in the df, we don't need to add them again
@@ -168,7 +168,7 @@ class RSITrigger(Trigger):
             if 'rsi_upper' in col_name.lower():
                 return
 
-        # create a list of the trigger value repeated
+        # create a list of the algorithm value repeated
         list_values = [trigger_value for _ in range(data_manager.get_data_length())]
 
         # add the list to the data
@@ -176,10 +176,10 @@ class RSITrigger(Trigger):
 
     @staticmethod
     def __add_lower_rsi(trigger_value, data_manager):
-        """Add lower RSI trigger to the df.
+        """Add lower RSI algorithm to the df.
 
         Args:
-            trigger_value (float): The trigger value for the lower RSI.
+            trigger_value (float): The algorithm value for the lower RSI.
             data_manager (any): The data object.
         """
         # if we already have RSI lower values in the df, we don't need to add them again
@@ -187,7 +187,7 @@ class RSITrigger(Trigger):
             if 'rsi_lower' in col_name.lower():
                 return
 
-        # create a list of the trigger value repeated
+        # create a list of the algorithm value repeated
         list_values = [trigger_value for _ in range(data_manager.get_data_length())]
 
         # add the list to the data

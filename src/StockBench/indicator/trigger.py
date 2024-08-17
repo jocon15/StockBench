@@ -7,7 +7,7 @@ log = logging.getLogger()
 
 
 class Trigger:
-    """Base class for a trigger. Provides some of the core functionality for a trigger."""
+    """Base class for a algorithm. Provides some of the core functionality for a algorithm."""
     BUY = 0
     SELL = 1
     AGNOSTIC = 2
@@ -29,15 +29,15 @@ class Trigger:
 
     @abstractmethod
     def check_trigger(self, key, value, data_manager, position_obj, current_day_index) -> bool:
-        raise NotImplementedError('Check trigger not implemented!')
+        raise NotImplementedError('Check algorithm not implemented!')
 
     def _parse_value(self, key, value, data_manager, current_day_index) -> tuple:
-        """Parser for parsing the operator and trigger value from the value.
+        """Parser for parsing the operator and algorithm value from the value.
 
         NOTE: This is the default implementation for this, since it is used frequently in this form.
-            For abnormal trigger like candle colors, you can override this with another implementation.
+            For abnormal algorithm like candle colors, you can override this with another implementation.
         """
-        # find the operator and trigger value (right hand side of the comparison)
+        # find the operator and algorithm value (right hand side of the comparison)
         if CURRENT_PRICE_SYMBOL in value:
             trigger_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
             operator = value.replace(CURRENT_PRICE_SYMBOL, '')
@@ -49,15 +49,15 @@ class Trigger:
 
     @staticmethod
     def basic_trigger_check(indicator_value, operator_value, trigger_value) -> bool:
-        """Abstraction for basic trigger comparison operators.
+        """Abstraction for basic algorithm comparison operators.
 
         Args:
             indicator_value (float): The value of the indicator.
             operator_value (str): The operator defined in the strategy
-            trigger_value (float): The value of the trigger.
+            trigger_value (float): The value of the algorithm.
 
         returns:
-            bool: True if the trigger was hit.
+            bool: True if the algorithm was hit.
         """
         if operator_value == '<=':
             if indicator_value <= trigger_value:
@@ -78,13 +78,13 @@ class Trigger:
 
     @staticmethod
     def find_single_numeric_in_str(value) -> float:
-        """Find a single numeric trigger in a string.
+        """Find a single numeric algorithm in a string.
 
         Args:
             value (str): Any value of the strategy.
 
         return:
-            float: The trigger value in the string.
+            float: The algorithm value in the string.
 
         raises:
             ValueError: If the passed value is not in the correct format (contains >1 or no numerics).
@@ -93,9 +93,9 @@ class Trigger:
         if len(nums) == 1:
             return float(nums[0])
         else:
-            log.error(f'Invalid amount of numbers found in trigger value: {value}')
-            print(f'Invalid amount of numbers found in trigger value: {value}')
-            raise ValueError(f'Invalid amount of numbers found in trigger value: {value}')
+            log.error(f'Invalid amount of numbers found in algorithm value: {value}')
+            print(f'Invalid amount of numbers found in algorithm value: {value}')
+            raise ValueError(f'Invalid amount of numbers found in algorithm value: {value}')
 
     @staticmethod
     def find_all_nums_in_str(value) -> list:
@@ -127,10 +127,10 @@ class Trigger:
         if len(nums) == 1:
             return value.replace(str(nums[0]), '')
         else:
-            log.error(f'Invalid number found in trigger value: {value}')
-            print(f'Invalid number found in trigger value: {value}')
-            # if no trigger value available, exit
-            raise ValueError(f'Invalid number found in trigger value: {value}')
+            log.error(f'Invalid number found in algorithm value: {value}')
+            print(f'Invalid number found in algorithm value: {value}')
+            # if no algorithm value available, exit
+            raise ValueError(f'Invalid number found in algorithm value: {value}')
 
     @staticmethod
     def calculate_slope(y2, y1, length) -> float:

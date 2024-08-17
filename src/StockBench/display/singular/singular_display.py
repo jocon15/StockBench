@@ -16,13 +16,13 @@ class SingularDisplay(Display):
     SUBPLOT_VERTICAL_SPACING = 0.05
 
     @staticmethod
-    def chart_overview(df, symbol, indicators, save_option=Display.TEMP_SAVE) -> str:
+    def chart_overview(df, symbol, available_indicators, save_option=Display.TEMP_SAVE) -> str:
         """Chart the data.
 
         Args:
             df (DataFrame): The full DataFrame post-simulation.
             symbol (str): The symbol the simulation was run on.
-            indicators (any): The list of indicators.
+            available_indicators (any): The list of indicators.
             save_option (int): Save the chart.
 
         Return:
@@ -33,7 +33,7 @@ class SingularDisplay(Display):
 
         # find the OHLC indicator
         ohlc_indicator = None
-        for indicator in indicators:
+        for indicator in available_indicators:
             indicator_subplot = indicator.get_subplot()
             if indicator_subplot is not None:
                 try:
@@ -51,7 +51,7 @@ class SingularDisplay(Display):
 
         # activate the subplot objects if evidence is found in the df
         for (column_name, column_data) in df.items():
-            for indicator in indicators:
+            for indicator in available_indicators:
                 indicator_subplot = indicator.get_subplot()
                 if indicator_subplot is not None:
                     if column_name == indicator.get_data_name():
@@ -81,7 +81,7 @@ class SingularDisplay(Display):
                 for trace in subplot.get_traces(df):
                     traces.append(trace)
                 # get the traces from all aux OHLC trace indicators
-                for indicator in indicators:
+                for indicator in available_indicators:
                     indicator_subplot = indicator.get_subplot()
                     if indicator_subplot is not None:
                         if indicator_subplot.is_ohlc_trace():

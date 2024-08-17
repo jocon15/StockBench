@@ -1,9 +1,9 @@
 """
-This file will hold an SMATrigger subclass that inherits from the trigger class and implements abstract methods.
+This file will hold an SMATrigger subclass that inherits from the algorithm class and implements abstract methods.
 
 The sma indicator class will instantiate an instance of this class as an attribute (member variable).
 
-Remember, this architecture allows both the subplot and the trigger functionality to be contained by the indicator
+Remember, this architecture allows both the subplot and the algorithm functionality to be contained by the indicator
 without forcing a complex [multiple] inheritance scheme. The currently used approach can be applied if new
 aspects of the indicator are added later on.
 """
@@ -57,26 +57,26 @@ class SMATrigger(Trigger):
         """Trigger logic for SMA.
 
         Args:
-            key (str): The key value of the trigger.
-            value (str): The value of the trigger.
+            key (str): The key value of the algorithm.
+            value (str): The value of the algorithm.
             data_manager (any): The data API object.
             position_obj (any): The position object.
             current_day_index (int): The index of the current day.
 
         return:
-            bool: True if the trigger was hit.
+            bool: True if the algorithm was hit.
         """
-        log.debug(f'Checking SMA trigger: {key}...')
+        log.debug(f'Checking SMA algorithm: {key}...')
 
         # get the indicator value from the key
         indicator_value = self.__parse_key(key, data_manager, current_day_index)
 
-        # get the operator and trigger value from the value
+        # get the operator and algorithm value from the value
         operator, trigger_value = self._parse_value(key, value, data_manager, current_day_index)
 
-        log.debug(f'SMA trigger: {key} checked successfully')
+        log.debug(f'SMA algorithm: {key} checked successfully')
 
-        # trigger checks
+        # algorithm checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
     def __parse_key(self, key, data_manager, current_day_index) -> float:

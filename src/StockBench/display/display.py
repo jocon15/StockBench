@@ -184,7 +184,7 @@ class Display:
 
     @staticmethod
     def __get_rule_from_side(position, side):
-        """Returns the correct rule used to trigger a position based on side."""
+        """Returns the correct rule used to algorithm a position based on side."""
         if side == 'buy':
             return position.get_buy_rule()
         else:

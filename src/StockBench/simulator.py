@@ -45,17 +45,19 @@ class Simulator:
     |   OHLC   |
     ------------ - End of the simulation (user defined)
     """
+    LOGS_FOLDER = 'logs'
+    DEV_FOLDER = 'dev'
 
     CHARTS_AND_DATA = 0
     DATA_ONLY = 1
 
-    def __init__(self, balance: float):
+    def __init__(self, initial_balance: float):
         """
         Args:
-            balance (float): The initial balance for the account.
+            initial_balance (float): The initial balance for the account.
         """
         # dependencies
-        self.__account = UserAccount(balance)
+        self.__account = UserAccount(initial_balance)
         self.__broker = Broker()
         self.__data_manager = None  # gets constructed once we request the data
         self.__algorithm = None  # gets constructed once we have the strategy
@@ -71,15 +73,6 @@ class Simulator:
         # post-simulation settings
         self.__reporting_on = False
         self.__running_multiple = False
-
-        # have not implemented stored results yet
-        self.__stored_results = None
-
-        # folder paths
-        self.__save_folder = 'saved_simulations'
-        self.__logs_folder = 'logs'
-        self.__dev_folder = 'dev'
-
         self.__running_as_exe = getattr(sys, 'frozen', False)
 
     def enable_logging(self):
@@ -88,7 +81,7 @@ class Simulator:
         log.setLevel(logging.INFO)
 
         # build the filepath
-        user_logging_filepath = os.path.join(self.__logs_folder, f'RunLog_{datetime_timestamp()}')
+        user_logging_filepath = os.path.join(self.LOGS_FOLDER, f'RunLog_{datetime_timestamp()}')
 
         # build the formatters
         user_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
@@ -134,7 +127,7 @@ class Simulator:
             developer_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
 
         # build the filepath
-        developer_logging_filepath = os.path.join(self.__dev_folder, f'DevLog_{datetime_timestamp()}')
+        developer_logging_filepath = os.path.join(self.DEV_FOLDER, f'DevLog_{datetime_timestamp()}')
 
         # make the directories if they don't already exist
         os.makedirs(os.path.dirname(developer_logging_filepath), exist_ok=True)

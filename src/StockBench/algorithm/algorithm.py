@@ -153,7 +153,6 @@ class Algorithm:
         if self.FILEPATH_KEY in self.strategy:
             # extract filepath to class attribute
             filename = os.path.basename(self.strategy[self.FILEPATH_KEY])
-
         return filename
 
     def __basic_error_check_strategy(self) -> None:

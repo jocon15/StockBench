@@ -1,14 +1,14 @@
 import logging
 from plotly.subplots import make_subplots
-from StockBench.display.display import Display
+from StockBench.charting.charting_engine import ChartingEngine
 
 log = logging.getLogger()
 
 
-class SingularDisplay(Display):
-    """This class defines a display object for a simulation where a single stock was simulated.
+class SingularChartingEngine(ChartingEngine):
+    """This class defines a charting object for a simulation where a single stock was simulated.
 
-    The display object is used as an API for the simulator to chart the data. The display will use the simulation
+    The charting object is used as an API for the simulator to chart the data. The charting will use the simulation
     data to establish which subplots need to be added to the singular chart. The subplots abstract all of that
     specific subplots details to make it easier to edit. This API simply aggregates the subplot objects and
     assembles the final parent plot that gets displayed to the user.
@@ -16,7 +16,7 @@ class SingularDisplay(Display):
     SUBPLOT_VERTICAL_SPACING = 0.05
 
     @staticmethod
-    def chart_overview(df, symbol, available_indicators, save_option=Display.TEMP_SAVE) -> str:
+    def chart_overview(df, symbol, available_indicators, save_option=ChartingEngine.TEMP_SAVE) -> str:
         """Chart the data.
 
         Args:
@@ -67,7 +67,7 @@ class SingularDisplay(Display):
         cols = col = 1  # only one col in every row
         rows = len(subplot_objects)
         fig = make_subplots(rows=rows, cols=cols, shared_xaxes=True,
-                            vertical_spacing=SingularDisplay.SUBPLOT_VERTICAL_SPACING, specs=subplot_types)
+                            vertical_spacing=SingularChartingEngine.SUBPLOT_VERTICAL_SPACING, specs=subplot_types)
 
         # add subplots and traces from the objects to the parent plot
         for enum_row, subplot in enumerate(subplot_objects):
@@ -98,7 +98,7 @@ class SingularDisplay(Display):
 
         # update the layout
         window_size = len(df['Close'])
-        if save_option != Display.TEMP_SAVE:
+        if save_option != ChartingEngine.TEMP_SAVE:
             # non-temp save should show the simulation metadata in the title (uses DEFAULT margin)
 
             fig.update_layout(template='plotly_dark', title=f'{window_size} day simulation for {symbol}',
@@ -109,20 +109,20 @@ class SingularDisplay(Display):
             # setting margin overrides plotly's default margin setting
             fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False,
                               xaxis_range=(df['Date'][0], df['Date'][window_size - 1]),
-                              margin=dict(l=SingularDisplay.PLOTLY_CHART_MARGIN_LEFT,
-                                          r=SingularDisplay.PLOTLY_CHART_MARGIN_RIGHT,
-                                          t=SingularDisplay.PLOTLY_CHART_MARGIN_TOP,
-                                          b=SingularDisplay.PLOTLY_CHART_MARGIN_BOTTOM))
+                              margin=dict(l=SingularChartingEngine.PLOTLY_CHART_MARGIN_LEFT,
+                                          r=SingularChartingEngine.PLOTLY_CHART_MARGIN_RIGHT,
+                                          t=SingularChartingEngine.PLOTLY_CHART_MARGIN_TOP,
+                                          b=SingularChartingEngine.PLOTLY_CHART_MARGIN_BOTTOM))
 
         # format the chart (remove plotly white border)
-        formatted_fig = Display.format_chart(fig)
+        formatted_fig = ChartingEngine.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return Display.handle_save_chart(formatted_fig, save_option,
-                                         'temp_overview_chart', f'figure_{symbol}')
+        return ChartingEngine.handle_save_chart(formatted_fig, save_option,
+                                                'temp_overview_chart', f'figure_{symbol}')
 
     @staticmethod
-    def chart_buy_rules_analysis(positions, symbol, save_option=Display.TEMP_SAVE) -> str:
+    def chart_buy_rules_analysis(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
         rows = 2
         cols = 1
 
@@ -139,10 +139,10 @@ class SingularDisplay(Display):
                             subplot_titles=chart_titles)
 
         # rule counts chart
-        fig.add_trace(Display.rule_count_bar(positions, 'buy'), 1, 1)
+        fig.add_trace(ChartingEngine.rule_count_bar(positions, 'buy'), 1, 1)
 
         # rule plpc stats chart (overlayed charts)
-        rule_stats_traces = Display.rule_stats_traces(positions, 'buy')
+        rule_stats_traces = ChartingEngine.rule_stats_traces(positions, 'buy')
         fig.add_trace(rule_stats_traces[0], 2, 1)
         fig.add_trace(rule_stats_traces[1], 2, 1)
         fig.add_trace(rule_stats_traces[2], 2, 1)
@@ -151,14 +151,14 @@ class SingularDisplay(Display):
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
 
         # format the chart (remove plotly white border)
-        formatted_fig = Display.format_chart(fig)
+        formatted_fig = ChartingEngine.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return Display.handle_save_chart(formatted_fig, save_option,
-                                         'temp_buy_chart', f'{symbol}_buy_rules')
+        return ChartingEngine.handle_save_chart(formatted_fig, save_option,
+                                                'temp_buy_chart', f'{symbol}_buy_rules')
 
     @staticmethod
-    def chart_sell_rules_analysis(positions, symbol, save_option=Display.TEMP_SAVE) -> str:
+    def chart_sell_rules_analysis(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
         rows = 2
         cols = 1
 
@@ -175,10 +175,10 @@ class SingularDisplay(Display):
                             subplot_titles=chart_titles)
 
         # rule counts chart
-        fig.add_trace(Display.rule_count_bar(positions, 'sell'), 1, 1)
+        fig.add_trace(ChartingEngine.rule_count_bar(positions, 'sell'), 1, 1)
 
         # rule plpc stats chart (overlayed traces)
-        rule_stats_traces = Display.rule_stats_traces(positions, 'sell')
+        rule_stats_traces = ChartingEngine.rule_stats_traces(positions, 'sell')
         fig.add_trace(rule_stats_traces[0], 2, 1)
         fig.add_trace(rule_stats_traces[1], 2, 1)
         fig.add_trace(rule_stats_traces[2], 2, 1)
@@ -187,13 +187,13 @@ class SingularDisplay(Display):
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
 
         # format the chart (remove plotly white border)
-        formatted_fig = Display.format_chart(fig)
+        formatted_fig = ChartingEngine.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return Display.handle_save_chart(formatted_fig, save_option, 'temp_sell_chart', f'{symbol}_sell_rules')
+        return ChartingEngine.handle_save_chart(formatted_fig, save_option, 'temp_sell_chart', f'{symbol}_sell_rules')
 
     @staticmethod
-    def chart_positions_analysis(positions, symbol, save_option=Display.TEMP_SAVE) -> str:
+    def chart_positions_analysis(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
         rows = 1
         cols = 1
 
@@ -210,7 +210,7 @@ class SingularDisplay(Display):
                             subplot_titles=chart_titles)
 
         # positions analysis traces
-        position_analysis_traces = Display.positions_total_pl_bar(positions)
+        position_analysis_traces = ChartingEngine.positions_total_pl_bar(positions)
 
         # position analysis chart (overlayed traces)
         fig.add_trace(position_analysis_traces[0], 1, 1)
@@ -221,8 +221,8 @@ class SingularDisplay(Display):
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
 
         # format the chart (remove plotly white border)
-        formatted_fig = Display.format_chart(fig)
+        formatted_fig = ChartingEngine.format_chart(fig)
 
         # perform and saving or showing (returns saved filepath)
-        return Display.handle_save_chart(formatted_fig, save_option,
-                                         'temp_positions_chart', f'{symbol}_positions')
+        return ChartingEngine.handle_save_chart(formatted_fig, save_option,
+                                                'temp_positions_chart', f'{symbol}_positions')

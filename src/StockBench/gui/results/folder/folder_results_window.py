@@ -1,8 +1,8 @@
-from PyQt6.QtWidgets import QProgressBar, QLabel
+from PyQt6.QtWidgets import QLabel
 from time import perf_counter
-from StockBench.gui.palette.palette import Palette
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
-from StockBench.gui.results.folder.tabs.folder_overview_tab import FolderResultsTab
+from StockBench.gui.results.folder.tabs.folder_overview_tab import FolderOverViewTab
+from StockBench.gui.results.folder.tabs.folder_trades_made_tab import FolderTradesMadeTab
 
 
 class FolderResultsWindow(SimulationResultsWindow):
@@ -26,15 +26,15 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.progress_observers = [progress_observer() for _ in strategies]
 
         # add elements to the layout
+        self.layout.addWidget(self.progress_bar)
+        # tab creation
+        self.overview_tab = FolderOverViewTab(strategies, self.progress_observers)
+        self.trades_made_tab = FolderTradesMadeTab()
 
-        # create a list of progress bars for each strategy
-        self.strategy_labels = [QLabel() for _ in strategies]
-        self.progress_bars = [QProgressBar() for _ in strategies]
-        # set up the progress bars and add them to the layout
-        self.__setup_progress_bars()
-
-        self.results_frame = FolderResultsTab(strategies, self.progress_observers)
-        self.layout.addWidget(self.results_frame)
+        # tab widget
+        self.tab_widget.addTab(self.overview_tab, 'Overview')
+        self.tab_widget.addTab(self.trades_made_tab, 'Trades Made')
+        self.layout.addWidget(self.tab_widget)
 
         # error message
         self.error_message_label = QLabel()
@@ -45,32 +45,21 @@ class FolderResultsWindow(SimulationResultsWindow):
     def update_error_message(self, message: str):
         self.error_message_label.setText(message)
 
-    def __setup_progress_bars(self):
-        for i, strategy in enumerate(self.strategies):
-            # set the label to the name of the strategy
-            self.strategy_labels[i].setText(self._get_strategy_name(strategy['strategy_filepath']))
-            self.strategy_labels[i].setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
-
-            # initialize the progress bar
-            self.progress_bars[i].setRange(0, 100)
-            self.progress_bars[i].setFixedHeight(5)
-            self.progress_bars[i].setTextVisible(False)
-            self.progress_bars[i].setStyleSheet(Palette.PROGRESS_BAR_STYLESHEET)
-
-            # add the label and the progress bar to the layout
-            self.layout.addWidget(self.strategy_labels[i])
-            self.layout.addWidget(self.progress_bars[i])
-
     def _update_progress_bar(self):
+        max_progress_per_observer = int(100 / len(self.progress_observers))
+        progress = 0
+
         all_bars_complete = True
         for i, progress_observer in enumerate(self.progress_observers):
             if progress_observer.is_simulation_completed():
-                # mark the progress bar as completed
-                self.progress_bars[i].setValue(100)
+                # full progress for that observer
+                progress += max_progress_per_observer
             else:
-                # update the progress bar
-                self.progress_bars[i].setValue(int(progress_observer.get_progress()))
+                # partial progress for that observer (scaled to the progress bar as a whole)
+                progress += max_progress_per_observer * int(progress_observer.get_progress() / 100)
                 all_bars_complete = False
+
+        self.progress_bar.setValue(progress)
 
         if all_bars_complete:
             # stop the timer
@@ -96,14 +85,9 @@ class FolderResultsWindow(SimulationResultsWindow):
 
         return {"results": results, 'elapsed_time': elapsed_time}
 
-    def _teardown_progress_bars(self):
-        for i in range(len(self.strategies)):
-            self.layout.removeWidget(self.strategy_labels[i])
-            self.layout.removeWidget(self.progress_bars[i])
-
     def _render_data(self, simulation_results: dict):
-        self._teardown_progress_bars()
-        self.results_frame.render_data(simulation_results)
+        self.overview_tab.render_data(simulation_results)
+        self.trades_made_tab.render_data(simulation_results)
 
     @staticmethod
     def _get_strategy_name(filepath: str):

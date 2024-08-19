@@ -1,7 +1,7 @@
 import re
 import plotly.graph_objects as fplt
 from StockBench.indicator.subplot import Subplot
-from StockBench.display.display_constants import *
+from StockBench.charting.display_constants import EMA_COLOR, MOVING_AVERAGE_LINE_WIDTH
 
 
 class DummySubplot(Subplot):

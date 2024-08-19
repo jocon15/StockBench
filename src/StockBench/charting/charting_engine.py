@@ -8,8 +8,8 @@ import plotly.graph_objects as plotter
 from StockBench.function_tools.nonce import datetime_timestamp
 
 
-class Display:
-    """Base class for a display."""
+class ChartingEngine:
+    """Base class for a charting."""
 
     TEMP_SAVE = 0
     UNIQUE_SAVE = 1
@@ -22,12 +22,12 @@ class Display:
     @staticmethod
     def handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix) -> str:
         """andle save options for charts"""
-        if save_option == Display.TEMP_SAVE:
+        if save_option == ChartingEngine.TEMP_SAVE:
             # save chart as temporary file - will be overwritten by any new chart
-            chart_filepath = Display.__save_chart(formatted_fig, f'{temp_filename}.html')
-        elif save_option == Display.UNIQUE_SAVE:
+            chart_filepath = ChartingEngine.__save_chart(formatted_fig, f'{temp_filename}.html')
+        elif save_option == ChartingEngine.UNIQUE_SAVE:
             # save chart as unique file for persistent saving
-            chart_filepath = Display.__save_chart(formatted_fig, f'{unique_prefix}_{datetime_timestamp()}.html')
+            chart_filepath = ChartingEngine.__save_chart(formatted_fig, f'{unique_prefix}_{datetime_timestamp()}.html')
         else:
             # no chart was saved
             chart_filepath = ''
@@ -57,7 +57,7 @@ class Display:
     @staticmethod
     def rule_count_bar(positions, side):
         """Build bar chart for the number of trades made for each buy rule."""
-        stats = Display.__get_rule_statistics(positions, side)
+        stats = ChartingEngine.__get_rule_statistics(positions, side)
 
         # extract the data from the stats dict
         rules_list = []
@@ -79,7 +79,7 @@ class Display:
 
     @staticmethod
     def rule_stats_traces(positions, side) -> list:
-        stats = Display.__get_rule_statistics(positions, side)
+        stats = ChartingEngine.__get_rule_statistics(positions, side)
 
         # extract the data from the stats dict
         rules_list = []
@@ -133,17 +133,17 @@ class Display:
         """Builds a dict of statistics for each rule based for the given side."""
         rule_stats = {}
         for position in positions:
-            rule = Display.__get_rule_from_side(position, side)
+            rule = ChartingEngine.__get_rule_from_side(position, side)
 
             # create a new key : value for the rule
             rule_stats[rule] = {}
 
             # FIXME: these calls may need to be multi-processed so it is not as slow for longer simulations
             # add statistics to the rule here
-            rule_stats[rule]['count'] = Display.__calculate_rule_count(positions, side, rule)
-            rule_stats[rule]['average_plpc'] = Display.__calculate_average_plpc(positions, side, rule)
-            rule_stats[rule]['median_plpc'] = Display.__calculate_median_plpc(positions, side, rule)
-            rule_stats[rule]['stddev_plpc'] = Display.__calculate_stddev_plpc(positions, side, rule)
+            rule_stats[rule]['count'] = ChartingEngine.__calculate_rule_count(positions, side, rule)
+            rule_stats[rule]['average_plpc'] = ChartingEngine.__calculate_average_plpc(positions, side, rule)
+            rule_stats[rule]['median_plpc'] = ChartingEngine.__calculate_median_plpc(positions, side, rule)
+            rule_stats[rule]['stddev_plpc'] = ChartingEngine.__calculate_stddev_plpc(positions, side, rule)
         return rule_stats
 
     @staticmethod
@@ -151,7 +151,7 @@ class Display:
         """Counts the number of positions that were triggered by the given rule."""
         count = 0
         for position in positions:
-            if Display.__get_rule_from_side(position, side) == rule:
+            if ChartingEngine.__get_rule_from_side(position, side) == rule:
                 count += 1
         return count
 
@@ -160,7 +160,7 @@ class Display:
         """Calculates the average profit/loss percent of the positions triggers by a given rule."""
         plpc_values = []
         for position in positions:
-            if Display.__get_rule_from_side(position, side) == rule:
+            if ChartingEngine.__get_rule_from_side(position, side) == rule:
                 plpc_values.append(position.lifetime_profit_loss_percent())
         return statistics.mean(plpc_values)
 
@@ -169,7 +169,7 @@ class Display:
         """Calculates the median profit/loss percent of the positions triggers by a given rule."""
         plpc_values = []
         for position in positions:
-            if Display.__get_rule_from_side(position, side) == rule:
+            if ChartingEngine.__get_rule_from_side(position, side) == rule:
                 plpc_values.append(position.lifetime_profit_loss_percent())
         return statistics.median(plpc_values)
 
@@ -178,7 +178,7 @@ class Display:
         """Calculates the stddev (population) profit/loss percent of the positions triggers by a given rule."""
         plpc_values = []
         for position in positions:
-            if Display.__get_rule_from_side(position, side) == rule:
+            if ChartingEngine.__get_rule_from_side(position, side) == rule:
                 plpc_values.append(position.lifetime_profit_loss_percent())
         return statistics.pstdev(plpc_values)
 

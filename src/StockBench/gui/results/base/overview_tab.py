@@ -1,8 +1,8 @@
-from StockBench.gui.results.base.base.result_tab import Tab
+from StockBench.gui.results.base.base.result_tab import ResultsTab
 from abc import abstractmethod
 
 
-class OverviewTab(Tab):
+class OverviewResultsTab(ResultsTab):
     """Abstract base class for a simulation results overview tab."""
     CHART_KEY = 'overview_chart_filepath'
 

@@ -1,7 +1,7 @@
 import numpy as np
 from StockBench.indicator.subplot import Subplot
 import plotly.graph_objects as fplt
-from StockBench.display.display_constants import *
+from StockBench.charting.display_constants import BEAR_RED, BULL_GREEN
 
 
 class VolumeSubplot(Subplot):

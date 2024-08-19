@@ -1,8 +1,8 @@
-from StockBench.gui.results.base.overview_tab import OverviewTab
+from StockBench.gui.results.base.overview_tab import OverviewResultsTab
 from StockBench.gui.results.singular.components.sidebar import SingularOverviewSideBar
 
 
-class SingularOverviewTab(OverviewTab):
+class SingularOverviewTab(OverviewResultsTab):
     """Tab showing simulation overview for single-symbol simulation results."""
     def __init__(self, progress_observer):
         super().__init__()

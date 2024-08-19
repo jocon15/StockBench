@@ -1,7 +1,7 @@
 import logging
 from abc import abstractmethod
 
-from StockBench.display.display import Display
+from StockBench.charting.charting_engine import ChartingEngine
 from PyQt6.QtWidgets import QWidget, QProgressBar, QTabWidget, QVBoxLayout
 from PyQt6.QtCore import QTimer, QThreadPool
 from PyQt6 import QtGui
@@ -21,7 +21,7 @@ class SimulationResultsWindow(QWidget):
     The simulation is long-running, therefore it is run on a QThread as to not freeze the Qt app while it runs. A
     progress observer (thread-safe) is injected into the simulator to monitor progress of the simulation from this
     window. When the window starts, the simulation is started. A timer is also started to check the progress via the
-    progress observer every 100ms. Each interval, the progress is rendered to the window's progress bar to display.
+    progress observer every 100ms. Each interval, the progress is rendered to the window's progress bar to charting.
 
     Once the simulation is complete, the timer is stopped and the progress bar gets set to 100%. The simulation returns
     a dict of results which are fed to the _render_data() function, which uses that information to render the results to
@@ -44,7 +44,7 @@ class SimulationResultsWindow(QWidget):
         self.threadpool = QThreadPool()
 
         # gets set by child objects
-        self.results_frame = None
+        self.overview_tab = None
 
         self.setWindowTitle('Simulation Results')
         self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
@@ -96,19 +96,19 @@ class SimulationResultsWindow(QWidget):
             self.simulator.enable_reporting()
         self.simulator.load_strategy(self.strategy)
         if self.unique_chart_saving:
-            save_option = Display.UNIQUE_SAVE
+            save_option = ChartingEngine.UNIQUE_SAVE
         else:
-            save_option = Display.TEMP_SAVE
+            save_option = ChartingEngine.TEMP_SAVE
         try:
             return self._run_simulation(save_option)
         except ValueError as e:
             # pass the known error down
-            self.results_frame.update_error_message(f'{e}')
+            self.overview_tab.update_error_message(f'{e}')
             return {}
         except Exception as e:
             # unexpected error
             log.error(f'Unexpected error during simulation: {e}')
-            self.results_frame.update_error_message(f'Unexpected error: {e}')
+            self.overview_tab.update_error_message(f'Unexpected error: {e}')
             return {}
 
     @abstractmethod

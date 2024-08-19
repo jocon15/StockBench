@@ -15,9 +15,8 @@ class HTMLViewer(QFrame):
     HTML_VIEWER_STYLESHEET = """margin: 8px; border: 5px solid #111111; border-radius: 10px; 
     background-color: #111111;"""
 
-    def __init__(self, chart_key):
+    def __init__(self):
         super().__init__()
-        self.chart_key = chart_key
 
         # define the layout type
         self.layout = QVBoxLayout()
@@ -40,16 +39,12 @@ class HTMLViewer(QFrame):
         """Render the chart-loading file."""
         self.web_engine.load(QtCore.QUrl().fromLocalFile(os.path.abspath(self.LOADING_REL_PATH)))
 
-    def render_chart(self, simulation_results):
+    def render_data(self, chart_filepath: str):
         """Render the chart created from the simulation."""
-        # check the simulation generated a chart
-        chart_loaded = False
-        if self.chart_key in simulation_results:
-            # check the chart exists
-            if os.path.isfile(simulation_results[self.chart_key]):
-                chart_loaded = True
-                self.web_engine.load(QtCore.QUrl().fromLocalFile(os.path.abspath(simulation_results[self.chart_key])))
-
-        if not chart_loaded:
+        # check the chart exists
+        if os.path.isfile(chart_filepath):
+            chart_loaded = True
+            self.web_engine.load(QtCore.QUrl().fromLocalFile(os.path.abspath(chart_filepath)))
+        else:
             # load the default html file
             self.web_engine.load(QtCore.QUrl().fromLocalFile(os.path.abspath(self.BACKUP_REL_PATH)))

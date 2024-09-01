@@ -7,6 +7,8 @@ from StockBench.gui.results.folder.tabs.folder_effectiveness_tab import FolderEf
 from StockBench.gui.results.folder.tabs.folder_average_pl_tab import FolderAverageProfitLossTab
 from StockBench.gui.results.folder.tabs.folder_median_pl_tab import FolderMedianProfitLossTab
 
+from StockBench.gui.results.folder.tabs.folder_positions_histogram_tab import FolderPositionsHistogramTab
+
 
 class FolderResultsWindow(SimulationResultsWindow):
     def __init__(self, strategies, symbols, initial_balance, simulator, progress_observer, worker, logging_on,
@@ -36,6 +38,7 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.effectiveness_tab = FolderEffectivenessTab()
         self.average_pl_tab = FolderAverageProfitLossTab()
         self.median_pl_tab = FolderMedianProfitLossTab()
+        self.positions_histogram_tab = FolderPositionsHistogramTab()
 
         # tab widget
         self.tab_widget.addTab(self.overview_tab, 'Overview')
@@ -43,6 +46,7 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.tab_widget.addTab(self.effectiveness_tab, 'Effectiveness')
         self.tab_widget.addTab(self.average_pl_tab, 'Average P/L')
         self.tab_widget.addTab(self.median_pl_tab, 'Median P/L')
+        self.tab_widget.addTab(self.positions_histogram_tab, 'Positions (histogram)')
         self.layout.addWidget(self.tab_widget)
 
         # error message
@@ -100,6 +104,7 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.effectiveness_tab.render_data(simulation_results)
         self.average_pl_tab.render_data(simulation_results)
         self.median_pl_tab.render_data(simulation_results)
+        self.positions_histogram_tab.render_data(simulation_results)
 
     @staticmethod
     def _get_strategy_name(filepath: str):

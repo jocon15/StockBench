@@ -405,6 +405,7 @@ class Simulator:
         return {
             'strategy': self.__algorithm.strategy_filename,
             'symbol': symbol,
+            'positions': self.__single_simulation_position_archive,
             'trade_able_days': trade_able_days,
             'elapsed_time': elapsed_time,
             'trades_made': analyzer.total_trades(),
@@ -482,7 +483,8 @@ class Simulator:
 
         return {
             'strategy': self.__algorithm.strategy_filename,
-            'trade_able_days': results[0]["trade_able_days"],
+            'positions': self.__multiple_simulation_position_archive,
+            'trade_able_days': results[0]['trade_able_days'],
             'elapsed_time': elapsed_time,
             'trades_made': analyzer.total_trades(),
             'effectiveness': analyzer.effectiveness(),

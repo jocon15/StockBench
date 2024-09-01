@@ -73,6 +73,23 @@ class FolderChartingEngine(ChartingEngine):
                                                 'temp_folder_median_pl', f'')
 
     @staticmethod
+    def build_stddev_pl_chart(folder_results: list) -> str:
+        """Build a chart for average pl."""
+        strategy_names = []
+        stddev_pl_data = []
+        for result in folder_results:
+            strategy_names.append(result['strategy'])
+            stddev_pl_data.append(float(result['standard_profit_loss_deviation']))
+
+        formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, stddev_pl_data,
+                                                                     'Standard Deviation (P) P/L per Strategy',
+                                                                     OFF_BLUE)
+
+        # perform and saving or showing (returns saved filepath)
+        return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,
+                                                'temp_folder_average_pl', f'')
+
+    @staticmethod
     def build_positions_histogram_chart(folder_results: list) -> str:
         """Build a chart for average pl."""
         strategy_names = []
@@ -119,20 +136,6 @@ class FolderChartingEngine(ChartingEngine):
     @staticmethod
     def _build_multi_dataset_histogram(strategy_names: list, positions_data: list, title: str):
         """Build a multi-dataset histogram chart."""
-        rows = 1
-        cols = 1
-
-        chart_list = [[{"type": "distplot"}]]
-        chart_titles = (title,)
-
-        # Parent Plot
-        # fig = make_subplots(rows=rows, cols=cols, shared_xaxes=True, vertical_spacing=0.15, horizontal_spacing=0.05,
-        #                     specs=chart_list, subplot_titles=chart_titles)
-        #
-        # # rule counts chart
-        # dist_plot = plotter.create_distplot(positions_data, strategy_names)
-        # fig.add_trace(dist_plot, 1, 1)
-
         fig = create_distplot(positions_data, strategy_names)
 
         # set the layout

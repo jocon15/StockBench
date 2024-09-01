@@ -10,7 +10,6 @@ class FolderChartingEngine(ChartingEngine):
     @staticmethod
     def build_trades_made_chart(folder_results: list) -> str:
         """Build a chart for trades made."""
-
         strategy_names = []
         trades_made_data = []
         for result in folder_results:
@@ -23,6 +22,38 @@ class FolderChartingEngine(ChartingEngine):
         # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,
                                                 'temp_folder_trades_made', f'')
+
+    @staticmethod
+    def build_effectiveness_chart(folder_results: list) -> str:
+        """Build a chart for effectiveness."""
+        strategy_names = []
+        trades_made_data = []
+        for result in folder_results:
+            strategy_names.append(result['strategy'])
+            trades_made_data.append(float(result['effectiveness']))
+
+        formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, trades_made_data,
+                                                                     'Effectiveness % per Strategy', OFF_BLUE)
+
+        # perform and saving or showing (returns saved filepath)
+        return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,
+                                                'temp_folder_effectiveness', f'')
+
+    @staticmethod
+    def build_average_pl_chart(folder_results: list) -> str:
+        """Build a chart for average pl."""
+        strategy_names = []
+        trades_made_data = []
+        for result in folder_results:
+            strategy_names.append(result['strategy'])
+            trades_made_data.append(float(result['average_profit_loss']))
+
+        formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, trades_made_data,
+                                                                     'Average P/L per Strategy', OFF_BLUE)
+
+        # perform and saving or showing (returns saved filepath)
+        return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,
+                                                'temp_folder_average_pl', f'')
 
     @staticmethod
     def _build_simple_bar_chart(x_values: list, y_values: list, title: str, marker_color: str) -> str:

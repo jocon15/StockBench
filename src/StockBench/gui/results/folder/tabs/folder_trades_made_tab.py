@@ -3,7 +3,7 @@ from StockBench.gui.results.base.simple_chart_tab import SimpleChartTab
 
 
 class FolderTradesMadeTab(SimpleChartTab):
-    """Tab for folder trades made results chart
+    """Tab for folder trades made results chart.
 
     Note: Cannot inherit from ResultsTab because
     """

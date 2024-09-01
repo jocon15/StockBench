@@ -3,6 +3,8 @@ from time import perf_counter
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.folder.tabs.folder_overview_tab import FolderOverViewTab
 from StockBench.gui.results.folder.tabs.folder_trades_made_tab import FolderTradesMadeTab
+from StockBench.gui.results.folder.tabs.folder_effectiveness_tab import FolderEffectivenessTab
+from StockBench.gui.results.folder.tabs.folder_average_pl_tab import FolderAveragePLTab
 
 
 class FolderResultsWindow(SimulationResultsWindow):
@@ -30,10 +32,14 @@ class FolderResultsWindow(SimulationResultsWindow):
         # tab creation
         self.overview_tab = FolderOverViewTab(strategies, self.progress_observers)
         self.trades_made_tab = FolderTradesMadeTab()
+        self.effectiveness_tab = FolderEffectivenessTab()
+        self.average_pl_tab = FolderAveragePLTab()
 
         # tab widget
         self.tab_widget.addTab(self.overview_tab, 'Overview')
         self.tab_widget.addTab(self.trades_made_tab, 'Trades Made')
+        self.tab_widget.addTab(self.effectiveness_tab, 'Effectiveness')
+        self.tab_widget.addTab(self.average_pl_tab, 'Average P/L')
         self.layout.addWidget(self.tab_widget)
 
         # error message
@@ -88,6 +94,8 @@ class FolderResultsWindow(SimulationResultsWindow):
     def _render_data(self, simulation_results: dict):
         self.overview_tab.render_data(simulation_results)
         self.trades_made_tab.render_data(simulation_results)
+        self.effectiveness_tab.render_data(simulation_results)
+        self.average_pl_tab.render_data(simulation_results)
 
     @staticmethod
     def _get_strategy_name(filepath: str):

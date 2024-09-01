@@ -4,7 +4,8 @@ from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.folder.tabs.folder_overview_tab import FolderOverViewTab
 from StockBench.gui.results.folder.tabs.folder_trades_made_tab import FolderTradesMadeTab
 from StockBench.gui.results.folder.tabs.folder_effectiveness_tab import FolderEffectivenessTab
-from StockBench.gui.results.folder.tabs.folder_average_pl_tab import FolderAveragePLTab
+from StockBench.gui.results.folder.tabs.folder_average_pl_tab import FolderAverageProfitLossTab
+from StockBench.gui.results.folder.tabs.folder_median_pl_tab import FolderMedianProfitLossTab
 
 
 class FolderResultsWindow(SimulationResultsWindow):
@@ -33,13 +34,15 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.overview_tab = FolderOverViewTab(strategies, self.progress_observers)
         self.trades_made_tab = FolderTradesMadeTab()
         self.effectiveness_tab = FolderEffectivenessTab()
-        self.average_pl_tab = FolderAveragePLTab()
+        self.average_pl_tab = FolderAverageProfitLossTab()
+        self.median_pl_tab = FolderMedianProfitLossTab()
 
         # tab widget
         self.tab_widget.addTab(self.overview_tab, 'Overview')
         self.tab_widget.addTab(self.trades_made_tab, 'Trades Made')
         self.tab_widget.addTab(self.effectiveness_tab, 'Effectiveness')
         self.tab_widget.addTab(self.average_pl_tab, 'Average P/L')
+        self.tab_widget.addTab(self.median_pl_tab, 'Median P/L')
         self.layout.addWidget(self.tab_widget)
 
         # error message
@@ -96,6 +99,7 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.trades_made_tab.render_data(simulation_results)
         self.effectiveness_tab.render_data(simulation_results)
         self.average_pl_tab.render_data(simulation_results)
+        self.median_pl_tab.render_data(simulation_results)
 
     @staticmethod
     def _get_strategy_name(filepath: str):

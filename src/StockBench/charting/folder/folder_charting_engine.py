@@ -56,6 +56,22 @@ class FolderChartingEngine(ChartingEngine):
                                                 'temp_folder_average_pl', f'')
 
     @staticmethod
+    def build_median_pl_chart(folder_results: list) -> str:
+        """Build a chart for average pl."""
+        strategy_names = []
+        trades_made_data = []
+        for result in folder_results:
+            strategy_names.append(result['strategy'])
+            trades_made_data.append(float(result['median_profit_loss']))
+
+        formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, trades_made_data,
+                                                                     'Median P/L per Strategy', OFF_BLUE)
+
+        # perform and saving or showing (returns saved filepath)
+        return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,
+                                                'temp_folder_median_pl', f'')
+
+    @staticmethod
     def _build_simple_bar_chart(x_values: list, y_values: list, title: str, marker_color: str) -> str:
         """Build a simple bar chart."""
         rows = 1

@@ -2,7 +2,7 @@ from StockBench.charting.folder.folder_charting_engine import FolderChartingEngi
 from StockBench.gui.results.base.simple_chart_tab import SimpleChartTab
 
 
-class FolderAveragePLTab(SimpleChartTab):
+class FolderAverageProfitLossTab(SimpleChartTab):
     """Tab for folder trades made results chart.
 
     Note: Cannot inherit from ResultsTab because

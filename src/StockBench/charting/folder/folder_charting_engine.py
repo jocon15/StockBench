@@ -85,7 +85,7 @@ class FolderChartingEngine(ChartingEngine):
             positions_data.append(data_list)
 
         formatted_fig = FolderChartingEngine._build_multi_dataset_histogram(strategy_names, positions_data,
-                                                                            'Positions Histogram per Strategy')
+                                                                            'Position P/L Distribution per Strategy')
 
         # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,

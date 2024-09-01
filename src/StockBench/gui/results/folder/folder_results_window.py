@@ -101,13 +101,15 @@ class FolderResultsWindow(SimulationResultsWindow):
         return {"results": results, 'elapsed_time': elapsed_time}
 
     def _render_data(self, simulation_results: dict):
-        self.overview_tab.render_data(simulation_results)
-        self.trades_made_tab.render_data(simulation_results)
-        self.effectiveness_tab.render_data(simulation_results)
-        self.average_pl_tab.render_data(simulation_results)
-        self.median_pl_tab.render_data(simulation_results)
-        self.stddev_pl_tab.render_data(simulation_results)
-        self.positions_histogram_tab.render_data(simulation_results)
+        # only run if all symbols had enough data
+        if 'results' in simulation_results.keys():
+            self.overview_tab.render_data(simulation_results)
+            self.trades_made_tab.render_data(simulation_results)
+            self.effectiveness_tab.render_data(simulation_results)
+            self.average_pl_tab.render_data(simulation_results)
+            self.median_pl_tab.render_data(simulation_results)
+            self.stddev_pl_tab.render_data(simulation_results)
+            self.positions_histogram_tab.render_data(simulation_results)
 
     @staticmethod
     def _get_strategy_name(filepath: str):

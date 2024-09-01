@@ -41,6 +41,22 @@ class FolderChartingEngine(ChartingEngine):
                                                 'temp_folder_effectiveness', f'')
 
     @staticmethod
+    def build_total_pl_chart(folder_results: list) -> str:
+        """Build a chart for effectiveness."""
+        strategy_names = []
+        total_pl_data = []
+        for result in folder_results:
+            strategy_names.append(result['strategy'])
+            total_pl_data.append(float(result['total_profit_loss']))
+
+        formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, total_pl_data,
+                                                                     'Total P/L per Strategy', OFF_BLUE)
+
+        # perform and saving or showing (returns saved filepath)
+        return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,
+                                                'temp_folder_total_pl', f'')
+
+    @staticmethod
     def build_average_pl_chart(folder_results: list) -> str:
         """Build a chart for average pl."""
         strategy_names = []
@@ -87,7 +103,7 @@ class FolderChartingEngine(ChartingEngine):
 
         # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,
-                                                'temp_folder_average_pl', f'')
+                                                'temp_folder_stddev_pl', f'')
 
     @staticmethod
     def build_positions_histogram_chart(folder_results: list) -> str:

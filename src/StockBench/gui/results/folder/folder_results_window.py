@@ -4,6 +4,7 @@ from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.folder.tabs.folder_overview_tab import FolderOverViewTab
 from StockBench.gui.results.folder.tabs.folder_trades_made_tab import FolderTradesMadeTab
 from StockBench.gui.results.folder.tabs.folder_effectiveness_tab import FolderEffectivenessTab
+from StockBench.gui.results.folder.tabs.folder_total_pl_tab import FolderTotalProfitLossTab
 from StockBench.gui.results.folder.tabs.folder_average_pl_tab import FolderAverageProfitLossTab
 from StockBench.gui.results.folder.tabs.folder_median_pl_tab import FolderMedianProfitLossTab
 from StockBench.gui.results.folder.tabs.folder_stddev_pl_tab import FolderStandardDeviationProfitLossTab
@@ -36,6 +37,7 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.overview_tab = FolderOverViewTab(strategies, self.progress_observers)
         self.trades_made_tab = FolderTradesMadeTab()
         self.effectiveness_tab = FolderEffectivenessTab()
+        self.total_pl_tab = FolderTotalProfitLossTab()
         self.average_pl_tab = FolderAverageProfitLossTab()
         self.median_pl_tab = FolderMedianProfitLossTab()
         self.stddev_pl_tab = FolderStandardDeviationProfitLossTab()
@@ -45,6 +47,7 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.tab_widget.addTab(self.overview_tab, 'Overview')
         self.tab_widget.addTab(self.trades_made_tab, 'Trades Made')
         self.tab_widget.addTab(self.effectiveness_tab, 'Effectiveness')
+        self.tab_widget.addTab(self.total_pl_tab, 'Total P/L')
         self.tab_widget.addTab(self.average_pl_tab, 'Average P/L')
         self.tab_widget.addTab(self.median_pl_tab, 'Median P/L')
         self.tab_widget.addTab(self.stddev_pl_tab, 'Stddev P/L')
@@ -106,6 +109,7 @@ class FolderResultsWindow(SimulationResultsWindow):
             self.overview_tab.render_data(simulation_results)
             self.trades_made_tab.render_data(simulation_results)
             self.effectiveness_tab.render_data(simulation_results)
+            self.total_pl_tab.render_data(simulation_results)
             self.average_pl_tab.render_data(simulation_results)
             self.median_pl_tab.render_data(simulation_results)
             self.stddev_pl_tab.render_data(simulation_results)

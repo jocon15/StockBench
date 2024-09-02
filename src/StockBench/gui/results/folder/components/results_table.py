@@ -60,15 +60,16 @@ class FolderResultsTable(QWidget):
             self.table.setItem(row, 6, stddev_pl_cell)
 
     def on_toggle_table_heatmap(self):
-        if self.toggle_heatmap_btn.isChecked():
-            self._apply_table_heatmap()
-            self.toggle_heatmap_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
-        else:
-            self._remove_table_heatmap()
-            self.toggle_heatmap_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
+        # check if data exists in the table
+        if self.table.item(3, 3) is not None:
+            if self.toggle_heatmap_btn.isChecked():
+                self._apply_table_heatmap()
+                self.toggle_heatmap_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
+            else:
+                self._remove_table_heatmap()
+                self.toggle_heatmap_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
 
     def _apply_table_heatmap(self):
-        # FIXME: implement error checks
         hsv_range = 100
 
         for column_index in range(1, 7):
@@ -86,7 +87,6 @@ class FolderResultsTable(QWidget):
                 self.table.item(row_index, column_index).setBackground(QBrush(color))
 
     def _remove_table_heatmap(self):
-        # FIXME: implement error checks
         for column_index in range(1, 7):
             for row_index in range(self.table.rowCount()):
                 self.table.item(row_index, column_index).setBackground(QBrush(QColor(32, 33, 36)))

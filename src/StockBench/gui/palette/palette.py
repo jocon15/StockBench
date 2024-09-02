@@ -55,6 +55,23 @@ class Palette:
     LINE_EDIT_STYLESHEET = """background-color:#303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
             text-indent:5px;"""
 
+    SIMPLE_SECONDARY_BTN = """
+                QPushButton
+                {
+                    color: #FFF;
+                    background-color: #303134;
+                    margin-left: auto;
+                    margin-right:auto;
+                    width: 40%;
+                    height:25px;
+                    border-radius: 10px;
+                }
+                QPushButton:hover
+                {
+                    background-color: #3f4145;
+                }
+    """
+
     TOGGLE_BTN_ENABLED_STYLESHEET = """
                 QPushButton
                 {

@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QWidget, QVBoxLayout, QPushButton
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QColor
 from StockBench.gui.palette.palette import Palette
 
@@ -15,11 +16,12 @@ class FolderResultsTable(QWidget):
 
         # table controls
         self.toggle_heatmap_btn = QPushButton()
+        self.toggle_heatmap_btn.setFixedSize(400, 30)
         self.toggle_heatmap_btn.setText('Toggle Table Column Heatmap')
         self.toggle_heatmap_btn.setCheckable(True)
         self.toggle_heatmap_btn.clicked.connect(self.on_toggle_table_heatmap)  # noqa
-        self.toggle_heatmap_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)  # default off
-        self.layout.addWidget(self.toggle_heatmap_btn)
+        self.toggle_heatmap_btn.setStyleSheet(Palette.SIMPLE_SECONDARY_BTN)  # default off
+        self.layout.addWidget(self.toggle_heatmap_btn, alignment=Qt.AlignmentFlag.AlignLeft)
 
         # table
         self.table = QTableWidget()
@@ -64,10 +66,8 @@ class FolderResultsTable(QWidget):
         if self.table.item(3, 3) is not None:
             if self.toggle_heatmap_btn.isChecked():
                 self._apply_table_heatmap()
-                self.toggle_heatmap_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
             else:
                 self._remove_table_heatmap()
-                self.toggle_heatmap_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
 
     def _apply_table_heatmap(self):
         hsv_range = 100

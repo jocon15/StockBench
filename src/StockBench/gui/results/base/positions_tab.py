@@ -1,7 +1,7 @@
-from StockBench.gui.results.base.base.result_tab import Tab
+from StockBench.gui.results.base.base.result_tab import ResultsTab
 
 
-class PositionsTab(Tab):
+class PositionsResultsTab(ResultsTab):
     """Abstract base class for a positions analysis tab."""
     CHART_KEY = 'position_analysis_chart_filepath'
 

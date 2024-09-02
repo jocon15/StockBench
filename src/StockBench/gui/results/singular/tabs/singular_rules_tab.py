@@ -1,7 +1,7 @@
-from StockBench.gui.results.base.rules_tab import RulesTab
+from StockBench.gui.results.base.rules_tab import RulesResultsTab
 
 
-class SingularRulesTab(RulesTab):
+class SingularRulesTab(RulesResultsTab):
     """Tab showing simulation rule analysis for single-symbol simulation results."""
     def __init__(self, side):
         super().__init__(side)

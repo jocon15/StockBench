@@ -1,7 +1,7 @@
-from StockBench.gui.results.base.base.result_tab import Tab
+from StockBench.gui.results.base.base.result_tab import ResultsTab
 
 
-class RulesTab(Tab):
+class RulesResultsTab(ResultsTab):
     """Abstract base class for a rules analysis tab."""
     def __init__(self, side):
         super().__init__(f'{side}_rule_analysis_chart_filepath')

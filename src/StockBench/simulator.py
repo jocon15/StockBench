@@ -9,11 +9,11 @@ from datetime import datetime
 from StockBench.constants import BUY_SIDE, SELL_SIDE, SECONDS_1_DAY, STOCK_SPLIT_PLPC
 from StockBench.broker.broker import Broker
 from StockBench.export.window_data_exporter import WindowDataExporter
-from StockBench.display.display import Display
 from StockBench.position.position import Position
 from concurrent.futures import ProcessPoolExecutor
-from StockBench.display.singular.singular_display import SingularDisplay
-from StockBench.display.multi.multiple_display import MultipleDisplay
+from StockBench.charting.charting_engine import ChartingEngine
+from StockBench.charting.singular.singular_charting_engine import SingularChartingEngine
+from StockBench.charting.multi.multi_charting_engine import MultiChartingEngine
 from StockBench.account.user_account import UserAccount
 from StockBench.analysis.analyzer import SimulationAnalyzer
 from StockBench.algorithm.algorithm import Algorithm
@@ -154,7 +154,7 @@ class Simulator:
         # build the algorithm using the strategy
         self.__algorithm = Algorithm(strategy, self.__available_indicators.values())
 
-    def run(self, symbol: str, results_depth=CHARTS_AND_DATA, save_option=Display.TEMP_SAVE,
+    def run(self, symbol: str, results_depth=CHARTS_AND_DATA, save_option=ChartingEngine.TEMP_SAVE,
             progress_observer=None) -> dict:
         """Run a simulation on an asset.
 
@@ -202,7 +202,7 @@ class Simulator:
     def run_multiple(self,
                      symbols: list,
                      results_depth=CHARTS_AND_DATA,
-                     save_option=Display.TEMP_SAVE,
+                     save_option=ChartingEngine.TEMP_SAVE,
                      progress_observer=None) -> dict:
         """Simulate a list of assets.
 
@@ -380,16 +380,16 @@ class Simulator:
         if results_depth == self.CHARTS_AND_DATA:
             # faster to do it synchronously for singular
             gui_terminal_log.info('Building overview chart...')
-            overview_chart_filepath = SingularDisplay.chart_overview(chopped_temp_df, symbol,
+            overview_chart_filepath = SingularChartingEngine.chart_overview(chopped_temp_df, symbol,
                                                                      self.__available_indicators.values(), save_option)
             gui_terminal_log.info('Building buy rules analysis chart...')
-            buy_rule_analysis_chart_filepath = SingularDisplay.chart_buy_rules_analysis(
+            buy_rule_analysis_chart_filepath = SingularChartingEngine.chart_buy_rules_analysis(
                 self.__single_simulation_position_archive, symbol, save_option)
             gui_terminal_log.info('Building sell rules analysis chart...')
-            sell_rule_analysis_chart_filepath = SingularDisplay.chart_sell_rules_analysis(
+            sell_rule_analysis_chart_filepath = SingularChartingEngine.chart_sell_rules_analysis(
                 self.__single_simulation_position_archive, symbol, save_option)
             gui_terminal_log.info('Building positions analysis charts...')
-            position_analysis_chart_filepath = SingularDisplay.chart_positions_analysis(
+            position_analysis_chart_filepath = SingularChartingEngine.chart_positions_analysis(
                 self.__single_simulation_position_archive, symbol, save_option)
 
         log.info('Simulation complete!')
@@ -405,6 +405,7 @@ class Simulator:
         return {
             'strategy': self.__algorithm.strategy_filename,
             'symbol': symbol,
+            'positions': self.__single_simulation_position_archive,
             'trade_able_days': trade_able_days,
             'elapsed_time': elapsed_time,
             'trades_made': analyzer.total_trades(),
@@ -453,17 +454,17 @@ class Simulator:
         if results_depth == self.CHARTS_AND_DATA:
             with ProcessPoolExecutor() as executor:
                 gui_terminal_log.info('Building overview chart...')
-                future1 = executor.submit(MultipleDisplay.chart_overview, results, self.__account.get_initial_balance(),
+                future1 = executor.submit(MultiChartingEngine.chart_overview, results, self.__account.get_initial_balance(),
                                           save_option)
 
                 gui_terminal_log.info('Building buy rules analysis chart...')
-                future2 = executor.submit(MultipleDisplay.chart_buy_rules_analysis,
+                future2 = executor.submit(MultiChartingEngine.chart_buy_rules_analysis,
                                           self.__multiple_simulation_position_archive, save_option),
                 gui_terminal_log.info('Building sell rules analysis chart...')
-                future3 = executor.submit(MultipleDisplay.chart_sell_rules_analysis,
+                future3 = executor.submit(MultiChartingEngine.chart_sell_rules_analysis,
                                           self.__multiple_simulation_position_archive, save_option),
                 gui_terminal_log.info('Building positions analysis charts...')
-                future4 = executor.submit(MultipleDisplay.chart_positions_analysis,
+                future4 = executor.submit(MultiChartingEngine.chart_positions_analysis,
                                           self.__multiple_simulation_position_archive, save_option)
 
                 overview_chart_filepath = future1.result()
@@ -482,7 +483,8 @@ class Simulator:
 
         return {
             'strategy': self.__algorithm.strategy_filename,
-            'trade_able_days': results[0]["trade_able_days"],
+            'positions': self.__multiple_simulation_position_archive,
+            'trade_able_days': results[0]['trade_able_days'],
             'elapsed_time': elapsed_time,
             'trades_made': analyzer.total_trades(),
             'effectiveness': analyzer.effectiveness(),

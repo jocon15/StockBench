@@ -55,11 +55,54 @@ class Palette:
     LINE_EDIT_STYLESHEET = """background-color:#303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
             text-indent:5px;"""
 
-    TOGGLE_BTN_ENABLED_STYLESHEET = """background-color:#04ba5f;margin-left:auto;margin-right:auto;
-            width:40%;height:25px;border-radius:10px;"""
+    SIMPLE_SECONDARY_BTN = """
+                QPushButton
+                {
+                    color: #FFF;
+                    background-color: #303134;
+                    margin-left: auto;
+                    margin-right:auto;
+                    width: 40%;
+                    height:25px;
+                    border-radius: 10px;
+                }
+                QPushButton:hover
+                {
+                    background-color: #3f4145;
+                }
+    """
 
-    TOGGLE_BTN_DISABLED_STYLESHEET = """background-color: #303134;margin-left: auto;
-                margin-right:auto;width: 40%;height:25px;border-radius: 10px;"""
+    TOGGLE_BTN_ENABLED_STYLESHEET = """
+                QPushButton
+                {
+                    background-color:#04ba5f;
+                    margin-left:auto;
+                    margin-right:auto;
+                    width:40%;
+                    height:25px;
+                    border-radius:10px;
+                }
+                QPushButton:hover
+                {
+                    background-color: #4ab577;
+                }
+                """
+
+    TOGGLE_BTN_DISABLED_STYLESHEET = """
+                QPushButton
+                {
+                    background-color: #303134;
+                    margin-left: auto;
+                    margin-right:auto;
+                    width: 40%;
+                    height:25px;
+                    border-radius: 10px;
+                }
+                QPushButton:hover
+                {
+                    background-color: #3f4145;
+                }
+                """
 
     RUN_BTN_STYLESHEET = """
                 QPushButton
@@ -70,7 +113,7 @@ class Palette:
                 }
                 QPushButton:hover
                 {
-                    background-color: #04ba50;
+                    background-color: #4ab577;
                 }
                 """
 

@@ -1,5 +1,7 @@
-from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QWidget, QVBoxLayout
+from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QWidget, QVBoxLayout, QPushButton
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QColor
+from StockBench.gui.palette.palette import Palette
 
 
 class FolderResultsTable(QWidget):
@@ -11,6 +13,15 @@ class FolderResultsTable(QWidget):
     def __init__(self, strategies):
         super().__init__()
         self.layout = QVBoxLayout()
+
+        # table controls
+        self.toggle_heatmap_btn = QPushButton()
+        self.toggle_heatmap_btn.setFixedSize(400, 30)
+        self.toggle_heatmap_btn.setText('Toggle Table Column Heatmap')
+        self.toggle_heatmap_btn.setCheckable(True)
+        self.toggle_heatmap_btn.clicked.connect(self.on_toggle_table_heatmap)  # noqa
+        self.toggle_heatmap_btn.setStyleSheet(Palette.SIMPLE_SECONDARY_BTN)  # default off
+        self.layout.addWidget(self.toggle_heatmap_btn, alignment=Qt.AlignmentFlag.AlignLeft)
 
         # table
         self.table = QTableWidget()
@@ -49,3 +60,33 @@ class FolderResultsTable(QWidget):
             self.table.setItem(row, 4, avg_pl_cell)
             self.table.setItem(row, 5, median_pl_cell)
             self.table.setItem(row, 6, stddev_pl_cell)
+
+    def on_toggle_table_heatmap(self):
+        # check if data exists in the table
+        if self.table.item(3, 3) is not None:
+            if self.toggle_heatmap_btn.isChecked():
+                self._apply_table_heatmap()
+            else:
+                self._remove_table_heatmap()
+
+    def _apply_table_heatmap(self):
+        hsv_range = 100
+
+        for column_index in range(1, 7):
+            column_values = []
+            for row_index in range(self.table.rowCount()):
+                column_values.append(float(self.table.item(row_index, column_index).text()))
+            min_value = min(column_values)
+            value_range = max(column_values) - min_value
+            conversion_value = value_range / hsv_range
+
+            for row_index in range(self.table.rowCount()):
+                dif = float(self.table.item(row_index, column_index).text()) - min_value
+                hue_value = int(dif / conversion_value)
+                color = QColor.fromHsv(hue_value, 255, 191, 191)
+                self.table.item(row_index, column_index).setBackground(QBrush(color))
+
+    def _remove_table_heatmap(self):
+        for column_index in range(1, 7):
+            for row_index in range(self.table.rowCount()):
+                self.table.item(row_index, column_index).setBackground(QBrush(QColor(32, 33, 36)))

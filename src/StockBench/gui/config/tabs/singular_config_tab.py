@@ -17,14 +17,14 @@ class SingularConfigTab(ConfigTab):
         self.layout.addWidget(label)
 
         self.strategy_selection_box = StrategySelection()
-        self.strategy_selection_box.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
+        self.strategy_selection_box.setStyleSheet(Palette.INPUT_BOX_STYLESHEET)
         self.layout.addWidget(self.strategy_selection_box)
 
         self.strategy_studio_btn = QPushButton()
         self.strategy_studio_btn.setText('Strategy Studio (beta)')
         self.strategy_studio_btn.clicked.connect(lambda: self.on_strategy_studio_btn_clicked(  # noqa
                                                  self.strategy_selection_box.filepath_box.text()))
-        self.strategy_studio_btn.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
+        self.strategy_studio_btn.setStyleSheet(Palette.SECONDARY_BTN)
         self.layout.addWidget(self.strategy_studio_btn)
 
         self.layout.addWidget(self.simulation_length_label)

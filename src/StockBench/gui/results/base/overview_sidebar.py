@@ -3,16 +3,11 @@ from abc import abstractmethod
 from PyQt6.QtCore import Qt, QTimer, QThreadPool
 from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton
+from StockBench.gui.palette.palette import Palette
 
 
 class OverviewSideBar(QWidget):
     """Abstract base class for a sidebar widget."""
-    OUTPUT_BOX_STYLESHEET = """color: #fff; background-color: #303136; border-radius: 8px;border: 0px; padding: 5px; 
-    max-height: 300px;"""
-
-    EXPORT_BTN_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;"""
-
-    HEADER_STYLESHEET = """max-height:45px; color:#FFF;font-size:20px;font-weight:bold;"""
 
     def __init__(self, progress_observer):
         super().__init__()
@@ -29,35 +24,35 @@ class OverviewSideBar(QWidget):
         # metadata header
         self.metadata_header = QLabel()
         self.metadata_header.setText('Metadata')
-        self.metadata_header.setStyleSheet(self.HEADER_STYLESHEET)
+        self.metadata_header.setStyleSheet(Palette.SIDEBAR_HEADER_STYLESHEET)
 
         # results header
         self.results_header = QLabel()
         self.results_header.setText('Simulation Results')
-        self.results_header.setStyleSheet(self.HEADER_STYLESHEET)
+        self.results_header.setStyleSheet(Palette.SIDEBAR_HEADER_STYLESHEET)
 
         # export JSON button
         self.export_json_btn = QPushButton()
         self.export_json_btn.setText('Export to Clipboard (JSON)')
-        self.export_json_btn.setStyleSheet(self.EXPORT_BTN_STYLESHEET)
+        self.export_json_btn.setStyleSheet(Palette.SECONDARY_BTN)
         self.export_json_btn.clicked.connect(self.on_export_json_btn_clicked)  # noqa
 
         # export excel button
         self.export_excel_btn = QPushButton()
         self.export_excel_btn.setText('Export to Excel (.xlsx)')
-        self.export_excel_btn.setStyleSheet(self.EXPORT_BTN_STYLESHEET)
+        self.export_excel_btn.setStyleSheet(Palette.SECONDARY_BTN)
         self.export_excel_btn.clicked.connect(self.on_export_excel_btn_clicked)  # noqa
 
         # output box (terminal)
         self.output_box = QListWidget()
         self.output_box.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.output_box.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.output_box.setStyleSheet(self.OUTPUT_BOX_STYLESHEET)
+        self.output_box.setStyleSheet(Palette.SIDEBAR_OUTPUT_BOX_STYLESHEET)
 
         # status header
         self.status_header = QLabel()
         self.status_header.setText('Status')
-        self.status_header.setStyleSheet(self.HEADER_STYLESHEET)
+        self.status_header.setStyleSheet(Palette.SIDEBAR_HEADER_STYLESHEET)
 
         # timer to periodically read from the progress observer and update output box
         self.timer = QTimer()

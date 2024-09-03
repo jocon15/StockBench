@@ -3,13 +3,10 @@ import json
 
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton
 from PyQt6.QtWidgets import QFileDialog
+from StockBench.gui.palette.palette import Palette
 
 
 class StrategySelection(QWidget):
-    FILEPATH_BOX_STYLESHEET = """background-color: #303134;color: #FFF;"""
-
-    SELECT_FILE_BTN_STYLESHEET = """background-color: #303134;color: #FFF;"""
-
     CACHE_FILE_FILEPATH = 'cache.json'
 
     DEFAULT_CACHE_KEY = 'cached_strategy_filepath'
@@ -20,14 +17,14 @@ class StrategySelection(QWidget):
         self.layout = QHBoxLayout()
 
         self.filepath_box = QLabel()
-        self.filepath_box.setStyleSheet(self.FILEPATH_BOX_STYLESHEET)
+        self.filepath_box.setStyleSheet(Palette.INPUT_BOX_STYLESHEET)
         self.layout.addWidget(self.filepath_box)
         self.apply_cached_strategy_filepath(cache_key)
 
         self.select_file_btn = QPushButton()
         self.select_file_btn.setText('Select File')
         self.select_file_btn.clicked.connect(self.on_select_file_btn_clicked)  # noqa
-        self.select_file_btn.setStyleSheet(self.SELECT_FILE_BTN_STYLESHEET)
+        self.select_file_btn.setStyleSheet(Palette.SECONDARY_BTN)
         self.layout.addWidget(self.select_file_btn)
 
         self.setLayout(self.layout)

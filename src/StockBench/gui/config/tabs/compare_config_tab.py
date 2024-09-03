@@ -22,14 +22,14 @@ class CompareConfigTab(ConfigTab):
         self.layout.addWidget(label)
 
         self.strategy_1_selection_box = StrategySelection(self.STRATEGY_1_CACHE_KEY)
-        self.strategy_1_selection_box.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
+        self.strategy_1_selection_box.setStyleSheet(Palette.INPUT_BOX_STYLESHEET)
         self.layout.addWidget(self.strategy_1_selection_box)
 
         self.strategy_1_studio_btn = QPushButton()
         self.strategy_1_studio_btn.setText('Strategy Studio (beta)')
         self.strategy_1_studio_btn.clicked.connect(lambda: self.on_strategy_studio_btn_clicked(  # noqa
                                                    self.strategy_1_selection_box.filepath_box.text()))
-        self.strategy_1_studio_btn.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
+        self.strategy_1_studio_btn.setStyleSheet(Palette.SECONDARY_BTN)
         self.layout.addWidget(self.strategy_1_studio_btn)
 
         label = QLabel()
@@ -38,14 +38,14 @@ class CompareConfigTab(ConfigTab):
         self.layout.addWidget(label)
 
         self.strategy_2_selection_box = StrategySelection(self.STRATEGY_2_CACHE_KEY)
-        self.strategy_2_selection_box.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
+        self.strategy_2_selection_box.setStyleSheet(Palette.INPUT_BOX_STYLESHEET)
         self.layout.addWidget(self.strategy_2_selection_box)
 
         self.strategy_2_studio_btn = QPushButton()
         self.strategy_2_studio_btn.setText('Strategy Studio (beta)')
         self.strategy_2_studio_btn.clicked.connect(lambda: self.on_strategy_studio_btn_clicked(  # noqa
                                                    self.strategy_2_selection_box.filepath_box.text()))
-        self.strategy_2_studio_btn.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
+        self.strategy_2_studio_btn.setStyleSheet(Palette.SECONDARY_BTN)
         self.layout.addWidget(self.strategy_2_studio_btn)
 
         self.layout.addWidget(self.simulation_length_label)

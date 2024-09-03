@@ -15,7 +15,7 @@ class FolderSelector(QWidget):
         self.select_folder_btn = QPushButton()
         self.select_folder_btn.setText('Select Folder')
         self.select_folder_btn.clicked.connect(self.on_select_folder_btn_clicked)  # noqa
-        self.select_folder_btn.setStyleSheet(Palette.SELECT_FILE_BTN_STYLESHEET)
+        self.select_folder_btn.setStyleSheet(Palette.SECONDARY_BTN)
         self.layout.addWidget(self.select_folder_btn)
 
         self.setLayout(self.layout)

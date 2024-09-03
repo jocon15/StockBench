@@ -20,7 +20,7 @@ class FolderResultsTable(QWidget):
         self.toggle_heatmap_btn.setText('Toggle Table Column Heatmap')
         self.toggle_heatmap_btn.setCheckable(True)
         self.toggle_heatmap_btn.clicked.connect(self.on_toggle_table_heatmap)  # noqa
-        self.toggle_heatmap_btn.setStyleSheet(Palette.SIMPLE_SECONDARY_BTN)  # default off
+        self.toggle_heatmap_btn.setStyleSheet(Palette.SECONDARY_BTN)  # default off
         self.layout.addWidget(self.toggle_heatmap_btn, alignment=Qt.AlignmentFlag.AlignLeft)
 
         # table

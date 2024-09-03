@@ -41,11 +41,11 @@ class Palette:
 
     INPUT_LABEL_STYLESHEET = """color: #FFF;"""
 
+    INPUT_BOX_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;
+            height:25px;"""
+
     TEXT_BOX_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
             text-indent:3px;"""
-
-    SELECT_FILE_BTN_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;
-            height:25px;"""
 
     COMBOBOX_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
             text-indent:3px;"""
@@ -55,16 +55,19 @@ class Palette:
     LINE_EDIT_STYLESHEET = """background-color:#303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
             text-indent:5px;"""
 
-    SIMPLE_SECONDARY_BTN = """
+    SIDEBAR_HEADER_STYLESHEET = """max-height:45px; color:#FFF;font-size:20px;font-weight:bold;"""
+
+    SIDEBAR_OUTPUT_BOX_STYLESHEET = """color: #fff; background-color: #303136; border-radius: 8px;border: 
+    0px; padding: 5px;max-height: 300px;"""
+
+    SECONDARY_BTN = """
                 QPushButton
                 {
                     color: #FFF;
                     background-color: #303134;
-                    margin-left: auto;
-                    margin-right:auto;
-                    width: 40%;
+                    border-width:0px;
+                    border-radius:10px;
                     height:25px;
-                    border-radius: 10px;
                 }
                 QPushButton:hover
                 {

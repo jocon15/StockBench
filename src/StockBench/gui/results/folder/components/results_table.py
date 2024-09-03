@@ -83,7 +83,7 @@ class FolderResultsTable(QWidget):
             for row_index in range(self.table.rowCount()):
                 dif = float(self.table.item(row_index, column_index).text()) - min_value
                 hue_value = int(dif / conversion_value)
-                color = QColor.fromHsv(hue_value, 100, 100, 255)
+                color = QColor.fromHsv(hue_value, 255, 191, 191)
                 self.table.item(row_index, column_index).setBackground(QBrush(color))
 
     def _remove_table_heatmap(self):

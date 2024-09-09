@@ -9,7 +9,7 @@ from StockBench.function_tools.nonce import datetime_timestamp
 
 
 class ChartingEngine:
-    """Base class for a charting."""
+    """Base class for a charting engine."""
 
     TEMP_SAVE = 0
     UNIQUE_SAVE = 1

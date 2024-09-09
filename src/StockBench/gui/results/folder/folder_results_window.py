@@ -80,6 +80,8 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.progress_bar.setValue(progress)
 
         if all_bars_complete:
+            # set bar to full
+            self.progress_bar.setValue(100)
             # stop the timer
             self.timer.stop()
 

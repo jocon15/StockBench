@@ -1,14 +1,17 @@
 # StockBench
+
 <p align="center">
-    <img src ="https://img.shields.io/badge/version-1.5.0-blueviolet.svg"/> <img src ="https://img.shields.io/badge/platform-windows-yellow.svg"/> <img src ="https://img.shields.io/badge/python-^3-blue.svg" /> <img src ="https://img.shields.io/github/license/jocon15/StockBench.svg?color=orange"/>
+    <img src ="https://img.shields.io/badge/version-1.6.0-blueviolet.svg"/> <img src ="https://img.shields.io/badge/platform-windows-yellow.svg"/> <img src ="https://img.shields.io/badge/python-^3-blue.svg" /> <img src ="https://img.shields.io/github/license/jocon15/StockBench.svg?color=orange"/>
 </p>
 
 ### A back-testing app for testing stock trading strategies with historical data.
+
 <p align="center">
-	<img src="https://github.com/jocon15/StockBench/blob/master/images/singular_v2.gif" />
+    <img src="https://github.com/jocon15/StockBench/blob/master/images/singular_v2.gif" />
 </p>
 
 # How it Works
+
 StockBench is a stock simulation suite designed for testing strategies on historical data. StockBench sources market data from [Alpaca Markets](https://alpaca.markets/).
 
 StockBench is designed to test strategies that use technical analysis. StockBench allows for quite some freedom in defining a strategy. It can be simple or complex. Once you have a strategy picked out, you can play with the simulation settings. Check out the [StockBench Wiki](https://github.com/jocon15/StockBench/wiki) for more information on settings, indicators, and rules.
@@ -18,6 +21,7 @@ Now that you have everything the way you like, you can start the simulation. The
 And just like that, you have simulated a strategy on historical data. Have fun!
 
 ## Getting Started
+
 1. First, you need to get your own API keys from [Alpaca Markets](https://alpaca.markets/).
 
 2. Add them as [Environment Variables](https://github.com/jocon15/StockBench/wiki/Environment-Variables).
@@ -32,34 +36,42 @@ And just like that, you have simulated a strategy on historical data. Have fun!
 
 7. Run the simulation and view the results.
 
-| Configuration                                                                         | Results                                                                               |
-|:--------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------:|
+| Configuration                                                                         | Results                                                                        |
+|:-------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------:|
 | ![single](https://github.com/jocon15/StockBench/blob/master/images/configuration.png) | ![multi](https://github.com/jocon15/StockBench/blob/master/images/results.png) |
 
 Or test your strategy on multiple symbols and see overview analytics:
 ![chart](https://github.com/jocon15/StockBench/blob/master/images/multi_display.png)
 
 ## Head to Head
+
 Want to run 2 strategies side by side? We have you covered with the compare tab!
+
 <p align="center">
-	<img src="https://github.com/jocon15/StockBench/blob/master/images/compare.gif" />
+    <img src="https://github.com/jocon15/StockBench/blob/master/images/compare.gif" />
 </p>
 
 ## Additional Results Analytics
+
 Simulation results are split up into different tabs within the results window, giving you an in-depth look at how your strategy performed.
+
 <p align="center">
-	<img src="https://github.com/jocon15/StockBench/blob/master/images/additional_analytics.gif" />
+    <img src="https://github.com/jocon15/StockBench/blob/master/images/additional_analytics.gif" />
 </p>
 
 ## Strategy Studio
+
 Strategy Studio allows you to create and update strategy .json files. You can edit existing files or create new ones from a provided basic template.
+
 <p align="center">
-	<img src="https://github.com/jocon15/StockBench/blob/master/images/strategy_studio.gif" />
+    <img src="https://github.com/jocon15/StockBench/blob/master/images/strategy_studio.gif" />
 </p>
 
 ## Diving Deeper
+
 If you are curious to see the underlying data used by the simulation, you can choose to export the simulation data using the reporting option. When chosen, a report of all the data used during the simulation will be generated. The report will be an excel (.xlsx) file.
 ![report](https://github.com/jocon15/StockBench/blob/master/images/excel.png)
 
 # Roadmap
+
 Check out our [Trello Board](https://trello.com/b/XtEbMZL4/stockbench) for more information on where we're headed next.

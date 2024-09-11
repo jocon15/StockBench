@@ -7,10 +7,10 @@ from StockBench.charting.charting_engine import ChartingEngine
 
 
 class MultiChartingEngine(ChartingEngine):
-    """This class defines a charting object for a simulation where multiple stocks were simulated."""
+    """Charting tools for multiple simulation analysis."""
 
     @staticmethod
-    def chart_overview(data, initial_balance, save_option=ChartingEngine.TEMP_SAVE) -> str:
+    def build_overview_chart(data, initial_balance, save_option=ChartingEngine.TEMP_SAVE) -> str:
         rows = 2
         cols = 2
 

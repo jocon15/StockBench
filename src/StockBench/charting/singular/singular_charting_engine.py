@@ -6,18 +6,12 @@ log = logging.getLogger()
 
 
 class SingularChartingEngine(ChartingEngine):
-    """This class defines a charting object for a simulation where a single stock was simulated.
-
-    The charting object is used as an API for the simulator to chart the data. The charting will use the simulation
-    data to establish which subplots need to be added to the singular chart. The subplots abstract all of that
-    specific subplots details to make it easier to edit. This API simply aggregates the subplot objects and
-    assembles the final parent plot that gets displayed to the user.
-    """
+    """Charting tools for singular simulation analysis."""
     SUBPLOT_VERTICAL_SPACING = 0.05
 
     @staticmethod
-    def chart_overview(df, symbol, available_indicators, save_option=ChartingEngine.TEMP_SAVE) -> str:
-        """Chart the data.
+    def build_multi_indicator_chart(df, symbol, available_indicators, save_option=ChartingEngine.TEMP_SAVE) -> str:
+        """Multi-plot chart for singular simulation indicators.
 
         Args:
             df (DataFrame): The full DataFrame post-simulation.
@@ -122,7 +116,8 @@ class SingularChartingEngine(ChartingEngine):
                                                 'temp_overview_chart', f'figure_{symbol}')
 
     @staticmethod
-    def chart_buy_rules_analysis(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
+    def build_buy_rules_chart(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
+        """Builds a chart for singular analysis of buy rules."""
         rows = 2
         cols = 1
 
@@ -158,7 +153,8 @@ class SingularChartingEngine(ChartingEngine):
                                                 'temp_buy_chart', f'{symbol}_buy_rules')
 
     @staticmethod
-    def chart_sell_rules_analysis(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
+    def build_sell_rules_chart(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
+        """Builds a chart for singular analysis of sell rules."""
         rows = 2
         cols = 1
 
@@ -193,7 +189,8 @@ class SingularChartingEngine(ChartingEngine):
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, 'temp_sell_chart', f'{symbol}_sell_rules')
 
     @staticmethod
-    def chart_positions_analysis(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
+    def build_positions_chart(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
+        """Builds a chart for singular analysis of positions."""
         rows = 1
         cols = 1
 

@@ -10,7 +10,7 @@ class SingularChartingEngine(ChartingEngine):
     SUBPLOT_VERTICAL_SPACING = 0.05
 
     @staticmethod
-    def build_multi_indicator_chart(df, symbol, available_indicators, save_option=ChartingEngine.TEMP_SAVE) -> str:
+    def build_indicator_chart(df, symbol, available_indicators, save_option=ChartingEngine.TEMP_SAVE) -> str:
         """Multi-plot chart for singular simulation indicators.
 
         Args:

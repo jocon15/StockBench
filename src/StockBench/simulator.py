@@ -380,8 +380,8 @@ class Simulator:
         if results_depth == self.CHARTS_AND_DATA:
             # faster to do it synchronously for singular
             gui_terminal_log.info('Building overview chart...')
-            overview_chart_filepath = SingularChartingEngine.build_multi_indicator_chart(chopped_temp_df, symbol,
-                                                                                         self.__available_indicators.values(), save_option)
+            overview_chart_filepath = SingularChartingEngine.build_indicator_chart(chopped_temp_df, symbol,
+                                                                                   self.__available_indicators.values(), save_option)
             gui_terminal_log.info('Building buy rules analysis chart...')
             buy_rule_analysis_chart_filepath = SingularChartingEngine.build_buy_rules_chart(
                 self.__single_simulation_position_archive, symbol, save_option)
@@ -454,7 +454,7 @@ class Simulator:
         if results_depth == self.CHARTS_AND_DATA:
             with ProcessPoolExecutor() as executor:
                 gui_terminal_log.info('Building overview chart...')
-                future1 = executor.submit(MultiChartingEngine.chart_overview, results, self.__account.get_initial_balance(),
+                future1 = executor.submit(MultiChartingEngine.build_overview_chart, results, self.__account.get_initial_balance(),
                                           save_option)
 
                 gui_terminal_log.info('Building buy rules analysis chart...')

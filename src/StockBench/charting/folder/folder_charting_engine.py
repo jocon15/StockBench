@@ -6,7 +6,7 @@ from StockBench.charting.display_constants import *
 
 
 class FolderChartingEngine(ChartingEngine):
-    """Charting engine for folder charts."""
+    """Charting tools for folder simulation analysis."""
 
     @staticmethod
     def build_trades_made_chart(folder_results: list) -> str:

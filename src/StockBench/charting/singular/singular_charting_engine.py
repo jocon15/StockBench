@@ -223,3 +223,22 @@ class SingularChartingEngine(ChartingEngine):
         # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, save_option,
                                                 'temp_positions_chart', f'{symbol}_positions')
+
+    @staticmethod
+    def build_positions_histogram_chart(results: dict) -> str:
+        """Build a chart for positions histogram."""
+        # put the strategy name inside a list so we can use it in the dataset histogram
+        strategy_name = [results['strategy']]
+        positions_data = []
+
+        data_list = []
+        for position in results['positions']:
+            data_list.append(position.lifetime_profit_loss())
+        positions_data.append(data_list)
+
+        formatted_fig = ChartingEngine._build_multi_dataset_histogram(strategy_name, positions_data,
+                                                                      'Position Profit/Loss Distribution per Strategy')
+
+        # perform and saving or showing (returns saved filepath)
+        return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,
+                                                'temp_folder_positions_histogram', f'')

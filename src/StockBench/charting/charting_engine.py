@@ -5,6 +5,7 @@ import pandas as pd
 import plotly.offline as offline
 from .display_constants import *
 import plotly.graph_objects as plotter
+from plotly.figure_factory import create_distplot
 from StockBench.function_tools.nonce import datetime_timestamp
 
 
@@ -127,6 +128,17 @@ class ChartingEngine:
         return [plotter.Bar(y=df['total_pl'], marker_color=df['color'], name='Profit/Loss'),
                 plotter.Scatter(y=mean_values, marker=dict(color=MED_COLOR), name='Mean'),
                 plotter.Scatter(y=median_values, marker=dict(color=STDDEV_COLOR), name='Median')]
+
+    @staticmethod
+    def _build_multi_dataset_histogram(strategy_names: list, positions_data: list, title: str):
+        """Build a multi-dataset histogram chart."""
+        fig = create_distplot(positions_data, strategy_names)
+
+        # set the layout
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, title=title)
+
+        # format the chart (remove plotly white border)
+        return ChartingEngine.format_chart(fig)
 
     @staticmethod
     def __get_rule_statistics(positions, side) -> dict:

@@ -1,5 +1,4 @@
 from plotly.subplots import make_subplots
-from plotly.figure_factory import create_distplot
 import plotly.graph_objects as plotter
 from StockBench.charting.charting_engine import ChartingEngine
 from StockBench.charting.display_constants import *
@@ -117,8 +116,8 @@ class FolderChartingEngine(ChartingEngine):
                 data_list.append(position.lifetime_profit_loss())
             positions_data.append(data_list)
 
-        formatted_fig = FolderChartingEngine._build_multi_dataset_histogram(strategy_names, positions_data,
-                                                                            'Position P/L Distribution per Strategy')
+        formatted_fig = ChartingEngine._build_multi_dataset_histogram(strategy_names, positions_data,
+                                                                      'Position Profit/Loss Distribution per Strategy')
 
         # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,
@@ -145,17 +144,6 @@ class FolderChartingEngine(ChartingEngine):
 
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
-
-        # format the chart (remove plotly white border)
-        return ChartingEngine.format_chart(fig)
-
-    @staticmethod
-    def _build_multi_dataset_histogram(strategy_names: list, positions_data: list, title: str):
-        """Build a multi-dataset histogram chart."""
-        fig = create_distplot(positions_data, strategy_names)
-
-        # set the layout
-        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, title=title)
 
         # format the chart (remove plotly white border)
         return ChartingEngine.format_chart(fig)

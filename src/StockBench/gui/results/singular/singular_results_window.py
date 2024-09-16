@@ -1,6 +1,7 @@
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.singular.tabs.singular_overview_tab import SingularOverviewTab
 from StockBench.gui.results.singular.tabs.singular_rules_tab import SingularRulesTab
+from StockBench.gui.results.singular.tabs.singular_positions_histogram_tab import SingularPositionsHistogramTab
 from StockBench.gui.results.base.positions_tab import PositionsResultsTab
 
 
@@ -22,12 +23,14 @@ class SingularResultsWindow(SimulationResultsWindow):
         self.buy_rules_tab = SingularRulesTab('buy')
         self.sell_rules_tab = SingularRulesTab('sell')
         # positions analysis tab (gets added to layout via tab widget)
-        self.positions_analysis_tab = PositionsResultsTab()
+        self.positions_bar_tab = PositionsResultsTab()
+        self.positions_histogram_tab = SingularPositionsHistogramTab()
         # tab widget
         self.tab_widget.addTab(self.overview_tab, 'Overview')
         self.tab_widget.addTab(self.buy_rules_tab, 'Buy Rules')
         self.tab_widget.addTab(self.sell_rules_tab, 'Sell Rules')
-        self.tab_widget.addTab(self.positions_analysis_tab, 'Positions')
+        self.tab_widget.addTab(self.positions_bar_tab, 'Positions (bar)')
+        self.tab_widget.addTab(self.positions_histogram_tab, 'Positions (histogram)')
         self.layout.addWidget(self.tab_widget)
 
         # apply the layout to the window
@@ -43,4 +46,5 @@ class SingularResultsWindow(SimulationResultsWindow):
         self.overview_tab.render_data(simulation_results)
         self.buy_rules_tab.render_chart(simulation_results)
         self.sell_rules_tab.render_chart(simulation_results)
-        self.positions_analysis_tab.render_chart(simulation_results)
+        self.positions_bar_tab.render_chart(simulation_results)
+        self.positions_histogram_tab.render_data(simulation_results)

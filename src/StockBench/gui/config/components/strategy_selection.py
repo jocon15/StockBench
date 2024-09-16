@@ -4,10 +4,10 @@ import json
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton
 from PyQt6.QtWidgets import QFileDialog
 from StockBench.gui.palette.palette import Palette
+from StockBench.caching.file_cache import CACHE_FILE_FILEPATH
 
 
 class StrategySelection(QWidget):
-    CACHE_FILE_FILEPATH = 'cache.json'
 
     DEFAULT_CACHE_KEY = 'cached_strategy_filepath'
 
@@ -30,8 +30,8 @@ class StrategySelection(QWidget):
         self.setLayout(self.layout)
 
     def apply_cached_strategy_filepath(self, cache_key=None):
-        if os.path.exists(self.CACHE_FILE_FILEPATH):
-            with open(self.CACHE_FILE_FILEPATH, 'r') as file:
+        if os.path.exists(CACHE_FILE_FILEPATH):
+            with open(CACHE_FILE_FILEPATH, 'r') as file:
                 data = json.load(file)
 
             # swap the key to the passed key if one was entered (used when using h2h cached keys)

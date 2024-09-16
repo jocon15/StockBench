@@ -13,10 +13,10 @@ from StockBench.gui.palette.palette import Palette
 from StockBench.gui.studio.strategy_studio import StrategyStudioWindow
 from StockBench.constants import *
 from StockBench.simulator import Simulator
+from StockBench.caching.file_cache import CACHE_FILE_FILEPATH
 
 
 class ConfigTab(QWidget):
-    CACHE_FILE_FILEPATH = 'cache.json'
 
     DEFAULT_CACHE_KEY = 'cached_strategy_filepath'
 
@@ -243,7 +243,7 @@ class ConfigTab(QWidget):
             key = cache_key
 
         # get the existing cache data
-        with open(self.CACHE_FILE_FILEPATH, 'r') as file:
+        with open(CACHE_FILE_FILEPATH, 'r') as file:
             data = json.load(file)
 
         # add the filepath to the cache data
@@ -253,7 +253,7 @@ class ConfigTab(QWidget):
             data[key] = strategy_filepath
 
         # write the cache data
-        with open(self.CACHE_FILE_FILEPATH, 'w+') as file:
+        with open(CACHE_FILE_FILEPATH, 'w+') as file:
             json.dump(data, file)
 
     @abstractmethod

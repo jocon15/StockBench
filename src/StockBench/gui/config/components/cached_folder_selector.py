@@ -2,11 +2,10 @@ import os
 import json
 from StockBench.gui.palette.palette import Palette
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton, QFileDialog
+from StockBench.caching.file_cache import CACHE_FILE_FILEPATH
 
 
 class CachedFolderSelector(QWidget):
-    CACHE_FILE_FILEPATH = 'cache.json'
-
     DEFAULT_CACHE_KEY = 'cached_folderpath'
 
     def __init__(self):
@@ -28,8 +27,8 @@ class CachedFolderSelector(QWidget):
         self.setLayout(self.layout)
 
     def apply_cached_folderpath(self):
-        if os.path.exists(self.CACHE_FILE_FILEPATH):
-            with open(self.CACHE_FILE_FILEPATH, 'r') as file:
+        if os.path.exists(CACHE_FILE_FILEPATH):
+            with open(CACHE_FILE_FILEPATH, 'r') as file:
                 data = json.load(file)
 
             if self.DEFAULT_CACHE_KEY in data.keys():

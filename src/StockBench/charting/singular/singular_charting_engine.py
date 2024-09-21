@@ -241,4 +241,4 @@ class SingularChartingEngine(ChartingEngine):
 
         # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,
-                                                'temp_folder_positions_histogram', f'')
+                                                'temp_positions_histogram_chart', f'')

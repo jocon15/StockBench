@@ -117,7 +117,7 @@ class MultiChartingEngine(ChartingEngine):
 
         # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, save_option,
-                                         'temp_sell_chart', 'multi_sell_rules')
+                                                'temp_sell_chart', 'multi_sell_rules')
 
     @staticmethod
     def chart_positions_analysis(positions, save_option=ChartingEngine.TEMP_SAVE) -> str:
@@ -152,7 +152,26 @@ class MultiChartingEngine(ChartingEngine):
 
         # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, save_option,
-                                         'temp_positions_chart', 'multi_positions')
+                                                'temp_positions_chart', 'multi_positions')
+
+    @staticmethod
+    def build_positions_histogram_chart(results: dict) -> str:
+        """Build a chart for positions histogram."""
+        # put the strategy name inside a list so we can use it in the dataset histogram
+        strategy_name = [results['strategy']]
+        positions_data = []
+
+        data_list = []
+        for position in results['positions']:
+            data_list.append(position.lifetime_profit_loss())
+        positions_data.append(data_list)
+
+        formatted_fig = ChartingEngine._build_multi_dataset_histogram(strategy_name, positions_data,
+                                                                      'Position Profit/Loss Distribution per Strategy')
+
+        # perform and saving or showing (returns saved filepath)
+        return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,
+                                                'temp_positions_histogram_chart', f'')
 
     @staticmethod
     def __overview_profit_loss_bar(data):

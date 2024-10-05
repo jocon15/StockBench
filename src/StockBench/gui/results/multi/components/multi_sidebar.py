@@ -21,8 +21,6 @@ class MultiOverviewSideBar(OverviewSideBar):
 
         self.layout.addWidget(self.export_json_btn)
 
-        self.layout.addWidget(self.export_excel_btn)
-
         # pushes the status header and output box to the bottom
         self.layout.addStretch()
 

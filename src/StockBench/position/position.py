@@ -108,7 +108,7 @@ class Position:
             raise Exception('You need to close the position first')
         return round(((self.__sell_price - self.__buy_price) / self.__buy_price) * 100.0, 2)
 
-    def get_duration(self):
+    def get_duration(self) -> int:
         """Calculates the duration of the position.
 
         return:

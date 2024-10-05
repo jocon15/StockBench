@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QWidget, QVBoxLayout
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QColor
 from StockBench.gui.palette.palette import Palette
+from StockBench.constants import *
 
 
 class FolderResultsTable(QWidget):
@@ -37,13 +38,13 @@ class FolderResultsTable(QWidget):
         results = simulation_results['results']
 
         for row, result in enumerate(results):
-            strategy_cell = QTableWidgetItem(str(result['strategy']))
-            trades_made_cell = QTableWidgetItem(str(result['trades_made']))
-            effectiveness_cell = QTableWidgetItem(str(result['effectiveness']))
-            total_pl_cell = QTableWidgetItem(str(result['total_profit_loss']))
-            avg_pl_cell = QTableWidgetItem(str(result['average_profit_loss']))
-            median_pl_cell = QTableWidgetItem(str(result['median_profit_loss']))
-            stddev_pl_cell = QTableWidgetItem(str(result['standard_profit_loss_deviation']))
+            strategy_cell = QTableWidgetItem(str(result[STRATEGY_KEY]))
+            trades_made_cell = QTableWidgetItem(str(result[TRADES_MADE_KEY]))
+            effectiveness_cell = QTableWidgetItem(str(result[EFFECTIVENESS_KEY]))
+            total_pl_cell = QTableWidgetItem(str(result[TOTAL_PROFIT_LOSS_KEY]))
+            avg_pl_cell = QTableWidgetItem(str(result[AVERAGE_PROFIT_LOSS_KEY]))
+            median_pl_cell = QTableWidgetItem(str(result[MEDIAN_PROFIT_LOSS_KEY]))
+            stddev_pl_cell = QTableWidgetItem(str(result[STANDARD_PROFIT_LOSS_DEVIATION_KEY]))
 
             strategy_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
             trades_made_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))

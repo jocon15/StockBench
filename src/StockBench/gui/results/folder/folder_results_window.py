@@ -103,7 +103,7 @@ class FolderResultsWindow(SimulationResultsWindow):
 
         elapsed_time = round(perf_counter() - start_time, 2)
 
-        return {"results": results, 'elapsed_time': elapsed_time}
+        return {"results": results, ELAPSED_TIME_KEY: elapsed_time}
 
     def _render_data(self, simulation_results: dict):
         # only run if all symbols had enough data

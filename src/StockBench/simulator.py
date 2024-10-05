@@ -6,7 +6,7 @@ import logging
 from tqdm import tqdm
 from time import perf_counter
 from datetime import datetime
-from StockBench.constants import BUY_SIDE, SELL_SIDE, SECONDS_1_DAY, STOCK_SPLIT_PLPC
+from StockBench.constants import *
 from StockBench.broker.broker import Broker
 from StockBench.export.window_data_exporter import WindowDataExporter
 from StockBench.position.position import Position
@@ -374,23 +374,33 @@ class Simulator:
             exporter.export(chopped_temp_df, symbol)
 
         overview_chart_filepath = ''
-        buy_rule_analysis_chart_filepath = ''
-        sell_rule_analysis_chart_filepath = ''
-        position_analysis_chart_filepath = ''
+        buy_rules_chart_filepath = ''
+        sell_rules_chart_filepath = ''
+        positions_duration_bar_chart_filepath = ''
+        positions_profit_loss_bar_chart_filepath = ''
+        positions_profit_loss_histogram_chart_filepath = ''
         if results_depth == self.CHARTS_AND_DATA:
             # faster to do it synchronously for singular
             gui_terminal_log.info('Building overview chart...')
             overview_chart_filepath = SingularChartingEngine.build_indicator_chart(chopped_temp_df, symbol,
-                                                                                   self.__available_indicators.values(), save_option)
-            gui_terminal_log.info('Building buy rules analysis chart...')
-            buy_rule_analysis_chart_filepath = SingularChartingEngine.build_buy_rules_chart(
+                                                                                   self.__available_indicators.values(),
+                                                                                   save_option)
+            gui_terminal_log.info('Building buy rules chart...')
+            buy_rules_chart_filepath = SingularChartingEngine.build_buy_rules_chart(
                 self.__single_simulation_position_archive, symbol, save_option)
-            gui_terminal_log.info('Building sell rules analysis chart...')
-            sell_rule_analysis_chart_filepath = SingularChartingEngine.build_sell_rules_chart(
+            gui_terminal_log.info('Building sell rules chart...')
+            sell_rules_chart_filepath = SingularChartingEngine.build_sell_rules_chart(
                 self.__single_simulation_position_archive, symbol, save_option)
-            gui_terminal_log.info('Building positions analysis charts...')
-            position_analysis_chart_filepath = SingularChartingEngine.build_positions_chart(
+            gui_terminal_log.info('Building positions duration bar chart...')
+            positions_duration_bar_chart_filepath = SingularChartingEngine.build_positions_duration_bar_chart(
                 self.__single_simulation_position_archive, symbol, save_option)
+            gui_terminal_log.info('Building positions profit loss bar chart...')
+            positions_profit_loss_bar_chart_filepath = SingularChartingEngine.build_positions_profit_loss_bar_chart(
+                self.__single_simulation_position_archive, symbol, save_option)
+            gui_terminal_log.info('Building positions profit loss histogram chart...')
+            positions_profit_loss_histogram_chart_filepath = (
+                SingularChartingEngine.build_positions_profit_loss_histogram_chart(
+                    self.__algorithm.strategy_filename, self.__single_simulation_position_archive, symbol, save_option))
 
         log.info('Simulation complete!')
 
@@ -403,23 +413,25 @@ class Simulator:
             gui_terminal_log.info(f'Analytics for {symbol} complete')
 
         return {
-            'strategy': self.__algorithm.strategy_filename,
-            'symbol': symbol,
-            'positions': self.__single_simulation_position_archive,
-            'trade_able_days': trade_able_days,
-            'elapsed_time': elapsed_time,
-            'trades_made': analyzer.total_trades(),
-            'average_trade_duration': analyzer.average_trade_duration(),
-            'effectiveness': analyzer.effectiveness(),
-            'total_profit_loss': analyzer.total_profit_loss(),
-            'average_profit_loss': analyzer.average_profit_loss(),
-            'median_profit_loss': analyzer.median_profit_loss(),
-            'standard_profit_loss_deviation': analyzer.standard_profit_loss_deviation(),
-            'account_value': self.__account.get_balance(),
-            'buy_rule_analysis_chart_filepath': buy_rule_analysis_chart_filepath,
-            'sell_rule_analysis_chart_filepath': sell_rule_analysis_chart_filepath,
-            'position_analysis_chart_filepath': position_analysis_chart_filepath,
-            'overview_chart_filepath': overview_chart_filepath
+            STRATEGY_KEY: self.__algorithm.strategy_filename,
+            SYMBOL_KEY: symbol,
+            POSITIONS_KEY: self.__single_simulation_position_archive,
+            TRADE_ABLE_DAYS_KEY: trade_able_days,
+            ELAPSED_TIME_KEY: elapsed_time,
+            TRADES_MADE_KEY: analyzer.total_trades(),
+            AVERAGE_TRADE_DURATION_KEY: analyzer.average_trade_duration(),
+            EFFECTIVENESS_KEY: analyzer.effectiveness(),
+            TOTAL_PROFIT_LOSS_KEY: analyzer.total_profit_loss(),
+            AVERAGE_PROFIT_LOSS_KEY: analyzer.average_profit_loss(),
+            MEDIAN_PROFIT_LOSS_KEY: analyzer.median_profit_loss(),
+            STANDARD_PROFIT_LOSS_DEVIATION_KEY: analyzer.standard_profit_loss_deviation(),
+            ACCOUNT_VALUE_KEY: self.__account.get_balance(),
+            OVERVIEW_CHART_FILEPATH_KEY: overview_chart_filepath,
+            BUY_RULES_CHART_FILEPATH_KEY: buy_rules_chart_filepath,
+            SELL_RULES_CHART_FILEPATH_KEY: sell_rules_chart_filepath,
+            POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: positions_duration_bar_chart_filepath,
+            POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY: positions_profit_loss_bar_chart_filepath,
+            POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY: positions_profit_loss_histogram_chart_filepath
         }
 
     def __multi_pre_process(self, symbols, progress_observer) -> float:
@@ -483,21 +495,23 @@ class Simulator:
             progress_observer.set_analytics_complete()
 
         return {
-            'strategy': self.__algorithm.strategy_filename,
-            'positions': self.__multiple_simulation_position_archive,
-            'trade_able_days': results[0]['trade_able_days'],
-            'elapsed_time': elapsed_time,
-            'trades_made': analyzer.total_trades(),
-            'average_trade_duration': analyzer.average_trade_duration(),
-            'effectiveness': analyzer.effectiveness(),
-            'total_profit_loss': analyzer.total_profit_loss(),
-            'average_profit_loss': analyzer.average_profit_loss(),
-            'median_profit_loss': analyzer.median_profit_loss(),
-            'standard_profit_loss_deviation': analyzer.standard_profit_loss_deviation(),
-            'buy_rule_analysis_chart_filepath': buy_rule_analysis_chart_filepath,
-            'sell_rule_analysis_chart_filepath': sell_rule_analysis_chart_filepath,
-            'position_analysis_chart_filepath': position_analysis_chart_filepath,
-            'overview_chart_filepath': overview_chart_filepath
+            STRATEGY_KEY: self.__algorithm.strategy_filename,
+            POSITIONS_KEY: self.__multiple_simulation_position_archive,
+            TRADE_ABLE_DAYS_KEY: results[0][TRADE_ABLE_DAYS_KEY],
+            ELAPSED_TIME_KEY: elapsed_time,
+            TRADES_MADE_KEY: analyzer.total_trades(),
+            AVERAGE_TRADE_DURATION_KEY: analyzer.average_trade_duration(),
+            EFFECTIVENESS_KEY: analyzer.effectiveness(),
+            TOTAL_PROFIT_LOSS_KEY: analyzer.total_profit_loss(),
+            AVERAGE_PROFIT_LOSS_KEY: analyzer.average_profit_loss(),
+            MEDIAN_PROFIT_LOSS_KEY: analyzer.median_profit_loss(),
+            STANDARD_PROFIT_LOSS_DEVIATION_KEY: analyzer.standard_profit_loss_deviation(),
+            OVERVIEW_CHART_FILEPATH_KEY: overview_chart_filepath,
+            BUY_RULES_CHART_FILEPATH_KEY: buy_rule_analysis_chart_filepath,
+            SELL_RULES_CHART_FILEPATH_KEY: sell_rule_analysis_chart_filepath,
+            # FIXME: add positions duration bar here
+            POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY: position_analysis_chart_filepath,
+            # FIXME: add histogram here
         }
 
     def __reset_singular_attributes(self):

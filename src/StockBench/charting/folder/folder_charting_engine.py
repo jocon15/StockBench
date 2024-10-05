@@ -13,8 +13,8 @@ class FolderChartingEngine(ChartingEngine):
         strategy_names = []
         trades_made_data = []
         for result in folder_results:
-            strategy_names.append(result['strategy'])
-            trades_made_data.append(float(result['trades_made']))
+            strategy_names.append(result[STRATEGY_KEY])
+            trades_made_data.append(float(result[TRADES_MADE_KEY]))
 
         formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, trades_made_data,
                                                                      'Trades Made per Strategy', OFF_BLUE)
@@ -29,8 +29,8 @@ class FolderChartingEngine(ChartingEngine):
         strategy_names = []
         effectiveness_data = []
         for result in folder_results:
-            strategy_names.append(result['strategy'])
-            effectiveness_data.append(float(result['effectiveness']))
+            strategy_names.append(result[STRATEGY_KEY])
+            effectiveness_data.append(float(result[EFFECTIVENESS_KEY]))
 
         formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, effectiveness_data,
                                                                      'Effectiveness % per Strategy', OFF_BLUE)
@@ -45,8 +45,8 @@ class FolderChartingEngine(ChartingEngine):
         strategy_names = []
         total_pl_data = []
         for result in folder_results:
-            strategy_names.append(result['strategy'])
-            total_pl_data.append(float(result['total_profit_loss']))
+            strategy_names.append(result[STRATEGY_KEY])
+            total_pl_data.append(float(result[TOTAL_PROFIT_LOSS_KEY]))
 
         formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, total_pl_data,
                                                                      'Total P/L per Strategy', OFF_BLUE)
@@ -61,8 +61,8 @@ class FolderChartingEngine(ChartingEngine):
         strategy_names = []
         average_pl_data = []
         for result in folder_results:
-            strategy_names.append(result['strategy'])
-            average_pl_data.append(float(result['average_profit_loss']))
+            strategy_names.append(result[STRATEGY_KEY])
+            average_pl_data.append(float(result[AVERAGE_PROFIT_LOSS_KEY]))
 
         formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, average_pl_data,
                                                                      'Average P/L per Strategy', OFF_BLUE)
@@ -77,8 +77,8 @@ class FolderChartingEngine(ChartingEngine):
         strategy_names = []
         median_pl_data = []
         for result in folder_results:
-            strategy_names.append(result['strategy'])
-            median_pl_data.append(float(result['median_profit_loss']))
+            strategy_names.append(result[STRATEGY_KEY])
+            median_pl_data.append(float(result[MEDIAN_PROFIT_LOSS_KEY]))
 
         formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, median_pl_data,
                                                                      'Median P/L per Strategy', OFF_BLUE)
@@ -93,8 +93,8 @@ class FolderChartingEngine(ChartingEngine):
         strategy_names = []
         stddev_pl_data = []
         for result in folder_results:
-            strategy_names.append(result['strategy'])
-            stddev_pl_data.append(float(result['standard_profit_loss_deviation']))
+            strategy_names.append(result[STRATEGY_KEY])
+            stddev_pl_data.append(float(result[STANDARD_PROFIT_LOSS_DEVIATION_KEY]))
 
         formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, stddev_pl_data,
                                                                      'Standard Deviation (P) P/L per Strategy',
@@ -110,9 +110,9 @@ class FolderChartingEngine(ChartingEngine):
         strategy_names = []
         positions_data = []
         for result in folder_results:
-            strategy_names.append(result['strategy'])
+            strategy_names.append(result[STRATEGY_KEY])
             data_list = []
-            for position in result['positions']:
+            for position in result[POSITIONS_KEY]:
                 data_list.append(position.lifetime_profit_loss())
             positions_data.append(data_list)
 

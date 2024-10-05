@@ -37,6 +37,12 @@ class OverviewSideBar(QWidget):
         self.export_json_btn.setStyleSheet(Palette.SECONDARY_BTN)
         self.export_json_btn.clicked.connect(self.on_export_json_btn_clicked)  # noqa
 
+        # export excel button
+        self.export_excel_btn = QPushButton()
+        self.export_excel_btn.setText('Export to Excel (.xlsx)')
+        self.export_excel_btn.setStyleSheet(Palette.SECONDARY_BTN)
+        self.export_excel_btn.clicked.connect(self.on_export_excel_btn_clicked)  # noqa
+
         # output box (terminal)
         self.output_box = QListWidget()
         self.output_box.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)

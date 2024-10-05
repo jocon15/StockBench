@@ -1,13 +1,17 @@
 from PyQt6.QtWidgets import QFrame, QHBoxLayout
 from StockBench.gui.results.base.html_viewer import HTMLViewer
+from StockBench.constants import *
 
 
-class ResultsTab(QFrame):
+class RulesTab(QFrame):
     """Abstract base class for a gui tab."""
 
-    def __init__(self, chart_key):
+    def __init__(self, side):
         super().__init__()
-        self.chart_key = chart_key
+        if side == BUY_SIDE:
+            self.chart_key = BUY_RULES_CHART_FILEPATH_KEY
+        else:
+            self.chart_key = SELL_RULES_CHART_FILEPATH_KEY
 
         # layout type
         self.layout = QHBoxLayout()

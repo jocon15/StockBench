@@ -34,11 +34,11 @@ class FolderResultsExporter(ExcelExporter):
         col = self.DATA_COLUMN_HEADER_COL
         row = self.DATA_COLUMN_HEADER_ROW + 1
         for result in results:
-            self._write_to_cell(worksheet, row, col, result['strategy'])
-            self._write_to_cell(worksheet, row, col+1, result['trades_made'])
-            self._write_to_cell(worksheet, row, col+2, result['effectiveness'])
-            self._write_to_cell(worksheet, row, col+3, result['total_profit_loss'])
-            self._write_to_cell(worksheet, row, col+4, result['average_profit_loss'])
-            self._write_to_cell(worksheet, row, col+5, result['median_profit_loss'])
-            self._write_to_cell(worksheet, row, col+6, result['standard_profit_loss_deviation'])
+            self._write_to_cell(worksheet, row, col, result[STRATEGY_KEY])
+            self._write_to_cell(worksheet, row, col+1, result[TRADES_MADE_KEY])
+            self._write_to_cell(worksheet, row, col+2, result[EFFECTIVENESS_KEY])
+            self._write_to_cell(worksheet, row, col+3, result[TOTAL_PROFIT_LOSS_KEY])
+            self._write_to_cell(worksheet, row, col+4, result[AVERAGE_PROFIT_LOSS_KEY])
+            self._write_to_cell(worksheet, row, col+5, result[MEDIAN_PROFIT_LOSS_KEY])
+            self._write_to_cell(worksheet, row, col+6, result[STANDARD_PROFIT_LOSS_DEVIATION_KEY])
             row += 1

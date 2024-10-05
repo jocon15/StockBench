@@ -6,6 +6,7 @@ from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.gui.results.folder.components.folder_selector import FolderSelector
 from StockBench.export.folder_results_exporter import FolderResultsExporter
 from StockBench.gui.palette.palette import Palette
+from StockBench.constants import *
 from PyQt6 import QtGui
 
 
@@ -101,11 +102,12 @@ class FolderOverviewSidebar(OverviewSideBar):
         export_dict = results.copy()
 
         # remove extraneous data from exported results
-        export_dict.pop('elapsed_time')
-        export_dict.pop('buy_rule_analysis_chart_filepath')
-        export_dict.pop('sell_rule_analysis_chart_filepath')
-        export_dict.pop('position_analysis_chart_filepath')
-        export_dict.pop('overview_chart_filepath')
+        export_dict.pop(ELAPSED_TIME_KEY)
+        export_dict.pop(OVERVIEW_CHART_FILEPATH_KEY)
+        export_dict.pop(BUY_RULES_CHART_FILEPATH_KEY)
+        export_dict.pop(SELL_RULES_CHART_FILEPATH_KEY)
+        export_dict.pop(POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY)
+        # FIXME: remove the other filepaths
 
         return export_dict
 
@@ -117,5 +119,5 @@ class FolderOverviewSidebar(OverviewSideBar):
         # select the first result to use as a template
         result_to_use = results[0]
         # extract the elapsed time and inject it into the result to use (represents the entire sim time)
-        result_to_use['elapsed_time'] = simulation_results['elapsed_time']
+        result_to_use[ELAPSED_TIME_KEY] = simulation_results[ELAPSED_TIME_KEY]
         self.metadata_table.render_data(result_to_use)

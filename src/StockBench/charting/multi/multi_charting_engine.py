@@ -158,11 +158,11 @@ class MultiChartingEngine(ChartingEngine):
     def build_positions_histogram_chart(results: dict) -> str:
         """Build a chart for positions histogram."""
         # put the strategy name inside a list so we can use it in the dataset histogram
-        strategy_name = [results['strategy']]
+        strategy_name = [results[STRATEGY_KEY]]
         positions_data = []
 
         data_list = []
-        for position in results['positions']:
+        for position in results[POSITIONS_KEY]:
             data_list.append(position.lifetime_profit_loss())
         positions_data.append(data_list)
 
@@ -241,24 +241,24 @@ class MultiChartingEngine(ChartingEngine):
 
     @staticmethod
     def __get_symbols(data) -> list:
-        return MultiChartingEngine.__get_list_by_name('symbol', data)
+        return MultiChartingEngine.__get_list_by_name(SYMBOL_KEY, data)
 
     @staticmethod
     def __get_total_pl_per_symbol(data) -> list:
-        return MultiChartingEngine.__get_list_by_name('total_profit_loss', data)
+        return MultiChartingEngine.__get_list_by_name(TOTAL_PROFIT_LOSS_KEY, data)
 
     @staticmethod
     def __get_trades_per_symbol(data) -> list:
-        return MultiChartingEngine.__get_list_by_name('trades_made', data)
+        return MultiChartingEngine.__get_list_by_name(TRADES_MADE_KEY, data)
 
     @staticmethod
     def __get_avg_effectiveness(data) -> float:
-        effectiveness_per_symbol = MultiChartingEngine.__get_list_by_name('effectiveness', data)
+        effectiveness_per_symbol = MultiChartingEngine.__get_list_by_name(EFFECTIVENESS_KEY, data)
         return round(float(statistics.mean(effectiveness_per_symbol)), 2)
 
     @staticmethod
     def __get_avg_pl(data) -> float:
-        pl_per_symbol = MultiChartingEngine.__get_list_by_name('total_profit_loss', data)
+        pl_per_symbol = MultiChartingEngine.__get_list_by_name(TOTAL_PROFIT_LOSS_KEY, data)
         return round(float(statistics.mean(pl_per_symbol)), 2)
 
     @staticmethod

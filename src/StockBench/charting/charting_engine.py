@@ -106,6 +106,29 @@ class ChartingEngine:
                 plotter.Bar(x=df['Rule'], y=df['Stddev'], marker=dict(color=STDDEV_COLOR), name='Stddev')]
 
     @staticmethod
+    def positions_duration_bar(positions):
+        durations = []
+        for position in positions:
+            durations.append(position.duration())
+
+        # create a df to use for total pls (so we can keep track of bar color as well
+        df = pd.DataFrame()
+        df['duration'] = durations
+
+        # calculate mean and median
+        mean = statistics.mean(durations)
+        median = statistics.median(durations)
+
+        # assemble the values into a list for plotting
+        mean_values = [mean for _ in durations]
+        median_values = [median for _ in durations]
+
+        # build and return chart
+        return [plotter.Bar(y=df['duration'], name='Duration'),
+                plotter.Scatter(y=mean_values, marker=dict(color=MED_COLOR), name='Mean'),
+                plotter.Scatter(y=median_values, marker=dict(color=STDDEV_COLOR), name='Median')]
+
+    @staticmethod
     def positions_total_pl_bar(positions):
         total_pls = []
         for position in positions:

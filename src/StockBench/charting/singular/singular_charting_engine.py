@@ -1,6 +1,7 @@
 import logging
 from plotly.subplots import make_subplots
 from StockBench.charting.charting_engine import ChartingEngine
+from StockBench.constants import *
 
 log = logging.getLogger()
 
@@ -189,8 +190,44 @@ class SingularChartingEngine(ChartingEngine):
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, 'temp_sell_chart', f'{symbol}_sell_rules')
 
     @staticmethod
-    def build_positions_chart(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
-        """Builds a chart for singular analysis of positions."""
+    def build_positions_duration_bar_chart(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
+        """Builds a chart for singular duration of positions."""
+        rows = 1
+        cols = 1
+
+        chart_list = [[{"type": "bar"}]]
+        chart_titles = ('Duration per Position',)
+
+        # Parent Plot
+        fig = make_subplots(rows=rows,
+                            cols=cols,
+                            shared_xaxes=True,
+                            vertical_spacing=0.15,
+                            horizontal_spacing=0.05,
+                            specs=chart_list,
+                            subplot_titles=chart_titles)
+
+        # positions analysis traces
+        position_analysis_traces = ChartingEngine.positions_duration_bar(positions)
+
+        # position analysis chart (overlayed traces)
+        fig.add_trace(position_analysis_traces[0], 1, 1)
+        fig.add_trace(position_analysis_traces[1], 1, 1)
+        fig.add_trace(position_analysis_traces[2], 1, 1)
+
+        # set the layout
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
+
+        # format the chart (remove plotly white border)
+        formatted_fig = ChartingEngine.format_chart(fig)
+
+        # perform and saving or showing (returns saved filepath)
+        return ChartingEngine.handle_save_chart(formatted_fig, save_option,
+                                                'temp_positions_duration_bar_chart', f'{symbol}_positions')
+
+    @staticmethod
+    def build_positions_profit_loss_bar_chart(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
+        """Builds a chart for singular profit/loss of positions."""
         rows = 1
         cols = 1
 
@@ -222,23 +259,23 @@ class SingularChartingEngine(ChartingEngine):
 
         # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, save_option,
-                                                'temp_positions_chart', f'{symbol}_positions')
+                                                'temp_positions_profit_loss_bar_chart', f'{symbol}_positions')
 
     @staticmethod
-    def build_positions_histogram_chart(results: dict) -> str:
+    def build_positions_profit_loss_histogram_chart(strategy_name, positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
         """Build a chart for positions histogram."""
         # put the strategy name inside a list so we can use it in the dataset histogram
-        strategy_name = [results['strategy']]
+        strategy_names = [strategy_name]
         positions_data = []
 
         data_list = []
-        for position in results['positions']:
+        for position in positions:
             data_list.append(position.lifetime_profit_loss())
         positions_data.append(data_list)
 
-        formatted_fig = ChartingEngine._build_multi_dataset_histogram(strategy_name, positions_data,
+        formatted_fig = ChartingEngine._build_multi_dataset_histogram(strategy_names, positions_data,
                                                                       'Position Profit/Loss Distribution per Strategy')
 
         # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,
-                                                'temp_positions_histogram_chart', f'')
+                                                'temp_positions_profit_loss_histogram_chart', f'')

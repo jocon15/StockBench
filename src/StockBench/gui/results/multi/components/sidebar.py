@@ -1,6 +1,7 @@
 from StockBench.gui.results.base.overview_sidebar import OverviewSideBar
 from StockBench.gui.results.multi.components.metadata_sidebar_table import MultiMetadataSidebarTable
 from StockBench.gui.results.multi.components.results_sidebar_table import MultiResultsSidebarTable
+from StockBench.constants import *
 
 
 class MultiOverviewSideBar(OverviewSideBar):
@@ -43,10 +44,10 @@ class MultiOverviewSideBar(OverviewSideBar):
         export_dict = results.copy()
 
         # remove extraneous data from exported results
-        export_dict.pop('elapsed_time')
-        export_dict.pop('buy_rule_analysis_chart_filepath')
-        export_dict.pop('sell_rule_analysis_chart_filepath')
-        export_dict.pop('position_analysis_chart_filepath')
-        export_dict.pop('overview_chart_filepath')
+        export_dict.pop(ELAPSED_TIME_KEY)
+        export_dict.pop(OVERVIEW_CHART_FILEPATH_KEY)
+        export_dict.pop(BUY_RULES_CHART_FILEPATH_KEY)
+        export_dict.pop(SELL_RULES_CHART_FILEPATH_KEY)
+        export_dict.pop(POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY)
 
         return export_dict

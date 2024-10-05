@@ -1,4 +1,4 @@
-from StockBench.gui.results.base.base.result_tab import RulesTab
+from StockBench.gui.results.base.base.rules_tab import RulesTab
 
 
 class RulesResultsTab(RulesTab):

@@ -1,6 +1,6 @@
 from StockBench.gui.results.base.overview_tab import OverviewTabVertical
-from StockBench.gui.results.folder.components.sidebar import FolderOverviewSidebar
-from StockBench.gui.results.folder.components.results_table import FolderResultsTable
+from StockBench.gui.results.folder.components.folder_sidebar import FolderOverviewSidebar
+from StockBench.gui.results.folder.components.folder_results_table import FolderResultsTable
 
 
 class FolderOverViewTab(OverviewTabVertical):

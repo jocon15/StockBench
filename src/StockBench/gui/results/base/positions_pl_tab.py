@@ -1,4 +1,4 @@
-from StockBench.gui.results.base.simple_chart_tab import SimpleChartTab
+from StockBench.gui.results.base.base.simple_chart_tab import SimpleChartTab
 from StockBench.constants import POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY
 
 

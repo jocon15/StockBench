@@ -22,6 +22,11 @@ class SimulationAnalyzer:
         self.__standard_profit_loss_deviation_cache = None
 
     def total_trades(self) -> int:
+        """Calculates the number of trades made during the simulation.
+
+        return:
+            int: The number of trades made.
+        """
         return len(self.__positions)
 
     def effectiveness(self) -> float:

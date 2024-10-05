@@ -461,29 +461,42 @@ class Simulator:
         analyzer = SimulationAnalyzer(self.__multiple_simulation_position_archive)
 
         overview_chart_filepath = ''
-        buy_rule_analysis_chart_filepath = ''
-        sell_rule_analysis_chart_filepath = ''
-        position_analysis_chart_filepath = ''
+        buy_rules_chart_filepath = ''
+        sell_rules_chart_filepath = ''
+        positions_duration_bar_chart_filepath = ''
+        positions_profit_loss_bar_chart_filepath = ''
+        positions_profit_loss_histogram_chart_filepath = ''
         if results_depth == self.CHARTS_AND_DATA:
             with ProcessPoolExecutor() as executor:
                 gui_terminal_log.info('Building overview chart...')
-                future1 = executor.submit(MultiChartingEngine.build_overview_chart, results, self.__account.get_initial_balance(),
-                                          save_option)
-
+                future1 = executor.submit(MultiChartingEngine.build_overview_chart, results,
+                                          self.__account.get_initial_balance(), save_option)
                 gui_terminal_log.info('Building buy rules analysis chart...')
                 future2 = executor.submit(MultiChartingEngine.chart_buy_rules_analysis,
-                                          self.__multiple_simulation_position_archive, save_option),
+                                          self.__multiple_simulation_position_archive, save_option)
                 gui_terminal_log.info('Building sell rules analysis chart...')
                 future3 = executor.submit(MultiChartingEngine.chart_sell_rules_analysis,
-                                          self.__multiple_simulation_position_archive, save_option),
+                                          self.__multiple_simulation_position_archive, save_option)
+
+                gui_terminal_log.info('Building positions duration bar chart...')
+                future4 = executor.submit(MultiChartingEngine.build_positions_duration_bar_chart,
+                                          self.__multiple_simulation_position_archive, save_option)
+
                 gui_terminal_log.info('Building positions analysis charts...')
-                future4 = executor.submit(MultiChartingEngine.chart_positions_analysis,
+                future5 = executor.submit(MultiChartingEngine.build_positions_profit_loss_bar_chart,
+                                          self.__multiple_simulation_position_archive, save_option)
+
+                gui_terminal_log.info('Building positions profit loss histogram chart...')
+                future6 = executor.submit(MultiChartingEngine.build_positions_profit_loss_histogram_chart,
+                                          self.__algorithm.strategy_filename,
                                           self.__multiple_simulation_position_archive, save_option)
 
                 overview_chart_filepath = future1.result()
-                buy_rule_analysis_chart_filepath = future2[0].result()
-                sell_rule_analysis_chart_filepath = future3[0].result()
-                position_analysis_chart_filepath = future4.result()
+                buy_rules_chart_filepath = future2.result()
+                sell_rules_chart_filepath = future3.result()
+                positions_duration_bar_chart_filepath = future4.result()
+                positions_profit_loss_bar_chart_filepath = future5.result()
+                positions_profit_loss_histogram_chart_filepath = future6.result()
 
         end_time = perf_counter()
         elapsed_time = round(end_time - start_time, 4)
@@ -507,11 +520,11 @@ class Simulator:
             MEDIAN_PROFIT_LOSS_KEY: analyzer.median_profit_loss(),
             STANDARD_PROFIT_LOSS_DEVIATION_KEY: analyzer.standard_profit_loss_deviation(),
             OVERVIEW_CHART_FILEPATH_KEY: overview_chart_filepath,
-            BUY_RULES_CHART_FILEPATH_KEY: buy_rule_analysis_chart_filepath,
-            SELL_RULES_CHART_FILEPATH_KEY: sell_rule_analysis_chart_filepath,
-            # FIXME: add positions duration bar here
-            POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY: position_analysis_chart_filepath,
-            # FIXME: add histogram here
+            BUY_RULES_CHART_FILEPATH_KEY: buy_rules_chart_filepath,
+            SELL_RULES_CHART_FILEPATH_KEY: sell_rules_chart_filepath,
+            POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: positions_duration_bar_chart_filepath,
+            POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY: positions_profit_loss_bar_chart_filepath,
+            POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY: positions_profit_loss_histogram_chart_filepath
         }
 
     def __reset_singular_attributes(self):

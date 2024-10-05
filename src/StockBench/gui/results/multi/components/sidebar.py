@@ -39,6 +39,9 @@ class MultiOverviewSideBar(OverviewSideBar):
         self.metadata_table.render_data(simulation_results)
         self.overview_table.render_data(simulation_results)
 
+    def on_export_excel_btn_clicked(self):
+        raise NotImplementedError('Singular does not use the export to excel button')
+
     def _remove_extraneous_info(self, results: dict) -> dict:
         """Remove info from the simulation results that is not relevant to exporting."""
         export_dict = results.copy()

@@ -1,14 +1,14 @@
-from StockBench.gui.results.base.base.rules_tab import RulesTab
+from StockBench.gui.results.base.base.simple_horizontal_chart_tab import SimpleHorizontalChartTab
 from StockBench.constants import OVERVIEW_CHART_FILEPATH_KEY
 from abc import abstractmethod
 
 
-class OverviewTab(RulesTab):
+class OverviewTabVertical(SimpleHorizontalChartTab):
     """Abstract base class for a simulation results overview tab."""
     CHART_KEY = OVERVIEW_CHART_FILEPATH_KEY
 
     def __init__(self):
-        super().__init__(self.CHART_KEY)
+        super().__init__()
 
     @abstractmethod
     def render_data(self, simulation_results: dict):

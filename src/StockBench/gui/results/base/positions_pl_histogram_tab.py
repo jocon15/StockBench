@@ -1,8 +1,8 @@
-from StockBench.gui.results.base.base.simple_chart_tab import SimpleChartTab
+from StockBench.gui.results.base.base.simple_vertical_chart_tab import SimpleVerticalChartTab
 from StockBench.constants import POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY
 
 
-class PositionsHistogramTab(SimpleChartTab):
+class PositionsHistogramTabVertical(SimpleVerticalChartTab):
     """Tab for singular position histogram chart.
 
     Note: Cannot inherit from ResultsTab because
@@ -17,5 +17,5 @@ class PositionsHistogramTab(SimpleChartTab):
         # apply the layout
         self.setLayout(self.layout)
 
-    def render_data(self, simulation_results: dict):
+    def render_chart(self, simulation_results: dict):
         self.html_viewer.render_data(simulation_results[self.CHART_KEY])

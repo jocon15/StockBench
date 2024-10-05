@@ -1,8 +1,8 @@
-from StockBench.gui.results.base.base.simple_chart_tab import SimpleChartTab
+from StockBench.gui.results.base.base.simple_vertical_chart_tab import SimpleVerticalChartTab
 from StockBench.constants import POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY
 
 
-class PositionsDurationTab(SimpleChartTab):
+class PositionsDurationTabVertical(SimpleVerticalChartTab):
     """Abstract base class for a positions analysis tab."""
     CHART_KEY = POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY
 

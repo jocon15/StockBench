@@ -1,9 +1,9 @@
-from StockBench.gui.results.base.overview_tab import OverviewTab
+from StockBench.gui.results.base.overview_tab import OverviewTabVertical
 from StockBench.gui.results.folder.components.sidebar import FolderOverviewSidebar
 from StockBench.gui.results.folder.components.results_table import FolderResultsTable
 
 
-class FolderOverViewTab(OverviewTab):
+class FolderOverViewTab(OverviewTabVertical):
     def __init__(self, strategies, progress_observers):
         super().__init__()
         self.overview_side_bar = FolderOverviewSidebar(progress_observers)

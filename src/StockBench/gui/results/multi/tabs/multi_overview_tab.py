@@ -1,11 +1,11 @@
 import logging
-from StockBench.gui.results.base.overview_tab import OverviewTab
+from StockBench.gui.results.base.overview_tab import OverviewTabVertical
 from StockBench.gui.results.multi.components.sidebar import MultiOverviewSideBar
 
 log = logging.getLogger()
 
 
-class MultiOverviewTab(OverviewTab):
+class MultiOverviewTab(OverviewTabVertical):
     """Tab showing simulation overview for multi-symbol simulation results."""
 
     def __init__(self, progress_observer):

@@ -1,8 +1,8 @@
 from StockBench.charting.folder.folder_charting_engine import FolderChartingEngine
-from StockBench.gui.results.base.base.simple_chart_tab import SimpleChartTab
+from StockBench.gui.results.base.base.simple_vertical_chart_tab import SimpleVerticalChartTab
 
 
-class FolderTradesMadeTab(SimpleChartTab):
+class FolderTradesMadeTabVertical(SimpleVerticalChartTab):
     """Tab for folder trades made results chart.
 
     Note: Cannot inherit from ResultsTab because
@@ -15,7 +15,7 @@ class FolderTradesMadeTab(SimpleChartTab):
         # apply the layout
         self.setLayout(self.layout)
 
-    def render_data(self, simulation_results: dict):
+    def render_chart(self, simulation_results: dict):
         # normalize the results
         results = simulation_results['results']
         # build the chart

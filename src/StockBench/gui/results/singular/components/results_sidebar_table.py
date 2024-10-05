@@ -11,6 +11,11 @@ class SingularResultsSidebarTable(SidebarResultsTable):
         self.layout.addWidget(self.trades_made_label, row, 1)
         self.layout.addWidget(self.trades_made_data_label, row, 2)
 
+        # average trade duration label and data label
+        row += 1
+        self.layout.addWidget(self.average_trade_duration_label, row, 1)
+        self.layout.addWidget(self.average_trade_duration_data_label, row, 2)
+
         # effectiveness label and data label
         row += 1
         self.layout.addWidget(self.effectiveness_label, row, 1)
@@ -54,6 +59,7 @@ class SingularResultsSidebarTable(SidebarResultsTable):
         if simulation_results.keys():
             self.elapsed_time_data_label.setText(f'{simulation_results["elapsed_time"]} seconds')
             self.trades_made_data_label.setText(f'{simulation_results["trades_made"]}')
+            self.average_trade_duration_data_label.setText(f'{simulation_results["average_trade_duration"]} days')
             self.effectiveness_data_label.setText(f'{simulation_results["effectiveness"]} %')
             self.total_pl_data_label.setText(f'$ {simulation_results["total_profit_loss"]}')
             self.average_pl_data_label.setText(f'$ {simulation_results["average_profit_loss"]}')

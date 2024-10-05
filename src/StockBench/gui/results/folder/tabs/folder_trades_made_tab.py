@@ -1,5 +1,5 @@
 from StockBench.charting.folder.folder_charting_engine import FolderChartingEngine
-from StockBench.gui.results.base.simple_chart_tab import SimpleChartTab
+from StockBench.gui.results.base.base.simple_chart_tab import SimpleChartTab
 
 
 class FolderTradesMadeTab(SimpleChartTab):

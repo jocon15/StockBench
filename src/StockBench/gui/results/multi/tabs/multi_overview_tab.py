@@ -1,5 +1,5 @@
 from StockBench.gui.results.base.overview_tab import OverviewTabVertical
-from StockBench.gui.results.multi.components.sidebar import MultiOverviewSideBar
+from StockBench.gui.results.multi.components.multi_sidebar import MultiOverviewSideBar
 
 
 class MultiOverviewTab(OverviewTabVertical):

@@ -21,7 +21,7 @@ class SingularConfigTab(ConfigTab):
         self.layout.addWidget(self.strategy_selection_box)
 
         self.strategy_studio_btn = QPushButton()
-        self.strategy_studio_btn.setText('Strategy Studio (beta)')
+        self.strategy_studio_btn.setText('Strategy Studio')
         self.strategy_studio_btn.clicked.connect(lambda: self.on_strategy_studio_btn_clicked(  # noqa
                                                  self.strategy_selection_box.filepath_box.text()))
         self.strategy_studio_btn.setStyleSheet(Palette.SECONDARY_BTN)

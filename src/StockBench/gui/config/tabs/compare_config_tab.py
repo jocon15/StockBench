@@ -26,7 +26,7 @@ class CompareConfigTab(ConfigTab):
         self.layout.addWidget(self.strategy_1_selection_box)
 
         self.strategy_1_studio_btn = QPushButton()
-        self.strategy_1_studio_btn.setText('Strategy Studio (beta)')
+        self.strategy_1_studio_btn.setText('Strategy Studio')
         self.strategy_1_studio_btn.clicked.connect(lambda: self.on_strategy_studio_btn_clicked(  # noqa
                                                    self.strategy_1_selection_box.filepath_box.text()))
         self.strategy_1_studio_btn.setStyleSheet(Palette.SECONDARY_BTN)
@@ -42,7 +42,7 @@ class CompareConfigTab(ConfigTab):
         self.layout.addWidget(self.strategy_2_selection_box)
 
         self.strategy_2_studio_btn = QPushButton()
-        self.strategy_2_studio_btn.setText('Strategy Studio (beta)')
+        self.strategy_2_studio_btn.setText('Strategy Studio')
         self.strategy_2_studio_btn.clicked.connect(lambda: self.on_strategy_studio_btn_clicked(  # noqa
                                                    self.strategy_2_selection_box.filepath_box.text()))
         self.strategy_2_studio_btn.setStyleSheet(Palette.SECONDARY_BTN)

@@ -19,7 +19,7 @@ class StrategyStudioWindow(QWidget):
 
         # header
         self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
-        self.setWindowTitle('Strategy Studio (beta)')
+        self.setWindowTitle('Strategy Studio')
 
         # layout type
         self.layout = QVBoxLayout()

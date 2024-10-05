@@ -1,5 +1,5 @@
 from StockBench.gui.results.base.overview_tab import OverviewResultsTab
-from StockBench.gui.results.singular.components.sidebar import SingularOverviewSideBar
+from StockBench.gui.results.singular.components.singular_sidebar import SingularOverviewSideBar
 
 
 class SingularOverviewTab(OverviewResultsTab):

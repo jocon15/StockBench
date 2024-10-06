@@ -386,10 +386,10 @@ class Simulator:
                                                                                    self.__available_indicators.values(),
                                                                                    save_option)
             gui_terminal_log.info('Building buy rules chart...')
-            buy_rules_chart_filepath = SingularChartingEngine.build_buy_rules_chart(
+            buy_rules_chart_filepath = SingularChartingEngine.build_buy_rules_bar_chart(
                 self.__single_simulation_position_archive, symbol, save_option)
             gui_terminal_log.info('Building sell rules chart...')
-            sell_rules_chart_filepath = SingularChartingEngine.build_sell_rules_chart(
+            sell_rules_chart_filepath = SingularChartingEngine.build_sell_rules_bar_chart(
                 self.__single_simulation_position_archive, symbol, save_option)
             gui_terminal_log.info('Building positions duration bar chart...')
             positions_duration_bar_chart_filepath = SingularChartingEngine.build_positions_duration_bar_chart(
@@ -472,10 +472,10 @@ class Simulator:
                 future1 = executor.submit(MultiChartingEngine.build_overview_chart, results,
                                           self.__account.get_initial_balance(), save_option)
                 gui_terminal_log.info('Building buy rules analysis chart...')
-                future2 = executor.submit(MultiChartingEngine.chart_buy_rules_analysis,
+                future2 = executor.submit(MultiChartingEngine.build_buy_rules_bar_chart,
                                           self.__multiple_simulation_position_archive, save_option)
                 gui_terminal_log.info('Building sell rules analysis chart...')
-                future3 = executor.submit(MultiChartingEngine.chart_sell_rules_analysis,
+                future3 = executor.submit(MultiChartingEngine.chart_sell_rules_bar_chart,
                                           self.__multiple_simulation_position_archive, save_option)
 
                 gui_terminal_log.info('Building positions duration bar chart...')

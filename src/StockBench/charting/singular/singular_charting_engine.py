@@ -117,7 +117,7 @@ class SingularChartingEngine(ChartingEngine):
                                                 'temp_overview_chart', f'figure_{symbol}')
 
     @staticmethod
-    def build_buy_rules_chart(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
+    def build_buy_rules_bar_chart(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
         """Builds a chart for singular analysis of buy rules."""
         rows = 2
         cols = 1
@@ -154,7 +154,7 @@ class SingularChartingEngine(ChartingEngine):
                                                 'temp_buy_chart', f'{symbol}_buy_rules')
 
     @staticmethod
-    def build_sell_rules_chart(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
+    def build_sell_rules_bar_chart(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
         """Builds a chart for singular analysis of sell rules."""
         rows = 2
         cols = 1

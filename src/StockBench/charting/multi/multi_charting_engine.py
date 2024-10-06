@@ -50,7 +50,7 @@ class MultiChartingEngine(ChartingEngine):
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, 'temp_overview_chart', 'multi')
 
     @staticmethod
-    def chart_buy_rules_analysis(positions, save_option=ChartingEngine.TEMP_SAVE) -> str:
+    def build_buy_rules_bar_chart(positions, save_option=ChartingEngine.TEMP_SAVE) -> str:
         rows = 2
         cols = 1
 
@@ -85,7 +85,7 @@ class MultiChartingEngine(ChartingEngine):
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, 'temp_buy_chart', 'multi_buy_rules')
 
     @staticmethod
-    def chart_sell_rules_analysis(positions, save_option=ChartingEngine.TEMP_SAVE) -> str:
+    def chart_sell_rules_bar_chart(positions, save_option=ChartingEngine.TEMP_SAVE) -> str:
         rows = 2
         cols = 1
 

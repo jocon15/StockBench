@@ -385,18 +385,23 @@ class Simulator:
             overview_chart_filepath = SingularChartingEngine.build_indicator_chart(chopped_temp_df, symbol,
                                                                                    self.__available_indicators.values(),
                                                                                    save_option)
-            gui_terminal_log.info('Building buy rules chart...')
-            buy_rules_chart_filepath = SingularChartingEngine.build_buy_rules_bar_chart(
-                self.__single_simulation_position_archive, symbol, save_option)
-            gui_terminal_log.info('Building sell rules chart...')
-            sell_rules_chart_filepath = SingularChartingEngine.build_sell_rules_bar_chart(
-                self.__single_simulation_position_archive, symbol, save_option)
+
+            gui_terminal_log.info('Building buy rules bar chart...')
+            buy_rules_chart_filepath = ChartingEngine.build_rules_bar_chart(self.__single_simulation_position_archive,
+                                                                            BUY_SIDE, symbol, save_option)
+
+            gui_terminal_log.info('Building sell rules bar chart...')
+            sell_rules_chart_filepath = ChartingEngine.build_rules_bar_chart(self.__single_simulation_position_archive,
+                                                                             SELL_SIDE, symbol, save_option)
+
             gui_terminal_log.info('Building positions duration bar chart...')
             positions_duration_bar_chart_filepath = SingularChartingEngine.build_positions_duration_bar_chart(
                 self.__single_simulation_position_archive, symbol, save_option)
+
             gui_terminal_log.info('Building positions profit loss bar chart...')
             positions_profit_loss_bar_chart_filepath = SingularChartingEngine.build_positions_profit_loss_bar_chart(
                 self.__single_simulation_position_archive, symbol, save_option)
+
             gui_terminal_log.info('Building positions profit loss histogram chart...')
             positions_profit_loss_histogram_chart_filepath = (
                 SingularChartingEngine.build_positions_profit_loss_histogram_chart(
@@ -471,18 +476,20 @@ class Simulator:
                 gui_terminal_log.info('Building overview chart...')
                 future1 = executor.submit(MultiChartingEngine.build_overview_chart, results,
                                           self.__account.get_initial_balance(), save_option)
-                gui_terminal_log.info('Building buy rules analysis chart...')
-                future2 = executor.submit(MultiChartingEngine.build_buy_rules_bar_chart,
-                                          self.__multiple_simulation_position_archive, save_option)
-                gui_terminal_log.info('Building sell rules analysis chart...')
-                future3 = executor.submit(MultiChartingEngine.chart_sell_rules_bar_chart,
-                                          self.__multiple_simulation_position_archive, save_option)
+
+                gui_terminal_log.info('Building buy rules bar chart...')
+                future2 = executor.submit(ChartingEngine.build_rules_bar_chart,
+                                          self.__single_simulation_position_archive, BUY_SIDE, None, save_option)
+
+                gui_terminal_log.info('Building sell rules bar chart...')
+                future3 = executor.submit(ChartingEngine.build_rules_bar_chart,
+                                          self.__single_simulation_position_archive, SELL_SIDE, None, save_option)
 
                 gui_terminal_log.info('Building positions duration bar chart...')
                 future4 = executor.submit(MultiChartingEngine.build_positions_duration_bar_chart,
                                           self.__multiple_simulation_position_archive, save_option)
 
-                gui_terminal_log.info('Building positions analysis charts...')
+                gui_terminal_log.info('Building positions profit loss bar chart...')
                 future5 = executor.submit(MultiChartingEngine.build_positions_profit_loss_bar_chart,
                                           self.__multiple_simulation_position_archive, save_option)
 

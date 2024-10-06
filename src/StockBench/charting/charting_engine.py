@@ -2,11 +2,14 @@ import os
 import statistics
 import numpy as np
 import pandas as pd
+from typing import Optional
 import plotly.offline as offline
 from .display_constants import *
 import plotly.graph_objects as plotter
+from plotly.subplots import make_subplots
 from plotly.figure_factory import create_distplot
 from StockBench.function_tools.nonce import datetime_timestamp
+from StockBench.constants import *
 
 
 class ChartingEngine:
@@ -19,6 +22,51 @@ class ChartingEngine:
     PLOTLY_CHART_MARGIN_BOTTOM = 60
     PLOTLY_CHART_MARGIN_LEFT = 60
     PLOTLY_CHART_MARGIN_RIGHT = 100
+
+    @staticmethod
+    def build_rules_bar_chart(positions: list, side: str, symbol: Optional[str], save_option=TEMP_SAVE) -> str:
+        rows = 2
+        cols = 1
+        if side == BUY_SIDE:
+            side_title = 'Acquisition'
+        else:
+            side_title = 'Liquidation'
+
+        chart_list = [[{"type": "bar"}], [{"type": "bar"}]]
+        chart_titles = (f'{side_title} Count per Rule', f'Position Profit/Loss % Analytics per {side_title} Rule')
+
+        # Parent Plot
+        fig = make_subplots(rows=rows,
+                            cols=cols,
+                            shared_xaxes=True,
+                            vertical_spacing=0.15,
+                            horizontal_spacing=0.05,
+                            specs=chart_list,
+                            subplot_titles=chart_titles)
+
+        # rule counts chart
+        fig.add_trace(ChartingEngine.rule_count_bar(positions, side), 1, 1)
+
+        # rule plpc stats chart (overlayed charts)
+        rule_stats_traces = ChartingEngine.rule_stats_traces(positions, side)
+        fig.add_trace(rule_stats_traces[0], 2, 1)
+        fig.add_trace(rule_stats_traces[1], 2, 1)
+        fig.add_trace(rule_stats_traces[2], 2, 1)
+
+        # set the layout
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
+
+        # format the chart (remove plotly white border)
+        formatted_fig = ChartingEngine.format_chart(fig)
+
+        temp_filename = f'temp_{side}_chart'
+        if symbol:
+            unique_prefix = f'{symbol}_{side}_rules_bar_chart'
+        else:
+            unique_prefix = f'multi_{side}_rules_bar_chart'
+
+        # perform and saving or showing (returns saved filepath)
+        return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
 
     @staticmethod
     def handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix) -> str:

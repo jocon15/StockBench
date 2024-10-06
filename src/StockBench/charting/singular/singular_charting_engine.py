@@ -1,7 +1,6 @@
 import logging
 from plotly.subplots import make_subplots
 from StockBench.charting.charting_engine import ChartingEngine
-from StockBench.constants import *
 
 log = logging.getLogger()
 
@@ -115,79 +114,6 @@ class SingularChartingEngine(ChartingEngine):
         # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, save_option,
                                                 'temp_overview_chart', f'figure_{symbol}')
-
-    @staticmethod
-    def build_buy_rules_bar_chart(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
-        """Builds a chart for singular analysis of buy rules."""
-        rows = 2
-        cols = 1
-
-        chart_list = [[{"type": "bar"}], [{"type": "bar"}]]
-        chart_titles = ('Acquisition Count per Rule', 'Position Profit/Loss % Analytics per Acquisition Rule')
-
-        # Parent Plot
-        fig = make_subplots(rows=rows,
-                            cols=cols,
-                            shared_xaxes=True,
-                            vertical_spacing=0.15,
-                            horizontal_spacing=0.05,
-                            specs=chart_list,
-                            subplot_titles=chart_titles)
-
-        # rule counts chart
-        fig.add_trace(ChartingEngine.rule_count_bar(positions, 'buy'), 1, 1)
-
-        # rule plpc stats chart (overlayed charts)
-        rule_stats_traces = ChartingEngine.rule_stats_traces(positions, 'buy')
-        fig.add_trace(rule_stats_traces[0], 2, 1)
-        fig.add_trace(rule_stats_traces[1], 2, 1)
-        fig.add_trace(rule_stats_traces[2], 2, 1)
-
-        # set the layout
-        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
-
-        # format the chart (remove plotly white border)
-        formatted_fig = ChartingEngine.format_chart(fig)
-
-        # perform and saving or showing (returns saved filepath)
-        return ChartingEngine.handle_save_chart(formatted_fig, save_option,
-                                                'temp_buy_chart', f'{symbol}_buy_rules')
-
-    @staticmethod
-    def build_sell_rules_bar_chart(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
-        """Builds a chart for singular analysis of sell rules."""
-        rows = 2
-        cols = 1
-
-        chart_list = [[{"type": "bar"}], [{"type": "bar"}]]
-        chart_titles = ('Liquidation Count per Rule', 'Position Profit/Loss % Analytics per Liquidation Rule')
-
-        # Parent Plot
-        fig = make_subplots(rows=rows,
-                            cols=cols,
-                            shared_xaxes=True,
-                            vertical_spacing=0.15,
-                            horizontal_spacing=0.05,
-                            specs=chart_list,
-                            subplot_titles=chart_titles)
-
-        # rule counts chart
-        fig.add_trace(ChartingEngine.rule_count_bar(positions, 'sell'), 1, 1)
-
-        # rule plpc stats chart (overlayed traces)
-        rule_stats_traces = ChartingEngine.rule_stats_traces(positions, 'sell')
-        fig.add_trace(rule_stats_traces[0], 2, 1)
-        fig.add_trace(rule_stats_traces[1], 2, 1)
-        fig.add_trace(rule_stats_traces[2], 2, 1)
-
-        # set the layout
-        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
-
-        # format the chart (remove plotly white border)
-        formatted_fig = ChartingEngine.format_chart(fig)
-
-        # perform and saving or showing (returns saved filepath)
-        return ChartingEngine.handle_save_chart(formatted_fig, save_option, 'temp_sell_chart', f'{symbol}_sell_rules')
 
     @staticmethod
     def build_positions_duration_bar_chart(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:

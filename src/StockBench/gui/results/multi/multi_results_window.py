@@ -46,9 +46,10 @@ class MultiResultsWindow(SimulationResultsWindow):
 
     def _render_data(self, simulation_results: dict):
         """Render the updated data in the window's shared_components."""
-        self.overview_tab.render_data(simulation_results)
-        self.buy_rules_tab.render_chart(simulation_results)
-        self.sell_rules_tab.render_chart(simulation_results)
-        self.positions_duration_bar_tab.render_chart(simulation_results)
-        self.positions_profit_loss_bar_tab.render_chart(simulation_results)
-        self.positions_profit_loss_histogram_tab.render_chart(simulation_results)
+        if simulation_results.keys():
+            self.overview_tab.render_data(simulation_results)
+            self.buy_rules_tab.render_chart(simulation_results)
+            self.sell_rules_tab.render_chart(simulation_results)
+            self.positions_duration_bar_tab.render_chart(simulation_results)
+            self.positions_profit_loss_bar_tab.render_chart(simulation_results)
+            self.positions_profit_loss_histogram_tab.render_chart(simulation_results)

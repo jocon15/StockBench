@@ -116,42 +116,6 @@ class SingularChartingEngine(ChartingEngine):
                                                 'temp_overview_chart', f'figure_{symbol}')
 
     @staticmethod
-    def build_positions_duration_bar_chart(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
-        """Builds a chart for singular duration of positions."""
-        rows = 1
-        cols = 1
-
-        chart_list = [[{"type": "bar"}]]
-        chart_titles = ('Duration per Position',)
-
-        # Parent Plot
-        fig = make_subplots(rows=rows,
-                            cols=cols,
-                            shared_xaxes=True,
-                            vertical_spacing=0.15,
-                            horizontal_spacing=0.05,
-                            specs=chart_list,
-                            subplot_titles=chart_titles)
-
-        # positions analysis traces
-        position_analysis_traces = ChartingEngine.positions_duration_bar(positions)
-
-        # position analysis chart (overlayed traces)
-        fig.add_trace(position_analysis_traces[0], 1, 1)
-        fig.add_trace(position_analysis_traces[1], 1, 1)
-        fig.add_trace(position_analysis_traces[2], 1, 1)
-
-        # set the layout
-        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
-
-        # format the chart (remove plotly white border)
-        formatted_fig = ChartingEngine.format_chart(fig)
-
-        # perform and saving or showing (returns saved filepath)
-        return ChartingEngine.handle_save_chart(formatted_fig, save_option,
-                                                'temp_positions_duration_bar_chart', f'{symbol}_positions')
-
-    @staticmethod
     def build_positions_profit_loss_bar_chart(positions, symbol, save_option=ChartingEngine.TEMP_SAVE) -> str:
         """Builds a chart for singular profit/loss of positions."""
         rows = 1

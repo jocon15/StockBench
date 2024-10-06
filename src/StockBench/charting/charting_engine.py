@@ -25,12 +25,15 @@ class ChartingEngine:
 
     @staticmethod
     def build_rules_bar_chart(positions: list, side: str, symbol: Optional[str], save_option=TEMP_SAVE) -> str:
+        """Builds a multi-chart for an analysis of rules of a given side.
+
+        return:
+            str: The filepath of the built chart.
+        """
         rows = 2
         cols = 1
-        if side == BUY_SIDE:
-            side_title = 'Acquisition'
-        else:
-            side_title = 'Liquidation'
+
+        side_title = ChartingEngine.__translate_position_title_from_side(side)
 
         chart_list = [[{"type": "bar"}], [{"type": "bar"}]]
         chart_titles = (f'{side_title} Count per Rule', f'Position Profit/Loss % Analytics per {side_title} Rule')
@@ -67,6 +70,48 @@ class ChartingEngine:
 
         # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
+
+    @staticmethod
+    def build_duration_bar_chart(positions: list, symbol: Optional[str], save_option=TEMP_SAVE) -> str:
+        """Builds a chart for singular duration of positions."""
+        rows = 1
+        cols = 1
+
+        chart_list = [[{"type": "bar"}]]
+        chart_titles = ('Duration per Position',)
+
+        # Parent Plot
+        fig = make_subplots(rows=rows,
+                            cols=cols,
+                            shared_xaxes=True,
+                            vertical_spacing=0.15,
+                            horizontal_spacing=0.05,
+                            specs=chart_list,
+                            subplot_titles=chart_titles)
+
+        # positions analysis traces
+        position_analysis_traces = ChartingEngine.positions_duration_bar(positions)
+
+        # position analysis chart (overlayed traces)
+        fig.add_trace(position_analysis_traces[0], 1, 1)
+        fig.add_trace(position_analysis_traces[1], 1, 1)
+        fig.add_trace(position_analysis_traces[2], 1, 1)
+
+        # set the layout
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
+
+        # format the chart (remove plotly white border)
+        formatted_fig = ChartingEngine.format_chart(fig)
+
+        temp_filename = f'temp_positions_duration_bar_chart'
+        if symbol:
+            unique_prefix = f'{symbol}_positions_duration_bar_chart'
+        else:
+            unique_prefix = f'multi_positions_duration_bar_chart'
+
+        # perform and saving or showing (returns saved filepath)
+        return ChartingEngine.handle_save_chart(formatted_fig, save_option,
+                                                temp_filename, unique_prefix)
 
     @staticmethod
     def handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix) -> str:
@@ -292,3 +337,14 @@ class ChartingEngine:
             file.write(figure)
 
         return chart_filepath
+
+    @staticmethod
+    def __translate_position_title_from_side(side: str) -> str:
+        """Translates the side to a position title.
+
+        return:
+            str: The translated position title.
+        """
+        if side == BUY_SIDE:
+            return ACQUISITION
+        return LIQUIDATION

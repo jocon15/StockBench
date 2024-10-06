@@ -179,7 +179,7 @@ class ChartingEngine:
         positions_data.append(data_list)
 
         formatted_fig = ChartingEngine._build_multi_dataset_histogram(strategy_names, positions_data,
-                                                                      'Position Profit/Loss Distribution per Strategy')
+                                                                      'Position Profit/Loss Distribution')
 
         temp_filename = 'temp_positions_profit_loss_histogram_chart'
         if symbol:

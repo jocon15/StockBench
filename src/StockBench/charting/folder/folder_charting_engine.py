@@ -2,6 +2,7 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as plotter
 from StockBench.charting.charting_engine import ChartingEngine
 from StockBench.charting.display_constants import *
+from StockBench.constants import *
 
 
 class FolderChartingEngine(ChartingEngine):

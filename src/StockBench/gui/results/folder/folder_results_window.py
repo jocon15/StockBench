@@ -9,6 +9,7 @@ from StockBench.gui.results.folder.tabs.folder_average_pl_tab import FolderAvera
 from StockBench.gui.results.folder.tabs.folder_median_pl_tab import FolderMedianProfitLossTabVertical
 from StockBench.gui.results.folder.tabs.folder_stddev_pl_tab import FolderStandardDeviationProfitLossTabVertical
 from StockBench.gui.results.folder.tabs.folder_positions_histogram_tab import FolderPositionsHistogramTabVertical
+from StockBench.constants import *
 
 
 class FolderResultsWindow(SimulationResultsWindow):

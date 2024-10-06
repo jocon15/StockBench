@@ -43,7 +43,6 @@ class HTMLViewer(QFrame):
         """Render the chart created from the simulation."""
         # check the chart exists
         if os.path.isfile(chart_filepath):
-            chart_loaded = True
             self.web_engine.load(QtCore.QUrl().fromLocalFile(os.path.abspath(chart_filepath)))
         else:
             # load the default html file

@@ -72,8 +72,12 @@ class ChartingEngine:
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
 
     @staticmethod
-    def build_duration_bar_chart(positions: list, symbol: Optional[str], save_option=TEMP_SAVE) -> str:
-        """Builds a chart for singular duration of positions."""
+    def build_positions_duration_bar_chart(positions: list, symbol: Optional[str], save_option=TEMP_SAVE) -> str:
+        """Builds a chart for duration of positions.
+
+        return:
+            str: The filepath of the built chart.
+        """
         rows = 1
         cols = 1
 
@@ -103,15 +107,88 @@ class ChartingEngine:
         # format the chart (remove plotly white border)
         formatted_fig = ChartingEngine.format_chart(fig)
 
-        temp_filename = f'temp_positions_duration_bar_chart'
+        temp_filename = 'temp_positions_duration_bar_chart'
         if symbol:
             unique_prefix = f'{symbol}_positions_duration_bar_chart'
         else:
-            unique_prefix = f'multi_positions_duration_bar_chart'
+            unique_prefix = 'multi_positions_duration_bar_chart'
 
         # perform and saving or showing (returns saved filepath)
-        return ChartingEngine.handle_save_chart(formatted_fig, save_option,
-                                                temp_filename, unique_prefix)
+        return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
+
+    @staticmethod
+    def build_positions_profit_loss_bar_chart(positions: list, symbol: Optional[str], save_option=TEMP_SAVE) -> str:
+        """Builds a chart for profit/loss analysis of positions.
+
+        return:
+            str: The filepath of the built chart.
+        """
+        rows = 1
+        cols = 1
+
+        chart_list = [[{"type": "bar"}]]
+        chart_titles = ('Total Profit/Loss per Position',)
+
+        # Parent Plot
+        fig = make_subplots(rows=rows,
+                            cols=cols,
+                            shared_xaxes=True,
+                            vertical_spacing=0.15,
+                            horizontal_spacing=0.05,
+                            specs=chart_list,
+                            subplot_titles=chart_titles)
+
+        # positions analysis traces
+        position_analysis_traces = ChartingEngine.positions_total_pl_bar(positions)
+
+        # position analysis chart (overlayed traces)
+        fig.add_trace(position_analysis_traces[0], 1, 1)
+        fig.add_trace(position_analysis_traces[1], 1, 1)
+        fig.add_trace(position_analysis_traces[2], 1, 1)
+
+        # set the layout
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
+
+        # format the chart (remove plotly white border)
+        formatted_fig = ChartingEngine.format_chart(fig)
+
+        temp_filename = 'temp_positions_profit_loss_bar_chart'
+        if symbol:
+            unique_prefix = f'{symbol}_positions_profit_loss_bar_chart'
+        else:
+            unique_prefix = 'multi_positions_profit_loss_bar_chart'
+
+        # perform and saving or showing (returns saved filepath)
+        return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
+
+    @staticmethod
+    def build_positions_profit_loss_histogram_chart(positions: list, strategy_name: str, symbol: Optional[str],
+                                                    save_option=TEMP_SAVE) -> str:
+        """Build a chart for positions histogram.
+
+        return:
+            str: The filepath of the built chart.
+        """
+        # put the strategy name inside a list so we can use it in the dataset histogram
+        strategy_names = [strategy_name]
+        positions_data = []
+
+        data_list = []
+        for position in positions:
+            data_list.append(position.lifetime_profit_loss())
+        positions_data.append(data_list)
+
+        formatted_fig = ChartingEngine._build_multi_dataset_histogram(strategy_names, positions_data,
+                                                                      'Position Profit/Loss Distribution per Strategy')
+
+        temp_filename = 'temp_positions_profit_loss_histogram_chart'
+        if symbol:
+            unique_prefix = f'{symbol}_positions_profit_loss_histogram_chart'
+        else:
+            unique_prefix = 'multi_positions_profit_loss_histogram_chart'
+
+        # perform and saving or showing (returns saved filepath)
+        return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
 
     @staticmethod
     def handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix) -> str:

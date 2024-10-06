@@ -11,17 +11,21 @@ class SimulationAnalyzer:
         self.__positions = positions
 
         # extract the profit/loss of each position into a list, so we only have to do it once
-        self.__profit_loss_list = []
-        for position in self.__positions:
-            self.__profit_loss_list.append(position.lifetime_profit_loss())
+        self.__profit_loss_list = [position.lifetime_profit_loss() for position in self.__positions]
 
         self.__sum_cache = None
         self.__effectiveness_cache = None
+        self.__average_trade_duration_cache = None
         self.__average_profit_loss_cache = None
         self.__median_profit_loss_cache = None
         self.__standard_profit_loss_deviation_cache = None
 
     def total_trades(self) -> int:
+        """Calculates the number of trades made during the simulation.
+
+        return:
+            int: The number of trades made.
+        """
         return len(self.__positions)
 
     def effectiveness(self) -> float:
@@ -57,6 +61,23 @@ class SimulationAnalyzer:
             # update the cached value
             self.__sum_cache = round(sum(self.__profit_loss_list), SimulationAnalyzer.rounding_length)
         return self.__sum_cache
+
+    def average_trade_duration(self) -> float:
+        """Calculates the average trade duration of the simulation.
+
+        return:
+            float: The average duration.
+        """
+        # check for cached avg duration value
+        if not self.__average_trade_duration_cache:
+            # update the cached value
+            if self.total_trades() > 0:
+                durations_list = [position.duration() for position in self.__positions]
+                self.__average_trade_duration_cache = round(statistics.mean(durations_list),
+                                                            SimulationAnalyzer.rounding_length)
+            else:
+                self.__average_trade_duration_cache = 0.0
+        return self.__average_trade_duration_cache
 
     def average_profit_loss(self) -> float:
         """Calculates the average profit/loss of the simulation.

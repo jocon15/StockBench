@@ -49,6 +49,14 @@ class SidebarResultsTable(QFrame):
         self.trades_made_data_label = QLabel()
         self.trades_made_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
+        # average trade duration label
+        self.average_trade_duration_label = QLabel()
+        self.average_trade_duration_label.setText('Average Trade Duration')
+        self.average_trade_duration_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
+        # trades made data label
+        self.average_trade_duration_data_label = QLabel()
+        self.average_trade_duration_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+
         # effectiveness label
         self.effectiveness_label = QLabel()
         self.effectiveness_label.setText('Effectiveness')

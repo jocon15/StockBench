@@ -1,8 +1,9 @@
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.singular.tabs.singular_overview_tab import SingularOverviewTab
 from StockBench.gui.results.singular.tabs.singular_rules_tab import SingularRulesTab
-from StockBench.gui.results.singular.tabs.singular_positions_histogram_tab import SingularPositionsHistogramTab
-from StockBench.gui.results.base.positions_tab import PositionsResultsTab
+from StockBench.gui.results.base.positions_pl_histogram_tab import PositionsHistogramTabVertical
+from StockBench.gui.results.base.positions_pl_tab import PositionsProfitLossTabVertical
+from StockBench.gui.results.base.positions_duration_tab import PositionsDurationTabVertical
 
 
 class SingularResultsWindow(SimulationResultsWindow):
@@ -23,14 +24,16 @@ class SingularResultsWindow(SimulationResultsWindow):
         self.buy_rules_tab = SingularRulesTab('buy')
         self.sell_rules_tab = SingularRulesTab('sell')
         # positions analysis tab (gets added to layout via tab widget)
-        self.positions_bar_tab = PositionsResultsTab()
-        self.positions_histogram_tab = SingularPositionsHistogramTab()
+        self.positions_duration_bar_tab = PositionsDurationTabVertical()
+        self.positions_profit_loss_bar_tab = PositionsProfitLossTabVertical()
+        self.positions_histogram_tab = PositionsHistogramTabVertical()
         # tab widget
         self.tab_widget.addTab(self.overview_tab, 'Overview')
         self.tab_widget.addTab(self.buy_rules_tab, 'Buy Rules')
         self.tab_widget.addTab(self.sell_rules_tab, 'Sell Rules')
-        self.tab_widget.addTab(self.positions_bar_tab, 'Positions (bar)')
-        self.tab_widget.addTab(self.positions_histogram_tab, 'Positions (histogram)')
+        self.tab_widget.addTab(self.positions_duration_bar_tab, 'Positions Duration (bar)')
+        self.tab_widget.addTab(self.positions_profit_loss_bar_tab, 'Positions P/L (bar)')
+        self.tab_widget.addTab(self.positions_histogram_tab, 'Positions P/L (histogram)')
         self.layout.addWidget(self.tab_widget)
 
         # apply the layout to the window
@@ -43,8 +46,10 @@ class SingularResultsWindow(SimulationResultsWindow):
 
     def _render_data(self, simulation_results: dict):
         """Render the updated data in the window's shared_components."""
-        self.overview_tab.render_data(simulation_results)
-        self.buy_rules_tab.render_chart(simulation_results)
-        self.sell_rules_tab.render_chart(simulation_results)
-        self.positions_bar_tab.render_chart(simulation_results)
-        self.positions_histogram_tab.render_data(simulation_results)
+        if simulation_results.keys():
+            self.overview_tab.render_data(simulation_results)
+            self.buy_rules_tab.render_chart(simulation_results)
+            self.sell_rules_tab.render_chart(simulation_results)
+            self.positions_duration_bar_tab.render_chart(simulation_results)
+            self.positions_profit_loss_bar_tab.render_chart(simulation_results)
+            self.positions_histogram_tab.render_chart(simulation_results)

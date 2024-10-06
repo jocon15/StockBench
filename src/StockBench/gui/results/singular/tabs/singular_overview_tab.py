@@ -1,8 +1,8 @@
-from StockBench.gui.results.base.overview_tab import OverviewResultsTab
-from StockBench.gui.results.singular.components.sidebar import SingularOverviewSideBar
+from StockBench.gui.results.base.overview_tab import OverviewTabVertical
+from StockBench.gui.results.singular.components.singular_sidebar import SingularOverviewSideBar
 
 
-class SingularOverviewTab(OverviewResultsTab):
+class SingularOverviewTab(OverviewTabVertical):
     """Tab showing simulation overview for single-symbol simulation results."""
     def __init__(self, progress_observer):
         super().__init__()
@@ -18,6 +18,9 @@ class SingularOverviewTab(OverviewResultsTab):
     def render_data(self, simulation_results: dict):
         self.render_chart(simulation_results)
         self.results_table.render_data(simulation_results)
+
+    def render_chart(self, simulation_results: dict):
+        self.html_viewer.render_data(simulation_results[self.CHART_KEY])
 
     def update_error_message(self, message):
         # pass the error down

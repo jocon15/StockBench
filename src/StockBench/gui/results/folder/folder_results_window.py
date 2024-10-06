@@ -2,13 +2,14 @@ from PyQt6.QtWidgets import QLabel
 from time import perf_counter
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.folder.tabs.folder_overview_tab import FolderOverViewTab
-from StockBench.gui.results.folder.tabs.folder_trades_made_tab import FolderTradesMadeTab
-from StockBench.gui.results.folder.tabs.folder_effectiveness_tab import FolderEffectivenessTab
-from StockBench.gui.results.folder.tabs.folder_total_pl_tab import FolderTotalProfitLossTab
-from StockBench.gui.results.folder.tabs.folder_average_pl_tab import FolderAverageProfitLossTab
-from StockBench.gui.results.folder.tabs.folder_median_pl_tab import FolderMedianProfitLossTab
-from StockBench.gui.results.folder.tabs.folder_stddev_pl_tab import FolderStandardDeviationProfitLossTab
-from StockBench.gui.results.folder.tabs.folder_positions_histogram_tab import FolderPositionsHistogramTab
+from StockBench.gui.results.folder.tabs.folder_trades_made_tab import FolderTradesMadeTabVertical
+from StockBench.gui.results.folder.tabs.folder_effectiveness_tab import FolderEffectivenessTabVertical
+from StockBench.gui.results.folder.tabs.folder_total_pl_tab import FolderTotalProfitLossTabVertical
+from StockBench.gui.results.folder.tabs.folder_average_pl_tab import FolderAverageProfitLossTabVertical
+from StockBench.gui.results.folder.tabs.folder_median_pl_tab import FolderMedianProfitLossTabVertical
+from StockBench.gui.results.folder.tabs.folder_stddev_pl_tab import FolderStandardDeviationProfitLossTabVertical
+from StockBench.gui.results.folder.tabs.folder_positions_histogram_tab import FolderPositionsHistogramTabVertical
+from StockBench.constants import *
 
 
 class FolderResultsWindow(SimulationResultsWindow):
@@ -35,13 +36,13 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.layout.addWidget(self.progress_bar)
         # tab creation
         self.overview_tab = FolderOverViewTab(strategies, self.progress_observers)
-        self.trades_made_tab = FolderTradesMadeTab()
-        self.effectiveness_tab = FolderEffectivenessTab()
-        self.total_pl_tab = FolderTotalProfitLossTab()
-        self.average_pl_tab = FolderAverageProfitLossTab()
-        self.median_pl_tab = FolderMedianProfitLossTab()
-        self.stddev_pl_tab = FolderStandardDeviationProfitLossTab()
-        self.positions_histogram_tab = FolderPositionsHistogramTab()
+        self.trades_made_tab = FolderTradesMadeTabVertical()
+        self.effectiveness_tab = FolderEffectivenessTabVertical()
+        self.total_pl_tab = FolderTotalProfitLossTabVertical()
+        self.average_pl_tab = FolderAverageProfitLossTabVertical()
+        self.median_pl_tab = FolderMedianProfitLossTabVertical()
+        self.stddev_pl_tab = FolderStandardDeviationProfitLossTabVertical()
+        self.positions_histogram_tab = FolderPositionsHistogramTabVertical()
 
         # tab widget
         self.tab_widget.addTab(self.overview_tab, 'Overview')
@@ -103,19 +104,19 @@ class FolderResultsWindow(SimulationResultsWindow):
 
         elapsed_time = round(perf_counter() - start_time, 2)
 
-        return {"results": results, 'elapsed_time': elapsed_time}
+        return {"results": results, ELAPSED_TIME_KEY: elapsed_time}
 
     def _render_data(self, simulation_results: dict):
         # only run if all symbols had enough data
         if 'results' in simulation_results.keys():
             self.overview_tab.render_data(simulation_results)
-            self.trades_made_tab.render_data(simulation_results)
-            self.effectiveness_tab.render_data(simulation_results)
-            self.total_pl_tab.render_data(simulation_results)
-            self.average_pl_tab.render_data(simulation_results)
-            self.median_pl_tab.render_data(simulation_results)
-            self.stddev_pl_tab.render_data(simulation_results)
-            self.positions_histogram_tab.render_data(simulation_results)
+            self.trades_made_tab.render_chart(simulation_results)
+            self.effectiveness_tab.render_chart(simulation_results)
+            self.total_pl_tab.render_chart(simulation_results)
+            self.average_pl_tab.render_chart(simulation_results)
+            self.median_pl_tab.render_chart(simulation_results)
+            self.stddev_pl_tab.render_chart(simulation_results)
+            self.positions_histogram_tab.render_chart(simulation_results)
 
     @staticmethod
     def _get_strategy_name(filepath: str):

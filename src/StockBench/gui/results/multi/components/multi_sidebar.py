@@ -1,6 +1,7 @@
 from StockBench.gui.results.base.overview_sidebar import OverviewSideBar
-from StockBench.gui.results.multi.components.metadata_sidebar_table import MultiMetadataSidebarTable
-from StockBench.gui.results.multi.components.results_sidebar_table import MultiResultsSidebarTable
+from StockBench.gui.results.multi.components.multi_sidebar_metadata_table import MultiMetadataSidebarTable
+from StockBench.gui.results.multi.components.multi_sidebar_results_table import MultiResultsSidebarTable
+from StockBench.constants import *
 
 
 class MultiOverviewSideBar(OverviewSideBar):
@@ -20,8 +21,6 @@ class MultiOverviewSideBar(OverviewSideBar):
 
         self.layout.addWidget(self.export_json_btn)
 
-        self.layout.addWidget(self.export_excel_btn)
-
         # pushes the status header and output box to the bottom
         self.layout.addStretch()
 
@@ -38,15 +37,18 @@ class MultiOverviewSideBar(OverviewSideBar):
         self.metadata_table.render_data(simulation_results)
         self.overview_table.render_data(simulation_results)
 
+    def on_export_excel_btn_clicked(self):
+        raise NotImplementedError('Singular does not use the export to excel button')
+
     def _remove_extraneous_info(self, results: dict) -> dict:
         """Remove info from the simulation results that is not relevant to exporting."""
         export_dict = results.copy()
 
         # remove extraneous data from exported results
-        export_dict.pop('elapsed_time')
-        export_dict.pop('buy_rule_analysis_chart_filepath')
-        export_dict.pop('sell_rule_analysis_chart_filepath')
-        export_dict.pop('position_analysis_chart_filepath')
-        export_dict.pop('overview_chart_filepath')
+        export_dict.pop(ELAPSED_TIME_KEY)
+        export_dict.pop(OVERVIEW_CHART_FILEPATH_KEY)
+        export_dict.pop(BUY_RULES_CHART_FILEPATH_KEY)
+        export_dict.pop(SELL_RULES_CHART_FILEPATH_KEY)
+        export_dict.pop(POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY)
 
         return export_dict

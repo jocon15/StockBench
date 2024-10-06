@@ -92,22 +92,6 @@ class OverviewSideBar(QWidget):
             self._copy_to_clipboard(str(export_dict))
         # if no results are available yet, nothing gets copied to the clipboard
 
-    def on_export_excel_btn_clicked(self):
-        """On click function for exporting to excel button."""
-        if self.simulation_results_to_export:
-            # copy and clean the results info
-            export_dict = self._remove_extraneous_info(self.simulation_results_to_export)
-
-            # format the results for excel use
-            export_values = ''
-            for key in export_dict.keys():
-                export_values += f'{export_dict[key]},'
-            # remove last comma from string
-            export_values = export_values.rsplit(',', 1)[0]
-
-            self._copy_to_clipboard(export_values)
-        # if no results are available yet, nothing gets copied to the clipboard
-
     @staticmethod
     def _copy_to_clipboard(text: str):
         # copy the dict to the clipboard

@@ -1,6 +1,6 @@
 import os
 
-from PyQt6.QtWidgets import QLabel, QPushButton, QLineEdit
+from PyQt6.QtWidgets import QLabel, QLineEdit
 from PyQt6.QtCore import Qt
 
 from StockBench.gui.config.tabs.base.config_tab import ConfigTab

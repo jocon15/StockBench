@@ -1,11 +1,8 @@
-import logging
-from StockBench.gui.results.base.overview_tab import OverviewResultsTab
-from StockBench.gui.results.multi.components.sidebar import MultiOverviewSideBar
-
-log = logging.getLogger()
+from StockBench.gui.results.base.overview_tab import OverviewTabVertical
+from StockBench.gui.results.multi.components.multi_sidebar import MultiOverviewSideBar
 
 
-class MultiOverviewTab(OverviewResultsTab):
+class MultiOverviewTab(OverviewTabVertical):
     """Tab showing simulation overview for multi-symbol simulation results."""
 
     def __init__(self, progress_observer):
@@ -22,6 +19,9 @@ class MultiOverviewTab(OverviewResultsTab):
     def render_data(self, simulation_results):
         self.render_chart(simulation_results)
         self.overview_side_bar.render_data(simulation_results)
+
+    def render_chart(self, simulation_results: dict):
+        self.html_viewer.render_data(simulation_results[self.CHART_KEY])
 
     def update_error_message(self, message):
         # pass the error down

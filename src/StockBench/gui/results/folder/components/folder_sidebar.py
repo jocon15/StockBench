@@ -62,11 +62,11 @@ class FolderOverviewSidebar(OverviewSideBar):
         # if no results are available yet, nothing gets copied to the clipboard
 
     def on_export_excel_btn_clicked(self):
-        # get the filepath from the ui component
-        folder_path = self.folder_selection.folderpath_box.text()
-
         # make sure that results exist before trying to export
         if self.simulation_results_to_export:
+            # get the filepath from the ui component
+            folder_path = self.folder_selection.folderpath_box.text()
+
             # export the data to the xlsx file
             exporter = FolderResultsExporter()
             filepath = exporter.export(self.simulation_results_to_export['results'], folder_path, 'FolderResults')

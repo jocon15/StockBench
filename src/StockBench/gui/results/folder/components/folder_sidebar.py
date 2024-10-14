@@ -65,16 +65,18 @@ class FolderOverviewSidebar(OverviewSideBar):
         # get the filepath from the ui component
         folder_path = self.folder_selection.folderpath_box.text()
 
-        # export the data to the xlsx file
-        exporter = FolderResultsExporter()
-        filepath = exporter.export(self.simulation_results_to_export['results'], folder_path, 'FolderResults')
+        # make sure that results exist before trying to export
+        if self.simulation_results_to_export:
+            # export the data to the xlsx file
+            exporter = FolderResultsExporter()
+            filepath = exporter.export(self.simulation_results_to_export['results'], folder_path, 'FolderResults')
 
-        # show a message box indicating the file was saved
-        msgbox = QMessageBox()
-        msgbox.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
-        msgbox.setText(f'File has been saved to {filepath}')
-        msgbox.setWindowTitle("Export Notification")
-        msgbox.exec()
+            # show a message box indicating the file was saved
+            msgbox = QMessageBox()
+            msgbox.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
+            msgbox.setText(f'File has been saved to {filepath}')
+            msgbox.setWindowTitle("Export Notification")
+            msgbox.exec()
 
     def _update_output_box(self):
         """Update the output box with messages from the progress observer."""

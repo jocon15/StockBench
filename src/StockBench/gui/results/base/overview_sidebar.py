@@ -1,8 +1,9 @@
 import subprocess
 from abc import abstractmethod
 from PyQt6.QtCore import Qt, QTimer, QThreadPool
+from PyQt6 import QtGui
 from PyQt6.QtGui import QColor
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton, QMessageBox
 from StockBench.gui.palette.palette import Palette
 
 
@@ -85,18 +86,30 @@ class OverviewSideBar(QWidget):
 
     def on_export_json_btn_clicked(self):
         """On click function for exporting to JSON button."""
+        # make sure that results exist before trying to export
         if self.simulation_results_to_export:
             # copy and clean the results info
             export_dict = self._remove_extraneous_info(self.simulation_results_to_export)
 
             self._copy_to_clipboard(str(export_dict))
-        # if no results are available yet, nothing gets copied to the clipboard
+
+            # show a message box indicating the file was saved
+            self._show_message_box('Export Notification', 'Results copied to clipboard')
 
     @staticmethod
     def _copy_to_clipboard(text: str):
         # copy the dict to the clipboard
         cmd = 'echo ' + text + '|clip'
         return subprocess.check_call(cmd, shell=True)
+
+    @staticmethod
+    def _show_message_box(title: str, message: str):
+        # show a message box indicating the file was saved
+        msgbox = QMessageBox()
+        msgbox.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
+        msgbox.setText(message)
+        msgbox.setWindowTitle(title)
+        msgbox.exec()
 
     @abstractmethod
     def _remove_extraneous_info(self, results: dict) -> dict:

@@ -1,13 +1,11 @@
-from PyQt6.QtWidgets import QListWidgetItem, QMessageBox
+from PyQt6.QtWidgets import QListWidgetItem
 from PyQt6.QtGui import QColor
 from StockBench.gui.results.multi.components.multi_sidebar_metadata_table import MultiMetadataSidebarTable
 from StockBench.gui.results.base.overview_sidebar import OverviewSideBar
 from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.gui.results.folder.components.folder_selector import FolderSelector
 from StockBench.export.folder_results_exporter import FolderResultsExporter
-from StockBench.gui.palette.palette import Palette
 from StockBench.constants import *
-from PyQt6 import QtGui
 
 
 class FolderOverviewSidebar(OverviewSideBar):
@@ -46,6 +44,7 @@ class FolderOverviewSidebar(OverviewSideBar):
         self.setLayout(self.layout)
 
     def on_export_json_btn_clicked(self):
+        # make sure that results exist before trying to export
         if self.simulation_results_to_export:
             export_string = ''
             for result in self.simulation_results_to_export['results']:
@@ -59,7 +58,9 @@ class FolderOverviewSidebar(OverviewSideBar):
             # remove last comma from string
             export_string = export_string.rsplit(',', 1)[0]
             self._copy_to_clipboard(export_string)
-        # if no results are available yet, nothing gets copied to the clipboard
+
+            # show a message box indicating results were copied
+            self._show_message_box('Export Notification', 'Results copied to clipboard')
 
     def on_export_excel_btn_clicked(self):
         # make sure that results exist before trying to export
@@ -72,11 +73,7 @@ class FolderOverviewSidebar(OverviewSideBar):
             filepath = exporter.export(self.simulation_results_to_export['results'], folder_path, 'FolderResults')
 
             # show a message box indicating the file was saved
-            msgbox = QMessageBox()
-            msgbox.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
-            msgbox.setText(f'File has been saved to {filepath}')
-            msgbox.setWindowTitle("Export Notification")
-            msgbox.exec()
+            self._show_message_box('Export Notification', f'File has been saved to {filepath}')
 
     def _update_output_box(self):
         """Update the output box with messages from the progress observer."""

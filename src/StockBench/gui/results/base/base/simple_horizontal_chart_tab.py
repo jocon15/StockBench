@@ -16,4 +16,4 @@ class SimpleHorizontalChartTab(QFrame):
 
     @abstractmethod
     def render_chart(self, simulation_results: dict):
-        raise NotImplementedError('You must implement this method in a child class!')
+        raise NotImplementedError('You must define an implementation for render_data()!')

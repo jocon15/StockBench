@@ -105,11 +105,13 @@ class FolderOverviewSidebar(OverviewSideBar):
 
         # remove extraneous data from exported results
         export_dict.pop(ELAPSED_TIME_KEY)
+        export_dict.pop(POSITIONS_KEY)
         export_dict.pop(OVERVIEW_CHART_FILEPATH_KEY)
         export_dict.pop(BUY_RULES_CHART_FILEPATH_KEY)
         export_dict.pop(SELL_RULES_CHART_FILEPATH_KEY)
         export_dict.pop(POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY)
-        # FIXME: remove the other filepaths
+        export_dict.pop(POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY)
+        export_dict.pop(POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY)
 
         return export_dict
 

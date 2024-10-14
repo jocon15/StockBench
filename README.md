@@ -1,7 +1,7 @@
 # StockBench
 
 <p align="center">
-    <img src ="https://img.shields.io/badge/version-1.7.0-blueviolet.svg"/> <img src ="https://img.shields.io/badge/platform-windows-yellow.svg"/> <img src ="https://img.shields.io/badge/python-^3-blue.svg" /> <img src ="https://img.shields.io/github/license/jocon15/StockBench.svg?color=orange"/>
+    <img src ="https://img.shields.io/badge/version-1.7.1-blueviolet.svg"/> <img src ="https://img.shields.io/badge/platform-windows-yellow.svg"/> <img src ="https://img.shields.io/badge/python-^3-blue.svg" /> <img src ="https://img.shields.io/github/license/jocon15/StockBench.svg?color=orange"/>
 </p>
 
 ### A back-testing app for testing stock trading strategies with historical data.

@@ -64,7 +64,7 @@ class FolderResultsTable(QWidget):
 
     def on_toggle_table_heatmap(self):
         # check if data exists in the table
-        if self.table.item(3, 3) is not None:
+        if self.table.item(1, 1) is not None:
             if self.toggle_heatmap_btn.isChecked():
                 self._apply_table_heatmap()
             else:

@@ -69,13 +69,13 @@ class FolderResultsWindow(SimulationResultsWindow):
         progress = 0
 
         all_bars_complete = True
-        for i, progress_observer in enumerate(self.progress_observers):
+        for progress_observer in self.progress_observers:
             if progress_observer.is_simulation_completed():
                 # full progress for that observer
                 progress += max_progress_per_observer
             else:
                 # partial progress for that observer (scaled to the progress bar as a whole)
-                progress += max_progress_per_observer * int(progress_observer.get_progress() / 100)
+                progress += max_progress_per_observer * (progress_observer.get_progress() / 100)
                 all_bars_complete = False
 
         self.progress_bar.setValue(progress)

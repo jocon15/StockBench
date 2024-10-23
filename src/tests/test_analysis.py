@@ -6,14 +6,14 @@ from StockBench.analysis.analyzer import SimulationAnalyzer
 @pytest.fixture
 def test_positions():
     # set up 3 positions to test
-    pos_1 = Position(100, 10)
-    pos_1.close_position(200)
+    pos_1 = Position(100, 10, 1, 'sma20 > 100')
+    pos_1.close_position(200, 2, 'red red')
 
-    pos_2 = Position(50, 10)
-    pos_2.close_position(175)
+    pos_2 = Position(50, 10, 1, 'sma20 > 100')
+    pos_2.close_position(175, 2, 'red red')
 
-    pos_3 = Position(300, 10)
-    pos_3.close_position(150)
+    pos_3 = Position(300, 10, 1, 'sma20 > 100')
+    pos_3.close_position(150, 2, 'red red')
 
     return [pos_1, pos_2, pos_3]
 

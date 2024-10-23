@@ -34,7 +34,7 @@ def test_additional_days(test_object):
         assert True
 
 
-@patch('logging_handlers.getLogger')
+@patch('logging.getLogger')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_add_to_data(data_mocker, logger_mocker, test_object):
     # ============= Arrange ==============

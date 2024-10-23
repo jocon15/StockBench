@@ -1,7 +1,6 @@
 import pytest
 from unittest.mock import patch
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
-
 from StockBench.indicators.ema.trigger import EMATrigger
 
 

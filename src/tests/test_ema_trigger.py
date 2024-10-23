@@ -1,11 +1,6 @@
-import os
-import sys
 import pytest
 from unittest.mock import patch
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
-
-# allows import from src directory
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from StockBench.indicators.ema.trigger import EMATrigger
 

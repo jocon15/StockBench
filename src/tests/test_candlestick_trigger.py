@@ -1,11 +1,5 @@
-import os
-import sys
 import pytest
 from unittest.mock import patch
-
-# allows import out a directory
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-
 from StockBench.indicators.candlestick_color.trigger import CandlestickColorTrigger
 
 

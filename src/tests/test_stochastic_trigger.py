@@ -1,12 +1,6 @@
-import os
-import sys
 import pytest
 from unittest.mock import patch
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
-
-# allows import out a directory
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-
 from StockBench.simulation_data.data_manager import DataManager
 from StockBench.indicators.stochastic.trigger import StochasticTrigger
 
@@ -30,7 +24,7 @@ def test_additional_days(test_object):
     assert test_object.additional_days('stochastic20$slope30', '>20') == 30
 
 
-@patch('logging_handlers.getLogger')
+@patch('logging.getLogger')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_add_to_data(data_mocker, logger_mocker, test_object):
     logger_mocker.return_value = logger_mocker

@@ -1,12 +1,6 @@
-import os
-import sys
 import pytest
 from unittest.mock import patch
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
-
-# allows import from src directory
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-
 from StockBench.indicators.macd.trigger import MACDTrigger
 
 
@@ -25,7 +19,7 @@ def test_additional_days(test_object):
     assert test_object.additional_days('MACD', '<$price') == 26
 
 
-@patch('logging_handlers.getLogger')
+@patch('logging.getLogger')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_add_to_data(data_mocker, logger_mocker, test_object):
     # ============= Arrange ==============
@@ -261,9 +255,9 @@ def logger_side_effect(*args):
         assert False
 
 
-@patch('StockBench.indicator.algorithm.Trigger.find_single_numeric_in_str')
-@patch('StockBench.indicator.algorithm.Trigger.find_operator_in_str')
-@patch('StockBench.indicator.algorithm.Trigger.basic_trigger_check')
+@patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')
+@patch('StockBench.algorithm.algorithm.Trigger.find_operator_in_str')
+@patch('StockBench.algorithm.algorithm.Trigger.basic_trigger_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============
@@ -299,9 +293,9 @@ def test_check_trigger_value_error(data_mocker, test_object):
         assert True
 
 
-@patch('StockBench.indicator.algorithm.Trigger.find_single_numeric_in_str')
-@patch('StockBench.indicator.algorithm.Trigger.find_operator_in_str')
-@patch('StockBench.indicator.algorithm.Trigger.basic_trigger_check')
+@patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')
+@patch('StockBench.algorithm.algorithm.Trigger.find_operator_in_str')
+@patch('StockBench.algorithm.algorithm.Trigger.basic_trigger_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker,
                                                  test_object):
@@ -342,9 +336,9 @@ def test_check_trigger_2_numbers_present_bad_format(test_object):
         assert True
 
 
-@patch('StockBench.indicator.algorithm.Trigger.find_single_numeric_in_str')
-@patch('StockBench.indicator.algorithm.Trigger.find_operator_in_str')
-@patch('StockBench.indicator.algorithm.Trigger.basic_trigger_check')
+@patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')
+@patch('StockBench.algorithm.algorithm.Trigger.find_operator_in_str')
+@patch('StockBench.algorithm.algorithm.Trigger.basic_trigger_check')
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============

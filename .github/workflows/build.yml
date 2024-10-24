@@ -5,7 +5,7 @@ on:
       - workflow_test
 jobs:
     first-job:
-        runs-on: windows-latest
+        runs-on: linux
         strategy:
           matrix:
             python-version: [ "3.8.18" ]

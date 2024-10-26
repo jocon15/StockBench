@@ -27,6 +27,7 @@ class ProgressObserver:
         Args:
             advance (float): Amount to increase the progress by.
         """
+        advance = round(advance, 3)
         # acquire lock to be thread-safe
         with self.__progress_lock:
             if advance + self.__current_progress >= self.__max_progress:

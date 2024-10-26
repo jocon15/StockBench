@@ -2,7 +2,7 @@ name: Run unit tests with Pytest
 on:
   push:
     branches:
-      - workflow_test
+      - master
 jobs:
     first-job:
         runs-on: ubuntu-latest

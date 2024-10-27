@@ -3,7 +3,7 @@ import plotly.graph_objects as plotter
 from typing import List, Tuple
 
 from StockBench.charting.charting_engine import ChartingEngine
-from StockBench.charting.display_constants import *
+from StockBench.charting.display_constants import OFF_BLUE
 from StockBench.constants import *
 
 

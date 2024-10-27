@@ -1,5 +1,7 @@
 from plotly.subplots import make_subplots
 import plotly.graph_objects as plotter
+from typing import List, Tuple
+
 from StockBench.charting.charting_engine import ChartingEngine
 from StockBench.charting.display_constants import *
 from StockBench.constants import *
@@ -11,11 +13,8 @@ class FolderChartingEngine(ChartingEngine):
     @staticmethod
     def build_trades_made_chart(folder_results: list) -> str:
         """Build a chart for trades made."""
-        strategy_names = []
-        trades_made_data = []
-        for result in folder_results:
-            strategy_names.append(result[STRATEGY_KEY])
-            trades_made_data.append(float(result[TRADES_MADE_KEY]))
+        strategy_names, trades_made_data = FolderChartingEngine._extract_data_from_results(folder_results,
+                                                                                           TRADES_MADE_KEY)
 
         formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, trades_made_data,
                                                                      'Trades Made per Strategy', OFF_BLUE)
@@ -27,11 +26,8 @@ class FolderChartingEngine(ChartingEngine):
     @staticmethod
     def build_effectiveness_chart(folder_results: list) -> str:
         """Build a chart for effectiveness."""
-        strategy_names = []
-        effectiveness_data = []
-        for result in folder_results:
-            strategy_names.append(result[STRATEGY_KEY])
-            effectiveness_data.append(float(result[EFFECTIVENESS_KEY]))
+        strategy_names, effectiveness_data = FolderChartingEngine._extract_data_from_results(folder_results,
+                                                                                             EFFECTIVENESS_KEY)
 
         formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, effectiveness_data,
                                                                      'Effectiveness % per Strategy', OFF_BLUE)
@@ -43,11 +39,8 @@ class FolderChartingEngine(ChartingEngine):
     @staticmethod
     def build_total_pl_chart(folder_results: list) -> str:
         """Build a chart for effectiveness."""
-        strategy_names = []
-        total_pl_data = []
-        for result in folder_results:
-            strategy_names.append(result[STRATEGY_KEY])
-            total_pl_data.append(float(result[TOTAL_PROFIT_LOSS_KEY]))
+        strategy_names, total_pl_data = FolderChartingEngine._extract_data_from_results(folder_results,
+                                                                                        TOTAL_PROFIT_LOSS_KEY)
 
         formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, total_pl_data,
                                                                      'Total P/L per Strategy', OFF_BLUE)
@@ -59,11 +52,8 @@ class FolderChartingEngine(ChartingEngine):
     @staticmethod
     def build_average_pl_chart(folder_results: list) -> str:
         """Build a chart for average pl."""
-        strategy_names = []
-        average_pl_data = []
-        for result in folder_results:
-            strategy_names.append(result[STRATEGY_KEY])
-            average_pl_data.append(float(result[AVERAGE_PROFIT_LOSS_KEY]))
+        strategy_names, average_pl_data = FolderChartingEngine._extract_data_from_results(folder_results,
+                                                                                          AVERAGE_PROFIT_LOSS_KEY)
 
         formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, average_pl_data,
                                                                      'Average P/L per Strategy', OFF_BLUE)
@@ -75,11 +65,8 @@ class FolderChartingEngine(ChartingEngine):
     @staticmethod
     def build_median_pl_chart(folder_results: list) -> str:
         """Build a chart for average pl."""
-        strategy_names = []
-        median_pl_data = []
-        for result in folder_results:
-            strategy_names.append(result[STRATEGY_KEY])
-            median_pl_data.append(float(result[MEDIAN_PROFIT_LOSS_KEY]))
+        strategy_names, median_pl_data = FolderChartingEngine._extract_data_from_results(folder_results,
+                                                                                         MEDIAN_PROFIT_LOSS_KEY)
 
         formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, median_pl_data,
                                                                      'Median P/L per Strategy', OFF_BLUE)
@@ -91,11 +78,8 @@ class FolderChartingEngine(ChartingEngine):
     @staticmethod
     def build_stddev_pl_chart(folder_results: list) -> str:
         """Build a chart for average pl."""
-        strategy_names = []
-        stddev_pl_data = []
-        for result in folder_results:
-            strategy_names.append(result[STRATEGY_KEY])
-            stddev_pl_data.append(float(result[STANDARD_PROFIT_LOSS_DEVIATION_KEY]))
+        strategy_names, stddev_pl_data = FolderChartingEngine._extract_data_from_results(
+            folder_results, STANDARD_PROFIT_LOSS_DEVIATION_KEY)
 
         formatted_fig = FolderChartingEngine._build_simple_bar_chart(strategy_names, stddev_pl_data,
                                                                      'Standard Deviation (P) P/L per Strategy',
@@ -123,6 +107,16 @@ class FolderChartingEngine(ChartingEngine):
         # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,
                                                 'temp_positions_histogram_chart', f'')
+
+    @staticmethod
+    def _extract_data_from_results(results: List[dict], data_key: str) -> Tuple[List, List]:
+        strategy_names = []
+        data_values = []
+        for result in results:
+            strategy_names.append(result[STRATEGY_KEY])
+            data_values.append(float(result[data_key]))
+
+        return strategy_names, data_values
 
     @staticmethod
     def _build_simple_bar_chart(x_values: list, y_values: list, title: str, marker_color: str) -> str:

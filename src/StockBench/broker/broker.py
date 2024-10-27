@@ -101,6 +101,9 @@ class Broker:
 
         return:
             JSON: The request data (keyed with 'bars' and 'symbol').
+
+        raises:
+            ValueError: If the symbol passed is invalid.
         """
         log.debug('Attempting request...')
         try:
@@ -129,7 +132,10 @@ class Broker:
             json_data (JSON): The JSON data to convert.
 
         return
-            Pandas.DataFrame: The converted data as a DateFrame
+            Pandas.DataFrame: The converted data as a DateFrame.
+
+        raises
+            ValueError: If the symbol does not have sufficient data.
         """
         log.debug('Converting JSON to DF...')
         time_values = []

@@ -122,7 +122,6 @@ class Broker:
             print('Connection error trying to connect to brokerage servers!')
 
     @staticmethod
-    @performance_timer
     def __json_to_df(json_data):
         """Convert JSON to Pandas.DataFrame.
 

@@ -19,6 +19,6 @@ class FolderMedianProfitLossTabVertical(SimpleVerticalChartTab):
         # normalize the results
         results = simulation_results['results']
         # build the chart
-        chart_filepath = FolderChartingEngine.build_median_pl_chart(results)
+        chart_filepath = FolderChartingEngine.build_median_pl_bar_chart(results)
         # render the chart
         self.html_viewer.render_data(chart_filepath)

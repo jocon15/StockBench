@@ -11,8 +11,8 @@ class FolderChartingEngine(ChartingEngine):
     """Charting tools for folder simulation analysis."""
 
     @staticmethod
-    def build_trades_made_chart(folder_results: List[dict]) -> str:
-        """Build a chart for trades made.
+    def build_trades_made_bar_chart(folder_results: List[dict]) -> str:
+        """Build a bar chart for trades made.
 
         Args:
             folder_results: The results of the folder simulation.
@@ -31,8 +31,8 @@ class FolderChartingEngine(ChartingEngine):
                                                 'temp_folder_trades_made', f'')
 
     @staticmethod
-    def build_effectiveness_chart(folder_results: List[dict]) -> str:
-        """Build a chart for effectiveness.
+    def build_effectiveness_bar_chart(folder_results: List[dict]) -> str:
+        """Build a bar chart for effectiveness.
 
         Args:
             folder_results: The results of the folder simulation.
@@ -51,8 +51,8 @@ class FolderChartingEngine(ChartingEngine):
                                                 'temp_folder_effectiveness', f'')
 
     @staticmethod
-    def build_total_pl_chart(folder_results: List[dict]) -> str:
-        """Build a chart for effectiveness.
+    def build_total_pl_bar_chart(folder_results: List[dict]) -> str:
+        """Build a bar chart for effectiveness.
 
         Args:
             folder_results: The results of the folder simulation.
@@ -71,8 +71,8 @@ class FolderChartingEngine(ChartingEngine):
                                                 'temp_folder_total_pl', f'')
 
     @staticmethod
-    def build_average_pl_chart(folder_results: List[dict]) -> str:
-        """Build a chart for average pl.
+    def build_average_pl_bar_chart(folder_results: List[dict]) -> str:
+        """Build a bar chart for average pl.
 
         Args:
             folder_results: The results of the folder simulation.
@@ -91,8 +91,8 @@ class FolderChartingEngine(ChartingEngine):
                                                 'temp_folder_average_pl', f'')
 
     @staticmethod
-    def build_median_pl_chart(folder_results: List[dict]) -> str:
-        """Build a chart for average pl.
+    def build_median_pl_bar_chart(folder_results: List[dict]) -> str:
+        """Build a bar chart for average pl.
 
         Args:
             folder_results: The results of the folder simulation.
@@ -111,8 +111,8 @@ class FolderChartingEngine(ChartingEngine):
                                                 'temp_folder_median_pl', f'')
 
     @staticmethod
-    def build_stddev_pl_chart(folder_results: List[dict]) -> str:
-        """Build a chart for average pl.
+    def build_stddev_pl_bar_chart(folder_results: List[dict]) -> str:
+        """Build a bar chart for average pl.
 
         Args:
             folder_results: The results of the folder simulation.
@@ -133,7 +133,7 @@ class FolderChartingEngine(ChartingEngine):
 
     @staticmethod
     def build_positions_histogram_chart(folder_results: List[dict]) -> str:
-        """Build a chart for average pl.
+        """Build a bar chart for average pl.
 
         Args:
             folder_results: The results of the folder simulation.

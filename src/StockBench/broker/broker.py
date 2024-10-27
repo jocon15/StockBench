@@ -19,8 +19,6 @@ class Broker:
         self.__HEADERS = {'APCA-API-KEY-ID': self.__API_KEY, 'APCA-API-SECRET-KEY': self.__SECRET_KEY}
         self.__timeout = timeout
 
-        self.__symbol = None
-
     @performance_timer
     def get_daily_data(self, symbol: str, start_date_unix: int, end_date_unix: int):
         """Retrieve bars data with 1-Day resolution.
@@ -34,7 +32,6 @@ class Broker:
             JSON: The request data.
         """
         log.debug('Building URI...')
-        self.__symbol = symbol
         # convert dates from unix to utc
         start_date_utc, end_date_utc = self.__unix_to_utc_date(start_date_unix, end_date_unix)
         # convert times from unix to utc
@@ -48,7 +45,7 @@ class Broker:
                        f'T{end_time_utc}Z' \
                        f'&timeframe=1D'
         log.debug(f'Completed URI: {day_bars_url}')
-        return self.__make_request(day_bars_url)
+        return self.__make_request(day_bars_url, symbol)
 
     @staticmethod
     def get_hourly_data():
@@ -89,11 +86,12 @@ class Broker:
         return (datetime.utcfromtimestamp(start_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'),
                 datetime.utcfromtimestamp(end_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'))
 
-    def __make_request(self, uri: str):
+    def __make_request(self, uri: str, symbol: str):
         """Make the Brokerage API request.
 
         Args:
-            uri (str): The URI to use in the request.
+            uri: The URI to use in the request.
+            symbol: The symbol to use in the request.
 
         return:
             JSON: The request data (keyed with 'bars' and 'symbol').
@@ -107,11 +105,11 @@ class Broker:
             log.debug('Request made successfully')
             if 'bars' not in response_data.keys():
                 # symbols with numeric characters are flagged by the broker
-                raise ValueError(f'Invalid symbol {self.__symbol}')
+                raise ValueError(f'Invalid symbol {symbol}')
             if response_data['bars'] == {}:
                 # misspelled symbols return blank data for bars
-                raise ValueError(f'Invalid symbol {self.__symbol}')
-            return self.__json_to_df(response_data['bars'][self.__symbol])
+                raise ValueError(f'Invalid symbol {symbol}')
+            return self.__json_to_df(response_data['bars'][symbol])
         except requests.exceptions.ConnectionError:
             # do something if the request fails
             log.critical('Connection error during request')

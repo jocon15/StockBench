@@ -11,12 +11,18 @@ log = logging.getLogger()
 
 class Broker:
     """Interface for broker data."""
-    def __init__(self, timeout=15):
-        self.__API_KEY = os.environ['ALPACA_API_KEY']
-        self.__SECRET_KEY = os.environ['ALPACA_SECRET_KEY']
+    _API_KEY = os.environ['ALPACA_API_KEY']
+    _SECRET_KEY = os.environ['ALPACA_SECRET_KEY']
 
-        self.__BARS_URL = 'https://data.alpaca.markets/v2/stocks/bars?'
-        self.__HEADERS = {'APCA-API-KEY-ID': self.__API_KEY, 'APCA-API-SECRET-KEY': self.__SECRET_KEY}
+    _BARS_URL = 'https://data.alpaca.markets/v2/stocks/bars?'
+    _HEADERS = {'APCA-API-KEY-ID': _API_KEY, 'APCA-API-SECRET-KEY': _SECRET_KEY}
+
+    def __init__(self, timeout=15):
+        """Constructor.
+
+        Args:
+            timeout: Timeout length (seconds).
+        """
         self.__timeout = timeout
 
     @performance_timer
@@ -24,9 +30,9 @@ class Broker:
         """Retrieve bars data with 1-Day resolution.
 
         Args:
-            symbol (str): The asset symbol to retrieve data for.
-            start_date_unix (int): The start date in unix.
-            end_date_unix (int): The end date in unix.
+            symbol: The asset symbol to retrieve data for.
+            start_date_unix: The start date in unix.
+            end_date_unix: The end date in unix.
 
         return:
             JSON: The request data.
@@ -37,7 +43,7 @@ class Broker:
         # convert times from unix to utc
         start_time_utc, end_time_utc = self.__unix_to_utc_time(start_date_unix, end_date_unix)
 
-        day_bars_url = f'{self.__BARS_URL}' \
+        day_bars_url = f'{self._BARS_URL}' \
                        f'symbols={symbol}' \
                        f'&start={start_date_utc}' \
                        f'T{start_time_utc}Z' \
@@ -60,8 +66,8 @@ class Broker:
         """Convert 2 dates from unix to UTC-date.
 
         Args:
-            start_date_unix (int): Start date in unix.
-            end_date_unix (int): End date in unix.
+            start_date_unix: Start date in unix.
+            end_date_unix: End date in unix.
 
         return:
             tuple: The converted dates in UTC-date format.
@@ -76,8 +82,8 @@ class Broker:
         """Convert 2 dates from unix to UTC-time.
 
         Args:
-            start_date_unix (int): Start date in unix.
-            end_date_unix (int): End date in unix.
+            start_date_unix: Start date in unix.
+            end_date_unix: End date in unix.
 
         return:
             tuple: The converted dates in UTC-time format.
@@ -98,7 +104,7 @@ class Broker:
         """
         log.debug('Attempting request...')
         try:
-            response = requests.get(uri, headers=self.__HEADERS, timeout=self.__timeout)
+            response = requests.get(uri, headers=self._HEADERS, timeout=self.__timeout)
             if response.status_code != 200:
                 log.critical('Request unsuccessful!')
             response_data = response.json()

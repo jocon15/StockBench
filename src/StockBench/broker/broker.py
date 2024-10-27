@@ -53,6 +53,38 @@ class Broker:
         log.debug(f'Completed URI: {day_bars_url}')
         return self.__make_request(day_bars_url, symbol)
 
+    def __make_request(self, uri: str, symbol: str):
+        """Make the Brokerage API request.
+
+        Args:
+            uri: The URI to use in the request.
+            symbol: The symbol to use in the request.
+
+        return:
+            JSON: The request data (keyed with 'bars' and 'symbol').
+
+        raises:
+            ValueError: If the symbol passed is invalid.
+        """
+        log.debug('Attempting request...')
+        try:
+            response = requests.get(uri, headers=self._HEADERS, timeout=self.__timeout)
+            if response.status_code != 200:
+                log.critical('Request unsuccessful!')
+            response_data = response.json()
+            log.debug('Request made successfully')
+            if 'bars' not in response_data.keys():
+                # symbols with numeric characters are flagged by the broker
+                raise ValueError(f'Invalid symbol {symbol}')
+            if response_data['bars'] == {}:
+                # misspelled symbols return blank data for bars
+                raise ValueError(f'Invalid symbol {symbol}')
+            return self.__json_to_df(response_data['bars'][symbol])
+        except requests.exceptions.ConnectionError:
+            # do something if the request fails
+            log.critical('Connection error during request')
+            print('Connection error trying to connect to brokerage servers!')
+
     @staticmethod
     def get_hourly_data():
         return NotImplementedError('Hourly bar data is not supported yet.')
@@ -91,38 +123,6 @@ class Broker:
         # Note: end_date_utc is - 16 minutes to adjust for 15 minute historical data delay
         return (datetime.utcfromtimestamp(start_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'),
                 datetime.utcfromtimestamp(end_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'))
-
-    def __make_request(self, uri: str, symbol: str):
-        """Make the Brokerage API request.
-
-        Args:
-            uri: The URI to use in the request.
-            symbol: The symbol to use in the request.
-
-        return:
-            JSON: The request data (keyed with 'bars' and 'symbol').
-
-        raises:
-            ValueError: If the symbol passed is invalid.
-        """
-        log.debug('Attempting request...')
-        try:
-            response = requests.get(uri, headers=self._HEADERS, timeout=self.__timeout)
-            if response.status_code != 200:
-                log.critical('Request unsuccessful!')
-            response_data = response.json()
-            log.debug('Request made successfully')
-            if 'bars' not in response_data.keys():
-                # symbols with numeric characters are flagged by the broker
-                raise ValueError(f'Invalid symbol {symbol}')
-            if response_data['bars'] == {}:
-                # misspelled symbols return blank data for bars
-                raise ValueError(f'Invalid symbol {symbol}')
-            return self.__json_to_df(response_data['bars'][symbol])
-        except requests.exceptions.ConnectionError:
-            # do something if the request fails
-            log.critical('Connection error during request')
-            print('Connection error trying to connect to brokerage servers!')
 
     @staticmethod
     def __json_to_df(json_data):

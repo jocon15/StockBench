@@ -17,7 +17,7 @@ from StockBench.charting.multi.multi_charting_engine import MultiChartingEngine
 from StockBench.account.user_account import UserAccount
 from StockBench.analysis.analyzer import SimulationAnalyzer
 from StockBench.algorithm.algorithm import Algorithm
-from StockBench.function_tools.nonce import datetime_timestamp
+from StockBench.function_tools.timestamp import datetime_timestamp
 from StockBench.simulation_data.data_manager import DataManager
 from StockBench.indicators.indicator_manager import IndicatorManager
 from StockBench.logging_handlers.handlers import ProgressMessageHandler

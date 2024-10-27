@@ -8,7 +8,7 @@ from .display_constants import *
 import plotly.graph_objects as plotter
 from plotly.subplots import make_subplots
 from plotly.figure_factory import create_distplot
-from StockBench.function_tools.nonce import datetime_timestamp
+from StockBench.function_tools.timestamp import datetime_timestamp
 from StockBench.constants import *
 
 

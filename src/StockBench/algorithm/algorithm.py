@@ -4,7 +4,7 @@ import logging
 from typing import ValuesView, Tuple, List
 
 from StockBench.indicator.trigger import Trigger
-from StockBench.constants import BUY_SIDE, SELL_SIDE, START_KEY, END_KEY
+from StockBench.constants import BUY_SIDE, SELL_SIDE, START_KEY, END_KEY, AND_KEY
 from StockBench.simulation_data.data_manager import DataManager
 from StockBench.position.position import Position
 
@@ -97,7 +97,7 @@ class Algorithm:
             for trigger in triggers:
                 if trigger.strategy_symbol in key:
                     trigger.add_to_data(key, self.strategy[BUY_SIDE][key], BUY_SIDE, data_manager)
-                elif 'and' in key:
+                elif AND_KEY in key:
                     for inner_key in self.strategy[BUY_SIDE][key].keys():
                         if trigger.strategy_symbol in inner_key:
                             trigger.add_to_data(inner_key, self.strategy[BUY_SIDE][key][inner_key], BUY_SIDE, data_manager)
@@ -110,7 +110,7 @@ class Algorithm:
             for trigger in triggers:
                 if trigger.strategy_symbol in key:
                     trigger.add_to_data(key, self.strategy[SELL_SIDE][key], SELL_SIDE, data_manager)
-                elif 'and' in key:
+                elif AND_KEY in key:
                     for inner_key in self.strategy[SELL_SIDE][key].keys():
                         if trigger.strategy_symbol in inner_key:
                             trigger.add_to_data(inner_key, self.strategy[SELL_SIDE][key][inner_key], SELL_SIDE,
@@ -217,7 +217,7 @@ class Algorithm:
             # concatenate the agnostic list with the sell list
             triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
 
-        if 'and' in key:
+        if AND_KEY in key:
             return self.__handle_and_triggers(triggers, data_manager, current_day_index, position, key, side)
         else:
             return self.__handle_or_triggers(triggers, data_manager, current_day_index, position, key, side)
@@ -252,12 +252,12 @@ class Algorithm:
                         current_day_index)
             # note: placement of this conditional can be here or inside key check (doesn't matter)
             if not trigger_hit:
-                # not all 'AND' triggers were hit
+                # not all AND_KEY triggers were hit
                 return False
             if not key_matched_with_trigger:
                 raise ValueError(f'Strategy key: {key} did not match any available indicators!')
 
-        # all 'AND' triggers were hit
+        # all AND_KEY triggers were hit
         return True
 
     def __handle_or_triggers(self, triggers: List[Trigger], data_manager: DataManager, current_day_index: int,

@@ -3,8 +3,6 @@ import time
 import logging
 from typing import ValuesView, Tuple, List
 
-from pytz.exceptions import InvalidTimeError
-
 from StockBench.indicator.trigger import Trigger
 from StockBench.constants import BUY_SIDE, SELL_SIDE
 from StockBench.simulation_data.data_manager import DataManager
@@ -319,8 +317,8 @@ class Algorithm:
 
         raises:
             ValueError: If start timestamp is not chronologically before end timestamp.
-            InvalidTimeError: If the start timestamp is not chronologically before the current time.
-            InvalidTimeError: If the end timestamp is not chronologically before the current time.
+            ValueError: If the start timestamp is not chronologically before the current time.
+            ValueError: If the end timestamp is not chronologically before the current time.
         """
         if start_time_unix > end_time_unix:
             log.critical('Start timestamp must be before end timestamp')
@@ -329,8 +327,8 @@ class Algorithm:
         current_time = int(time.time())
         if start_time_unix > current_time:
             log.critical('Start timestamp must not be in the future')
-            raise InvalidTimeError('Start timestamp must not be in the future')
+            raise ValueError('Start timestamp must not be in the future')
 
         if end_time_unix > current_time:
             log.critical('End timestamp must not be in the future')
-            raise InvalidTimeError('End timestamp must not be in the future')
+            raise ValueError('End timestamp must not be in the future')

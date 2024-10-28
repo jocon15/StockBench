@@ -106,8 +106,8 @@ class Broker:
 
         """
         # Note: end_date_utc is - 16 minutes to adjust for 15 minute historical data delay
-        return (datetime.utcfromtimestamp(start_date_unix).strftime('%Y-%m-%d'),
-                datetime.utcfromtimestamp(end_date_unix - DELAY_SECONDS_15MIN).strftime('%Y-%m-%d'))
+        return (datetime.fromtimestamp(start_date_unix).strftime('%Y-%m-%d'),
+                datetime.fromtimestamp(end_date_unix - DELAY_SECONDS_15MIN).strftime('%Y-%m-%d'))
 
     @staticmethod
     def __unix_to_utc_time(start_date_unix: int, end_date_unix: int) -> tuple:
@@ -121,8 +121,8 @@ class Broker:
             tuple: The converted dates in UTC-time format.
         """
         # Note: end_date_utc is - 16 minutes to adjust for 15 minute historical data delay
-        return (datetime.utcfromtimestamp(start_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'),
-                datetime.utcfromtimestamp(end_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'))
+        return (datetime.fromtimestamp(start_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'),
+                datetime.fromtimestamp(end_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'))
 
     @staticmethod
     def __json_to_df(json_data):

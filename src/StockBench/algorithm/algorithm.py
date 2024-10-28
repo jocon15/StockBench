@@ -59,14 +59,14 @@ class Algorithm:
         # build a list algorithm keys and algorithm values
         keys = []
         values = []
-        if 'buy' in self.strategy.keys():
-            for key in self.strategy['buy'].keys():
+        if BUY_SIDE in self.strategy.keys():
+            for key in self.strategy[BUY_SIDE].keys():
                 keys.append(key)
-                values.append(self.strategy['buy'][key])
-        if 'sell' in self.strategy.keys():
-            for key in self.strategy['sell'].keys():
+                values.append(self.strategy[BUY_SIDE][key])
+        if SELL_SIDE in self.strategy.keys():
+            for key in self.strategy[SELL_SIDE].keys():
                 keys.append(key)
-                values.append(self.strategy['sell'][key])
+                values.append(self.strategy[SELL_SIDE][key])
 
         # assemble all algorithm into a single list
         triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
@@ -93,27 +93,27 @@ class Algorithm:
         triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
 
         # find all buy algorithm and add their indicator to the data
-        for key in self.strategy['buy'].keys():
+        for key in self.strategy[BUY_SIDE].keys():
             for trigger in triggers:
                 if trigger.strategy_symbol in key:
-                    trigger.add_to_data(key, self.strategy['buy'][key], 'buy', data_manager)
+                    trigger.add_to_data(key, self.strategy[BUY_SIDE][key], BUY_SIDE, data_manager)
                 elif 'and' in key:
-                    for inner_key in self.strategy['buy'][key].keys():
+                    for inner_key in self.strategy[BUY_SIDE][key].keys():
                         if trigger.strategy_symbol in inner_key:
-                            trigger.add_to_data(inner_key, self.strategy['buy'][key][inner_key], 'buy', data_manager)
+                            trigger.add_to_data(inner_key, self.strategy[BUY_SIDE][key][inner_key], BUY_SIDE, data_manager)
 
         # create a list of all algorithm except sell algorithm
         triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
 
         # find all sell algorithm and add their indicator to the data
-        for key in self.strategy['sell'].keys():
+        for key in self.strategy[SELL_SIDE].keys():
             for trigger in triggers:
                 if trigger.strategy_symbol in key:
-                    trigger.add_to_data(key, self.strategy['sell'][key], 'sell', data_manager)
+                    trigger.add_to_data(key, self.strategy[SELL_SIDE][key], SELL_SIDE, data_manager)
                 elif 'and' in key:
-                    for inner_key in self.strategy['sell'][key].keys():
+                    for inner_key in self.strategy[SELL_SIDE][key].keys():
                         if trigger.strategy_symbol in inner_key:
-                            trigger.add_to_data(inner_key, self.strategy['sell'][key][inner_key], 'sell',
+                            trigger.add_to_data(inner_key, self.strategy[SELL_SIDE][key][inner_key], SELL_SIDE,
                                                 data_manager)
 
     def check_triggers_by_side(self, data_manager: DataManager, current_day_index: int, position: Position, side: str) -> Tuple[bool, str]:
@@ -210,7 +210,7 @@ class Algorithm:
         return:
             bool: True if triggered, false if not.
         """
-        if side == 'buy':
+        if side == BUY_SIDE:
             # concatenate the agnostic list with the buy list
             triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
         else:
@@ -232,7 +232,7 @@ class Algorithm:
             current_day_index: Index of the current day in the simulation.
             position: Currently open position (if applicable).
             key: The key of the current context in the strategy.
-            side: 'buy' or 'sell'
+            side: BUY_SIDE or SELL_SIDE
 
         return:
             bool: True if triggered, false if not.
@@ -270,7 +270,7 @@ class Algorithm:
             current_day_index: Index of the current day in the simulation.
             position: Currently open position (if applicable).
             key: The key of the current context in the strategy.
-            side: 'buy' or 'sell'
+            side: BUY_SIDE or SELL_SIDE
 
         return:
             bool: True if triggered, false if not.

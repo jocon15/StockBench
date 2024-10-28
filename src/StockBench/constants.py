@@ -25,6 +25,9 @@ STOCK_SPLIT_PLPC = 50
 BUY_SIDE = 'buy'
 SELL_SIDE = 'sell'
 
+START_KEY = 'start'
+END_KEY = 'end'
+
 ACQUISITION = 'Acquisition'
 LIQUIDATION = 'Liquidation'
 

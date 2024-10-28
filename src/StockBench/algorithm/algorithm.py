@@ -4,7 +4,7 @@ import logging
 from typing import ValuesView, Tuple, List
 
 from StockBench.indicator.trigger import Trigger
-from StockBench.constants import BUY_SIDE, SELL_SIDE
+from StockBench.constants import BUY_SIDE, SELL_SIDE, START_KEY, END_KEY
 from StockBench.simulation_data.data_manager import DataManager
 from StockBench.position.position import Position
 
@@ -39,8 +39,8 @@ class Algorithm:
         log.debug('Parsing strategy for timestamps...')
 
         # __basic_error_check_strategy() guarantees the keys exist
-        start_date_unix = int(self.strategy['start'])
-        end_date_unix = int(self.strategy['end'])
+        start_date_unix = int(self.strategy[START_KEY])
+        end_date_unix = int(self.strategy[END_KEY])
 
         self.__validate_timestamps(start_date_unix, end_date_unix)
 
@@ -164,12 +164,12 @@ class Algorithm:
         if not self.strategy:
             log.critical('No strategy uploaded')
             raise Exception('No strategy uploaded')
-        if 'start' not in self.strategy.keys():
-            log.critical("Strategy missing 'start' key")
-            raise Exception("Strategy missing 'start' key")
-        if 'end' not in self.strategy.keys():
-            log.critical("Strategy missing 'end' key")
-            raise Exception("Strategy missing 'end' key")
+        if START_KEY not in self.strategy.keys():
+            log.critical("Strategy missing START_KEY key")
+            raise Exception("Strategy missing START_KEY key")
+        if END_KEY not in self.strategy.keys():
+            log.critical("Strategy missing END_KEY key")
+            raise Exception("Strategy missing END_KEY key")
         if BUY_SIDE not in self.strategy.keys():
             log.critical(f"Strategy missing '{BUY_SIDE}' key")
             raise Exception(f"Strategy missing '{BUY_SIDE}' key")

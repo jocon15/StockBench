@@ -29,7 +29,7 @@ class Algorithm:
         # sort the indicator algorithm into their respective list
         self.__sort_indicator_trigger_sides(available_indicators)
 
-        self.__basic_error_check_strategy()
+        self.__validate_strategy()
 
     def get_window(self) -> Tuple:
         """Parse the strategy for relevant information needed to make the API request."""
@@ -155,7 +155,7 @@ class Algorithm:
             filename = os.path.basename(self.strategy[self.FILEPATH_KEY])
         return filename
 
-    def __basic_error_check_strategy(self) -> None:
+    def __validate_strategy(self) -> None:
         """Check the strategy for errors"""
         log.debug('Checking strategy for errors...')
         if not self.strategy:

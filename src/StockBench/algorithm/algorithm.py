@@ -1,9 +1,12 @@
 import os
 import time
 import logging
-from typing import ValuesView, Tuple
+from typing import ValuesView, Tuple, List
+
 from StockBench.indicator.trigger import Trigger
-from StockBench.constants import BUY_SIDE, SELL_SIDE
+from StockBench.constants import BUY_SIDE, SELL_SIDE, START_KEY, END_KEY, AND_KEY
+from StockBench.simulation_data.data_manager import DataManager
+from StockBench.position.position import Position
 
 log = logging.getLogger()
 
@@ -27,19 +30,19 @@ class Algorithm:
         self.__sell_only_triggers = []
         self.__side_agnostic_triggers = []
         # sort the indicator algorithm into their respective list
-        self.__sort_indicator_trigger_sides(available_indicators)
+        self.__sort_indicator_triggers_by_side(available_indicators)
 
-        self.__basic_error_check_strategy()
+        self.__validate_strategy()
 
     def get_window(self) -> Tuple:
         """Parse the strategy for relevant information needed to make the API request."""
         log.debug('Parsing strategy for timestamps...')
 
         # __basic_error_check_strategy() guarantees the keys exist
-        start_date_unix = int(self.strategy['start'])
-        end_date_unix = int(self.strategy['end'])
+        start_date_unix = int(self.strategy[START_KEY])
+        end_date_unix = int(self.strategy[END_KEY])
 
-        self.__error_check_timestamps(start_date_unix, end_date_unix)
+        self.__validate_timestamps(start_date_unix, end_date_unix)
 
         additional_days = self.get_additional_days()
 
@@ -56,14 +59,14 @@ class Algorithm:
         # build a list algorithm keys and algorithm values
         keys = []
         values = []
-        if 'buy' in self.strategy.keys():
-            for key in self.strategy['buy'].keys():
+        if BUY_SIDE in self.strategy.keys():
+            for key in self.strategy[BUY_SIDE].keys():
                 keys.append(key)
-                values.append(self.strategy['buy'][key])
-        if 'sell' in self.strategy.keys():
-            for key in self.strategy['sell'].keys():
+                values.append(self.strategy[BUY_SIDE][key])
+        if SELL_SIDE in self.strategy.keys():
+            for key in self.strategy[SELL_SIDE].keys():
                 keys.append(key)
-                values.append(self.strategy['sell'][key])
+                values.append(self.strategy[SELL_SIDE][key])
 
         # assemble all algorithm into a single list
         triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
@@ -90,37 +93,37 @@ class Algorithm:
         triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
 
         # find all buy algorithm and add their indicator to the data
-        for key in self.strategy['buy'].keys():
+        for key in self.strategy[BUY_SIDE].keys():
             for trigger in triggers:
                 if trigger.strategy_symbol in key:
-                    trigger.add_to_data(key, self.strategy['buy'][key], 'buy', data_manager)
-                elif 'and' in key:
-                    for inner_key in self.strategy['buy'][key].keys():
+                    trigger.add_to_data(key, self.strategy[BUY_SIDE][key], BUY_SIDE, data_manager)
+                elif AND_KEY in key:
+                    for inner_key in self.strategy[BUY_SIDE][key].keys():
                         if trigger.strategy_symbol in inner_key:
-                            trigger.add_to_data(inner_key, self.strategy['buy'][key][inner_key], 'buy', data_manager)
+                            trigger.add_to_data(inner_key, self.strategy[BUY_SIDE][key][inner_key], BUY_SIDE, data_manager)
 
         # create a list of all algorithm except sell algorithm
         triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
 
         # find all sell algorithm and add their indicator to the data
-        for key in self.strategy['sell'].keys():
+        for key in self.strategy[SELL_SIDE].keys():
             for trigger in triggers:
                 if trigger.strategy_symbol in key:
-                    trigger.add_to_data(key, self.strategy['sell'][key], 'sell', data_manager)
-                elif 'and' in key:
-                    for inner_key in self.strategy['sell'][key].keys():
+                    trigger.add_to_data(key, self.strategy[SELL_SIDE][key], SELL_SIDE, data_manager)
+                elif AND_KEY in key:
+                    for inner_key in self.strategy[SELL_SIDE][key].keys():
                         if trigger.strategy_symbol in inner_key:
-                            trigger.add_to_data(inner_key, self.strategy['sell'][key][inner_key], 'sell',
+                            trigger.add_to_data(inner_key, self.strategy[SELL_SIDE][key][inner_key], SELL_SIDE,
                                                 data_manager)
 
-    def check_triggers_by_side(self, side, data_manager, current_day_index, position) -> Tuple[bool, str]:
-        """Check all sell triggers for a defined side.
+    def check_triggers_by_side(self, data_manager: DataManager, current_day_index: int, position: Position, side: str) -> Tuple[bool, str]:
+        """Check all triggers for a side.
 
         Args:
-            side(str): Buy or sell.
-            data_manager (object): The data object.
-            current_day_index (int): The index of the current day.
-            position (object): The position object.
+            data_manager: The data object.
+            current_day_index: The index of the current day.
+            position: The position object.
+            side: Buy or sell.
 
         return:
             Tuple: boolean was triggered, and the rule string that triggered it
@@ -138,35 +141,35 @@ class Algorithm:
         for key in side_keys:
             # handle algorithm
             triggered_key = key
-            was_triggered = self.__handle_triggers(data_manager, current_day_index, position, key, side)
+            was_triggered = self.__handle_triggers_by_side(data_manager, current_day_index, position, key, side)
             if was_triggered:
                 break
 
         if triggered_key == '':
             raise ValueError(f'Strategy does not have any {side} triggers defined!')
 
-        return was_triggered, self.__get_rule_string(side, triggered_key)
+        return was_triggered, self.__get_rule_string(triggered_key, side)
 
     def __load_strategy_filename(self) -> str:
-        # extract filepath if available
+        """Load the filename from the strategy if it is available."""
         filename = 'unknown'
         if self.FILEPATH_KEY in self.strategy:
             # extract filepath to class attribute
             filename = os.path.basename(self.strategy[self.FILEPATH_KEY])
         return filename
 
-    def __basic_error_check_strategy(self) -> None:
-        """Check the strategy for errors"""
+    def __validate_strategy(self) -> None:
+        """Check the strategy for errors."""
         log.debug('Checking strategy for errors...')
         if not self.strategy:
             log.critical('No strategy uploaded')
             raise Exception('No strategy uploaded')
-        if 'start' not in self.strategy.keys():
-            log.critical("Strategy missing 'start' key")
-            raise Exception("Strategy missing 'start' key")
-        if 'end' not in self.strategy.keys():
-            log.critical("Strategy missing 'end' key")
-            raise Exception("Strategy missing 'end' key")
+        if START_KEY not in self.strategy.keys():
+            log.critical("Strategy missing START_KEY key")
+            raise Exception("Strategy missing START_KEY key")
+        if END_KEY not in self.strategy.keys():
+            log.critical("Strategy missing END_KEY key")
+            raise Exception("Strategy missing END_KEY key")
         if BUY_SIDE not in self.strategy.keys():
             log.critical(f"Strategy missing '{BUY_SIDE}' key")
             raise Exception(f"Strategy missing '{BUY_SIDE}' key")
@@ -175,7 +178,7 @@ class Algorithm:
             raise Exception(f"Strategy missing '{SELL_SIDE}' key")
         log.debug('No errors found in the strategy')
 
-    def __sort_indicator_trigger_sides(self, indicators: ValuesView) -> None:
+    def __sort_indicator_triggers_by_side(self, indicators: ValuesView) -> None:
         """Sorts the algorithm of each indicator into their respective list based on trade side.
 
         Buy - algorithm can be used only to algorithm a position creation.
@@ -193,41 +196,43 @@ class Algorithm:
             else:
                 self.__buy_only_triggers.append(indicator.get_trigger())
 
-    def __handle_triggers(self, data_manager, current_day_index, position, key, side) -> bool:
-        """Check all triggers for hits.
+    def __handle_triggers_by_side(self, data_manager: DataManager, current_day_index: int, position: Position, key: str,
+                                  side: str) -> bool:
+        """Check all triggers of a side for hits.
 
         Args:
-            data_manager (any): DataManager housing the simulation data.
-            current_day_index (int): Index of the current day in the simulation.
-            position (any): Currently open position (if applicable).
-            key (str): The key of the current context in the strategy.
-            side (str): Buy or sell.
+            data_manager: DataManager housing the simulation data.
+            current_day_index: Index of the current day in the simulation.
+            position: Currently open position (if applicable).
+            key: The key of the current context in the strategy.
+            side: Buy or sell.
 
         return:
             bool: True if triggered, false if not.
         """
-        if side == 'buy':
+        if side == BUY_SIDE:
             # concatenate the agnostic list with the buy list
             triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
         else:
             # concatenate the agnostic list with the sell list
             triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
 
-        if 'and' in key:
+        if AND_KEY in key:
             return self.__handle_and_triggers(triggers, data_manager, current_day_index, position, key, side)
         else:
             return self.__handle_or_triggers(triggers, data_manager, current_day_index, position, key, side)
 
-    def __handle_and_triggers(self, triggers, data_manager, current_day_index, position, key, side) -> bool:
+    def __handle_and_triggers(self, triggers: List[Trigger], data_manager: DataManager, current_day_index: int,
+                              position: Position, key: str, side: str) -> bool:
         """Check all triggers for hits.
 
         Args:
-            triggers (list): A list of applicable triggers based on side.
-            data_manager (any): DataManager housing the simulation data.
-            current_day_index (int): Index of the current day in the simulation.
-            position (any): Currently open position (if applicable).
-            key (str): The key of the current context in the strategy.
-            side (str): 'buy' or 'sell'
+            triggers: A list of applicable triggers based on side.
+            data_manager: DataManager housing the simulation data.
+            current_day_index: Index of the current day in the simulation.
+            position: Currently open position (if applicable).
+            key: The key of the current context in the strategy.
+            side: BUY_SIDE or SELL_SIDE
 
         return:
             bool: True if triggered, false if not.
@@ -247,24 +252,25 @@ class Algorithm:
                         current_day_index)
             # note: placement of this conditional can be here or inside key check (doesn't matter)
             if not trigger_hit:
-                # not all 'AND' triggers were hit
+                # not all AND_KEY triggers were hit
                 return False
             if not key_matched_with_trigger:
                 raise ValueError(f'Strategy key: {key} did not match any available indicators!')
 
-        # all 'AND' triggers were hit
+        # all AND_KEY triggers were hit
         return True
 
-    def __handle_or_triggers(self, triggers, data_manager, current_day_index, position, key, side) -> bool:
+    def __handle_or_triggers(self, triggers: List[Trigger], data_manager: DataManager, current_day_index: int,
+                             position: Position, key: str, side: str) -> bool:
         """Check all triggers for hits.
 
         Args:
-            triggers (list): A list of applicable triggers based on side.
-            data_manager (any): DataManager housing the simulation data.
-            current_day_index (int): Index of the current day in the simulation.
-            position (any): Currently open position (if applicable).
-            key (str): The key of the current context in the strategy.
-            side (str): 'buy' or 'sell'
+            triggers: A list of applicable triggers based on side.
+            data_manager: DataManager housing the simulation data.
+            current_day_index: Index of the current day in the simulation.
+            position: Currently open position (if applicable).
+            key: The key of the current context in the strategy.
+            side: BUY_SIDE or SELL_SIDE
 
         return:
             bool: True if triggered, false if not.
@@ -289,12 +295,12 @@ class Algorithm:
         # no 'OR' triggers were hit
         return False
 
-    def __get_rule_string(self, side: str, key: str) -> str:
+    def __get_rule_string(self, key: str, side: str) -> str:
         """Get the rule as a string.
 
         Args:
-            side (str): Buy or sell.
-            key (str): The key of strategy rule.
+            key: The key of strategy rule.
+            side: Buy or sell.
 
         return:
             The full strategy rule as a string
@@ -302,11 +308,27 @@ class Algorithm:
         return f'{key}:{self.strategy[side][key]}'
 
     @staticmethod
-    def __error_check_timestamps(start_time_unix: int, end_time_unix: int) -> None:
-        """Simple check that the timestamps are valid."""
+    def __validate_timestamps(start_time_unix: int, end_time_unix: int) -> None:
+        """Simple check that the timestamps are valid.
+
+        Args:
+            start_time_unix: The unix start timestamp.
+            end_time_unix: The unix end timestamp.
+
+        raises:
+            ValueError: If start timestamp is not chronologically before end timestamp.
+            ValueError: If the start timestamp is not chronologically before the current time.
+            ValueError: If the end timestamp is not chronologically before the current time.
+        """
         if start_time_unix > end_time_unix:
             log.critical('Start timestamp must be before end timestamp')
-            raise Exception('Start timestamp must be before end timestamp')
-        if start_time_unix > int(time.time()):
+            raise ValueError('Start timestamp must be before end timestamp')
+
+        current_time = int(time.time())
+        if start_time_unix > current_time:
             log.critical('Start timestamp must not be in the future')
-            raise Exception('Start timestamp must not be in the future')
+            raise ValueError('Start timestamp must not be in the future')
+
+        if end_time_unix > current_time:
+            log.critical('End timestamp must not be in the future')
+            raise ValueError('End timestamp must not be in the future')

@@ -1,9 +1,14 @@
 import os
 import time
 import logging
-from typing import ValuesView, Tuple
+from typing import ValuesView, Tuple, List
+
+from pytz.exceptions import InvalidTimeError
+
 from StockBench.indicator.trigger import Trigger
 from StockBench.constants import BUY_SIDE, SELL_SIDE
+from StockBench.simulation_data.data_manager import DataManager
+from StockBench.position.position import Position
 
 log = logging.getLogger()
 
@@ -39,7 +44,7 @@ class Algorithm:
         start_date_unix = int(self.strategy['start'])
         end_date_unix = int(self.strategy['end'])
 
-        self.__error_check_timestamps(start_date_unix, end_date_unix)
+        self.__validate_timestamps(start_date_unix, end_date_unix)
 
         additional_days = self.get_additional_days()
 
@@ -113,14 +118,14 @@ class Algorithm:
                             trigger.add_to_data(inner_key, self.strategy['sell'][key][inner_key], 'sell',
                                                 data_manager)
 
-    def check_triggers_by_side(self, side, data_manager, current_day_index, position) -> Tuple[bool, str]:
-        """Check all sell triggers for a defined side.
+    def check_triggers_by_side(self, data_manager: DataManager, current_day_index: int, position: Position, side: str) -> Tuple[bool, str]:
+        """Check all triggers for a side.
 
         Args:
-            side(str): Buy or sell.
-            data_manager (object): The data object.
-            current_day_index (int): The index of the current day.
-            position (object): The position object.
+            data_manager: The data object.
+            current_day_index: The index of the current day.
+            position: The position object.
+            side: Buy or sell.
 
         return:
             Tuple: boolean was triggered, and the rule string that triggered it
@@ -138,17 +143,17 @@ class Algorithm:
         for key in side_keys:
             # handle algorithm
             triggered_key = key
-            was_triggered = self.__handle_triggers(data_manager, current_day_index, position, key, side)
+            was_triggered = self.__handle_triggers_by_side(data_manager, current_day_index, position, key, side)
             if was_triggered:
                 break
 
         if triggered_key == '':
             raise ValueError(f'Strategy does not have any {side} triggers defined!')
 
-        return was_triggered, self.__get_rule_string(side, triggered_key)
+        return was_triggered, self.__get_rule_string(triggered_key, side)
 
     def __load_strategy_filename(self) -> str:
-        # extract filepath if available
+        """Load the filename from the strategy if it is available."""
         filename = 'unknown'
         if self.FILEPATH_KEY in self.strategy:
             # extract filepath to class attribute
@@ -156,7 +161,7 @@ class Algorithm:
         return filename
 
     def __validate_strategy(self) -> None:
-        """Check the strategy for errors"""
+        """Check the strategy for errors."""
         log.debug('Checking strategy for errors...')
         if not self.strategy:
             log.critical('No strategy uploaded')
@@ -193,15 +198,16 @@ class Algorithm:
             else:
                 self.__buy_only_triggers.append(indicator.get_trigger())
 
-    def __handle_triggers(self, data_manager, current_day_index, position, key, side) -> bool:
-        """Check all triggers for hits.
+    def __handle_triggers_by_side(self, data_manager: DataManager, current_day_index: int, position: Position, key: str,
+                                  side: str) -> bool:
+        """Check all triggers of a side for hits.
 
         Args:
-            data_manager (any): DataManager housing the simulation data.
-            current_day_index (int): Index of the current day in the simulation.
-            position (any): Currently open position (if applicable).
-            key (str): The key of the current context in the strategy.
-            side (str): Buy or sell.
+            data_manager: DataManager housing the simulation data.
+            current_day_index: Index of the current day in the simulation.
+            position: Currently open position (if applicable).
+            key: The key of the current context in the strategy.
+            side: Buy or sell.
 
         return:
             bool: True if triggered, false if not.
@@ -218,16 +224,17 @@ class Algorithm:
         else:
             return self.__handle_or_triggers(triggers, data_manager, current_day_index, position, key, side)
 
-    def __handle_and_triggers(self, triggers, data_manager, current_day_index, position, key, side) -> bool:
+    def __handle_and_triggers(self, triggers: List[Trigger], data_manager: DataManager, current_day_index: int,
+                              position: Position, key: str, side: str) -> bool:
         """Check all triggers for hits.
 
         Args:
-            triggers (list): A list of applicable triggers based on side.
-            data_manager (any): DataManager housing the simulation data.
-            current_day_index (int): Index of the current day in the simulation.
-            position (any): Currently open position (if applicable).
-            key (str): The key of the current context in the strategy.
-            side (str): 'buy' or 'sell'
+            triggers: A list of applicable triggers based on side.
+            data_manager: DataManager housing the simulation data.
+            current_day_index: Index of the current day in the simulation.
+            position: Currently open position (if applicable).
+            key: The key of the current context in the strategy.
+            side: 'buy' or 'sell'
 
         return:
             bool: True if triggered, false if not.
@@ -255,16 +262,17 @@ class Algorithm:
         # all 'AND' triggers were hit
         return True
 
-    def __handle_or_triggers(self, triggers, data_manager, current_day_index, position, key, side) -> bool:
+    def __handle_or_triggers(self, triggers: List[Trigger], data_manager: DataManager, current_day_index: int,
+                             position: Position, key: str, side: str) -> bool:
         """Check all triggers for hits.
 
         Args:
-            triggers (list): A list of applicable triggers based on side.
-            data_manager (any): DataManager housing the simulation data.
-            current_day_index (int): Index of the current day in the simulation.
-            position (any): Currently open position (if applicable).
-            key (str): The key of the current context in the strategy.
-            side (str): 'buy' or 'sell'
+            triggers: A list of applicable triggers based on side.
+            data_manager: DataManager housing the simulation data.
+            current_day_index: Index of the current day in the simulation.
+            position: Currently open position (if applicable).
+            key: The key of the current context in the strategy.
+            side: 'buy' or 'sell'
 
         return:
             bool: True if triggered, false if not.
@@ -289,12 +297,12 @@ class Algorithm:
         # no 'OR' triggers were hit
         return False
 
-    def __get_rule_string(self, side: str, key: str) -> str:
+    def __get_rule_string(self, key: str, side: str) -> str:
         """Get the rule as a string.
 
         Args:
-            side (str): Buy or sell.
-            key (str): The key of strategy rule.
+            key: The key of strategy rule.
+            side: Buy or sell.
 
         return:
             The full strategy rule as a string
@@ -302,11 +310,27 @@ class Algorithm:
         return f'{key}:{self.strategy[side][key]}'
 
     @staticmethod
-    def __error_check_timestamps(start_time_unix: int, end_time_unix: int) -> None:
-        """Simple check that the timestamps are valid."""
+    def __validate_timestamps(start_time_unix: int, end_time_unix: int) -> None:
+        """Simple check that the timestamps are valid.
+
+        Args:
+            start_time_unix: The unix start timestamp.
+            end_time_unix: The unix end timestamp.
+
+        raises:
+            ValueError: If start timestamp is not chronologically before end timestamp.
+            InvalidTimeError: If the start timestamp is not chronologically before the current time.
+            InvalidTimeError: If the end timestamp is not chronologically before the current time.
+        """
         if start_time_unix > end_time_unix:
             log.critical('Start timestamp must be before end timestamp')
-            raise Exception('Start timestamp must be before end timestamp')
-        if start_time_unix > int(time.time()):
+            raise ValueError('Start timestamp must be before end timestamp')
+
+        current_time = int(time.time())
+        if start_time_unix > current_time:
             log.critical('Start timestamp must not be in the future')
-            raise Exception('Start timestamp must not be in the future')
+            raise InvalidTimeError('Start timestamp must not be in the future')
+
+        if end_time_unix > current_time:
+            log.critical('End timestamp must not be in the future')
+            raise InvalidTimeError('End timestamp must not be in the future')

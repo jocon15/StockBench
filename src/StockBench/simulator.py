@@ -313,8 +313,8 @@ class Simulator:
         else:
             # current day is not the end of the simulation (free to buy and sell)
             if buy_mode:
-                was_triggered, rule = self.__algorithm.check_triggers_by_side(BUY_SIDE, self.__data_manager,
-                                                                              current_day_index, None)
+                was_triggered, rule = self.__algorithm.check_triggers_by_side(self.__data_manager, current_day_index,
+                                                                              None, BUY_SIDE)
                 if was_triggered:
                     # create a position
                     position = self.__create_position(current_day_index, rule)
@@ -322,8 +322,8 @@ class Simulator:
                     buy_mode = False
             else:
                 # sell mode
-                was_triggered, rule = self.__algorithm.check_triggers_by_side(SELL_SIDE, self.__data_manager,
-                                                                              current_day_index, position)
+                was_triggered, rule = self.__algorithm.check_triggers_by_side(self.__data_manager, current_day_index,
+                                                                              position, SELL_SIDE)
                 if was_triggered:
                     # close the position
                     self.__liquidate_position(position, current_day_index, rule)

@@ -27,7 +27,7 @@ class Algorithm:
         self.__sell_only_triggers = []
         self.__side_agnostic_triggers = []
         # sort the indicator algorithm into their respective list
-        self.__sort_indicator_trigger_sides(available_indicators)
+        self.__sort_indicator_triggers_by_side(available_indicators)
 
         self.__validate_strategy()
 
@@ -175,7 +175,7 @@ class Algorithm:
             raise Exception(f"Strategy missing '{SELL_SIDE}' key")
         log.debug('No errors found in the strategy')
 
-    def __sort_indicator_trigger_sides(self, indicators: ValuesView) -> None:
+    def __sort_indicator_triggers_by_side(self, indicators: ValuesView) -> None:
         """Sorts the algorithm of each indicator into their respective list based on trade side.
 
         Buy - algorithm can be used only to algorithm a position creation.

@@ -43,6 +43,7 @@ def test_get_initial_balance():
     assert type(actual) is float
     assert int(actual) == 1000
 
+
 def test_get_balance():
     # ============= Arrange ==============
     test_object = UserAccount(1000.0)

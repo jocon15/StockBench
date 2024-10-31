@@ -7,7 +7,7 @@ log = logging.getLogger()
 
 
 class Trigger:
-    """Base class for a algorithm. Provides some of the core functionality for a algorithm."""
+    """Base class for an algorithm. Provides some of the core functionality for a algorithm."""
     BUY = 0
     SELL = 1
     AGNOSTIC = 2

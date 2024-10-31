@@ -100,7 +100,8 @@ class Algorithm:
                 elif AND_KEY in key:
                     for inner_key in self.strategy[BUY_SIDE][key].keys():
                         if trigger.strategy_symbol in inner_key:
-                            trigger.add_to_data(inner_key, self.strategy[BUY_SIDE][key][inner_key], BUY_SIDE, data_manager)
+                            trigger.add_to_data(inner_key, self.strategy[BUY_SIDE][key][inner_key], BUY_SIDE,
+                                                data_manager)
 
         # create a list of all algorithm except sell algorithm
         triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
@@ -116,7 +117,8 @@ class Algorithm:
                             trigger.add_to_data(inner_key, self.strategy[SELL_SIDE][key][inner_key], SELL_SIDE,
                                                 data_manager)
 
-    def check_triggers_by_side(self, data_manager: DataManager, current_day_index: int, position: Position, side: str) -> Tuple[bool, str]:
+    def check_triggers_by_side(self, data_manager: DataManager, current_day_index: int, position: Position,
+                               side: str) -> Tuple[bool, str]:
         """Check all triggers for a side.
 
         Args:

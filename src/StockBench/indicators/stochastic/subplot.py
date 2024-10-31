@@ -44,17 +44,12 @@ class StochasticSubplot(Subplot):
         # builds and returns a list of traces to add to the subplot
         traces = []
         for (column_name, column_data) in df.items():
-            if column_name == 'stochastic_upper':
+            # stochastic + underscore indicates it is a stochastic trigger value
+            if f'{self.data_symbol}_' in column_name:
                 traces.append(fplt.Scatter(
                     x=df['Date'],
-                    y=df['stochastic_upper'],
+                    y=df[column_name],
                     line=dict(color=HORIZONTAL_TRIGGER_YELLOW),
-                    name='Stochastic Upper'))
-            if column_name == 'stochastic_lower':
-                traces.append(fplt.Scatter(
-                    x=df['Date'],
-                    y=df['stochastic_lower'],
-                    line=dict(color=HORIZONTAL_TRIGGER_YELLOW),
-                    name='Stochastic Lower'))
+                    name=column_name))
 
         return traces

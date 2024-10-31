@@ -11,6 +11,7 @@ aspects of the indicator are added later on.
 import logging
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
+from StockBench.simulation_data.data_manager import DataManager
 
 log = logging.getLogger()
 
@@ -31,7 +32,7 @@ class StochasticTrigger(Trigger):
         if nums:
             return max(nums)
         # nums is empty
-        return DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH
+        return DEFAULT_STOCHASTIC_LENGTH
 
     def add_to_data(self, key, value, side, data_manager):
         """Add data to the dataframe.
@@ -47,23 +48,18 @@ class StochasticTrigger(Trigger):
         if len(nums) > 0:
             num = int(nums[0])
             # add the stochastic data to the df
-            self.__add_stochastic_oscillator(num, data_manager)
+            self.__add_stochastic_column(num, data_manager)
         else:
             # add the stochastic data to the df
-            self.__add_stochastic_oscillator(DEFAULT_STOCHASTIC_OSCILLATOR_LENGTH, data_manager)
+            self.__add_stochastic_column(DEFAULT_STOCHASTIC_LENGTH, data_manager)
         # ======== value based (stochastic limit)=========
         nums = self.find_all_nums_in_str(value)
-        if side == 'buy':
-            if len(nums) > 0:
-                trigger = float(nums[0])
-                self.__add_lower_stochastic(trigger, data_manager)
-        else:
-            if len(nums) > 0:
-                trigger = float(nums[0])
-                self.__add_upper_stochastic(trigger, data_manager)
+        if len(nums) > 0:
+            trigger = float(nums[0])
+            self.__add_stochastic_trigger_column(trigger, data_manager)
 
     def check_trigger(self, key, value, data_manager, position, current_day_index) -> bool:
-        """Trigger logic for stochastic oscillator.
+        """Trigger logic for stochastic.
 
         Args:
             key (str): The key value of the algorithm.
@@ -75,7 +71,7 @@ class StochasticTrigger(Trigger):
         return:
             bool: True if the algorithm was hit.
         """
-        log.debug(f'Checking stochastic oscillator algorithm: {key}...')
+        log.debug(f'Checking stochastic algorithm: {key}...')
 
         # get the indicator value from the key
         indicator_value = self.__parse_key(key, data_manager, current_day_index)
@@ -83,7 +79,7 @@ class StochasticTrigger(Trigger):
         # get the operator and algorithm value from the value
         operator, trigger_value = self._parse_value(value, data_manager, current_day_index)
 
-        log.debug(f'Stochastic oscillator algorithm: {key} checked successfully')
+        log.debug(f'Stochastic algorithm: {key} checked successfully')
 
         # algorithm checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
@@ -100,7 +96,7 @@ class StochasticTrigger(Trigger):
                 print(f"stochastic key: {key} contains too many number groupings!")
                 raise ValueError(f"stochastic key: {key} contains too many number groupings!")
             # title of the column in the data
-            title = 'stochastic_oscillator'
+            title = 'stochastic'
             indicator_value = float(data_manager.get_data_point(title, current_day_index))
         elif len(nums) == 1:
             if SLOPE_SYMBOL in key:
@@ -111,11 +107,11 @@ class StochasticTrigger(Trigger):
                     raise ValueError(f"stochastic key: {key} contains no slope value!")
             # stochastic is custom length (not 14)
             # title of the column in the data
-            title = 'stochastic_oscillator'
+            title = 'stochastic'
             indicator_value = float(data_manager.get_data_point(title, current_day_index))
         elif len(nums) == 2:
             # title of the column in the data
-            title = f'stochastic_oscillator{int(nums[0])}'
+            title = f'stochastic{int(nums[0])}'
             # likely that the $slope indicator is being used
             if SLOPE_SYMBOL in key:
                 # get the length of the slope window
@@ -142,7 +138,7 @@ class StochasticTrigger(Trigger):
         return indicator_value
 
     @staticmethod
-    def __add_stochastic_oscillator(length, data_manager):
+    def __add_stochastic_column(length, data_manager):
         """Pre-calculate the stochastic values and add them to the df.
 
         Args:
@@ -151,7 +147,7 @@ class StochasticTrigger(Trigger):
         """
         # if we already have SO values in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():
-            if 'stochastic_oscillator' in col_name:
+            if 'stochastic' in col_name:
                 return
 
         # get data to calculate the indicator value
@@ -163,45 +159,32 @@ class StochasticTrigger(Trigger):
         stochastic_values = StochasticTrigger.__stochastic_oscillator(length, high_data, low_data, close_data)
 
         # add the calculated values to the df
-        data_manager.add_column('stochastic_oscillator', stochastic_values)
+        data_manager.add_column('stochastic', stochastic_values)
 
     @staticmethod
-    def __add_upper_stochastic(trigger_value, data_manager):
-        """Add upper stochastic algorithm to the df.
+    def __add_stochastic_trigger_column(trigger_value: float, data_manager: DataManager):
+        """Add upper RSI algorithm to the df.
+
+        In a stochastic chart, the stochastic triggers are mapped as horizontal bars on top of the stochastic chart.
+        To ensure that these horizontal bars get mapped onto the chart, they must be added to the data as a column of
+        static values that match the trigger value.
 
         Args:
-            trigger_value (float): The algorithm value for the upper stochastic.
-            data_manager (any): The data object.
+            trigger_value: The algorithm value for the upper RSI.
+            data_manager: The simulation data manager.
         """
-        # if we already have values in the df, we don't need to add them again
+        trigger_column_name = f'stochastic_{trigger_value}'
+
+        # if we already have a stochastic trigger column with this value in the df, we don't need to add it again
         for col_name in data_manager.get_column_names():
-            if 'stochastic_upper' in col_name.lower():
+            if trigger_column_name == col_name:
                 return
 
         # create a list of the algorithm value repeated
         list_values = [trigger_value for _ in range(data_manager.get_data_length())]
 
         # add the list to the data
-        data_manager.add_column('stochastic_upper', list_values)
-
-    @staticmethod
-    def __add_lower_stochastic(trigger_value, data_manager):
-        """Add lower stochastic algorithm to the df.
-
-        Args:
-            trigger_value (float): The algorithm value for the lower stochastic.
-            data_manager (any): The data object.
-        """
-        # if we already have values in the df, we don't need to add them again
-        for col_name in data_manager.get_column_names():
-            if 'stochastic_lower' in col_name.lower():
-                return
-
-        # create a list of the algorithm value repeated
-        list_values = [trigger_value for _ in range(data_manager.get_data_length())]
-
-        # add the list to the data
-        data_manager.add_column('stochastic_lower', list_values)
+        data_manager.add_column(trigger_column_name, list_values)
 
     @staticmethod
     def __stochastic_oscillator(length: int, high_data: list, low_data: list, close_data: list) -> list:

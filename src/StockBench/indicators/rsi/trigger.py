@@ -161,14 +161,14 @@ class RSITrigger(Trigger):
         that match the trigger value.
 
         Args:
-            trigger_value (float): The algorithm value for the upper RSI.
-            data_manager (DataManager): The data object.
+            trigger_value: The algorithm value for the upper RSI.
+            data_manager: The data object.
         """
         trigger_column_name = f'RSI_{trigger_value}'
 
         # if we already have an RSI trigger column with this value in the df, we don't need to add it again
         for col_name in data_manager.get_column_names():
-            if trigger_column_name in col_name:
+            if trigger_column_name == col_name:
                 return
 
         # create a list of the algorithm value repeated

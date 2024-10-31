@@ -6,7 +6,7 @@ from .trigger import StochasticTrigger
 class StochasticIndicator(IndicatorInterface):
     def __init__(self):
         self.__strategy_name = 'stochastic'
-        self.__data_name = 'stochastic_oscillator'
+        self.__data_name = self.__strategy_name
         self.__trigger = StochasticTrigger(self.__strategy_name)
         self.__subplot = StochasticSubplot()
 

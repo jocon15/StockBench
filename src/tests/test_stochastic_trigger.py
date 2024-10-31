@@ -66,7 +66,7 @@ def get_column_data_side_effect(*args):
 
 
 def add_column_side_effect(*args):
-    if args[0] == 'stochastic_oscillator':
+    if args[0] == 'stochastic':
         assert args[1] == [67.958,
                            2.785,
                            55.57,
@@ -267,7 +267,7 @@ def add_column_side_effect(*args):
                            84.56,
                            95.663,
                            98.85]
-    elif args[0] == 'stochastic_lower':
+    elif args[0] == 'stochastic_30.0':
         assert args[1] == [30.0,
                            30.0,
                            30.0,
@@ -468,7 +468,7 @@ def add_column_side_effect(*args):
                            30.0,
                            30.0,
                            30.0]
-    elif args[0] == 'stochastic_upper':
+    elif args[0] == 'stochastic_30.0':
         assert args[1] == [30.0,
                            30.0,
                            30.0,

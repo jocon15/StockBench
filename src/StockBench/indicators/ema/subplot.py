@@ -1,32 +1,30 @@
 import re
 import plotly.graph_objects as fplt
+from pandas import DataFrame
+
 from StockBench.indicator.subplot import Subplot
 from StockBench.charting.display_constants import EMA_COLOR, MOVING_AVERAGE_LINE_WIDTH
 
 
-class DummySubplot(Subplot):
+class EMASubplot(Subplot):
     def __init__(self):
-        # Dummy subplot so filling out any info in not necessary
-        # but make sure that the subplot is defined as an OHLC trace
-        super().__init__('', [{}], is_ohlc_trace=True)
+        super().__init__('EMA', [{}], is_ohlc_trace=True)
 
-    @staticmethod
-    def get_subplot(df):
+    def get_subplot(self, df: DataFrame):
         # Dummy subplot - provides an implementation but should never be used
         # only the get_traces function should be used
         return None
 
-    @staticmethod
-    def get_traces(df):
+    def get_traces(self, df: DataFrame):
         # sma is only an OHLC trace
         traces = []
         for (column_name, column_data) in df.items():
-            if 'EMA' in column_name:
+            if self.data_symbol in column_name:
                 nums = re.findall(r'\d+', column_name)
                 length = nums[0]
                 traces.append(fplt.Scatter(
                     x=df['Date'],
                     y=df[column_name],
                     line=dict(color=EMA_COLOR, width=MOVING_AVERAGE_LINE_WIDTH),
-                    name=f'EMA{length}'))
+                    name=f'{self.data_symbol}{length}'))
         return traces

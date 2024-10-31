@@ -248,7 +248,7 @@ def add_column_side_effect(*args):
                            59.354,
                            59.01,
                            56.741]
-    elif args[0] == 'RSI_lower':
+    elif args[0] == 'RSI_30.0':
         assert args[1] == [30.0,
                            30.0,
                            30.0,
@@ -449,7 +449,7 @@ def add_column_side_effect(*args):
                            30.0,
                            30.0,
                            30.0]
-    elif args[0] == 'RSI_upper':
+    elif args[0] == 'RSI_60.0':
         assert args[1] == [60.0,
                            60.0,
                            60.0,

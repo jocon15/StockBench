@@ -1,18 +1,23 @@
 import re
 import logging
 from abc import abstractmethod
+from typing import Tuple
+
 from StockBench.constants import *
+from StockBench.simulation_data.data_manager import DataManager
+from StockBench.position.position import Position
+
 
 log = logging.getLogger()
 
 
 class Trigger:
-    """Base class for a algorithm. Provides some of the core functionality for a algorithm."""
+    """Base class for an algorithm. Provides some shared functionality for an algorithm."""
     BUY = 0
     SELL = 1
     AGNOSTIC = 2
 
-    def __init__(self, strategy_symbol, side):
+    def __init__(self, strategy_symbol: str, side: str):
         self.strategy_symbol = strategy_symbol
         self.__side = side
 
@@ -20,22 +25,31 @@ class Trigger:
         return self.__side
 
     @abstractmethod
-    def additional_days(self, key, value) -> int:
+    def additional_days(self, key: str, value: str) -> int:
         raise NotImplementedError('Additional days not implemented!')
 
     @abstractmethod
-    def add_to_data(self, key, value, side, data_manager):
+    def add_to_data(self, key: str, value: str, side: str, data_manager: DataManager):
         raise NotImplementedError('Add to data not implemented!')
 
     @abstractmethod
-    def check_trigger(self, key, value, data_manager, position_obj, current_day_index) -> bool:
+    def check_trigger(self, key: str, value: str, data_manager: DataManager, position: Position,
+                      current_day_index: int) -> bool:
         raise NotImplementedError('Check algorithm not implemented!')
 
-    def _parse_value(self, key, value, data_manager, current_day_index) -> tuple:
+    def _parse_value(self, value: str, data_manager: DataManager, current_day_index: int) -> Tuple[str, float]:
         """Parser for parsing the operator and algorithm value from the value.
 
         NOTE: This is the default implementation for this, since it is used frequently in this form.
             For abnormal algorithm like candle colors, you can override this with another implementation.
+
+        Args:
+             value: The rule's value.
+             data_manager: The simulation data manager.
+             current_day_index: The current day index.
+
+        returns:
+            Tuple: The operator and the trigger value.
         """
         # find the operator and algorithm value (right hand side of the comparison)
         if CURRENT_PRICE_SYMBOL in value:
@@ -48,13 +62,13 @@ class Trigger:
         return operator, trigger_value
 
     @staticmethod
-    def basic_trigger_check(indicator_value, operator_value, trigger_value) -> bool:
+    def basic_trigger_check(indicator_value: float, operator_value: str, trigger_value: float) -> bool:
         """Abstraction for basic algorithm comparison operators.
 
         Args:
-            indicator_value (float): The value of the indicator.
-            operator_value (str): The operator defined in the strategy
-            trigger_value (float): The value of the algorithm.
+            indicator_value: The value of the indicator.
+            operator_value: The operator defined in the strategy
+            trigger_value: The value of the algorithm.
 
         returns:
             bool: True if the algorithm was hit.
@@ -77,13 +91,13 @@ class Trigger:
         return False
 
     @staticmethod
-    def find_single_numeric_in_str(value) -> float:
+    def find_single_numeric_in_str(value: str) -> float:
         """Find a single numeric algorithm in a string.
 
         Args:
-            value (str): Any value of the strategy.
+            value: Any value of the strategy.
 
-        return:
+        returns:
             float: The algorithm value in the string.
 
         raises:
@@ -98,26 +112,26 @@ class Trigger:
             raise ValueError(f'Invalid amount of numbers found in algorithm value: {value}')
 
     @staticmethod
-    def find_all_nums_in_str(value) -> list:
+    def find_all_nums_in_str(value: str) -> list:
         """Finds all number groupings in a string.
 
         Args:
-            value (str): The string to parse.
+            value: The string to parse.
 
-        return:
+        returns:
             list: A list of numbers in the string.
 
         """
         return re.findall(r'\d+', value)
 
     @staticmethod
-    def find_operator_in_str(value) -> str:
+    def find_operator_in_str(value: str) -> str:
         """Find the logic operator in a string.
 
         Args:
-            value (str): Any value of the strategy.
+            value: Any value of the strategy.
 
-        return:
+        returns:
             str: The operator in the string.
 
         raises:
@@ -133,15 +147,15 @@ class Trigger:
             raise ValueError(f'Invalid number found in algorithm value: {value}')
 
     @staticmethod
-    def calculate_slope(y2, y1, length) -> float:
+    def calculate_slope(y2: float, y1: float, length: int) -> float:
         """Calculate the slope between 2 points.
 
         Args:
-            y2(any): The y-value of the final point.
-            y1(any): The y-value of the initial point.
-            length(any): The difference between the x-values of y2 and y1.
+            y2: The y-value of the final point.
+            y1: The y-value of the initial point.
+            length: The difference between the x-values of y2 and y1.
 
-        return:
+        returns:
             float: The slope between the two points.
 
         raises:

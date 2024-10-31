@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from pandas import DataFrame
 
 
 class Subplot:
@@ -13,12 +14,10 @@ class Subplot:
     def is_ohlc_trace(self):
         return self.__is_ohlc_trace
 
-    @staticmethod
     @abstractmethod
-    def get_subplot(df):
+    def get_subplot(self, df: DataFrame):
         raise NotImplementedError('Not implemented yet!')
 
-    @staticmethod
     @abstractmethod
-    def get_traces(self):
+    def get_traces(self, df: DataFrame):
         raise NotImplementedError('Not implemented yet!')

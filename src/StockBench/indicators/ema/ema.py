@@ -1,5 +1,5 @@
 from .trigger import EMATrigger
-from .subplot import DummySubplot
+from .subplot import EMASubplot
 from StockBench.indicator.indicator import IndicatorInterface
 
 
@@ -8,7 +8,7 @@ class EMAIndicator(IndicatorInterface):
         self.__strategy_name = 'EMA'
         self.__data_name = self.__strategy_name
         self.__trigger = EMATrigger(self.__strategy_name)
-        self.__subplot = DummySubplot()
+        self.__subplot = EMASubplot()
 
     def get_strategy_name(self):
         return self.__strategy_name

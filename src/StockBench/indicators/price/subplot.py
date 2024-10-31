@@ -1,4 +1,6 @@
 import plotly.graph_objects as fplt
+from pandas import DataFrame
+
 from StockBench.indicator.subplot import Subplot
 from StockBench.charting.display_constants import BUY_COLOR, SELL_COLOR, BUY_SELL_DOTS_WIDTH
 
@@ -16,8 +18,7 @@ class OHLCSubplot(Subplot):
     def __init__(self):
         super().__init__('OHLC', [{"type": "ohlc"}], False)
 
-    @staticmethod
-    def get_subplot(df):
+    def get_subplot(self, df: DataFrame):
         """Builds and returns the subplot.
 
         Args:
@@ -33,8 +34,7 @@ class OHLCSubplot(Subplot):
                          close=df['Close'],
                          name='Price Data')
 
-    @staticmethod
-    def get_traces(df) -> list:
+    def get_traces(self, df: DataFrame) -> list:
         """builds and returns a list of traces to add to the subplot.
 
         Args:

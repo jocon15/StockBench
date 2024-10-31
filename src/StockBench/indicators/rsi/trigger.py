@@ -2,6 +2,7 @@ import logging
 import statistics
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
+from StockBench.simulation_data.data_manager import DataManager
 
 log = logging.getLogger()
 
@@ -38,30 +39,26 @@ class RSITrigger(Trigger):
         if len(nums) > 0:
             num = int(nums[0])
             # add the RSI data to the df
-            self.__add_rsi(num, data_manager)
+            self.__add_rsi_column(num, data_manager)
         else:
             # add the RSI data to the df
-            self.__add_rsi(DEFAULT_RSI_LENGTH, data_manager)
+            self.__add_rsi_column(DEFAULT_RSI_LENGTH, data_manager)
         # ======== value based (rsi limit)=========
         # (adds the RSI limit values to the data for charting)
         nums = self.find_all_nums_in_str(value)
-        if side == 'buy':
-            if len(nums) > 0:
-                trigger = float(nums[0])
-                self.__add_lower_rsi(trigger, data_manager)
-        else:
-            if len(nums) > 0:
-                trigger = float(nums[0])
-                self.__add_upper_rsi(trigger, data_manager)
+        # add the trigger to the df for charting
+        if len(nums) > 0:
+            trigger = float(nums[0])
+            self.__add_rsi_trigger_column(trigger, data_manager)
 
-    def check_trigger(self, key, value, data_manager, position_obj, current_day_index) -> bool:
+    def check_trigger(self, key, value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for RSI.
 
         Args:
             key (str): The key value of the algorithm.
             value (str): The value of the algorithm.
             data_manager (any): The data API object.
-            position_obj (any): The position object.
+            position (any): The position object.
             current_day_index (int): The index of the current day.
 
         return:
@@ -73,7 +70,7 @@ class RSITrigger(Trigger):
         indicator_value = self.__parse_key(key, data_manager, current_day_index)
 
         # get the operator and algorithm value from the value
-        operator, trigger_value = self._parse_value(key, value, data_manager, current_day_index)
+        operator, trigger_value = self._parse_value(value, data_manager, current_day_index)
 
         log.debug(f'RSI algorithm: {key} checked successfully')
 
@@ -134,8 +131,8 @@ class RSITrigger(Trigger):
         return indicator_value
 
     @staticmethod
-    def __add_rsi(length, data_manager):
-        """Pre-calculate the RSI values and add them to the df.
+    def __add_rsi_column(length, data_manager):
+        """Calculate the RSI values and add them to the df.
 
         Args:
             length (int): The length of the RSI to use.
@@ -156,42 +153,29 @@ class RSITrigger(Trigger):
         data_manager.add_column('RSI', rsi_values)
 
     @staticmethod
-    def __add_upper_rsi(trigger_value, data_manager):
+    def __add_rsi_trigger_column(trigger_value: float, data_manager: DataManager):
         """Add upper RSI algorithm to the df.
 
+        In an RSI chart, the RSI triggers are mapped as horizontal bars on top of the RSI chart. To ensure that
+        these horizontal bars get mapped onto the chart, they must be added to the data as a column of static values
+        that match the trigger value.
+
         Args:
-            trigger_value (float): The algorithm value for the upper RSI.
-            data_manager (any): The data object.
+            trigger_value: The algorithm value for the upper RSI.
+            data_manager: The data object.
         """
-        # if we already have RSI upper values in the df, we don't need to add them again
+        trigger_column_name = f'RSI_{trigger_value}'
+
+        # if we already have an RSI trigger column with this value in the df, we don't need to add it again
         for col_name in data_manager.get_column_names():
-            if 'rsi_upper' in col_name.lower():
+            if trigger_column_name == col_name:
                 return
 
         # create a list of the algorithm value repeated
         list_values = [trigger_value for _ in range(data_manager.get_data_length())]
 
         # add the list to the data
-        data_manager.add_column('RSI_upper', list_values)
-
-    @staticmethod
-    def __add_lower_rsi(trigger_value, data_manager):
-        """Add lower RSI algorithm to the df.
-
-        Args:
-            trigger_value (float): The algorithm value for the lower RSI.
-            data_manager (any): The data object.
-        """
-        # if we already have RSI lower values in the df, we don't need to add them again
-        for col_name in data_manager.get_column_names():
-            if 'rsi_lower' in col_name.lower():
-                return
-
-        # create a list of the algorithm value repeated
-        list_values = [trigger_value for _ in range(data_manager.get_data_length())]
-
-        # add the list to the data
-        data_manager.add_column('RSI_lower', list_values)
+        data_manager.add_column(trigger_column_name, list_values)
 
     @staticmethod
     def __calculate_rsi(length: int, price_data: list) -> list:

@@ -10,8 +10,7 @@ class MACDSubplot(Subplot):
     def __init__(self):
         super().__init__('MACD', [{"type": "bar"}], False)
 
-    @staticmethod
-    def get_subplot(df):
+    def get_subplot(self, df):
         """Builds the subplot.
 
         Args:
@@ -20,10 +19,9 @@ class MACDSubplot(Subplot):
         return:
             A plotly subplot.
         """
-        return fplt.Bar(x=df['Date'], y=df['MACD'], name='MACD')
+        return fplt.Bar(x=df['Date'], y=df[self.data_symbol], name=self.data_symbol)
 
-    @staticmethod
-    def get_traces(df) -> list:
+    def get_traces(self, df) -> list:
         """Build a list of traces to add to the subplot.
 
         Args:

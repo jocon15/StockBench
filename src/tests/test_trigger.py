@@ -26,12 +26,12 @@ def test__parse_value(data_mocker):
 
     # ============= Assert ===============
     # normal case
-    assert test_object._parse_value('SMA21', '>250', data_mocker, 0) == ('>', 250.0)
+    assert test_object._parse_value('>250', data_mocker, 0) == ('>', 250.0)
     # current price in symbol case
-    assert test_object._parse_value('SMA21', '>$price', data_mocker, 0) == ('>', 255.1)
+    assert test_object._parse_value('>$price', data_mocker, 0) == ('>', 255.1)
     # no number case
     try:
-        test_object._parse_value('SMA21', '>', data_mocker, 0)
+        test_object._parse_value('>', data_mocker, 0)
         assert False
     except ValueError:
         assert True

@@ -1,5 +1,3 @@
-import os
-import sys
 import pytest
 from unittest.mock import patch
 from StockBench.indicators.stop_loss.trigger import StopLossTrigger

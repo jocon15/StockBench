@@ -45,17 +45,12 @@ class RSISubplot(Subplot):
         # builds and returns a list of traces to add to the subplot
         traces = []
         for (column_name, column_data) in df.items():
-            if column_name == 'RSI_upper':
+            # RSI + underscore indicates it is an RSI trigger value
+            if 'RSI_' in column_name:
                 traces.append(fplt.Scatter(
                     x=df['Date'],
-                    y=df['RSI_upper'],
+                    y=df[column_name],
                     line=dict(color=HORIZONTAL_TRIGGER_YELLOW),
-                    name='RSI Upper'))
-            if column_name == 'RSI_lower':
-                traces.append(fplt.Scatter(
-                    x=df['Date'],
-                    y=df['RSI_lower'],
-                    line=dict(color=HORIZONTAL_TRIGGER_YELLOW),
-                    name='RSI Lower'))
+                    name=column_name))
 
         return traces

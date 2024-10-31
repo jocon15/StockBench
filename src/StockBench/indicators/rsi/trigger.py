@@ -132,7 +132,7 @@ class RSITrigger(Trigger):
 
     @staticmethod
     def __add_rsi_column(length, data_manager):
-        """Pre-calculate the RSI values and add them to the df.
+        """Calculate the RSI values and add them to the df.
 
         Args:
             length (int): The length of the RSI to use.

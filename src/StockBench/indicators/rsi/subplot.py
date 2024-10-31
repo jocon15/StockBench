@@ -28,7 +28,7 @@ class RSISubplot(Subplot):
             A plotly subplot.
         """
         return fplt.Scatter(
-            x=df[self.data_symbol],
+            x=df['Date'],
             y=df[self.data_symbol],
             line=dict(color=WHITE),
             name=self.data_symbol)

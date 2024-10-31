@@ -1,5 +1,5 @@
 from .trigger import SMATrigger
-from .subplot import DummySubplot
+from .subplot import SMASubplot
 from StockBench.indicator.indicator import IndicatorInterface
 
 
@@ -8,7 +8,7 @@ class SMAIndicator(IndicatorInterface):
         self.__strategy_name = 'SMA'
         self.__data_name = self.__strategy_name
         self.__trigger = SMATrigger(self.__strategy_name)
-        self.__subplot = DummySubplot()
+        self.__subplot = SMASubplot()
 
     def get_strategy_name(self):
         return self.__strategy_name

@@ -39,10 +39,10 @@ class RSITrigger(Trigger):
         if len(nums) > 0:
             num = int(nums[0])
             # add the RSI data to the df
-            self.__add_rsi(num, data_manager)
+            self.__add_rsi_column(num, data_manager)
         else:
             # add the RSI data to the df
-            self.__add_rsi(DEFAULT_RSI_LENGTH, data_manager)
+            self.__add_rsi_column(DEFAULT_RSI_LENGTH, data_manager)
         # ======== value based (rsi limit)=========
         # (adds the RSI limit values to the data for charting)
         nums = self.find_all_nums_in_str(value)
@@ -131,7 +131,7 @@ class RSITrigger(Trigger):
         return indicator_value
 
     @staticmethod
-    def __add_rsi(length, data_manager):
+    def __add_rsi_column(length, data_manager):
         """Pre-calculate the RSI values and add them to the df.
 
         Args:

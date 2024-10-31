@@ -51,7 +51,7 @@ class PriceTrigger(Trigger):
         indicator_value = self.__parse_key(key, data_manager, current_day_index)
 
         # get the operator and algorithm value from the value
-        operator, trigger_value = self._parse_value(key, value, data_manager, current_day_index)
+        operator, trigger_value = self._parse_value(value, data_manager, current_day_index)
 
         log.debug(f'Price algorithm: {key} checked successfully')
 

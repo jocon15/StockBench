@@ -1,4 +1,6 @@
 import plotly.graph_objects as fplt
+from pandas import DataFrame
+
 from StockBench.indicator.subplot import Subplot
 from StockBench.charting.display_constants import WHITE, HORIZONTAL_TRIGGER_YELLOW
 
@@ -13,30 +15,28 @@ class StochasticSubplot(Subplot):
         - RSI lower algorithm
     """
     def __init__(self):
-        super().__init__('stochastic_oscillator', [{"type": "scatter"}], False)
+        super().__init__('stochastic', [{"type": "scatter"}], False)
 
-    @staticmethod
-    def get_subplot(df):
+    def get_subplot(self, df: DataFrame):
         """Builds and returns the subplot.
 
         Args:
-            df (DataFrame): The dataframe from the simulation.
+            df: The dataframe of simulation data.
 
         return:
             A plotly subplot.
         """
         return fplt.Scatter(
             x=df['Date'],
-            y=df['stochastic_oscillator'],
+            y=df[self.data_symbol],
             line=dict(color=WHITE),
             name='Stochastic')
 
-    @staticmethod
-    def get_traces(df) -> list:
+    def get_traces(self, df: DataFrame) -> list:
         """builds and returns a list of traces to add to the subplot.
 
         Args:
-            df (DataFrame): The dataframe from the simulation.
+            df: The dataframe of simulation data.
 
         return:
             list: A list of traces to add to the subplot defined in this class.

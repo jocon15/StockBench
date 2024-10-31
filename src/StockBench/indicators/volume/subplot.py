@@ -1,6 +1,8 @@
 import numpy as np
-from StockBench.indicator.subplot import Subplot
 import plotly.graph_objects as fplt
+from pandas import DataFrame
+
+from StockBench.indicator.subplot import Subplot
 from StockBench.charting.display_constants import BEAR_RED, BULL_GREEN
 
 
@@ -12,12 +14,11 @@ class VolumeSubplot(Subplot):
     def __init__(self):
         super().__init__('volume', [{"type": "bar"}], False)
 
-    @staticmethod
-    def get_subplot(df):
+    def get_subplot(self, df: DataFrame):
         """Builds the subplot.
 
         Args:
-            df (DataFrame): The dataframe from the simulation.
+            df: The dataframe of simulation data.
 
         return:
             A plotly subplot.
@@ -25,16 +26,15 @@ class VolumeSubplot(Subplot):
         df['volume_colors'] = np.where(df['color'] == 'red', BEAR_RED, BULL_GREEN)
         return fplt.Bar(
                     x=df['Date'],
-                    y=df['volume'],
+                    y=df[self.data_symbol],
                     name='Volume',
                     marker_color=df['volume_colors'])
 
-    @staticmethod
-    def get_traces(df) -> list:
+    def get_traces(self, df: DataFrame) -> list:
         """Build a list of traces to add to the subplot.
 
         Args:
-            df (DataFrame): The dataframe from the simulation.
+            df: The dataframe of simulation data.
 
         return:
             list: A list of traces to add to the subplot defined in this class.

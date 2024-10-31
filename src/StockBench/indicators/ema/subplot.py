@@ -6,11 +6,9 @@ from StockBench.indicator.subplot import Subplot
 from StockBench.charting.display_constants import EMA_COLOR, MOVING_AVERAGE_LINE_WIDTH
 
 
-class DummySubplot(Subplot):
+class EMASubplot(Subplot):
     def __init__(self):
-        # Dummy subplot so filling out any info in not necessary
-        # but make sure that the subplot is defined as an OHLC trace
-        super().__init__('', [{}], is_ohlc_trace=True)
+        super().__init__('EMA', [{}], is_ohlc_trace=True)
 
     def get_subplot(self, df: DataFrame):
         # Dummy subplot - provides an implementation but should never be used

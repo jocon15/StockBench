@@ -46,14 +46,14 @@ class MACDTrigger(Trigger):
         # add the calculated values to the df
         data_manager.add_column(self.DATA_COLUMN_TITLE, self.__calculate_macd(price_data))
 
-    def check_trigger(self, key, value, data_manager, position_obj, current_day_index) -> bool:
+    def check_trigger(self, key, value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for EMA.
 
         Args:
             key (str): The key value of the algorithm.
             value (str): The value of the algorithm.
             data_manager (any): The data API object.
-            position_obj (any): The position object.
+            position (any): The position object.
             current_day_index (int): The index of the current day.
 
         return:

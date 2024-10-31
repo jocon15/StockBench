@@ -31,14 +31,14 @@ class StopLossTrigger(Trigger):
         # require any additional data to be added to the data
         return
 
-    def check_trigger(self, key, value, data_manager, position_obj, current_day_index) -> bool:
+    def check_trigger(self, key, value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for stop loss.
 
         Args:
             key (str): The key value of the algorithm.
             value (str): The value of the algorithm.
             data_manager (any): The data API object.
-            position_obj (any): The position object.
+            position (any): The position object.
             current_day_index (int): The index of the current day.
 
         return:
@@ -51,12 +51,12 @@ class StopLossTrigger(Trigger):
         open_price = data_manager.get_data_point(data_manager.OPEN, current_day_index)
 
         # get the profit/loss values from the position
-        intraday_pl = position_obj.intraday_profit_loss(open_price, current_price)
-        lifetime_pl = position_obj.profit_loss(current_price)
+        intraday_pl = position.intraday_profit_loss(open_price, current_price)
+        lifetime_pl = position.profit_loss(current_price)
 
         # get the profit/loss percents from the position
-        intraday_plpc = position_obj.intraday_profit_loss_percent(open_price, current_price)
-        lifetime_plpc = position_obj.profit_loss_percent(current_price)
+        intraday_plpc = position.intraday_profit_loss_percent(open_price, current_price)
+        lifetime_plpc = position.profit_loss_percent(current_price)
 
         if 'intraday' in key:
             # use intraday stats

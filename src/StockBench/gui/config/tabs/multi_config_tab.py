@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QLabel, QPushButton, QLineEdit
 from PyQt6.QtCore import Qt
 
-from StockBench.gui.config.tabs.base.config_tab import ConfigTab
+from StockBench.gui.config.tabs.base.config_tab import ConfigTab, MessageBoxCaptureException, CaptureErrors
 from StockBench.gui.results.multi.multi_results_window import MultiResultsWindow
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.config.components.strategy_selection import StrategySelection
@@ -73,13 +73,17 @@ class MultiConfigTab(ConfigTab):
 
         self.setLayout(self.layout)
 
+    @CaptureErrors
     def on_run_btn_clicked(self):
+        """On-click function for the run button.
+
+        Decorator:
+            The CaptureErrors decorator allows custom exceptions to be caught and logged to the error message box
+            instead of crashing. It also allows us to functionalize the filepath validation without the need for
+            try blocks or return values.
+        """
         # load the strategy from the JSON file into a strategy python dict
         strategy = self.load_strategy(self.strategy_selection_box.filepath_box.text())
-
-        if strategy is None:
-            # strategy load failed
-            return
 
         # gather other data from UI shared_components
         raw_simulation_symbols = self.symbol_tbox.text().split(',')
@@ -90,8 +94,7 @@ class MultiConfigTab(ConfigTab):
 
         # check the balance for negative numbers
         if simulation_balance <= 0:
-            self.error_message_box.setText('Initial account balance must be a positive number!')
-            return
+            raise MessageBoxCaptureException('Initial account balance must be a positive number!')
 
         # create a new simulations results window
         self.simulation_result_window = MultiResultsWindow(

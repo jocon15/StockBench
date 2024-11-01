@@ -249,7 +249,7 @@ class ConfigTab(QWidget):
 
     @CaptureErrors
     def load_strategy(self, filepath: str, cache_key=None, cache_value=None):
-        """
+        """Loads a strategy from a filepath.
 
         Decorator:
             The CaptureErrors decorator allows custom exceptions to be caught and logged to the error message box

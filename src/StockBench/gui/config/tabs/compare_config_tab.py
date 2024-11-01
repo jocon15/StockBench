@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QLabel, QPushButton, QLineEdit
 from PyQt6.QtCore import Qt
 
-from StockBench.gui.config.tabs.base.config_tab import ConfigTab
+from StockBench.gui.config.tabs.base.config_tab import ConfigTab, MessageBoxCaptureException, CaptureErrors
 from StockBench.gui.results.multi.multi_results_window import MultiResultsWindow
 from StockBench.gui.results.compare.compare_results_window import CompareResultsWindow
 from StockBench.gui.palette.palette import Palette
@@ -91,14 +91,18 @@ class CompareConfigTab(ConfigTab):
         # add the layout to the widget
         self.setLayout(self.layout)
 
+    @CaptureErrors
     def on_run_btn_clicked(self):
+        """On-click function for the run button.
+
+        Decorator:
+            The CaptureErrors decorator allows custom exceptions to be caught and logged to the error message box
+            instead of crashing. It also allows us to functionalize the filepath validation without the need for
+            try blocks or return values.
+        """
         # load the strategy from the JSON file into a strategy python dict
         strategy1 = self.load_strategy(self.strategy_1_selection_box.filepath_box.text(), self.STRATEGY_1_CACHE_KEY)
         strategy2 = self.load_strategy(self.strategy_2_selection_box.filepath_box.text(), self.STRATEGY_2_CACHE_KEY)
-
-        if strategy1 is None or strategy2 is None:
-            self.error_message_box.setText('Error trying to load strategy 1 or strategy 2!')
-            return
 
         # gather other data from UI shared_components
         raw_simulation_symbols = self.symbol_tbox.text().split(',')
@@ -109,8 +113,7 @@ class CompareConfigTab(ConfigTab):
 
         # check the balance for negative numbers
         if simulation_balance <= 0:
-            self.error_message_box.setText('Initial account balance must be a positive number!')
-            return
+            raise MessageBoxCaptureException('Initial account balance must be a positive number!')
 
         # reminder: h2h will store the references of these simulations, so we do not need to attribute them with self
         # also, h2h will call the begin functions

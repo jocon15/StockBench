@@ -1,4 +1,5 @@
 import json
+import os.path
 import time
 from abc import abstractmethod
 
@@ -146,6 +147,10 @@ class ConfigTab(QWidget):
         self.error_message_box.setStyleSheet(Palette.ERROR_LABEL_STYLESHEET)
 
     def on_strategy_studio_btn_clicked(self, filepath):
+        if not os.path.isfile(filepath):
+            self.error_message_box.setText('Strategy filepath is not a valid file!')
+            return
+
         # launch the strategy studio window injecting the filepath from the filepath box into the strategy editor
         coordinates = self.mapToGlobal(QPoint(0, 0))
         self.strategy_studio_window = StrategyStudioWindow(

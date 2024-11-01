@@ -7,7 +7,7 @@ from PyQt6.QtCore import QTimer, QThreadPool
 from PyQt6 import QtGui
 from StockBench.gui.palette.palette import Palette
 from StockBench.simulator import Simulator
-
+from StockBench.indicator.exceptions import StrategyIndicatorError
 log = logging.getLogger()
 
 
@@ -90,26 +90,35 @@ class SimulationResultsWindow(QWidget):
 
     def __run_simulation(self) -> dict:
         """Run the simulation."""
+        # set up the simulator's configuration options
+        # FIXME: this should be functionalized
         if self.logging:
             self.simulator.enable_logging()
         if self.reporting:
             self.simulator.enable_reporting()
-        self.simulator.load_strategy(self.strategy)
+
+        # configure the simulator's configuration options
+        # FIXME: this should be functionalized
         if self.unique_chart_saving:
             save_option = ChartingEngine.UNIQUE_SAVE
         else:
             save_option = ChartingEngine.TEMP_SAVE
+
+        # load the strategy file
+        self.simulator.load_strategy(self.strategy)
+
+        # run the simulation and catch any errors - keep the app from crashing even if the sim fails
         try:
             return self._run_simulation(save_option)
-        except ValueError as e:
-            # pass the known error down
-            self.overview_tab.update_error_message(f'{e}')
-            return {}
+        except StrategyIndicatorError as e:
+            message = f'Strategy error: {e}'
         except Exception as e:
-            # unexpected error
-            log.error(f'Unexpected error during simulation: {e}')
-            self.overview_tab.update_error_message(f'Unexpected error: {e}')
-            return {}
+            message = f'Unexpected error: {e}'
+
+        # log all errors and display error message in console box
+        log.error(message)
+        self.overview_tab.update_error_message(message)
+        return {}
 
     @abstractmethod
     def _run_simulation(self, save_option) -> dict:

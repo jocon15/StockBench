@@ -1,11 +1,15 @@
 import logging
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
+from StockBench.indicator.exceptions import StrategyIndicatorError
 
 log = logging.getLogger()
 
 
 class PriceTrigger(Trigger):
+    # cannot use strategy symbol because its "price"
+    DISPLAY_NAME = 'Price'
+
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
 
@@ -68,9 +72,8 @@ class PriceTrigger(Trigger):
 
         if len(nums) == 0:
             if SLOPE_SYMBOL in key:
-                log.critical(f"Price key: {key} does not contain enough number groupings!")
-                print(f"Price key: {key} does not contain enough number groupings!")
-                raise ValueError(f"Price key: {key} does not contain enough number groupings!")
+                raise StrategyIndicatorError(f'{self.DISPLAY_NAME} key: {key} does not contain enough number '
+                                             f'groupings!')
             indicator_value = float(data_manager.get_data_point(title, current_day_index))
         elif len(nums) == 1:
             # likely that the $slope indicator is being used
@@ -88,14 +91,9 @@ class PriceTrigger(Trigger):
                     slope_window_length
                 )
             else:
-                log.warning(f'Warning: {key} is in incorrect format and will be ignored')
-                print(f'Warning: {key} is in incorrect format and will be ignored')
-                # re-raise the error so check_trigger() knows the parse failed
-                raise ValueError
+                raise StrategyIndicatorError(f'{self.DISPLAY_NAME} key: {key} contains too many number groupings! '
+                                             f'Are you missing a $slope emblem?')
         else:
-            log.warning(f'Warning: {key} is in incorrect format and will be ignored')
-            print(f'Warning: {key} is in incorrect format and will be ignored')
-            # re-raise the error so check_trigger() knows the parse failed
-            raise ValueError
+            raise StrategyIndicatorError(f'{self.DISPLAY_NAME} key: {key} contains too many number groupings!')
 
         return indicator_value

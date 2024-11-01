@@ -24,7 +24,7 @@ class MessageBoxCaptureException(Exception):
     pass
 
 
-def CaptureErrors(original_fxn: Callable):
+def CaptureConfigErrors(original_fxn: Callable):
     """Decorator for capturing errors. This decorator simply wraps the original function in a try block to capture
     raised exceptions that are designated as MassageBoxCaptureExceptions. If such an exception occurs, the exception
     message is logged to the tab's error_message_box instead of crashing the program.
@@ -171,7 +171,7 @@ class ConfigTab(QWidget):
         self.error_message_box = QLabel()
         self.error_message_box.setStyleSheet(Palette.ERROR_LABEL_STYLESHEET)
 
-    @CaptureErrors
+    @CaptureConfigErrors
     def on_strategy_studio_btn_clicked(self, filepath: str):
         """
 
@@ -247,7 +247,7 @@ class ConfigTab(QWidget):
         if selected:
             self.results_depth = Simulator.DATA_ONLY
 
-    @CaptureErrors
+    @CaptureConfigErrors
     def load_strategy(self, filepath: str, cache_key=None, cache_value=None):
         """Loads a strategy from a filepath.
 

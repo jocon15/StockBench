@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QLabel, QPushButton, QLineEdit
 from PyQt6.QtCore import Qt
 
-from StockBench.gui.config.tabs.base.config_tab import ConfigTab, MessageBoxCaptureException, CaptureErrors
+from StockBench.gui.config.tabs.base.config_tab import ConfigTab, MessageBoxCaptureException, CaptureConfigErrors
 from StockBench.gui.results.singular.singular_results_window import SingularResultsWindow
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.config.components.strategy_selection import StrategySelection
@@ -75,7 +75,7 @@ class SingularConfigTab(ConfigTab):
 
         self.setLayout(self.layout)
 
-    @CaptureErrors
+    @CaptureConfigErrors
     def on_run_btn_clicked(self):
         """On-click function for the run button.
 

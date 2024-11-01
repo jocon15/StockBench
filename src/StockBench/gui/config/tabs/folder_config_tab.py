@@ -3,7 +3,7 @@ import os
 from PyQt6.QtWidgets import QLabel, QLineEdit
 from PyQt6.QtCore import Qt
 
-from StockBench.gui.config.tabs.base.config_tab import ConfigTab, MessageBoxCaptureException, CaptureErrors
+from StockBench.gui.config.tabs.base.config_tab import ConfigTab, MessageBoxCaptureException, CaptureConfigErrors
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.results.folder.folder_results_window import FolderResultsWindow
 from StockBench.gui.config.components.cached_folder_selector import CachedFolderSelector
@@ -60,7 +60,7 @@ class FolderConfigTab(ConfigTab):
 
         self.setLayout(self.layout)
 
-    @CaptureErrors
+    @CaptureConfigErrors
     def on_run_btn_clicked(self):
         """On-click function for the run button.
 

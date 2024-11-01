@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QLabel, QPushButton, QLineEdit
 from PyQt6.QtCore import Qt
 
-from StockBench.gui.config.tabs.base.config_tab import ConfigTab, MessageBoxCaptureException, CaptureErrors
+from StockBench.gui.config.tabs.base.config_tab import ConfigTab, MessageBoxCaptureException, CaptureConfigErrors
 from StockBench.gui.results.multi.multi_results_window import MultiResultsWindow
 from StockBench.gui.results.compare.compare_results_window import CompareResultsWindow
 from StockBench.gui.palette.palette import Palette
@@ -91,7 +91,7 @@ class CompareConfigTab(ConfigTab):
         # add the layout to the widget
         self.setLayout(self.layout)
 
-    @CaptureErrors
+    @CaptureConfigErrors
     def on_run_btn_clicked(self):
         """On-click function for the run button.
 

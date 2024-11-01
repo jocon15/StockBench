@@ -2,6 +2,7 @@ import logging
 import statistics
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
+from StockBench.indicator.exceptions import StrategyIndicatorError
 
 log = logging.getLogger()
 
@@ -67,7 +68,7 @@ class MACDTrigger(Trigger):
         # get the operator and algorithm value from the value
         operator, trigger_value = self._parse_value(value, data_manager, current_day_index)
 
-        log.debug(f'MACD algorithm: {key} checked successfully')
+        log.debug(f'{self.strategy_symbol} algorithm: {key} checked successfully')
 
         # algorithm checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
@@ -90,9 +91,8 @@ class MACDTrigger(Trigger):
         # MACD can only have slope emblem therefore 1 or 0 number groupings are acceptable
         if len(nums) == 0:
             if SLOPE_SYMBOL in key:
-                log.critical(f"MACD key: {key} does not contain enough number groupings!")
-                print(f"MACD key: {key} does not contain enough number groupings!")
-                raise ValueError(f"MACD key: {key} does not contain enough number groupings!")
+                raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} does not contain enough number '
+                                             f'groupings!')
             indicator_value = float(data_manager.get_data_point(self.DATA_COLUMN_TITLE, current_day_index))
         elif len(nums) == 1:
             # likely that the $slope indicator is being used
@@ -111,15 +111,10 @@ class MACDTrigger(Trigger):
                     slope_window_length
                 )
             else:
-                log.warning(f'Warning: {key} is in incorrect format and will be ignored')
-                print(f'Warning: {key} is in incorrect format and will be ignored')
-                # re-raise the error so check_trigger() knows the parse failed
-                raise ValueError
+                raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains too many number groupings! '
+                                             f'Are you missing a $slope emblem?')
         else:
-            log.warning(f'Warning: {key} is in incorrect format and will be ignored')
-            print(f'Warning: {key} is in incorrect format and will be ignored')
-            # re-raise the error so check_trigger() knows the parse failed
-            raise ValueError
+            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains too many number groupings!')
 
         return indicator_value
 
@@ -137,7 +132,8 @@ class MACDTrigger(Trigger):
         small_ema_length_values = MACDTrigger.__calculate_ema(self.SMALL_EMA_LENGTH, price_data)
 
         if len(large_ema_length_values) != len(small_ema_length_values):
-            raise ArithmeticError('EMA value lists for MACD must be the same length!')
+            raise StrategyIndicatorError(f'{self.strategy_symbol} value lists for {self.strategy_symbol} must be the '
+                                         f'same length!')
 
         macd_values = []
         for i in range(len(large_ema_length_values)):

@@ -3,7 +3,7 @@ import os
 from PyQt6.QtWidgets import QLabel, QLineEdit
 from PyQt6.QtCore import Qt
 
-from StockBench.gui.config.tabs.base.config_tab import ConfigTab
+from StockBench.gui.config.tabs.base.config_tab import ConfigTab, MessageBoxCaptureException, CaptureErrors
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.results.folder.folder_results_window import FolderResultsWindow
 from StockBench.gui.config.components.cached_folder_selector import CachedFolderSelector
@@ -60,7 +60,15 @@ class FolderConfigTab(ConfigTab):
 
         self.setLayout(self.layout)
 
+    @CaptureErrors
     def on_run_btn_clicked(self):
+        """On-click function for the run button.
+
+        Decorator:
+            The CaptureErrors decorator allows custom exceptions to be caught and logged to the error message box
+            instead of crashing. It also allows us to functionalize the filepath validation without the need for
+            try blocks or return values.
+        """
         # extract the folder path from the input
         folderpath = self.folder_selection.folderpath_box.text()
 
@@ -73,8 +81,7 @@ class FolderConfigTab(ConfigTab):
 
         # check the balance for negative numbers
         if simulation_balance <= 0:
-            self.error_message_box.setText('Initial account balance must be a positive number!')
-            return
+            raise MessageBoxCaptureException('Initial account balance must be a positive number!')
 
         # create a list of simulations
         strategies = []
@@ -82,9 +89,7 @@ class FolderConfigTab(ConfigTab):
         # iterate through all files in the folder, loading the strategies into a list
         for filename in os.listdir(folderpath):
             filepath = os.path.join(folderpath, filename)
-
             strategy = self.load_strategy(filepath, self.FOLDER_CACHE_KEY, folderpath)
-
             strategies.append(strategy)
 
         # create a new simulations results window

@@ -2,6 +2,8 @@ import json
 import os.path
 import time
 from abc import abstractmethod
+from functools import wraps
+from typing import Callable
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QRadioButton, QComboBox
 from PyQt6.QtCore import QThreadPool
@@ -15,6 +17,29 @@ from StockBench.gui.studio.strategy_studio import StrategyStudioWindow
 from StockBench.constants import *
 from StockBench.simulator import Simulator
 from StockBench.caching.file_cache import CACHE_FILE_FILEPATH
+
+
+class MessageBoxCaptureException(Exception):
+    """This is a custom exception use with the CaptureErrors decorator."""
+    pass
+
+
+def CaptureErrors(original_fxn: Callable):
+    """Decorator for capturing errors. This decorator simply wraps the original function in a try block to capture
+    raised exceptions that are designated as MassageBoxCaptureExceptions. If such an exception occurs, the exception
+    message is logged to the tab's error_message_box instead of crashing the program.
+
+    This decorator allows for the functionalization of validation logic without having to use try blocks or return
+    a status value. Functions that contain paths that require an error message to be shown simply need to decorate
+    using @CaptureErrors and raise MessageBoxCaptureExceptions with a custom message for the message box.
+    """
+    @wraps(original_fxn)
+    def wrapper(self, *args, **kwargs):
+        try:
+            original_fxn(self, *args, **kwargs)
+        except MessageBoxCaptureException as e:
+            self.error_message_box.setText(str(e))
+    return wrapper
 
 
 class ConfigTab(QWidget):
@@ -146,10 +171,16 @@ class ConfigTab(QWidget):
         self.error_message_box = QLabel()
         self.error_message_box.setStyleSheet(Palette.ERROR_LABEL_STYLESHEET)
 
-    def on_strategy_studio_btn_clicked(self, filepath):
-        if not os.path.isfile(filepath):
-            self.error_message_box.setText('Strategy filepath is not a valid file!')
-            return
+    @CaptureErrors
+    def on_strategy_studio_btn_clicked(self, filepath: str):
+        """
+
+        Decorator:
+            The CaptureErrors decorator allows custom exceptions to be caught and logged to the error message box
+            instead of crashing. It also allows us to functionalize the filepath validation without the need for
+            try blocks or return values.
+        """
+        self._validate_filepath(filepath)
 
         # launch the strategy studio window injecting the filepath from the filepath box into the strategy editor
         coordinates = self.mapToGlobal(QPoint(0, 0))
@@ -216,19 +247,21 @@ class ConfigTab(QWidget):
         if selected:
             self.results_depth = Simulator.DATA_ONLY
 
-    def load_strategy(self, filepath, cache_key=None, cache_value=None):
-        if filepath is None or filepath == '':
-            self.error_message_box.setText('You must select a strategy file!')
-            return None
+    @CaptureErrors
+    def load_strategy(self, filepath: str, cache_key=None, cache_value=None):
+        """Loads a strategy from a filepath.
+
+        Decorator:
+            The CaptureErrors decorator allows custom exceptions to be caught and logged to the error message box
+            instead of crashing. It also allows us to functionalize the filepath validation without the need for
+            try blocks or return values.
+        """
+        self._validate_filepath(filepath)
         try:
             with open(filepath, 'r') as file:
                 strategy = json.load(file)
-        except FileNotFoundError:
-            self.error_message_box.setText('Strategy file not found!')
-            return None
         except Exception as e:
-            self.error_message_box.setText(f'Uncaught error parsing strategy file: {e}')
-            return None
+            raise MessageBoxCaptureException(f'Uncaught error parsing strategy file: {e}')
 
         # cache the strategy filepath (create if it does not already exist)
         self.cache_strategy_filepath(filepath, cache_key, cache_value)
@@ -260,6 +293,13 @@ class ConfigTab(QWidget):
         # write the cache data
         with open(CACHE_FILE_FILEPATH, 'w+') as file:
             json.dump(data, file)
+
+    @staticmethod
+    def _validate_filepath(filepath: str):
+        if filepath is None or filepath == '':
+            raise MessageBoxCaptureException('You must select a strategy file!')
+        if not os.path.isfile(filepath):
+            raise MessageBoxCaptureException('Strategy filepath is not a valid file!')
 
     @abstractmethod
     def on_run_btn_clicked(self):

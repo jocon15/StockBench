@@ -61,7 +61,7 @@ class FolderConfigTab(ConfigTab):
         self.setLayout(self.layout)
 
     @CaptureConfigErrors
-    def on_run_btn_clicked(self):
+    def on_run_btn_clicked(self, clicked_signal: bool):
         """On-click function for the run button.
 
         Decorator:

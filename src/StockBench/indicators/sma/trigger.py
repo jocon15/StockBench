@@ -53,7 +53,7 @@ class SMATrigger(Trigger):
         return:
             bool: True if the algorithm was hit.
         """
-        log.debug(f'Checking SMA algorithm: {key}...')
+        log.debug(f'Checking {self.strategy_symbol} algorithm: {key}...')
 
         # get the indicator value from the key
         indicator_value = self.__parse_key(key, data_manager, current_day_index)
@@ -61,7 +61,7 @@ class SMATrigger(Trigger):
         # get the operator and algorithm value from the value
         operator, trigger_value = self._parse_value(value, data_manager, current_day_index)
 
-        log.debug(f'SMA algorithm: {key} checked successfully')
+        log.debug(f'{self.strategy_symbol} algorithm: {key} checked successfully')
 
         # algorithm checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
@@ -78,11 +78,11 @@ class SMATrigger(Trigger):
                 raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} does not contain enough number '
                                              f'groupings!')
             # title of the column in the data
-            title = f'SMA{int(nums[0])}'
+            title = f'{self.strategy_symbol} {int(nums[0])}'
             indicator_value = float(data_manager.get_data_point(title, current_day_index))
         elif len(nums) == 2:
             # title of the column in the data
-            title = f'SMA{int(nums[0])}'
+            title = f'{self.strategy_symbol} {int(nums[0])}'
             # likely that the $slope indicator is being used
             if SLOPE_SYMBOL in key:
                 # get the length of the slope window
@@ -105,8 +105,7 @@ class SMATrigger(Trigger):
 
         return indicator_value
 
-    @staticmethod
-    def __add_sma(length, data_manager):
+    def __add_sma(self, length, data_manager):
         """Pre-calculate the SMA values and add them to the df.
 
         Args:
@@ -114,7 +113,7 @@ class SMATrigger(Trigger):
             data_manager (any): The data object.
         """
         # get a list of close price values
-        column_title = f'SMA{length}'
+        column_title = f'{self.strategy_symbol} {length}'
 
         # if SMA values ar already in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():

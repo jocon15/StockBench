@@ -51,13 +51,8 @@ class VolumeTrigger(Trigger):
             operator = value.replace(CURRENT_PRICE_SYMBOL, '')
         else:
             # check that the value from {key: value} has a number in it
-            try:
-                trigger_value = Trigger.find_single_numeric_in_str(value)
-                operator = Trigger.find_operator_in_str(value)
-            except ValueError:
-                # an exception occurred trying to parse algorithm value or operator - skip algorithm
-                return False
-
+            trigger_value = Trigger.find_single_numeric_in_str(value)
+            operator = Trigger.find_operator_in_str(value)
         # algorithm checks
         result = Trigger.basic_trigger_check(volume, operator, trigger_value)
 

@@ -1,4 +1,5 @@
 import logging
+import traceback
 from abc import abstractmethod
 
 from StockBench.charting.charting_engine import ChartingEngine
@@ -111,7 +112,7 @@ class SimulationResultsWindow(QWidget):
         except StrategyIndicatorError as e:
             message = f'Strategy error: {e}'
         except Exception as e:
-            message = f'Unexpected error: {e}'
+            message = f'Unexpected error: {type(e)} {e} {traceback.print_exc()}'
 
         # log all errors and display error message in console box
         log.error(message)

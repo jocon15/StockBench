@@ -34,11 +34,14 @@ class SMATrigger(Trigger):
             side (str): The side (buy/sell).
             data_manager (any): The data object.
         """
-        nums = list(map(int, self.find_all_nums_in_str(key)))
-        if nums:
-            return max(nums)
-        # nums is empty
-        raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} must have an indicator length!')
+        nums = self.find_all_nums_in_str(key)
+        if len(nums) > 0:
+            # element 0 will be the indicator length
+            indicator_length = int(nums[0])
+            # add the EMA data to the df
+            self.__add_sma(indicator_length, data_manager)
+        else:
+            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} must have an indicator length!')
 
     def check_trigger(self, key, value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for SMA.
@@ -78,11 +81,11 @@ class SMATrigger(Trigger):
                 raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} does not contain enough number '
                                              f'groupings!')
             # title of the column in the data
-            title = f'{self.strategy_symbol} {int(nums[0])}'
+            title = f'{self.strategy_symbol}{int(nums[0])}'
             indicator_value = float(data_manager.get_data_point(title, current_day_index))
         elif len(nums) == 2:
             # title of the column in the data
-            title = f'{self.strategy_symbol} {int(nums[0])}'
+            title = f'{self.strategy_symbol}{int(nums[0])}'
             # likely that the $slope indicator is being used
             if SLOPE_SYMBOL in key:
                 # get the length of the slope window
@@ -113,7 +116,7 @@ class SMATrigger(Trigger):
             data_manager (any): The data object.
         """
         # get a list of close price values
-        column_title = f'{self.strategy_symbol} {length}'
+        column_title = f'{self.strategy_symbol}{length}'
 
         # if SMA values ar already in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():

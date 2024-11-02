@@ -79,6 +79,10 @@ class SingularConfigTab(ConfigTab):
     def on_run_btn_clicked(self, clicked_signal: bool):
         """On-click function for the run button.
 
+        Args:
+            clicked_signal: DO NOT REMOVE - Unused boolean param that PyQt clicked.connect() function sends when a
+            decorator is connected.
+
         Decorator:
             The CaptureErrors decorator allows custom exceptions to be caught and logged to the error message box
             instead of crashing. It also allows us to functionalize the filepath validation without the need for

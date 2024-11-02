@@ -23,7 +23,7 @@ class EMATrigger(Trigger):
         if nums:
             return max(nums)
         # nums is empty
-        raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} must have an indicator length')
+        raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} must have an indicator length!')
 
     def add_to_data(self, key, value, side, data_manager):
         """Add data to the dataframe.
@@ -41,7 +41,7 @@ class EMATrigger(Trigger):
             # add the EMA data to the df
             self.__add_ema(indicator_length, data_manager)
         else:
-            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} must have an indicator length')
+            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} must have an indicator length!')
 
     def check_trigger(self, key, value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for EMA.

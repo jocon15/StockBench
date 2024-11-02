@@ -91,14 +91,12 @@ class SimulationResultsWindow(QWidget):
     def __run_simulation(self) -> dict:
         """Run the simulation."""
         # set up the simulator's configuration options
-        # FIXME: this should be functionalized
         if self.logging:
             self.simulator.enable_logging()
         if self.reporting:
             self.simulator.enable_reporting()
 
         # configure the simulator's configuration options
-        # FIXME: this should be functionalized
         if self.unique_chart_saving:
             save_option = ChartingEngine.UNIQUE_SAVE
         else:

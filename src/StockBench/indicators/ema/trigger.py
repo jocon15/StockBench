@@ -73,9 +73,6 @@ class EMATrigger(Trigger):
         """Parser for parsing the key into the indicator value."""
         # find the indicator value (left hand side of the comparison)
         nums = self.find_all_nums_in_str(key)
-
-        # do not build title outside of conditional as nums could be [] which would result in index error
-
         if len(nums) == 1:
             if SLOPE_SYMBOL in key:
                 raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} does not contain enough number '

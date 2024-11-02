@@ -3,6 +3,7 @@ import statistics
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
 from StockBench.simulation_data.data_manager import DataManager
+from StockBench.indicator.exceptions import StrategyIndicatorError
 
 log = logging.getLogger()
 
@@ -85,22 +86,17 @@ class RSITrigger(Trigger):
         if len(nums) == 0:
             # RSI is default length (14)
             if SLOPE_SYMBOL in key:
-                log.critical(f"RSI key: {key} contains too many number groupings!")
-                print(f"RSI key: {key} contains too many number groupings!")
-                raise ValueError(f"RSI key: {key} contains too many number groupings!")
-            # title of the column in the data
-            title = 'RSI'
-            indicator_value = float(data_manager.get_data_point(title, current_day_index))
+                raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} does not contain enough number '
+                                             f'groupings!')
+            indicator_value = float(data_manager.get_data_point(self.strategy_symbol, current_day_index))
         elif len(nums) == 1:
             if SLOPE_SYMBOL in key:
                 # make sure the number is after the slope emblem and not the RSI emblem
-                if key.split(str(nums))[0] == 'RSI' + SLOPE_SYMBOL:
-                    log.critical(f"RSI key: {key} contains no slope value!")
-                    print(f"RSI key: {key} contains no slope value!")
-                    raise ValueError(f"RSI key: {key} contains no slope value!")
+                if key.split(str(nums))[0] == self.strategy_symbol + SLOPE_SYMBOL:
+                    raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} does not contain a slope value!')
             # RSI is custom length (not 14)
             # title of the column in the data
-            title = f'RSI{int(nums[0])}'
+            title = f'{self.strategy_symbol}{int(nums[0])}'
             indicator_value = float(data_manager.get_data_point(title, current_day_index))
         elif len(nums) == 2:
             # title of the column in the data
@@ -120,13 +116,10 @@ class RSITrigger(Trigger):
                     slope_window_length
                 )
             else:
-                log.warning(f'Warning: {key} is in incorrect format and will be ignored')
-                print(f'Warning: {key} is in incorrect format and will be ignored')
-                raise ValueError(f"RSI key: {key} contains too many number groupings!")
+                raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains too many number groupings! '
+                                             f'Are you missing a $slope emblem?')
         else:
-            log.warning(f'Warning: {key} is in incorrect format and will be ignored')
-            print(f'Warning: {key} is in incorrect format and will be ignored')
-            raise ValueError(f"RSI key: {key} contains too many number groupings!")
+            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains too many number groupings!')
 
         return indicator_value
 

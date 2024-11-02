@@ -1,17 +1,8 @@
-"""
-This file will hold an SMATrigger subclass that inherits from the algorithm class and implements abstract methods.
-
-The sma indicator class will instantiate an instance of this class as an attribute (member variable).
-
-Remember, this architecture allows both the subplot and the algorithm functionality to be contained by the indicator
-without forcing a complex [multiple] inheritance scheme. The currently used approach can be applied if new
-aspects of the indicator are added later on.
-"""
-
 import logging
 import statistics
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
+from StockBench.indicator.exceptions import StrategyIndicatorError
 
 log = logging.getLogger()
 
@@ -32,7 +23,7 @@ class SMATrigger(Trigger):
         if nums:
             return max(nums)
         # nums is empty
-        raise ValueError(f'SMA key: {key} must have a length.')
+        raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} must have an indicator length!')
 
     def add_to_data(self, key, value, side, data_manager):
         """Add data to the dataframe.
@@ -46,12 +37,11 @@ class SMATrigger(Trigger):
         nums = self.find_all_nums_in_str(key)
         if len(nums) > 0:
             # element 0 will be the indicator length
-            num = int(nums[0])
-            # add the SMA data to the df
-            self.__add_sma(num, data_manager)
+            indicator_length = int(nums[0])
+            # add the EMA data to the df
+            self.__add_sma(indicator_length, data_manager)
         else:
-            log.warning(f'Warning: {key} is in incorrect format and will be ignored')
-            print(f'Warning: {key} is in incorrect format and will be ignored')
+            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} must have an indicator length!')
 
     def check_trigger(self, key, value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for SMA.
@@ -66,7 +56,7 @@ class SMATrigger(Trigger):
         return:
             bool: True if the algorithm was hit.
         """
-        log.debug(f'Checking SMA algorithm: {key}...')
+        log.debug(f'Checking {self.strategy_symbol} algorithm: {key}...')
 
         # get the indicator value from the key
         indicator_value = self.__parse_key(key, data_manager, current_day_index)
@@ -74,7 +64,7 @@ class SMATrigger(Trigger):
         # get the operator and algorithm value from the value
         operator, trigger_value = self._parse_value(value, data_manager, current_day_index)
 
-        log.debug(f'SMA algorithm: {key} checked successfully')
+        log.debug(f'{self.strategy_symbol} algorithm: {key} checked successfully')
 
         # algorithm checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
@@ -88,15 +78,14 @@ class SMATrigger(Trigger):
 
         if len(nums) == 1:
             if SLOPE_SYMBOL in key:
-                log.critical(f"SMA key: {key} does not contain enough number groupings!")
-                print(f"SMA key: {key} does not contain enough number groupings!")
-                raise ValueError(f"SMA key: {key} does not contain enough number groupings!")
+                raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} does not contain enough number '
+                                             f'groupings!')
             # title of the column in the data
-            title = f'SMA{int(nums[0])}'
+            title = f'{self.strategy_symbol}{int(nums[0])}'
             indicator_value = float(data_manager.get_data_point(title, current_day_index))
         elif len(nums) == 2:
             # title of the column in the data
-            title = f'SMA{int(nums[0])}'
+            title = f'{self.strategy_symbol}{int(nums[0])}'
             # likely that the $slope indicator is being used
             if SLOPE_SYMBOL in key:
                 # get the length of the slope window
@@ -112,20 +101,14 @@ class SMATrigger(Trigger):
                     slope_window_length
                 )
             else:
-                log.warning(f'Warning: {key} is in incorrect format and will be ignored')
-                print(f'Warning: {key} is in incorrect format and will be ignored')
-                # re-raise the error so check_trigger() knows the parse failed
-                raise ValueError
+                raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains too many number groupings! '
+                                             f'Are you missing a $slope emblem?')
         else:
-            log.warning(f'Warning: {key} is in incorrect format and will be ignored')
-            print(f'Warning: {key} is in incorrect format and will be ignored')
-            # re-raise the error so check_trigger() knows the parse failed
-            raise ValueError
+            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains too many number groupings!')
 
         return indicator_value
 
-    @staticmethod
-    def __add_sma(length, data_manager):
+    def __add_sma(self, length, data_manager):
         """Pre-calculate the SMA values and add them to the df.
 
         Args:
@@ -133,7 +116,7 @@ class SMATrigger(Trigger):
             data_manager (any): The data object.
         """
         # get a list of close price values
-        column_title = f'SMA{length}'
+        column_title = f'{self.strategy_symbol}{length}'
 
         # if SMA values ar already in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():

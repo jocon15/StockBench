@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
 from StockBench.indicators.ema.trigger import EMATrigger
+from StockBench.indicator.exceptions import StrategyIndicatorError
 
 
 @pytest.fixture
@@ -24,7 +25,7 @@ def test_additional_days(test_object):
     try:
         test_object.additional_days('EMA', '>20')
         assert False
-    except ValueError:
+    except StrategyIndicatorError:
         assert True
 
 
@@ -50,7 +51,11 @@ def test_add_to_data(data_mocker, logger_mocker, test_object):
     # assertions are done in side effect function
 
     # test console output if no indicator length is provided
-    test_object.add_to_data('EMA', '>30', 'buy', data_mocker)
+    try:
+        test_object.add_to_data('EMA', '>30', 'buy', data_mocker)
+        assert False
+    except StrategyIndicatorError:
+        assert True
 
     # ============= Assert ===============
     # assertions are done in side effect function
@@ -303,7 +308,7 @@ def test_check_trigger_value_error(data_mocker, test_object):
     try:
         test_object.check_trigger('EMA', '>60', data_mocker, None, 0)
         assert False
-    except ValueError:
+    except StrategyIndicatorError:
         assert True
 
 
@@ -347,7 +352,7 @@ def test_check_trigger_2_numbers_present_bad_format(test_object):
     try:
         assert test_object.check_trigger('EMA20ran50', '>$price', None, None, 0)
         assert False
-    except ValueError:
+    except StrategyIndicatorError:
         assert True
 
 
@@ -394,5 +399,5 @@ def test_check_trigger_slope_value_error(data_mocker, test_object):
     try:
         test_object.check_trigger('EMA20$slope', '>60', data_mocker, None, 0)
         assert False
-    except ValueError:
+    except StrategyIndicatorError:
         assert True

@@ -36,7 +36,7 @@ def CaptureConfigErrors(original_fxn: Callable):
     @wraps(original_fxn)
     def wrapper(self, *args, **kwargs):
         try:
-            original_fxn(self, *args, **kwargs)
+            return original_fxn(self, *args, **kwargs)
         except MessageBoxCaptureException as e:
             self.error_message_box.setText(str(e))
     return wrapper
@@ -302,5 +302,5 @@ class ConfigTab(QWidget):
             raise MessageBoxCaptureException('Strategy filepath is not a valid file!')
 
     @abstractmethod
-    def on_run_btn_clicked(self):
+    def on_run_btn_clicked(self, clicked_signal: bool):
         raise NotImplementedError('You need to implement this method!')

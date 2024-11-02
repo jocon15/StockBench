@@ -6,6 +6,7 @@ from typing import Tuple
 from StockBench.constants import *
 from StockBench.simulation_data.data_manager import DataManager
 from StockBench.position.position import Position
+from StockBench.indicator.exceptions import StrategyIndicatorError
 
 
 log = logging.getLogger()
@@ -107,9 +108,7 @@ class Trigger:
         if len(nums) == 1:
             return float(nums[0])
         else:
-            log.error(f'Invalid amount of numbers found in algorithm value: {value}')
-            print(f'Invalid amount of numbers found in algorithm value: {value}')
-            raise ValueError(f'Invalid amount of numbers found in algorithm value: {value}')
+            raise StrategyIndicatorError(f'Invalid amount of numbers found in algorithm value: {value}')
 
     @staticmethod
     def find_all_nums_in_str(value: str) -> list:
@@ -141,10 +140,7 @@ class Trigger:
         if len(nums) == 1:
             return value.replace(str(nums[0]), '')
         else:
-            log.error(f'Invalid number found in algorithm value: {value}')
-            print(f'Invalid number found in algorithm value: {value}')
-            # if no algorithm value available, exit
-            raise ValueError(f'Invalid number found in algorithm value: {value}')
+            raise StrategyIndicatorError(f'Invalid amount of numbers found in algorithm value: {value}')
 
     @staticmethod
     def calculate_slope(y2: float, y1: float, length: int) -> float:
@@ -162,9 +158,7 @@ class Trigger:
             ValueError: If the length is less than 2.
         """
         if length < 2:
-            log.error('Slope window length cannot be less than 2!')
-            print('Slope window length cannot be less than 2!')
-            raise ValueError('Slope window length cannot be less than 2!')
+            raise StrategyIndicatorError(f'Slope window length cannot be less than 2!')
 
         # calculate slope
         return round((y2 - y1) / float(length), 2)

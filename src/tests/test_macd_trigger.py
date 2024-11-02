@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
 from StockBench.indicators.macd.trigger import MACDTrigger
+from StockBench.indicator.exceptions import StrategyIndicatorError
 
 
 @pytest.fixture
@@ -289,7 +290,7 @@ def test_check_trigger_value_error(data_mocker, test_object):
     try:
         test_object.check_trigger('MACD$slope', '>60', data_mocker, None, 0)
         assert False
-    except ValueError:
+    except StrategyIndicatorError:
         assert True
 
 
@@ -332,7 +333,7 @@ def test_check_trigger_2_numbers_present_bad_format(test_object):
     try:
         assert test_object.check_trigger('MACD20ran50', '>$price', None, None, 0)
         assert False
-    except ValueError:
+    except StrategyIndicatorError:
         assert True
 
 

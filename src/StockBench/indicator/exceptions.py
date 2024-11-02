@@ -1,0 +1,4 @@
+
+
+class StrategyIndicatorError(Exception):
+    pass

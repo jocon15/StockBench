@@ -1,5 +1,6 @@
 import logging
 from StockBench.indicator.trigger import Trigger
+from StockBench.indicator.exceptions import StrategyIndicatorError
 
 log = logging.getLogger()
 
@@ -15,6 +16,9 @@ class CandlestickColorTrigger(Trigger):
             key (any): The key value from the strategy (unused in this function).
             value (any): The value from the strategy.
         """
+        if len(value.keys()) == 0:
+            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} must have at least one color child key')
+
         additional_days = 0
         for sub_key in value.keys():
             if int(sub_key) > additional_days:
@@ -50,6 +54,9 @@ class CandlestickColorTrigger(Trigger):
 
         # find out how many keys there are (value is a dict)
         num_keys = len(value)
+
+        if num_keys == 0:
+            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} must have at least one color child key')
 
         # these will both need to be in ascending order [today, yesterday...]
         trigger_colors = []

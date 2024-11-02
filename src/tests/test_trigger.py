@@ -1,5 +1,6 @@
 from unittest.mock import patch
 from StockBench.indicator.trigger import Trigger
+from StockBench.indicator.exceptions import StrategyIndicatorError
 
 
 def test_get_side():
@@ -33,7 +34,7 @@ def test__parse_value(data_mocker):
     try:
         test_object._parse_value('>', data_mocker, 0)
         assert False
-    except ValueError:
+    except StrategyIndicatorError:
         assert True
 
 
@@ -78,14 +79,14 @@ def test_find_single_numeric_in_str():
     try:
         Trigger.find_single_numeric_in_str('SMA')
         assert False
-    except ValueError:
+    except StrategyIndicatorError:
         assert True
 
     # more than 1 number
     try:
         Trigger.find_single_numeric_in_str('SMA21$slope4')
         assert False
-    except ValueError:
+    except StrategyIndicatorError:
         assert True
 
 
@@ -111,7 +112,7 @@ def test_find_operator_in_str():
     try:
         Trigger.find_operator_in_str('>')
         assert False
-    except ValueError:
+    except StrategyIndicatorError:
         assert True
 
 
@@ -129,5 +130,5 @@ def test_calculate_slope():
     try:
         Trigger.calculate_slope(1, 2, 1)
         assert False
-    except ValueError:
+    except StrategyIndicatorError:
         assert True

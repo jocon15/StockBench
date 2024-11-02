@@ -343,7 +343,6 @@ class ChartingEngine:
             # create a new key : value for the rule
             rule_stats[rule] = {}
 
-            # FIXME: these calls may need to be multi-processed so it is not as slow for longer simulations
             # add statistics to the rule here
             rule_stats[rule]['count'] = ChartingEngine.__calculate_rule_count(positions, side, rule)
             rule_stats[rule]['average_plpc'] = ChartingEngine.__calculate_average_plpc(positions, side, rule)

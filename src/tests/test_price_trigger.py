@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import patch
 from StockBench.indicators.price.price import PriceTrigger
+from StockBench.indicator.exceptions import StrategyIndicatorError
 
 
 @pytest.fixture
@@ -68,5 +69,5 @@ def test_check_trigger_value_error(data_mocker, test_object):
     try:
         test_object.check_trigger('$price$slope', '>60', data_mocker, None, 0)
         assert False
-    except ValueError:
+    except StrategyIndicatorError:
         assert True

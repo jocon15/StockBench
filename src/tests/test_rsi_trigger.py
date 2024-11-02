@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
 from StockBench.indicators.rsi.trigger import RSITrigger
+from StockBench.indicator.exceptions import StrategyIndicatorError
 
 
 @pytest.fixture
@@ -693,7 +694,7 @@ def test_check_trigger_value_error(data_mocker, numeric_mocker, test_object):
     try:
         assert test_object.check_trigger('12RSI12', '>60', data_mocker, None, 0)
         assert False
-    except ValueError:
+    except StrategyIndicatorError:
         assert True
 
 
@@ -783,5 +784,5 @@ def test_check_trigger_slope_value_error(data_mocker, test_object):
     try:
         assert test_object.check_trigger('RSI$slope', '>60', data_mocker, None, 0) is False
         assert False
-    except ValueError:
+    except StrategyIndicatorError:
         assert True

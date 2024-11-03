@@ -59,45 +59,35 @@ class StopLossTrigger(Trigger):
         lifetime_plpc = position.profit_loss_percent(current_price)
 
         if 'intraday' in key:
-            # use intraday stats
             if intraday_pl < 0:
-                # the position is at a loss (plpc will be a loss if pl is a loss)
                 if '%' in value:
-                    # use value percent stats
-                    nums = self.find_all_nums_in_str(value)
-                    trigger_value = float(nums[0])
-                    # check algorithm
-                    if abs(intraday_plpc) >= trigger_value:
-                        log.info('Stop loss algorithm hit!')
-                        return True
+                    return self.__check_plpc_loss(value, intraday_plpc)
                 else:
-                    # use value stats
-                    trigger_value = float(value)
-                    # check algorithm
-                    if abs(intraday_pl) >= trigger_value:
-                        log.info('Stop loss algorithm hit!')
-                        return True
+                    return self.__check_pl_loss(value, intraday_pl)
         else:
-            # use lifetime stats
             if lifetime_pl < 0:
-                # the position is at a loss (plpc will be a loss if pl is a loss)
                 if '%' in value:
-                    # use value percent stats
-                    nums = self.find_all_nums_in_str(value)
-                    trigger_value = float(nums[0])
-                    # check algorithm
-                    if abs(lifetime_plpc) >= trigger_value:
-                        log.info('Stop loss algorithm hit!')
-                        return True
+                    return self.__check_plpc_loss(value, lifetime_plpc)
                 else:
-                    # use value stats
-                    trigger_value = float(value)
-                    # check algorithm
-                    if abs(lifetime_pl) >= trigger_value:
-                        log.info('Stop loss algorithm hit!')
-                        return True
+                    return self.__check_pl_loss(value, lifetime_pl)
 
-        log.debug('Stop loss algorithm checked')
+    @staticmethod
+    def __check_plpc_loss(value: str, plpc_value: float) -> bool:
+        # use value percent stats
+        nums = Trigger.find_all_nums_in_str(value)
+        trigger_value = float(nums[0])
+        # check algorithm
+        if abs(plpc_value) >= trigger_value:
+            log.info('Stop loss algorithm hit!')
+            return True
+        return False
 
-        # algorithm was not hit
+    @staticmethod
+    def __check_pl_loss(value: str, pl_value: float) -> bool:
+        # use value stats
+        trigger_value = float(value)
+        # check algorithm
+        if abs(pl_value) >= trigger_value:
+            log.info('Stop loss algorithm hit!')
+            return True
         return False

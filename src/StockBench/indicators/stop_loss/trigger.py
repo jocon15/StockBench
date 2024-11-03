@@ -71,12 +71,13 @@ class StopLossTrigger(Trigger):
                 else:
                     return self.__check_pl_loss(value, lifetime_pl)
 
+        log.debug('Stop loss algorithm checked')
+        return False
+
     @staticmethod
     def __check_plpc_loss(value: str, plpc_value: float) -> bool:
-        # use value percent stats
         nums = Trigger.find_all_nums_in_str(value)
         trigger_value = float(nums[0])
-        # check algorithm
         if abs(plpc_value) >= trigger_value:
             log.info('Stop loss algorithm hit!')
             return True
@@ -84,9 +85,7 @@ class StopLossTrigger(Trigger):
 
     @staticmethod
     def __check_pl_loss(value: str, pl_value: float) -> bool:
-        # use value stats
         trigger_value = float(value)
-        # check algorithm
         if abs(pl_value) >= trigger_value:
             log.info('Stop loss algorithm hit!')
             return True

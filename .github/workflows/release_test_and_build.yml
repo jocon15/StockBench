@@ -1,0 +1,33 @@
+name: Release test and build
+on:
+  push:
+    branches:
+      - if: contains(github.ref, ".")
+jobs:
+    Unit-test:
+        runs-on: windows-latest
+        strategy:
+          matrix:
+            python-version: [ "3.8" ]
+
+        steps:
+          - uses: actions/checkout@v3
+          - name: Set up Python ${{ matrix.python-version }}
+            uses: actions/setup-python@v4
+            with:
+              python-version: ${{ matrix.python-version }}
+          - name: Install dependencies
+            run: |
+              python -m pip install --upgrade pip  
+              pip install -r requirements.txt
+          - name: Run pytest
+            run: |
+              pytest -W ignore::DeprecationWarning
+          - name: Build
+            run: |
+              build_release.bat
+          - name: Upload dist dir artifact
+          - uses: actions/upload-artifact@v3
+            with:
+              name: dist-dir
+              path: src/dist

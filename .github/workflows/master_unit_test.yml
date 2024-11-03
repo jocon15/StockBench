@@ -8,7 +8,7 @@ on:
       - master
 jobs:
     Unit-test:
-        runs-on: windows-latest
+        runs-on: ubuntu-latest
         strategy:
           matrix:
             python-version: [ "3.8" ]

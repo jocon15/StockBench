@@ -5,13 +5,15 @@ on:
       - master
 jobs:
     Unit-test-and-build:
-        if: contains(github.base_ref, '.')
+        if: contains(github.ref, '.')
         runs-on: windows-latest
         strategy:
           matrix:
             python-version: [ "3.8" ]
 
         steps:
+          - name: Branch name
+            run: echo running on branch ${GITHUB_REF##*/}
           - uses: actions/checkout@v3
           - name: Set up Python ${{ matrix.python-version }}
             uses: actions/setup-python@v4
@@ -26,7 +28,7 @@ jobs:
               pytest -W ignore::DeprecationWarning
           - name: Build
             run: |
-              src/build_release.bat
+              src/build_action.bat
           - uses: actions/upload-artifact@v4
             with:
               name: dist-dir

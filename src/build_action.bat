@@ -1,3 +1,4 @@
+:: cannot use build_release.bat files because its base dir is the src dir, VM's base dir is out 1 dir past src
 pyinstaller src\main.py --name StockBench --onefile --windowed --noconfirm --distpath=src\dist\release --icon=src\resources\images\candle.ico --version-file=src\version.YAML
 
 :: remove any existing resources directory if it exists

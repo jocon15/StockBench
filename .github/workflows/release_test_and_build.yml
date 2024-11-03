@@ -5,7 +5,7 @@ on:
       - master
 jobs:
     Unit-test-and-build:
-        # if: contains(github.base_ref, '.')
+        if: contains(github.ref, '.')
         runs-on: windows-latest
         strategy:
           matrix:
@@ -28,7 +28,7 @@ jobs:
               pytest -W ignore::DeprecationWarning
           - name: Build
             run: |
-              src/build_release.bat
+              src/build_action.bat
           - uses: actions/upload-artifact@v4
             with:
               name: dist-dir

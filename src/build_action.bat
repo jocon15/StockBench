@@ -8,4 +8,4 @@ rmdir /s /q "src\dist\resources"
 mkdir "src\dist\resources"
 
 :: Copy specific resource sub dirs to the dist resource dir
-xcopy "src\dist\resources\" "src\dist\resources\*" /E /H /C /I /Y
+xcopy "src\resources\" "src\dist\resources\*" /E /H /C /I /Y

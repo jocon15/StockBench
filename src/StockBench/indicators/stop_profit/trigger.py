@@ -59,45 +59,34 @@ class StopProfitTrigger(Trigger):
         lifetime_plpc = position.profit_loss_percent(current_price)
 
         if 'intraday' in key:
-            # use intraday stats
             if intraday_pl > 0:
-                # the position is at a profit (plpc will be a loss if pl is a profit)
                 if '%' in value:
-                    # use value percent stats
-                    nums = self.find_all_nums_in_str(value)
-                    trigger_value = float(nums[0])
-                    # check algorithm
-                    if intraday_plpc >= trigger_value:
-                        log.info('Stop profit algorithm hit!')
-                        return True
+                    return self.__check_plpc_profit(value, intraday_plpc)
                 else:
-                    # use value stats
-                    trigger_value = float(value)
-                    # check algorithm
-                    if intraday_pl >= trigger_value:
-                        log.info('Stop profit algorithm hit!')
-                        return True
+                    return self.__check_pl_profit(value, intraday_pl)
         else:
             if lifetime_pl > 0:
-                # the position is at a profit (plpc will be a loss if pl is a profit)
-                # use lifetime stats
                 if '%' in value:
-                    # use value percent stats
-                    nums = self.find_all_nums_in_str(value)
-                    trigger_value = float(nums[0])
-                    # check algorithm
-                    if lifetime_plpc >= trigger_value:
-                        log.info('Stop profit algorithm hit!')
-                        return True
+                    return self.__check_plpc_profit(value, lifetime_plpc)
                 else:
-                    # use value stats
-                    trigger_value = float(value)
-                    # check algorithm
-                    if lifetime_pl >= trigger_value:
-                        log.info('Stop profit algorithm hit!')
-                        return True
+                    return self.__check_pl_profit(value, lifetime_pl)
 
         log.debug('Stop profit algorithm checked')
+        return False
 
-        # algorithm was not hit
+    @staticmethod
+    def __check_plpc_profit(value: str, plpc_value: float) -> bool:
+        nums = Trigger.find_all_nums_in_str(value)
+        trigger_value = float(nums[0])
+        if plpc_value >= trigger_value:
+            log.info('Stop profit algorithm hit!')
+            return True
+        return False
+
+    @staticmethod
+    def __check_pl_profit(value: str, pl_value: float) -> bool:
+        trigger_value = float(value)
+        if pl_value >= trigger_value:
+            log.info('Stop profit algorithm hit!')
+            return True
         return False

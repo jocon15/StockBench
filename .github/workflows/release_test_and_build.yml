@@ -28,7 +28,8 @@ jobs:
             run: |
               src/build_release.bat
           - name: Upload dist dir artifact
-          - uses: actions/upload-artifact@v3
+          - uses: actions/upload-artifact@v4
             with:
               name: dist-dir
               path: src/dist
+              run: echo 'running'

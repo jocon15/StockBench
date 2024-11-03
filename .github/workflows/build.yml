@@ -2,13 +2,13 @@ name: Run unit tests with Pytest
 on:
   push:
     branches:
-      - master
+      - experimental/build-action
   pull_request:
     branches:
-      - master
+      - experimental/build-action
 jobs:
     Unit-test:
-        runs-on: ubuntu-latest
+        runs-on: windows-latest
         strategy:
           matrix:
             python-version: [ "3.8.18" ]

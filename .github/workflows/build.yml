@@ -2,10 +2,10 @@ name: Run unit tests with Pytest
 on:
   push:
     branches:
-      - experimental/build-action
+      - master
   pull_request:
     branches:
-      - experimental/build-action
+      - master
 jobs:
     Unit-test:
         runs-on: windows-latest

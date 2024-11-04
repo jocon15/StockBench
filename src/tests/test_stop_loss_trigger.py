@@ -139,7 +139,7 @@ def test_check_trigger_lifetime_hit_case(data_mocker, position_mocker, test_obje
 @patch('StockBench.simulation_data.data_manager.DataManager')
 def test_check_trigger_lifetime_not_hit_case(data_mocker, position_mocker, test_object):
     # ============= Arrange ==============
-    position_mocker.profit_loss.return_value = -100
+    position_mocker.profit_loss.return_value = 100
 
     # ============= Act ==================
     actual = test_object.check_trigger('stop_loss', '1000', data_mocker, position_mocker, 0)

@@ -1,5 +1,7 @@
 import logging
 from StockBench.indicator.trigger import Trigger
+from StockBench.simulation_data.data_manager import DataManager
+from StockBench.position.position import Position
 
 log = logging.getLogger()
 
@@ -8,38 +10,39 @@ class StopProfitTrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol, side=Trigger.SELL)
 
-    def additional_days(self, key, value) -> int:
+    def additional_days(self, key: str, value: str) -> int:
         """Calculate the additional days required.
 
         Args:
-            key (any): The key value from the strategy.
-            value (any): The value from the strategy.
+            key: The key value from the strategy.
+            value: The value from the strategy.
         """
         # note stop profit does not require additional days
         return 0
 
-    def add_to_data(self, key, value, side, data_manager):
+    def add_to_data(self, key: str, value: str, side: str, data_manager: DataManager):
         """Add data to the dataframe.
 
         Args:
-            key (any): The key value from the strategy.
-            value (any): The value from thr strategy.
-            side (str): The side (buy/sell).
-            data_manager (any): The data object.
+            key: The key value from the strategy.
+            value: The value from thr strategy.
+            side: The side (buy/sell).
+            data_manager: The simulation data manager.
         """
         # note stop profit algorithm is not an additional indicator and does not
         # require any additional data to be added to the data
         return
 
-    def check_trigger(self, key, value, data_manager, position, current_day_index) -> bool:
+    def check_trigger(self, key: str, value: str, data_manager: DataManager, position: Position,
+                      current_day_index: int) -> bool:
         """Trigger logic for stop profit.
 
         Args:
-            key (str): The key value of the algorithm.
-            value (str): The value of the algorithm.
-            data_manager (any): The data API object.
-            position (any): The position object.
-            current_day_index (int): The index of the current day.
+            key: The key value of the algorithm.
+            value: The value of the algorithm.
+            data_manager: The simulation data manager.
+            position: The position object.
+            current_day_index: The index of the current day.
 
         return:
             bool: True if the algorithm was hit.
@@ -59,45 +62,34 @@ class StopProfitTrigger(Trigger):
         lifetime_plpc = position.profit_loss_percent(current_price)
 
         if 'intraday' in key:
-            # use intraday stats
             if intraday_pl > 0:
-                # the position is at a profit (plpc will be a loss if pl is a profit)
                 if '%' in value:
-                    # use value percent stats
-                    nums = self.find_all_nums_in_str(value)
-                    trigger_value = float(nums[0])
-                    # check algorithm
-                    if intraday_plpc >= trigger_value:
-                        log.info('Stop profit algorithm hit!')
-                        return True
+                    return self.__check_plpc_profit(value, intraday_plpc)
                 else:
-                    # use value stats
-                    trigger_value = float(value)
-                    # check algorithm
-                    if intraday_pl >= trigger_value:
-                        log.info('Stop profit algorithm hit!')
-                        return True
+                    return self.__check_pl_profit(value, intraday_pl)
         else:
             if lifetime_pl > 0:
-                # the position is at a profit (plpc will be a loss if pl is a profit)
-                # use lifetime stats
                 if '%' in value:
-                    # use value percent stats
-                    nums = self.find_all_nums_in_str(value)
-                    trigger_value = float(nums[0])
-                    # check algorithm
-                    if lifetime_plpc >= trigger_value:
-                        log.info('Stop profit algorithm hit!')
-                        return True
+                    return self.__check_plpc_profit(value, lifetime_plpc)
                 else:
-                    # use value stats
-                    trigger_value = float(value)
-                    # check algorithm
-                    if lifetime_pl >= trigger_value:
-                        log.info('Stop profit algorithm hit!')
-                        return True
+                    return self.__check_pl_profit(value, lifetime_pl)
 
         log.debug('Stop profit algorithm checked')
+        return False
 
-        # algorithm was not hit
+    @staticmethod
+    def __check_plpc_profit(value: str, plpc_value: float) -> bool:
+        nums = Trigger.find_all_nums_in_str(value)
+        trigger_value = float(nums[0])
+        if plpc_value >= trigger_value:
+            log.info('Stop profit algorithm hit!')
+            return True
+        return False
+
+    @staticmethod
+    def __check_pl_profit(value: str, pl_value: float) -> bool:
+        trigger_value = float(value)
+        if pl_value >= trigger_value:
+            log.info('Stop profit algorithm hit!')
+            return True
         return False

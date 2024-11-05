@@ -1,0 +1,4 @@
+
+
+class ChartingError(Exception):
+    pass

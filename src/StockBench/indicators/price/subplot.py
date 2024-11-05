@@ -15,6 +15,14 @@ class OHLCSubplot(Subplot):
         - Buy points
         - Sell points
     """
+    DATE_COLUMN = 'Date'
+    BUY_COLUMN = 'Buy'
+    SELL_COLUMN = 'Sell'
+    OPEN_COLUMN = 'Open'
+    HIGH_COLUMN = 'High'
+    LOW_COLUMN = 'Low'
+    CLOSE_COLUMN = 'Close'  
+    
     def __init__(self):
         super().__init__('OHLC', [{"type": "ohlc"}], False)
 
@@ -27,11 +35,11 @@ class OHLCSubplot(Subplot):
         return:
             A plotly subplot.
         """
-        return fplt.Ohlc(x=df['Date'],
-                         open=df['Open'],
-                         high=df['High'],
-                         low=df['Low'],
-                         close=df['Close'],
+        return fplt.Ohlc(x=df[self.DATE_COLUMN],
+                         open=df[self.OPEN_COLUMN],
+                         high=df[self.HIGH_COLUMN],
+                         low=df[self.LOW_COLUMN],
+                         close=df[self.CLOSE_COLUMN],
                          name='Price Data')
 
     def get_traces(self, df: DataFrame) -> list:
@@ -45,18 +53,18 @@ class OHLCSubplot(Subplot):
         """
         traces = []
         for (column_name, column_data) in df.items():
-            if column_name == 'Buy':
+            if column_name == self.BUY_COLUMN:
                 traces.append(fplt.Scatter(
-                    x=df['Date'],
-                    y=df['Buy'],
-                    name='Buy',
+                    x=df[self.DATE_COLUMN],
+                    y=df[self.BUY_COLUMN],
+                    name=self.BUY_COLUMN,
                     mode='markers',
                     marker=dict(color=BUY_COLOR, size=BUY_SELL_DOTS_WIDTH)))
-            if column_name == 'Sell':
+            if column_name == self.SELL_COLUMN:
                 traces.append(fplt.Scatter(
-                    x=df['Date'],
-                    y=df['Sell'],
-                    name='Sell',
+                    x=df[self.DATE_COLUMN],
+                    y=df[self.SELL_COLUMN],
+                    name=self.SELL_COLUMN,
                     mode='markers',
                     marker=dict(color=SELL_COLOR, size=BUY_SELL_DOTS_WIDTH)))
 

@@ -9,6 +9,7 @@ from datetime import datetime
 from StockBench.constants import *
 from StockBench.broker.broker import Broker
 from StockBench.export.window_data_exporter import WindowDataExporter
+from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.position.position import Position
 from concurrent.futures import ProcessPoolExecutor
 from StockBench.charting.charting_engine import ChartingEngine
@@ -286,10 +287,7 @@ class Simulator:
             self.__calculate_simulation_window(start_date_unix, end_date_unix, augmented_start_date_unix,
                                                self.__data_manager))
 
-        # calculate the increment for the progress bar
-        increment = 1.0  # must supply default value
-        if progress_observer is not None:
-            increment = 100.0 / (self.__data_manager.get_data_length() - sim_window_start_day)
+        increment = self.__calculate_progress_bar_increment(progress_observer, sim_window_start_day)
 
         log.info(f'Setup for symbol: {symbol} complete')
 
@@ -616,6 +614,26 @@ class Simulator:
         self.__data_manager.add_column('Buy', acquisition_price_list)
         self.__data_manager.add_column('Sell', liquidation_price_list)
 
+    def __calculate_progress_bar_increment(self, progress_observer: ProgressObserver,
+                                           sim_window_start_day: int) -> float:
+        """Calculate the progress bar increment per day.
+
+        Args:
+            progress_observer: The progress observer.
+            sim_window_start_day: The start day index of the simulation
+
+        Return:
+            float: The progress bar percentage increment per day of the simulation.
+
+        Notes:
+            increment(%/day) = 100% / #days
+        """
+        # calculate the increment for the progress bar
+        increment = 1.0  # must supply default value
+        if progress_observer is not None:
+            increment = round(100.0 / (self.__data_manager.get_data_length() - sim_window_start_day), 2)
+        return increment
+
     @staticmethod
     def __calculate_simulation_window(start_date_unix: int, end_date_unix: int, augmented_start_date_unix: int,
                                       data_manager: DataManager) -> tuple:
@@ -691,7 +709,7 @@ class Simulator:
         return:
             str: The converted string in custom format.
         """
-        return datetime.utcfromtimestamp(_unix_date).strftime(_format)
+        return datetime.fromtimestamp(_unix_date).strftime(_format)
 
     @staticmethod
     def __error_check_timestamps(start, end):

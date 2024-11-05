@@ -1,20 +1,14 @@
 import plotly.graph_objects as fplt
+from plotly.graph_objects import Ohlc, Scatter
 from pandas import DataFrame
+from typing import List
 
 from StockBench.indicator.subplot import Subplot
 from StockBench.charting.display_constants import BUY_COLOR, SELL_COLOR, BUY_SELL_DOTS_WIDTH
 
 
 class OHLCSubplot(Subplot):
-    """This class is a subclass of the Subplot class.
-
-    A OHLC object contains the subplot with candlestick price data.
-
-    Additional traces include:
-        - SMA curves
-        - Buy points
-        - Sell points
-    """
+    """Subplot of the stock price in candlestick format."""
     DATE_COLUMN = 'Date'
     BUY_COLUMN = 'Buy'
     SELL_COLUMN = 'Sell'
@@ -26,14 +20,14 @@ class OHLCSubplot(Subplot):
     def __init__(self):
         super().__init__('OHLC', [{"type": "ohlc"}], False)
 
-    def get_subplot(self, df: DataFrame):
-        """Builds and returns the subplot.
+    def get_subplot(self, df: DataFrame) -> Ohlc:
+        """Builds a subplot.
 
         Args:
             df (DataFrame): The dataframe from the simulation.
 
         return:
-            A plotly subplot.
+            Ohlc: A plotly OHLC subplot.
         """
         return fplt.Ohlc(x=df[self.DATE_COLUMN],
                          open=df[self.OPEN_COLUMN],
@@ -42,14 +36,14 @@ class OHLCSubplot(Subplot):
                          close=df[self.CLOSE_COLUMN],
                          name='Price Data')
 
-    def get_traces(self, df: DataFrame) -> list:
-        """builds and returns a list of traces to add to the subplot.
+    def get_traces(self, df: DataFrame) -> List[Scatter]:
+        """Builds a list of traces to add to the subplot.
 
         Args:
-            df (DataFrame): The dataframe from the simulation.
+            df (DataFrame): The simulation data.
 
         return:
-            list: A list of traces to add to the subplot defined in this class.
+            list: A list of scatter traces to add to the OHLC subplot.
         """
         traces = []
         for (column_name, column_data) in df.items():

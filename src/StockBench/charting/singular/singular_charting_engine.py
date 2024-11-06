@@ -5,6 +5,7 @@ from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
 from StockBench.indicator.indicator import IndicatorInterface
+from StockBench.indicator.subplot import Subplot
 from StockBench.charting.charting_engine import ChartingEngine
 from StockBench.charting.exceptions import ChartingError
 
@@ -46,7 +47,7 @@ class SingularChartingEngine(ChartingEngine):
     @staticmethod
     def __get_subplot_objects_and_types(df: DataFrame,
                                         available_indicators: List[IndicatorInterface]) -> Tuple[list, list]:
-        """"""
+        """Builds a list of subplots objects and a list of subplot types."""
         subplot_objects = []
         subplot_types = []
 
@@ -72,8 +73,9 @@ class SingularChartingEngine(ChartingEngine):
         return subplot_objects, subplot_types
 
     @staticmethod
-    def __build_parent_figure(df, subplot_objects, subplot_types, available_indicators) -> Figure:
-        """Build the parent plot"""
+    def __build_parent_figure(df: DataFrame, subplot_objects: List[Subplot], subplot_types: List[List],
+                              available_indicators: List[IndicatorInterface]) -> Figure:
+        """Builds the parent figure."""
         cols = col = 1  # only one col in every row
         rows = len(subplot_objects)
         fig = make_subplots(rows=rows, cols=cols, shared_xaxes=True,

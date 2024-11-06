@@ -380,9 +380,10 @@ class Simulator:
         if results_depth == self.CHARTS_AND_DATA:
             # faster to do it synchronously for singular
             gui_terminal_log.info('Building overview chart...')
-            overview_chart_filepath = SingularChartingEngine.build_indicator_chart(chopped_temp_df, symbol,
-                                                                                   self.__available_indicators.values(),
-                                                                                   save_option)
+            overview_chart_filepath = (
+                SingularChartingEngine.build_indicator_chart(chopped_temp_df, symbol,
+                                                             [*self.__available_indicators.values()],
+                                                             save_option))
 
             gui_terminal_log.info('Building buy rules bar chart...')
             buy_rules_chart_filepath = ChartingEngine.build_rules_bar_chart(self.__single_simulation_position_archive,

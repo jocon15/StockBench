@@ -9,6 +9,7 @@ from PyQt6 import QtGui
 from StockBench.gui.palette.palette import Palette
 from StockBench.simulator import Simulator
 from StockBench.indicator.exceptions import StrategyIndicatorError
+from StockBench.charting.exceptions import ChartingError
 log = logging.getLogger()
 
 
@@ -111,6 +112,8 @@ class SimulationResultsWindow(QWidget):
             return self._run_simulation(save_option)
         except StrategyIndicatorError as e:
             message = f'Strategy error: {e}'
+        except ChartingError as e:
+            message = f'Charting error: {e}'
         except Exception as e:
             message = f'Unexpected error: {type(e)} {e} {traceback.print_exc()}'
 

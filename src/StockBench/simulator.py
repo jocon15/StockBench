@@ -6,12 +6,14 @@ import logging
 from tqdm import tqdm
 from time import perf_counter
 from datetime import datetime
+from typing import Optional
+from concurrent.futures import ProcessPoolExecutor
+
 from StockBench.constants import *
 from StockBench.broker.broker import Broker
 from StockBench.export.window_data_exporter import WindowDataExporter
 from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.position.position import Position
-from concurrent.futures import ProcessPoolExecutor
 from StockBench.charting.charting_engine import ChartingEngine
 from StockBench.charting.singular.singular_charting_engine import SingularChartingEngine
 from StockBench.charting.multi.multi_charting_engine import MultiChartingEngine
@@ -70,6 +72,7 @@ class Simulator:
         # positions storage during simulation
         self.__single_simulation_position_archive = []
         self.__multiple_simulation_position_archive = []
+        self.__account_value_archive = []
 
         # post-simulation settings
         self.__reporting_on = False
@@ -342,7 +345,19 @@ class Simulator:
             if progress_observer is not None:
                 progress_observer.update_progress(increment)
 
+        # record account value
+        self.__record_account_value(position)
+
         return buy_mode, position
+
+    def __record_account_value(self, position: Optional[Position]) -> None:
+        """Add the account value to the data."""
+        account_value = self.__account.get_balance()
+        if position:
+            # if a position is currently open, add the unrealized lifetime pl to the account value
+            # the account value will have a little left in it due to rounding
+            account_value += position.lifetime_profit_loss()
+        self.__account_value_archive.append(account_value)
 
     def __post_process(self, symbol, trade_able_days, sim_window_start_day, start_time, results_depth,
                        save_option, progress_observer) -> dict:
@@ -350,6 +365,9 @@ class Simulator:
         gui_terminal_log.info(f'Starting analytics for {symbol}...')
         # add the buys and sells to the df
         self.__add_positions_to_data()
+
+        # add the account value values to the df
+        self.__add_account_values_to_data()
 
         # get the chopped DataFrame
         chopped_temp_df = self.__data_manager.get_chopped_df(sim_window_start_day)
@@ -536,6 +554,7 @@ class Simulator:
         """Clear singular simulation stored data."""
         self.__account.reset()
         self.__single_simulation_position_archive = []
+        self.__account_value_archive = []
 
     def __create_position(self, current_day_index: int, rule: str) -> Position:
         """Creates a position and updates the account.
@@ -600,8 +619,14 @@ class Simulator:
         # deposit the value of the position to the account
         self.__account.deposit(round(sell_price * position.get_share_count(), 3))
 
-    def __add_positions_to_data(self):
-        """Add the position data to the simulation data."""
+    def __add_positions_to_data(self) -> None:
+        """Add the position data to the simulation data.
+
+        Notes:
+            Not every row in the data will have a value. To fix this we declare a list of None values the size of the
+            simulation. Then we insert the data matching the index to the row. The indexes without a value are left as
+            None. Then we can send the list to the df.
+        """
         # initialize the lists to the length of the simulation (with None values)
         acquisition_price_list = [None for _ in range(self.__data_manager.get_data_length())]
         liquidation_price_list = [None for _ in range(self.__data_manager.get_data_length())]
@@ -614,6 +639,15 @@ class Simulator:
         # add the columns to the data
         self.__data_manager.add_column('Buy', acquisition_price_list)
         self.__data_manager.add_column('Sell', liquidation_price_list)
+
+    def __add_account_values_to_data(self) -> None:
+        """Add the account value values to the simulation data.
+
+        Notes:
+            Unlike __add_positions_to_data(), the account value archive list has values for every day of the simulation.
+            Because of this, we do not need to normalize and can cut straight to adding the values to the df.
+        """
+        self.__data_manager.add_column('Account Value', self.__account_value_archive)
 
     def __calculate_progress_bar_increment(self, progress_observer: ProgressObserver,
                                            sim_window_start_day: int) -> float:

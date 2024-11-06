@@ -346,18 +346,20 @@ class Simulator:
                 progress_observer.update_progress(increment)
 
         # record account value
-        self.__record_account_value(position)
+        self.__record_account_value(position, current_day_index)
 
         return buy_mode, position
 
-    def __record_account_value(self, position: Optional[Position]) -> None:
+    def __record_account_value(self, position: Optional[Position], current_day_index: int) -> None:
         """Add the account value to the data."""
         account_value = self.__account.get_balance()
         if position:
-            # if a position is currently open, add the unrealized lifetime pl to the account value
+            # if a position is currently open, add the position value to the account value
             # the account value will have a little left in it due to rounding
-            account_value += position.lifetime_profit_loss()
-        self.__account_value_archive.append(account_value)
+            current_price = self.__data_manager.get_data_point(self.__data_manager.CLOSE, current_day_index)
+            position_value = round(position.get_share_count() * current_price, 2)
+            account_value += position_value
+        self.__account_value_archive.append(round(account_value, 2))
 
     def __post_process(self, symbol, trade_able_days, sim_window_start_day, start_time, results_depth,
                        save_option, progress_observer) -> dict:
@@ -647,7 +649,20 @@ class Simulator:
             Unlike __add_positions_to_data(), the account value archive list has values for every day of the simulation.
             Because of this, we do not need to normalize and can cut straight to adding the values to the df.
         """
-        self.__data_manager.add_column('Account Value', self.__account_value_archive)
+        # initialize the lists to the length of the simulation (with None values)
+        account_values_list = [None for _ in range(self.__data_manager.get_data_length())]
+
+        # calculate the start index of the archive relative to the simulation
+        start_index = self.__data_manager.get_data_length() - len(self.__account_value_archive)
+
+        # replace None values with account values
+        j = 0
+        for i in range(start_index, self.__data_manager.get_data_length()):
+            account_values_list[i] = self.__account_value_archive[j]
+            j += 1
+
+        # add the column to the data
+        self.__data_manager.add_column('Account Value', account_values_list)
 
     def __calculate_progress_bar_increment(self, progress_observer: ProgressObserver,
                                            sim_window_start_day: int) -> float:

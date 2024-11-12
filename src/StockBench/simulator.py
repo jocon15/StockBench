@@ -311,6 +311,8 @@ class Simulator:
                 log.info('Position closed due to end of simulation reached')
                 # close the position
                 self.__liquidate_position(position, current_day_index, 'end of simulation window')
+                # clear the stored position
+                position = None
         else:
             # current day is not the end of the simulation (free to buy and sell)
             if buy_mode:

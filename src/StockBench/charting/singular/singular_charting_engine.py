@@ -3,11 +3,13 @@ from typing import Tuple, List
 from pandas import DataFrame
 from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
+import plotly.graph_objects as plotter
 
 from StockBench.indicator.indicator import IndicatorInterface
 from StockBench.indicator.subplot import Subplot
 from StockBench.charting.charting_engine import ChartingEngine
 from StockBench.charting.exceptions import ChartingError
+from StockBench.charting.display_constants import *
 
 log = logging.getLogger()
 
@@ -43,6 +45,46 @@ class SingularChartingEngine(ChartingEngine):
         # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, save_option,
                                                 'temp_overview_chart', f'figure_{symbol}')
+
+    @staticmethod
+    def build_account_value_bar_chart(df: DataFrame, symbol: str, save_option=ChartingEngine.TEMP_SAVE) -> str:
+        """Builds a chart for duration of positions.
+
+                return:
+                    str: The filepath of the built chart.
+                """
+        rows = 1
+        cols = 1
+
+        chart_list = [[{"type": "bar"}]]
+        chart_titles = ('Account Value per Position',)
+
+        # Parent Plot
+        fig = make_subplots(rows=rows,
+                            cols=cols,
+                            shared_xaxes=True,
+                            vertical_spacing=0.15,
+                            horizontal_spacing=0.05,
+                            specs=chart_list,
+                            subplot_titles=chart_titles)
+
+        # positions analysis traces
+        bar_chart_trace = plotter.Bar(y=df['Account Value'], marker=dict(color=OFF_BLUE), name='Account Value')
+
+        # position analysis chart (overlayed traces)
+        fig.add_trace(bar_chart_trace, 1, 1)
+
+        # set the layout
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
+
+        # format the chart (remove plotly white border)
+        formatted_fig = ChartingEngine.format_chart(fig)
+
+        temp_filename = 'temp_account_value_bar_chart'
+        unique_prefix = f'{symbol}_account_value_bar_chart'
+
+        # perform and saving or showing (returns saved filepath)
+        return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
 
     @staticmethod
     def __get_subplot_objects_and_types(df: DataFrame,

@@ -6,12 +6,14 @@ import logging
 from tqdm import tqdm
 from time import perf_counter
 from datetime import datetime
+from typing import Optional
+from concurrent.futures import ProcessPoolExecutor
+
 from StockBench.constants import *
 from StockBench.broker.broker import Broker
 from StockBench.export.window_data_exporter import WindowDataExporter
 from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.position.position import Position
-from concurrent.futures import ProcessPoolExecutor
 from StockBench.charting.charting_engine import ChartingEngine
 from StockBench.charting.singular.singular_charting_engine import SingularChartingEngine
 from StockBench.charting.multi.multi_charting_engine import MultiChartingEngine
@@ -70,6 +72,7 @@ class Simulator:
         # positions storage during simulation
         self.__single_simulation_position_archive = []
         self.__multiple_simulation_position_archive = []
+        self.__account_value_archive = []
 
         # post-simulation settings
         self.__reporting_on = False
@@ -308,6 +311,8 @@ class Simulator:
                 log.info('Position closed due to end of simulation reached')
                 # close the position
                 self.__liquidate_position(position, current_day_index, 'end of simulation window')
+                # clear the stored position
+                position = None
         else:
             # current day is not the end of the simulation (free to buy and sell)
             if buy_mode:
@@ -342,7 +347,21 @@ class Simulator:
             if progress_observer is not None:
                 progress_observer.update_progress(increment)
 
+        # record account value
+        self.__record_account_value(position, current_day_index)
+
         return buy_mode, position
+
+    def __record_account_value(self, position: Optional[Position], current_day_index: int) -> None:
+        """Add the account value to the data."""
+        account_value = self.__account.get_balance()
+        if position:
+            # if a position is currently open, add the position value to the account value
+            # the account value will have a little left in it due to rounding
+            current_price = self.__data_manager.get_data_point(self.__data_manager.CLOSE, current_day_index)
+            position_value = round(position.get_share_count() * current_price, 2)
+            account_value += position_value
+        self.__account_value_archive.append(round(account_value, 2))
 
     def __post_process(self, symbol, trade_able_days, sim_window_start_day, start_time, results_depth,
                        save_option, progress_observer) -> dict:
@@ -350,6 +369,9 @@ class Simulator:
         gui_terminal_log.info(f'Starting analytics for {symbol}...')
         # add the buys and sells to the df
         self.__add_positions_to_data()
+
+        # add the account value values to the df
+        self.__add_account_values_to_data()
 
         # get the chopped DataFrame
         chopped_temp_df = self.__data_manager.get_chopped_df(sim_window_start_day)
@@ -374,6 +396,7 @@ class Simulator:
         overview_chart_filepath = ''
         buy_rules_chart_filepath = ''
         sell_rules_chart_filepath = ''
+        account_value_bar_chart_filepath = ''
         positions_duration_bar_chart_filepath = ''
         positions_profit_loss_bar_chart_filepath = ''
         positions_profit_loss_histogram_chart_filepath = ''
@@ -392,6 +415,10 @@ class Simulator:
             gui_terminal_log.info('Building sell rules bar chart...')
             sell_rules_chart_filepath = ChartingEngine.build_rules_bar_chart(self.__single_simulation_position_archive,
                                                                              SELL_SIDE, symbol, save_option)
+
+            gui_terminal_log.info('Building account value bar chart...')
+            account_value_bar_chart_filepath = SingularChartingEngine.build_account_value_bar_chart(chopped_temp_df,
+                                                                                                    symbol, save_option)
 
             gui_terminal_log.info('Building positions duration bar chart...')
             positions_duration_bar_chart_filepath = ChartingEngine.build_positions_duration_bar_chart(
@@ -432,6 +459,7 @@ class Simulator:
             OVERVIEW_CHART_FILEPATH_KEY: overview_chart_filepath,
             BUY_RULES_CHART_FILEPATH_KEY: buy_rules_chart_filepath,
             SELL_RULES_CHART_FILEPATH_KEY: sell_rules_chart_filepath,
+            ACCOUNT_VALUE_BAR_CHART_FILEPATH: account_value_bar_chart_filepath,
             POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: positions_duration_bar_chart_filepath,
             POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY: positions_profit_loss_bar_chart_filepath,
             POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY: positions_profit_loss_histogram_chart_filepath
@@ -536,6 +564,7 @@ class Simulator:
         """Clear singular simulation stored data."""
         self.__account.reset()
         self.__single_simulation_position_archive = []
+        self.__account_value_archive = []
 
     def __create_position(self, current_day_index: int, rule: str) -> Position:
         """Creates a position and updates the account.
@@ -600,8 +629,14 @@ class Simulator:
         # deposit the value of the position to the account
         self.__account.deposit(round(sell_price * position.get_share_count(), 3))
 
-    def __add_positions_to_data(self):
-        """Add the position data to the simulation data."""
+    def __add_positions_to_data(self) -> None:
+        """Add the position data to the simulation data.
+
+        Notes:
+            Not every row in the data will have a value. To fix this we declare a list of None values the size of the
+            simulation. Then we insert the data matching the index to the row. The indexes without a value are left as
+            None. Then we can send the list to the df.
+        """
         # initialize the lists to the length of the simulation (with None values)
         acquisition_price_list = [None for _ in range(self.__data_manager.get_data_length())]
         liquidation_price_list = [None for _ in range(self.__data_manager.get_data_length())]
@@ -614,6 +649,28 @@ class Simulator:
         # add the columns to the data
         self.__data_manager.add_column('Buy', acquisition_price_list)
         self.__data_manager.add_column('Sell', liquidation_price_list)
+
+    def __add_account_values_to_data(self) -> None:
+        """Add the account value values to the simulation data.
+
+        Notes:
+            Unlike __add_positions_to_data(), the account value archive list has values for every day of the simulation.
+            Because of this, we do not need to normalize and can cut straight to adding the values to the df.
+        """
+        # initialize the lists to the length of the simulation (with None values)
+        account_values_list = [None for _ in range(self.__data_manager.get_data_length())]
+
+        # calculate the start index of the archive relative to the simulation
+        start_index = self.__data_manager.get_data_length() - len(self.__account_value_archive)
+
+        # replace None values with account values
+        j = 0
+        for i in range(start_index, self.__data_manager.get_data_length()):
+            account_values_list[i] = self.__account_value_archive[j]
+            j += 1
+
+        # add the column to the data
+        self.__data_manager.add_column('Account Value', account_values_list)
 
     def __calculate_progress_bar_increment(self, progress_observer: ProgressObserver,
                                            sim_window_start_day: int) -> float:

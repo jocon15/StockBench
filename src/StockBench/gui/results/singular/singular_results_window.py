@@ -4,6 +4,7 @@ from StockBench.gui.results.singular.tabs.singular_rules_tab import SingularRule
 from StockBench.gui.results.base.positions_pl_histogram_tab import PositionsHistogramTabVertical
 from StockBench.gui.results.base.positions_pl_tab import PositionsProfitLossTabVertical
 from StockBench.gui.results.base.positions_duration_tab import PositionsDurationTabVertical
+from StockBench.gui.results.singular.tabs.singular_account_value_tab import SingularAccountValueTabVertical
 
 
 class SingularResultsWindow(SimulationResultsWindow):
@@ -24,6 +25,7 @@ class SingularResultsWindow(SimulationResultsWindow):
         self.buy_rules_tab = SingularRulesTab('buy')
         self.sell_rules_tab = SingularRulesTab('sell')
         # positions analysis tab (gets added to layout via tab widget)
+        self.account_value_bar_tab = SingularAccountValueTabVertical()
         self.positions_duration_bar_tab = PositionsDurationTabVertical()
         self.positions_profit_loss_bar_tab = PositionsProfitLossTabVertical()
         self.positions_histogram_tab = PositionsHistogramTabVertical()
@@ -31,6 +33,7 @@ class SingularResultsWindow(SimulationResultsWindow):
         self.tab_widget.addTab(self.overview_tab, 'Overview')
         self.tab_widget.addTab(self.buy_rules_tab, 'Buy Rules')
         self.tab_widget.addTab(self.sell_rules_tab, 'Sell Rules')
+        self.tab_widget.addTab(self.account_value_bar_tab, 'Account Value')
         self.tab_widget.addTab(self.positions_duration_bar_tab, 'Positions Duration (bar)')
         self.tab_widget.addTab(self.positions_profit_loss_bar_tab, 'Positions P/L (bar)')
         self.tab_widget.addTab(self.positions_histogram_tab, 'Positions P/L (histogram)')
@@ -50,6 +53,7 @@ class SingularResultsWindow(SimulationResultsWindow):
             self.overview_tab.render_data(simulation_results)
             self.buy_rules_tab.render_chart(simulation_results)
             self.sell_rules_tab.render_chart(simulation_results)
+            self.account_value_bar_tab.render_chart(simulation_results)
             self.positions_duration_bar_tab.render_chart(simulation_results)
             self.positions_profit_loss_bar_tab.render_chart(simulation_results)
             self.positions_histogram_tab.render_chart(simulation_results)

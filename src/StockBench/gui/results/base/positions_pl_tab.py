@@ -3,7 +3,7 @@ from StockBench.constants import POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY
 
 
 class PositionsProfitLossTabVertical(SimpleVerticalChartTab):
-    """Abstract base class for a positions analysis tab."""
+    """Generic positions analysis tab."""
     CHART_KEY = POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY
 
     def __init__(self):

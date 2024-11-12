@@ -4,10 +4,11 @@ import numpy as np
 import pandas as pd
 from typing import Optional
 import plotly.offline as offline
-from .display_constants import *
 import plotly.graph_objects as plotter
 from plotly.subplots import make_subplots
 from plotly.figure_factory import create_distplot
+
+from StockBench.charting.display_constants import *
 from StockBench.function_tools.timestamp import datetime_timestamp
 from StockBench.constants import *
 

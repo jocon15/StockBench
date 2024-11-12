@@ -394,6 +394,7 @@ class Simulator:
         overview_chart_filepath = ''
         buy_rules_chart_filepath = ''
         sell_rules_chart_filepath = ''
+        account_value_bar_chart_filepath = ''
         positions_duration_bar_chart_filepath = ''
         positions_profit_loss_bar_chart_filepath = ''
         positions_profit_loss_histogram_chart_filepath = ''
@@ -412,6 +413,10 @@ class Simulator:
             gui_terminal_log.info('Building sell rules bar chart...')
             sell_rules_chart_filepath = ChartingEngine.build_rules_bar_chart(self.__single_simulation_position_archive,
                                                                              SELL_SIDE, symbol, save_option)
+
+            gui_terminal_log.info('Building account value bar chart...')
+            account_value_bar_chart_filepath = SingularChartingEngine.build_account_value_bar_chart(chopped_temp_df,
+                                                                                                    symbol, save_option)
 
             gui_terminal_log.info('Building positions duration bar chart...')
             positions_duration_bar_chart_filepath = ChartingEngine.build_positions_duration_bar_chart(
@@ -452,6 +457,7 @@ class Simulator:
             OVERVIEW_CHART_FILEPATH_KEY: overview_chart_filepath,
             BUY_RULES_CHART_FILEPATH_KEY: buy_rules_chart_filepath,
             SELL_RULES_CHART_FILEPATH_KEY: sell_rules_chart_filepath,
+            ACCOUNT_VALUE_BAR_CHART_FILEPATH: account_value_bar_chart_filepath,
             POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: positions_duration_bar_chart_filepath,
             POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY: positions_profit_loss_bar_chart_filepath,
             POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY: positions_profit_loss_histogram_chart_filepath

@@ -46,6 +46,7 @@ class OverviewSideBar(QWidget):
 
         # output box (terminal)
         self.output_box = QListWidget()
+        self.output_box.setWordWrap(True)
         self.output_box.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.output_box.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.output_box.setStyleSheet(Palette.SIDEBAR_OUTPUT_BOX_STYLESHEET)

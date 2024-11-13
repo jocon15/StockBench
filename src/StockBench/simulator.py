@@ -757,17 +757,17 @@ class Simulator:
         print('================================')
 
     @staticmethod
-    def __unix_to_string(_unix_date, _format='%m-%d-%Y') -> str:
+    def __unix_to_string(unix_date, date_format='%m-%d-%Y') -> str:
         """Convert a unix date to a string of custom format.
 
         Args:
-            _unix_date (int): The unix timestamp to convert.
-            _format (str): The format to convert to.
+            unix_date (int): The unix timestamp to convert.
+            date_format (str): The format to convert to.
 
         return:
             str: The converted string in custom format.
         """
-        return datetime.fromtimestamp(_unix_date).strftime(_format)
+        return datetime.fromtimestamp(unix_date).strftime(date_format)
 
     @staticmethod
     def __error_check_timestamps(start, end):

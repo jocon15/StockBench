@@ -327,6 +327,7 @@ class ChartingEngine:
     def _build_multi_dataset_histogram(strategy_names: list, positions_data: list, title: str):
         """Build a multi-dataset histogram chart."""
         fig = create_distplot(positions_data, strategy_names)
+        fig.add_vline(0)
 
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, title=title)

@@ -28,7 +28,7 @@ And just like that, you have simulated a strategy on historical data. Have fun!
 
 3. Restart your PC to enable the [Environment Variables](https://github.com/jocon15/StockBench/wiki/Environment-Variables).
 
-4. Build your strategy .JSON file. See [Building a Strategy](https://github.com/jocon15/StockBench/wiki/Building-a-Strategy) or try our new [Strategy Studio (beta)](#Strategy-Studio).
+4. Build your strategy .JSON file. See [Building a Strategy](https://github.com/jocon15/StockBench/wiki/Building-a-Strategy) or try our new [Strategy Studio](#Strategy-Studio).
 
 5. Run the StockBench.exe.
 

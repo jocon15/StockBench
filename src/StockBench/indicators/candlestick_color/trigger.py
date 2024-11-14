@@ -17,7 +17,8 @@ class CandlestickColorTrigger(Trigger):
             value_value (any): The value from the strategy.
         """
         if len(value_value.keys()) == 0:
-            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {rule_key} must have at least one color child key')
+            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {rule_key} must have at least one color child '
+                                         f'key')
 
         additional_days = 0
         for sub_key in value_value.keys():
@@ -56,7 +57,8 @@ class CandlestickColorTrigger(Trigger):
         num_keys = len(rule_value)
 
         if num_keys == 0:
-            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {rule_key} must have at least one color child key')
+            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {rule_key} must have at least one color child '
+                                         f'key')
 
         # these will both need to be in ascending order [today, yesterday...]
         trigger_colors = []

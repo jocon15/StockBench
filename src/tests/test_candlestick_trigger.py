@@ -58,10 +58,10 @@ def test_check_trigger(data_mocker, test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.check_trigger('color', {'0': 'green', '1': 'red'}, data_mocker,None,
+    assert test_object.check_trigger('color', {'0': 'green', '1': 'red'}, data_mocker, None,
                                      current_day_index) is True
 
-    assert test_object.check_trigger('color', {'0': 'red', '1': 'green'}, data_mocker,None,
+    assert test_object.check_trigger('color', {'0': 'red', '1': 'green'}, data_mocker, None,
                                      current_day_index) is False
 
 

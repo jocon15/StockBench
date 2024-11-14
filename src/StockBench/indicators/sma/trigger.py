@@ -11,44 +11,44 @@ class SMATrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days(self, key, value) -> int:
+    def additional_days(self, rule_key, value_value) -> int:
         """Calculate the additional days required.
 
         Args:
-            key (any): The key value from the strategy.
-            value (any): The value from the strategy.
+            rule_key (any): The key value from the strategy.
+            value_value (any): The value from the strategy.
         """
         # map nums to a list of ints
-        nums = list(map(int, self.find_all_nums_in_str(key)))
+        nums = list(map(int, self.find_all_nums_in_str(rule_key)))
         if nums:
             return max(nums)
         # nums is empty
-        raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} must have an indicator length!')
+        raise StrategyIndicatorError(f'{self.strategy_symbol} key: {rule_key} must have an indicator length!')
 
-    def add_to_data(self, key, value, side, data_manager):
+    def add_to_data(self, rule_key, rule_value, side, data_manager):
         """Add data to the dataframe.
 
         Args:
-            key (any): The key value from the strategy.
-            value (any): The value from thr strategy.
+            rule_key (any): The key value from the strategy.
+            rule_value (any): The value from thr strategy.
             side (str): The side (buy/sell).
             data_manager (any): The data object.
         """
-        nums = self.find_all_nums_in_str(key)
+        nums = self.find_all_nums_in_str(rule_key)
         if len(nums) > 0:
             # element 0 will be the indicator length
             indicator_length = int(nums[0])
             # add the EMA data to the df
             self.__add_sma(indicator_length, data_manager)
         else:
-            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} must have an indicator length!')
+            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {rule_key} must have an indicator length!')
 
-    def check_trigger(self, key, value, data_manager, position, current_day_index) -> bool:
+    def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for SMA.
 
         Args:
-            key (str): The key value of the algorithm.
-            value (str): The value of the algorithm.
+            rule_key (str): The key value of the algorithm.
+            rule_value (str): The value of the algorithm.
             data_manager (any): The data API object.
             position (any): The position object.
             current_day_index (int): The index of the current day.
@@ -56,15 +56,15 @@ class SMATrigger(Trigger):
         return:
             bool: True if the algorithm was hit.
         """
-        log.debug(f'Checking {self.strategy_symbol} algorithm: {key}...')
+        log.debug(f'Checking {self.strategy_symbol} algorithm: {rule_key}...')
 
         # get the indicator value from the key
-        indicator_value = self.__parse_key(key, data_manager, current_day_index)
+        indicator_value = self.__parse_key(rule_key, data_manager, current_day_index)
 
         # get the operator and algorithm value from the value
-        operator, trigger_value = self._parse_value(value, data_manager, current_day_index)
+        operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
 
-        log.debug(f'{self.strategy_symbol} algorithm: {key} checked successfully')
+        log.debug(f'{self.strategy_symbol} algorithm: {rule_key} checked successfully')
 
         # algorithm checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)

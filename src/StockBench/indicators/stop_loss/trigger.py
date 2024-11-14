@@ -10,22 +10,22 @@ class StopLossTrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol, side=Trigger.SELL)
 
-    def additional_days(self, key: str, value: str) -> int:
+    def additional_days(self, rule_key: str, value_value: str) -> int:
         """Calculate the additional days required.
 
         Args:
-            key: The key value from the strategy.
-            value: The value from the strategy.
+            rule_key: The key value from the strategy.
+            value_value: The value from the strategy.
         """
         # note stop loss does not require additional days
         return 0
 
-    def add_to_data(self, key: str, value: str, side: str, data_manager: DataManager):
+    def add_to_data(self, rule_key: str, rule_value: str, side: str, data_manager: DataManager):
         """Add data to the dataframe.
 
         Args:
-            key: The key value from the strategy.
-            value: The value from thr strategy.
+            rule_key: The key value from the strategy.
+            rule_value: The value from thr strategy.
             side: The side (buy/sell).
             data_manager: The simulation data manager.
         """
@@ -33,13 +33,13 @@ class StopLossTrigger(Trigger):
         # require any additional data to be added to the data
         return
 
-    def check_trigger(self, key: str, value: str, data_manager: DataManager, position: Position,
+    def check_trigger(self, rule_key: str, rule_value: str, data_manager: DataManager, position: Position,
                       current_day_index: int) -> bool:
         """Trigger logic for stop loss.
 
         Args:
-            key: The key value of the algorithm.
-            value: The value of the algorithm.
+            rule_key: The key value of the algorithm.
+            rule_value: The value of the algorithm.
             data_manager: The data API object.
             position: The simulation data manager.
             current_day_index: The index of the current day.
@@ -61,18 +61,18 @@ class StopLossTrigger(Trigger):
         intraday_plpc = position.intraday_profit_loss_percent(open_price, current_price)
         lifetime_plpc = position.profit_loss_percent(current_price)
 
-        if 'intraday' in key:
+        if 'intraday' in rule_key:
             if intraday_pl < 0:
-                if '%' in value:
-                    return self.__check_plpc_loss(value, intraday_plpc)
+                if '%' in rule_value:
+                    return self.__check_plpc_loss(rule_value, intraday_plpc)
                 else:
-                    return self.__check_pl_loss(value, intraday_pl)
+                    return self.__check_pl_loss(rule_value, intraday_pl)
         else:
             if lifetime_pl < 0:
-                if '%' in value:
-                    return self.__check_plpc_loss(value, lifetime_plpc)
+                if '%' in rule_value:
+                    return self.__check_plpc_loss(rule_value, lifetime_plpc)
                 else:
-                    return self.__check_pl_loss(value, lifetime_pl)
+                    return self.__check_pl_loss(rule_value, lifetime_pl)
 
         log.debug('Stop loss algorithm checked')
         return False

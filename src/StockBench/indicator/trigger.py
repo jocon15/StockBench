@@ -26,15 +26,15 @@ class Trigger:
         return self.__side
 
     @abstractmethod
-    def additional_days(self, rule_key: str, value_value: str) -> int:
+    def additional_days(self, rule_key: str, value_value: any) -> int:
         raise NotImplementedError('Additional days not implemented!')
 
     @abstractmethod
-    def add_to_data(self, rule_key: str, rule_value: str, side: str, data_manager: DataManager):
+    def add_to_data(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
         raise NotImplementedError('Add to data not implemented!')
 
     @abstractmethod
-    def check_trigger(self, rule_key: str, rule_value: str, data_manager: DataManager, position: Position,
+    def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,
                       current_day_index: int) -> bool:
         raise NotImplementedError('Check algorithm not implemented!')
 

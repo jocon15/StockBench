@@ -26,26 +26,27 @@ class Trigger:
         return self.__side
 
     @abstractmethod
-    def additional_days(self, key: str, value: str) -> int:
+    def additional_days(self, rule_key: str, value_value: str) -> int:
         raise NotImplementedError('Additional days not implemented!')
 
     @abstractmethod
-    def add_to_data(self, key: str, value: str, side: str, data_manager: DataManager):
+    def add_to_data(self, rule_key: str, rule_value: str, side: str, data_manager: DataManager):
         raise NotImplementedError('Add to data not implemented!')
 
     @abstractmethod
-    def check_trigger(self, key: str, value: str, data_manager: DataManager, position: Position,
+    def check_trigger(self, rule_key: str, rule_value: str, data_manager: DataManager, position: Position,
                       current_day_index: int) -> bool:
         raise NotImplementedError('Check algorithm not implemented!')
 
-    def _parse_value(self, value: str, data_manager: DataManager, current_day_index: int) -> Tuple[str, float]:
+    def _parse_rule_value(self, rule_value: str, data_manager: DataManager,
+                          current_day_index: int) -> Tuple[str, float]:
         """Parser for parsing the operator and algorithm value from the value.
 
         NOTE: This is the default implementation for this, since it is used frequently in this form.
             For abnormal algorithm like candle colors, you can override this with another implementation.
 
         Args:
-             value: The rule's value.
+             rule_value: The rule's value.
              data_manager: The simulation data manager.
              current_day_index: The current day index.
 
@@ -53,12 +54,12 @@ class Trigger:
             Tuple: The operator and the trigger value.
         """
         # find the operator and algorithm value (right hand side of the comparison)
-        if CURRENT_PRICE_SYMBOL in value:
+        if CURRENT_PRICE_SYMBOL in rule_value:
             trigger_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
-            operator = value.replace(CURRENT_PRICE_SYMBOL, '')
+            operator = rule_value.replace(CURRENT_PRICE_SYMBOL, '')
         else:
-            trigger_value = self.find_single_numeric_in_str(value)
-            operator = self.find_operator_in_str(value)
+            trigger_value = self.find_single_numeric_in_str(rule_value)
+            operator = self.find_operator_in_str(rule_value)
 
         return operator, trigger_value
 
@@ -92,11 +93,11 @@ class Trigger:
         return False
 
     @staticmethod
-    def find_single_numeric_in_str(value: str) -> float:
+    def find_single_numeric_in_str(rule_value: str) -> float:
         """Find a single numeric algorithm in a string.
 
         Args:
-            value: Any value of the strategy.
+            rule_value: Any value of the strategy.
 
         returns:
             float: The algorithm value in the string.
@@ -104,31 +105,31 @@ class Trigger:
         raises:
             ValueError: If the passed value is not in the correct format (contains >1 or no numerics).
         """
-        nums = re.findall(r'\d+', value)
+        nums = re.findall(r'\d+', rule_value)
         if len(nums) == 1:
             return float(nums[0])
         else:
-            raise StrategyIndicatorError(f'Invalid amount of numbers found in algorithm value: {value}')
+            raise StrategyIndicatorError(f'Invalid amount of numbers found in algorithm value: {rule_value}')
 
     @staticmethod
-    def find_all_nums_in_str(value: str) -> list:
+    def find_all_nums_in_str(rule_value: str) -> list:
         """Finds all number groupings in a string.
 
         Args:
-            value: The string to parse.
+            rule_value: The string to parse.
 
         returns:
             list: A list of numbers in the string.
 
         """
-        return re.findall(r'\d+', value)
+        return re.findall(r'\d+', rule_value)
 
     @staticmethod
-    def find_operator_in_str(value: str) -> str:
+    def find_operator_in_str(rule_value: str) -> str:
         """Find the logic operator in a string.
 
         Args:
-            value: Any value of the strategy.
+            rule_value: Any value of the strategy.
 
         returns:
             str: The operator in the string.
@@ -136,11 +137,11 @@ class Trigger:
         raises:
             ValueError: If the passed value has incorrect amount of number groupings.
         """
-        nums = re.findall(r'\d+', value)
+        nums = re.findall(r'\d+', rule_value)
         if len(nums) == 1:
-            return value.replace(str(nums[0]), '')
+            return rule_value.replace(str(nums[0]), '')
         else:
-            raise StrategyIndicatorError(f'Invalid amount of numbers found in algorithm value: {value}')
+            raise StrategyIndicatorError(f'Invalid amount of numbers found in algorithm value: {rule_value}')
 
     @staticmethod
     def calculate_slope(y2: float, y1: float, length: int) -> float:

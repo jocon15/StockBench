@@ -13,22 +13,22 @@ class PriceTrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days(self, key, value) -> int:
+    def additional_days(self, rule_key, value_value) -> int:
         """Calculate the additional days required.
 
         Args:
-            key (any): The key value from the strategy.
-            value (any): The value from the strategy.
+            rule_key (any): The key value from the strategy.
+            value_value (any): The value from the strategy.
         """
         # note price does not require any additional days
         return 0
 
-    def add_to_data(self, key, value, side, data_manager):
+    def add_to_data(self, rule_key, rule_value, side, data_manager):
         """Add data to the dataframe.
 
         Args:
-            key (any): The key value from the strategy.
-            value (any): The value from thr strategy.
+            rule_key (any): The key value from the strategy.
+            rule_value (any): The value from thr strategy.
             side (str): The side (buy/sell).
             data_manager (any): The data object.
         """
@@ -36,12 +36,12 @@ class PriceTrigger(Trigger):
         # no need to add it
         return
 
-    def check_trigger(self, key, value, data_manager, position, current_day_index) -> bool:
+    def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for price.
 
         Args:
-            key (str): The key value of the algorithm.
-            value (str): The value of the algorithm.
+            rule_key (str): The key value of the algorithm.
+            rule_value (str): The value of the algorithm.
             data_manager (any): The data API object.
             position (any): The position object.
             current_day_index (int): The index of the current day.
@@ -49,15 +49,15 @@ class PriceTrigger(Trigger):
         return:
             bool: True if the algorithm was hit.
         """
-        log.debug(f'Checking price algorithm: {key}...')
+        log.debug(f'Checking price algorithm: {rule_key}...')
 
         # get the indicator value from the key
-        indicator_value = self.__parse_key(key, data_manager, current_day_index)
+        indicator_value = self.__parse_key(rule_key, data_manager, current_day_index)
 
         # get the operator and algorithm value from the value
-        operator, trigger_value = self._parse_value(value, data_manager, current_day_index)
+        operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
 
-        log.debug(f'Price algorithm: {key} checked successfully')
+        log.debug(f'Price algorithm: {rule_key} checked successfully')
 
         # algorithm checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)

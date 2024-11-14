@@ -12,31 +12,31 @@ class RSITrigger(Trigger):
     def __init__(self, strategy_symbol):
         super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days(self, key, value) -> int:
+    def additional_days(self, rule_key, value_value) -> int:
         """Calculate the additional days required.
 
         Args:
-            key (any): The key value from the strategy.
-            value (any): The value from the strategy.
+            rule_key (any): The key value from the strategy.
+            value_value (any): The value from the strategy.
         """
-        nums = self.find_all_nums_in_str(key)
+        nums = self.find_all_nums_in_str(rule_key)
         if len(nums) > 0:
             return max(list(map(int, nums)))
         else:
             return DEFAULT_RSI_LENGTH
 
-    def add_to_data(self, key, value, side, data_manager):
+    def add_to_data(self, rule_key, rule_value, side, data_manager):
         """Add data to the dataframe.
 
         Args:
-            key (any): The key value from the strategy.
-            value (any): The value from thr strategy.
+            rule_key (any): The key value from the strategy.
+            rule_value (any): The value from thr strategy.
             side (str): The side (buy/sell).
             data_manager (any): The data object.
         """
         # ======== key based =========
         # (adds the RSI values to the data based on the key)
-        nums = self.find_all_nums_in_str(key)
+        nums = self.find_all_nums_in_str(rule_key)
         if len(nums) > 0:
             num = int(nums[0])
             # add the RSI data to the df
@@ -46,18 +46,18 @@ class RSITrigger(Trigger):
             self.__add_rsi_column(DEFAULT_RSI_LENGTH, data_manager)
         # ======== value based (rsi limit)=========
         # (adds the RSI limit values to the data for charting)
-        nums = self.find_all_nums_in_str(value)
+        nums = self.find_all_nums_in_str(rule_value)
         # add the trigger to the df for charting
         if len(nums) > 0:
             trigger = float(nums[0])
             self.__add_rsi_trigger_column(trigger, data_manager)
 
-    def check_trigger(self, key, value, data_manager, position, current_day_index) -> bool:
+    def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for RSI.
 
         Args:
-            key (str): The key value of the algorithm.
-            value (str): The value of the algorithm.
+            rule_key (str): The key value of the algorithm.
+            rule_value (str): The value of the algorithm.
             data_manager (any): The data API object.
             position (any): The position object.
             current_day_index (int): The index of the current day.
@@ -65,15 +65,15 @@ class RSITrigger(Trigger):
         return:
             bool: True if the algorithm was hit.
         """
-        log.debug(f'Checking RSI algorithm: {key}...')
+        log.debug(f'Checking RSI algorithm: {rule_key}...')
 
         # get the indicator value from the key
-        indicator_value = self.__parse_key(key, data_manager, current_day_index)
+        indicator_value = self.__parse_key(rule_key, data_manager, current_day_index)
 
         # get the operator and algorithm value from the value
-        operator, trigger_value = self._parse_value(value, data_manager, current_day_index)
+        operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
 
-        log.debug(f'RSI algorithm: {key} checked successfully')
+        log.debug(f'RSI algorithm: {rule_key} checked successfully')
 
         # algorithm checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)

@@ -6,7 +6,7 @@ import logging
 from tqdm import tqdm
 from time import perf_counter
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List, Tuple
 from concurrent.futures import ProcessPoolExecutor
 
 from StockBench.constants import *
@@ -55,9 +55,10 @@ class Simulator:
     DATA_ONLY = 1
 
     def __init__(self, initial_balance: float):
-        """
+        """Constructor
+
         Args:
-            initial_balance (float): The initial balance for the account.
+            initial_balance: The initial balance for the account.
         """
         # dependencies
         self.__account = UserAccount(initial_balance)
@@ -79,7 +80,7 @@ class Simulator:
         self.__running_multiple = False
         self.__running_as_exe = getattr(sys, 'frozen', False)
 
-    def enable_logging(self):
+    def enable_logging(self) -> None:
         """Enable user logging_handlers."""
         # set the logging_handlers level to info
         log.setLevel(logging.INFO)
@@ -102,11 +103,11 @@ class Simulator:
         # add the handler to the logger
         log.addHandler(user_handler)
 
-    def enable_developer_logging(self, level=2):
-        """Enable developer logging_handlers.
+    def enable_developer_logging(self, level: int = 2) -> None:
+        """Enable developer logging handlers.
 
         Args:
-            level (int): The logging_handlers level for the logger.
+            level: The logging level for the logger.
         """
         # set the logging_handlers level
         if level == 1:
@@ -153,20 +154,20 @@ class Simulator:
         """Load a strategy.
 
          Args:
-             strategy (dict): The strategy as a dictionary.
+             strategy: The strategy as a dictionary.
          """
         # build the algorithm using the strategy
         self.__algorithm = Algorithm(strategy, self.__available_indicators.values())
 
-    def run(self, symbol: str, results_depth=CHARTS_AND_DATA, save_option=ChartingEngine.TEMP_SAVE,
-            progress_observer=None) -> dict:
+    def run(self, symbol: str, results_depth: int = CHARTS_AND_DATA,
+            save_option: int = ChartingEngine.TEMP_SAVE, progress_observer=None) -> dict:
         """Run a simulation on an asset.
 
         Args:
-            symbol (str): The symbol to run the simulation on.
-            results_depth (bool): Show the chart when finished.
-            save_option (int): Selection for how to save the finished chart.
-            progress_observer (any): Observer object to update progress to.
+            symbol: The symbol to run the simulation on.
+            results_depth: Show the chart when finished.
+            save_option: Selection for how to save the finished chart.
+            progress_observer: Observer object to update progress to.
         """
         start_time = perf_counter()
 
@@ -203,18 +204,17 @@ class Simulator:
         return self.__post_process(symbol, trade_able_days, sim_window_start_day, start_time, results_depth,
                                    save_option, progress_observer)
 
-    def run_multiple(self,
-                     symbols: list,
-                     results_depth=CHARTS_AND_DATA,
-                     save_option=ChartingEngine.TEMP_SAVE,
-                     progress_observer=None) -> dict:
+    def run_multiple(self, symbols: List[str],
+                     results_depth: int = CHARTS_AND_DATA,
+                     save_option: int = ChartingEngine.TEMP_SAVE,
+                     progress_observer: Optional[ProgressObserver] = None) -> dict:
         """Simulate a list of assets.
 
         Args:
-            symbols (list): The list of assets to simulation.
-            results_depth (bool): Switch to remove charts from results.
-            save_option (int): Save the chart when finished.
-            progress_observer (any): Observer object to update progress to.
+            symbols: The list of assets to simulation.
+            results_depth: Switch to remove charts from results.
+            save_option: Save the chart when finished.
+            progress_observer: Observer object to update progress to.
         """
         start_time = perf_counter()
 
@@ -237,21 +237,17 @@ class Simulator:
             tqdm_increment = round(100.0 / len(symbols), 2)
             pbar = tqdm(total=100)
 
-        # simulate each symbol
         results = []
         for symbol in symbols:
-            # run the simulation for that symbol
             result = self.run(symbol=symbol, results_depth=results_depth, save_option=save_option)
-            # capture the archived positions from the symbol run in the multiple positions list
+            # capture the archived positions from the run in the multiple positions list
             self.__multiple_simulation_position_archive += self.__single_simulation_position_archive
 
             results.append(result)
 
-            # update the progress observer
             if progress_observer:
                 progress_observer.update_progress(progress_bar_increment)
 
-            # update tqdm if enabled
             if not self.__running_as_exe:
                 pbar.update(tqdm_increment)
 
@@ -261,31 +257,24 @@ class Simulator:
         return self.__multi_post_process(results, start_time, results_depth,
                                          save_option, progress_observer)
 
-    def __pre_process(self, symbol, progress_observer) -> tuple:
+    def __pre_process(self, symbol: str, progress_observer: ProgressObserver) -> Tuple[int, int, float]:
         """Setup for the simulation."""
         log.info(f'Setting up simulation for symbol: {symbol}...')
 
-        # reset the attributes()
         self.__reset_singular_attributes()
 
-        # parse the strategy for timestamps
         start_date_unix, end_date_unix, additional_days = self.__algorithm.get_window()
         augmented_start_date_unix = start_date_unix - (additional_days * SECONDS_1_DAY)
 
-        # get the data from the broker
         temp_df = self.__broker.get_daily_data(symbol, augmented_start_date_unix, end_date_unix)
 
-        # initialize the data api with the broker data
         self.__data_manager = DataManager(temp_df)
 
-        # add indicators to the data based on strategy
         self.__algorithm.add_indicator_data(self.__data_manager)
 
-        # print the header if necessary
         if not self.__running_multiple:
             self.__print_header(symbol)
 
-        # calculate the simulation window
         total_days, days_in_focus, sim_window_start_day, trade_able_days = (
             self.__calculate_simulation_window(start_date_unix, end_date_unix, augmented_start_date_unix,
                                                self.__data_manager))
@@ -300,18 +289,16 @@ class Simulator:
 
         return sim_window_start_day, trade_able_days, increment
 
-    def __simulate_day(self, current_day_index, buy_mode, position, progress_observer, increment) -> tuple:
+    def __simulate_day(self, current_day_index: int, buy_mode: bool, position: Position,
+                       progress_observer: ProgressObserver, increment: float) -> Tuple[bool, Position]:
         """Core simulation logic for simulating 1 day."""
         log.debug(f'Current day index: {current_day_index}')
 
         if current_day_index == self.__data_manager.get_data_length() - 1:
-            # check that position still exists - if so sell
+            # reached the end of the simulation, if a position is still open, sell it
             if position:
-                # the position is still open at the end of the simulation
                 log.info('Position closed due to end of simulation reached')
-                # close the position
                 self.__liquidate_position(position, current_day_index, 'end of simulation window')
-                # clear the stored position
                 position = None
         else:
             # current day is not the end of the simulation (free to buy and sell)
@@ -319,35 +306,21 @@ class Simulator:
                 was_triggered, rule = self.__algorithm.check_triggers_by_side(self.__data_manager, current_day_index,
                                                                               None, BUY_SIDE)
                 if was_triggered:
-                    # create a position
                     position = self.__create_position(current_day_index, rule)
                     # switch to selling
                     buy_mode = False
             else:
-                # sell mode
                 was_triggered, rule = self.__algorithm.check_triggers_by_side(self.__data_manager, current_day_index,
                                                                               position, SELL_SIDE)
                 if was_triggered:
-                    # close the position
                     self.__liquidate_position(position, current_day_index, rule)
-                    # clear the stored position
                     position = None
                     # switch to buying
                     buy_mode = True
 
-                elif current_day_index == self.__data_manager.get_data_length() - 1:
-                    # the position is still open at the end of the simulation
-                    log.info('Position closed due to end of simulation reached')
-                    # check that position still exists - if so sell
-                    if position:
-                        # close the position
-                        self.__liquidate_position(position, current_day_index, rule)
-
-            # update the progress observer by 1 increment
             if progress_observer is not None:
                 progress_observer.update_progress(increment)
 
-        # record account value
         self.__record_account_value(position, current_day_index)
 
         return buy_mode, position
@@ -363,20 +336,17 @@ class Simulator:
             account_value += position_value
         self.__account_value_archive.append(round(account_value, 2))
 
-    def __post_process(self, symbol, trade_able_days, sim_window_start_day, start_time, results_depth,
-                       save_option, progress_observer) -> dict:
+    def __post_process(self, symbol: str, trade_able_days: int, window_start_day: int, start_time: float,
+                       results_depth: int, save_option: int, progress_observer: ProgressObserver) -> dict:
         """Cleanup and analysis after the simulation."""
         gui_terminal_log.info(f'Starting analytics for {symbol}...')
-        # add the buys and sells to the df
+
         self.__add_positions_to_data()
 
-        # add the account value values to the df
         self.__add_account_values_to_data()
 
-        # get the chopped DataFrame
-        chopped_temp_df = self.__data_manager.get_chopped_df(sim_window_start_day)
+        chopped_temp_df = self.__data_manager.get_chopped_df(window_start_day)
 
-        # initiate an analyzer with the positions data
         analyzer = SimulationAnalyzer(self.__single_simulation_position_archive)
 
         end_time = perf_counter()
@@ -388,9 +358,7 @@ class Simulator:
             self.__print_singular_results(elapsed_time, analyzer, self.__account.get_balance())
 
         if self.__reporting_on:
-            # create an export object
             exporter = WindowDataExporter()
-            # synchronous charting
             exporter.export(chopped_temp_df, symbol)
 
         overview_chart_filepath = ''
@@ -465,7 +433,7 @@ class Simulator:
             POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY: positions_profit_loss_histogram_chart_filepath
         }
 
-    def __multi_pre_process(self, symbols, progress_observer) -> float:
+    def __multi_pre_process(self, symbols: List[str], progress_observer: ProgressObserver) -> float:
         log.debug('Running multi simulation pre-process...')
         # disable printing for TQDM
         self.__running_multiple = True
@@ -473,14 +441,10 @@ class Simulator:
         # reset the multiple simulation archived symbols to clear any data from previous multiple simulations
         self.__multiple_simulation_position_archive = []
 
-        # calculate the increment for the progress bar
-        increment = 1.0  # must supply default value
-        if progress_observer is not None:
-            increment = 100.0 / float(len(symbols))
+        return self.__calculate_multi_progress_bar_increment(symbols, progress_observer)
 
-        return increment
-
-    def __multi_post_process(self, results, start_time, results_depth, save_option, progress_observer):
+    def __multi_post_process(self, results: List[dict], start_time: float, results_depth: int, save_option: int,
+                             progress_observer: ProgressObserver) -> dict:
         # re-enable printing for TQDM
         log.info('Running multi simulation post-process...')
         gui_terminal_log.info('Starting analytics...')
@@ -570,8 +534,8 @@ class Simulator:
         """Creates a position and updates the account.
 
         Args:
-            current_day_index (int): The index of the current day
-            rule (str): The strategy rule used to acquire the position.
+            current_day_index: The index of the current day
+            rule: The strategy rule used to acquire the position.
 
         return:
             Position: The created Position object.
@@ -581,18 +545,15 @@ class Simulator:
         """
         log.info('Creating the position...')
 
-        # add the buying price to the DataFrame
         buy_price = self.__data_manager.get_data_point(self.__data_manager.CLOSE, current_day_index)
 
         # calculate the withdrawal amount (nearest whole share - floor direction)
         share_count = float(math.floor(self.__account.get_balance() / buy_price))
 
-        # create the new position
         new_position = Position(buy_price, share_count, current_day_index, rule)
 
         log.info('Position created successfully')
 
-        # withdraw the money from the account
         self.__account.withdraw(round(buy_price * share_count, 3))
 
         return new_position
@@ -669,7 +630,6 @@ class Simulator:
             account_values_list[i] = self.__account_value_archive[j]
             j += 1
 
-        # add the column to the data
         self.__data_manager.add_column('Account Value', account_values_list)
 
     def __calculate_progress_bar_increment(self, progress_observer: ProgressObserver,
@@ -686,16 +646,35 @@ class Simulator:
         Notes:
             increment(%/day) = 100% / #days
         """
-        # calculate the increment for the progress bar
         increment = 1.0  # must supply default value
         if progress_observer is not None:
             increment = round(100.0 / (self.__data_manager.get_data_length() - sim_window_start_day), 2)
         return increment
 
     @staticmethod
+    def __calculate_multi_progress_bar_increment(symbols: List[str],
+                                                 progress_observer: ProgressObserver) -> float:
+        """Calculate the progress bar increment per day.
+
+        Args:
+            symbols: List of symbols to simulate.
+            progress_observer: The progress observer.
+
+        Return:
+            float: The progress bar percentage increment per day of the simulation.
+
+        Notes:
+            increment(%/day) = 100% / #symbols
+        """
+        increment = 1.0  # must supply default value
+        if progress_observer is not None:
+            increment = 100.0 / float(len(symbols))
+        return increment
+
+    @staticmethod
     def __calculate_simulation_window(start_date_unix: int, end_date_unix: int, augmented_start_date_unix: int,
                                       data_manager: DataManager) -> tuple:
-        """Calculate window dimensions."""
+        """Calculate simulation window dimensions."""
         total_days = int((end_date_unix - augmented_start_date_unix) / SECONDS_1_DAY)
         days_in_focus = int((end_date_unix - start_date_unix) / SECONDS_1_DAY)
         sim_window_start_day = total_days - days_in_focus
@@ -711,26 +690,27 @@ class Simulator:
         return False
 
     @staticmethod
-    def __print_header(symbol):
+    def __print_header(symbol: str) -> None:
         """Prints the simulation header."""
         print('======= Simulation Start =======')
         print(f'Running simulation on {symbol}...')
         print('================================')
 
     @staticmethod
-    def __log_details(filename, symbol, start, end, focus_days, tradable_days, balance):
+    def __log_details(filename: str, symbol: str, start_date: str, end_date: str, window_size: int, tradable_days: int,
+                      balance: float) -> None:
         log.info('==== Simulation Details =====')
         log.info(f'Strategy        : {filename}')
         log.info(f'Symbol          : {symbol}')
-        log.info(f'Start Date      : {start}')
-        log.info(f'End Date        : {end}')
-        log.info(f'Window Size     : {focus_days}')
+        log.info(f'Start Date      : {start_date}')
+        log.info(f'End Date        : {end_date}')
+        log.info(f'Window Size     : {window_size}')
         log.info(f'Trade-able Days : {tradable_days}')
         log.info(f'Account Value   : $ {balance}')
         log.info('=============================')
 
     @staticmethod
-    def __log_results(elapsed_time, analyzer: SimulationAnalyzer, balance):
+    def __log_results(elapsed_time: float, analyzer: SimulationAnalyzer, balance: float) -> None:
         log.info('====== Simulation Results ======')
         log.info(f'Elapsed Time  : {elapsed_time} seconds')
         log.info(f'Trades Made   : {analyzer.total_trades()}')
@@ -743,7 +723,7 @@ class Simulator:
         log.info('================================')
 
     @staticmethod
-    def __print_singular_results(elapsed_time, analyzer: SimulationAnalyzer, balance):
+    def __print_singular_results(elapsed_time: float, analyzer: SimulationAnalyzer, balance: float) -> None:
         """Prints the simulation results."""
         print('====== Simulation Results ======')
         print(f'Elapsed Time  : {elapsed_time} seconds')
@@ -757,29 +737,29 @@ class Simulator:
         print('================================')
 
     @staticmethod
-    def __unix_to_string(unix_date, date_format='%m-%d-%Y') -> str:
+    def __unix_to_string(timestamp: int, date_format: str = '%m-%d-%Y') -> str:
         """Convert a unix date to a string of custom format.
 
         Args:
-            unix_date (int): The unix timestamp to convert.
-            date_format (str): The format to convert to.
+            timestamp: The unix timestamp to convert.
+            date_format: The format to convert to.
 
         return:
             str: The converted string in custom format.
         """
-        return datetime.fromtimestamp(unix_date).strftime(date_format)
+        return datetime.fromtimestamp(timestamp).strftime(date_format)
 
     @staticmethod
-    def __error_check_timestamps(start, end):
-        """Simple check that the timestamps are valid.
+    def __validate_timestamps(start_timestamp: int, end_timestamp: int) -> None:
+        """Validate simulation timestamps
 
         Args:
-            start (any): Unix timestamp of the start date.
-            end (any): Unix timestamp of the end date.
+            start_timestamp: Unix timestamp of the start date.
+          end_timestamp: Unix timestamp of the end date.
         """
-        if start > end:
+        if start_timestamp > end_timestamp:
             log.critical('Start timestamp must be before end timestamp')
             raise Exception('Start timestamp must be before end timestamp')
-        if start > int(time.time()):
+        if start_timestamp > int(time.time()):
             log.critical('Start timestamp must not be in the future')
             raise Exception('Start timestamp must not be in the future')

@@ -10,6 +10,9 @@ from StockBench.gui.config.components.strategy_selection import StrategySelectio
 class SingularConfigTab(ConfigTab):
     def __init__(self):
         super().__init__()
+
+        self.show_volume = True
+
         # add shared_components to the layout
         label = QLabel()
         label.setText('Strategy:')
@@ -59,6 +62,19 @@ class SingularConfigTab(ConfigTab):
 
         self.layout.addWidget(self.unique_chart_save_btn)
 
+        self.show_volume_label = QLabel()
+        self.show_volume_label.setText('Show Volume')
+        self.show_volume_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
+        self.layout.addWidget(self.show_volume_label)
+
+        self.show_volume_btn = QPushButton()
+        self.show_volume_btn.setCheckable(True)
+        self.show_volume_btn.setChecked(True)
+        self.show_volume_btn.setText('On')
+        self.show_volume_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
+        self.show_volume_btn.clicked.connect(self.on_show_volume_btn_clicked)  # noqa
+        self.layout.addWidget(self.show_volume_btn)
+
         self.layout.addWidget(self.show_results_label)
 
         self.layout.addWidget(self.show_sim_results_btn)
@@ -74,6 +90,16 @@ class SingularConfigTab(ConfigTab):
         self.layout.addWidget(self.error_message_box)
 
         self.setLayout(self.layout)
+
+    def on_show_volume_btn_clicked(self):
+        if self.show_volume_btn.isChecked():
+            self.show_volume = True
+            self.show_volume_btn.setText('ON')
+            self.show_volume_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
+        else:
+            self.show_volume = False
+            self.show_volume_btn.setText('OFF')
+            self.show_volume_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     @CaptureConfigErrors
     def on_run_btn_clicked(self, clicked_signal: bool):

@@ -11,9 +11,9 @@ class SingularResultsWindow(SimulationResultsWindow):
     """Simulation results window for a simulation on a single symbol."""
 
     def __init__(self, symbol, strategy, initial_balance, simulator, progress_observer, worker, logging_on,
-                 reporting_on, unique_chart_saving_on, results_depth):
+                 reporting_on, unique_chart_saving_on, show_volume, results_depth):
         super().__init__(strategy, initial_balance, simulator, progress_observer, worker, logging_on, reporting_on,
-                         unique_chart_saving_on, results_depth)
+                         unique_chart_saving_on, show_volume, results_depth)
         self.symbol = symbol
 
         # add shared_components to the layout
@@ -45,7 +45,7 @@ class SingularResultsWindow(SimulationResultsWindow):
     def _run_simulation(self, save_option) -> dict:
         """Implementation of running the simulation for a single symbol simulation."""
         return self.simulator.run(self.symbol, results_depth=self.results_depth, save_option=save_option,
-                                  progress_observer=self.progress_observer)
+                                  show_volume=self.show_volume, progress_observer=self.progress_observer)
 
     def _render_data(self, simulation_results: dict):
         """Render the updated data in the window's shared_components."""

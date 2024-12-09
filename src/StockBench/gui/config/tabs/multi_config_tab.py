@@ -96,11 +96,9 @@ class MultiConfigTab(ConfigTab):
             simulation_symbols.append(symbol.upper().strip())
         simulation_balance = float(self.initial_balance_tbox.text())
 
-        # check the balance for negative numbers
         if simulation_balance <= 0:
             raise MessageBoxCaptureException('Initial account balance must be a positive number!')
 
-        # create a new simulations results window
         self.simulation_result_window = MultiResultsWindow(
             simulation_symbols,
             strategy,
@@ -120,5 +118,4 @@ class MultiConfigTab(ConfigTab):
         self.simulation_result_window.begin()
 
         if self.simulation_show_results_window:
-            # show the results window if option is checked
             self.simulation_result_window.showMaximized()

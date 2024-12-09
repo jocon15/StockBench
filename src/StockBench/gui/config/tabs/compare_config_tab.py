@@ -115,14 +115,12 @@ class CompareConfigTab(ConfigTab):
             simulation_symbols.append(symbol.upper().strip())
         simulation_balance = float(self.initial_balance_tbox.text())
 
-        # check the balance for negative numbers
         if simulation_balance <= 0:
             raise MessageBoxCaptureException('Initial account balance must be a positive number!')
 
         # reminder: h2h will store the references of these simulations, so we do not need to attribute them with self
         # also, h2h will call the begin functions
 
-        # create simulation number 1
         simulation_result_window_1 = MultiResultsWindow(
             simulation_symbols,
             strategy1,
@@ -135,7 +133,6 @@ class CompareConfigTab(ConfigTab):
             self.simulation_unique_chart_saving,
             self.results_depth)
 
-        # create simulation number 2
         simulation_result_window_2 = MultiResultsWindow(
             simulation_symbols,
             strategy2,
@@ -148,9 +145,7 @@ class CompareConfigTab(ConfigTab):
             True,  # prevent the second chart from loading the temp chart (being used by sim 1)
             self.results_depth)
 
-        # create the h2h window - passing the simulations into the constructor
         self.head_to_head_window = CompareResultsWindow(simulation_result_window_1, simulation_result_window_2)
 
         if self.simulation_show_results_window:
-            # show the results window if option is checked
             self.head_to_head_window.showMaximized()

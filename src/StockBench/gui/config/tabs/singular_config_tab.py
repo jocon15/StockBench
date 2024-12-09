@@ -124,7 +124,6 @@ class SingularConfigTab(ConfigTab):
         if simulation_balance <= 0:
             raise MessageBoxCaptureException('Initial account balance must be a positive number!')
 
-        # create a new simulations results window
         self.simulation_result_window = SingularResultsWindow(
             simulation_symbol,
             strategy,
@@ -145,5 +144,4 @@ class SingularConfigTab(ConfigTab):
         self.simulation_result_window.begin()
 
         if self.simulation_show_results_window:
-            # show the results window if option is checked
             self.simulation_result_window.showMaximized()

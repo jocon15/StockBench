@@ -10,9 +10,6 @@ from StockBench.gui.config.components.strategy_selection import StrategySelectio
 class SingularConfigTab(ConfigTab):
     def __init__(self):
         super().__init__()
-
-        self.show_volume = True
-
         # add shared_components to the layout
         label = QLabel()
         label.setText('Strategy:')
@@ -77,7 +74,7 @@ class SingularConfigTab(ConfigTab):
 
         self.layout.addWidget(self.show_results_label)
 
-        self.layout.addWidget(self.show_sim_results_btn)
+        self.layout.addWidget(self.show_results_btn)
 
         self.layout.addWidget(self.results_depth_label)
 
@@ -93,11 +90,9 @@ class SingularConfigTab(ConfigTab):
 
     def on_show_volume_btn_clicked(self):
         if self.show_volume_btn.isChecked():
-            self.show_volume = True
             self.show_volume_btn.setText('ON')
             self.show_volume_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
-            self.show_volume = False
             self.show_volume_btn.setText('OFF')
             self.show_volume_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
@@ -124,7 +119,6 @@ class SingularConfigTab(ConfigTab):
         if simulation_balance <= 0:
             raise MessageBoxCaptureException('Initial account balance must be a positive number!')
 
-        # create a new simulations results window
         self.simulation_result_window = SingularResultsWindow(
             simulation_symbol,
             strategy,
@@ -132,10 +126,10 @@ class SingularConfigTab(ConfigTab):
             self.simulator,
             self.progress_bar_observer,
             self.worker,
-            self.simulation_logging,
-            self.simulation_reporting,
-            self.simulation_unique_chart_saving,
-            self.show_volume,
+            self.logging_btn.isChecked(),
+            self.reporting_btn.isChecked(),
+            self.unique_chart_save_btn.isChecked(),
+            self.show_volume_btn.isChecked(),
             self.results_depth)
 
         # all error checks have passed, can now clear the error message box
@@ -144,6 +138,5 @@ class SingularConfigTab(ConfigTab):
         # begin the simulation and progress checking timer
         self.simulation_result_window.begin()
 
-        if self.simulation_show_results_window:
-            # show the results window if option is checked
+        if self.show_results_btn.isChecked():
             self.simulation_result_window.showMaximized()

@@ -160,13 +160,14 @@ class Simulator:
         self.__algorithm = Algorithm(strategy, self.__available_indicators.values())
 
     def run(self, symbol: str, results_depth: int = CHARTS_AND_DATA,
-            save_option: int = ChartingEngine.TEMP_SAVE, progress_observer=None) -> dict:
+            save_option: int = ChartingEngine.TEMP_SAVE, show_volume: bool = False, progress_observer=None) -> dict:
         """Run a simulation on an asset.
 
         Args:
             symbol: The symbol to run the simulation on.
             results_depth: Show the chart when finished.
             save_option: Selection for how to save the finished chart.
+            show_volume: Switch to show volume subplot in results.
             progress_observer: Observer object to update progress to.
         """
         start_time = perf_counter()
@@ -202,7 +203,7 @@ class Simulator:
         gui_terminal_log.info(f'Simulation for {symbol} complete')
 
         return self.__post_process(symbol, trade_able_days, sim_window_start_day, start_time, results_depth,
-                                   save_option, progress_observer)
+                                   save_option, show_volume, progress_observer)
 
     def run_multiple(self, symbols: List[str],
                      results_depth: int = CHARTS_AND_DATA,
@@ -337,7 +338,8 @@ class Simulator:
         self.__account_value_archive.append(round(account_value, 2))
 
     def __post_process(self, symbol: str, trade_able_days: int, window_start_day: int, start_time: float,
-                       results_depth: int, save_option: int, progress_observer: ProgressObserver) -> dict:
+                       results_depth: int, save_option: int, show_volume: bool,
+                       progress_observer: ProgressObserver) -> dict:
         """Cleanup and analysis after the simulation."""
         gui_terminal_log.info(f'Starting analytics for {symbol}...')
 
@@ -374,6 +376,7 @@ class Simulator:
             overview_chart_filepath = (
                 SingularChartingEngine.build_indicator_chart(chopped_temp_df, symbol,
                                                              [*self.__available_indicators.values()],
+                                                             show_volume,
                                                              save_option))
 
             gui_terminal_log.info('Building buy rules bar chart...')

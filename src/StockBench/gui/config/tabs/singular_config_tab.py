@@ -135,6 +135,7 @@ class SingularConfigTab(ConfigTab):
             self.simulation_logging,
             self.simulation_reporting,
             self.simulation_unique_chart_saving,
+            self.show_volume,
             self.results_depth)
 
         # all error checks have passed, can now clear the error message box

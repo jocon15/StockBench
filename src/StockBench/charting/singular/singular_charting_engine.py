@@ -7,11 +7,15 @@ import plotly.graph_objects as plotter
 
 from StockBench.indicator.indicator import IndicatorInterface
 from StockBench.indicator.subplot import Subplot
+from StockBench.indicators.volume.subplot import VolumeSubplot
 from StockBench.charting.charting_engine import ChartingEngine
 from StockBench.charting.exceptions import ChartingError
 from StockBench.charting.display_constants import *
 
 log = logging.getLogger()
+
+class VolumeNotFoundException(Exception):
+    pass
 
 
 class SingularChartingEngine(ChartingEngine):
@@ -23,6 +27,7 @@ class SingularChartingEngine(ChartingEngine):
 
     @staticmethod
     def build_indicator_chart(df: DataFrame, symbol: str, available_indicators: List[IndicatorInterface],
+                              show_volume: bool,
                               save_option=ChartingEngine.TEMP_SAVE) -> str:
         """Multi-plot chart for singular simulation indicators.
 
@@ -38,7 +43,8 @@ class SingularChartingEngine(ChartingEngine):
         subplot_objects, subplot_types = SingularChartingEngine.__get_subplot_objects_and_types(df,
                                                                                                 available_indicators)
 
-        fig = SingularChartingEngine.__build_parent_figure(df, subplot_objects, subplot_types, available_indicators)
+        fig = SingularChartingEngine.__build_parent_figure(df, subplot_objects, subplot_types, available_indicators,
+                                                           show_volume)
 
         formatted_fig = SingularChartingEngine.__update_layout(df, symbol, fig, save_option)
 
@@ -116,8 +122,12 @@ class SingularChartingEngine(ChartingEngine):
 
     @staticmethod
     def __build_parent_figure(df: DataFrame, subplot_objects: List[Subplot], subplot_types: List[List],
-                              available_indicators: List[IndicatorInterface]) -> Figure:
+                              available_indicators: List[IndicatorInterface], show_volume: bool) -> Figure:
         """Builds the parent figure."""
+        if not show_volume:
+            subplot_objects, subplot_types = SingularChartingEngine.__remove_volume_subplot(subplot_objects,
+                                                                                            subplot_types)
+
         cols = col = 1  # only one col in every row
         rows = len(subplot_objects)
         fig = make_subplots(rows=rows, cols=cols, shared_xaxes=True,
@@ -197,3 +207,14 @@ class SingularChartingEngine(ChartingEngine):
             raise ChartingError('No OHLC indicator found, cannot chart!')
 
         return ohlc_indicator
+
+    @staticmethod
+    def __remove_volume_subplot(subplot_objects: List[Subplot], subplot_types: List[List]) -> tuple:
+        for index, subplot in enumerate(subplot_objects):
+            if type(subplot) is VolumeSubplot:
+                # remove the volume subplot and the volume subplot type
+                subplot_objects.pop(index)
+                subplot_types.pop(index)
+                return subplot_objects, subplot_types
+        raise VolumeNotFoundException('A volume subplot was not provided in the data')
+

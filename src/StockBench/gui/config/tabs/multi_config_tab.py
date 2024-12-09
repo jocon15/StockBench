@@ -59,7 +59,7 @@ class MultiConfigTab(ConfigTab):
 
         self.layout.addWidget(self.show_results_label)
 
-        self.layout.addWidget(self.show_sim_results_btn)
+        self.layout.addWidget(self.show_results_btn)
 
         self.layout.addWidget(self.results_depth_label)
 
@@ -96,11 +96,9 @@ class MultiConfigTab(ConfigTab):
             simulation_symbols.append(symbol.upper().strip())
         simulation_balance = float(self.initial_balance_tbox.text())
 
-        # check the balance for negative numbers
         if simulation_balance <= 0:
             raise MessageBoxCaptureException('Initial account balance must be a positive number!')
 
-        # create a new simulations results window
         self.simulation_result_window = MultiResultsWindow(
             simulation_symbols,
             strategy,
@@ -108,9 +106,9 @@ class MultiConfigTab(ConfigTab):
             self.simulator,
             self.progress_bar_observer,
             self.worker,
-            self.simulation_logging,
-            self.simulation_reporting,
-            self.simulation_unique_chart_saving,
+            self.logging_btn.isChecked(),
+            self.reporting_btn.isChecked(),
+            self.unique_chart_save_btn.isChecked(),
             self.results_depth)
 
         # all error checks have passed, can now clear the error message box
@@ -119,6 +117,5 @@ class MultiConfigTab(ConfigTab):
         # begin the simulation and progress checking timer
         self.simulation_result_window.begin()
 
-        if self.simulation_show_results_window:
-            # show the results window if option is checked
+        if self.show_results_btn.isChecked():
             self.simulation_result_window.showMaximized()

@@ -52,7 +52,7 @@ class FolderConfigTab(ConfigTab):
 
         self.layout.addWidget(self.show_results_label)
 
-        self.layout.addWidget(self.show_sim_results_btn)
+        self.layout.addWidget(self.show_results_btn)
 
         self.layout.addWidget(self.run_btn, alignment=Qt.AlignmentFlag.AlignRight)
 
@@ -83,20 +83,15 @@ class FolderConfigTab(ConfigTab):
             simulation_symbols.append(symbol.upper().strip())
         simulation_balance = float(self.initial_balance_tbox.text())
 
-        # check the balance for negative numbers
         if simulation_balance <= 0:
             raise MessageBoxCaptureException('Initial account balance must be a positive number!')
 
-        # create a list of simulations
         strategies = []
-
-        # iterate through all files in the folder, loading the strategies into a list
         for filename in os.listdir(folderpath):
             filepath = os.path.join(folderpath, filename)
             strategy = self.load_strategy(filepath, self.FOLDER_CACHE_KEY, folderpath)
             strategies.append(strategy)
 
-        # create a new simulations results window
         self.simulation_result_window = FolderResultsWindow(
             strategies,
             simulation_symbols,
@@ -104,9 +99,9 @@ class FolderConfigTab(ConfigTab):
             self.simulator,
             self.progress_bar_observer,
             self.worker,
-            self.simulation_logging,
-            self.simulation_reporting,
-            self.simulation_unique_chart_saving,
+            self.logging_btn.isChecked(),
+            self.reporting_btn.isChecked(),
+            self.unique_chart_save_btn.isChecked(),
             None)
 
         # all error checks have passed, can now clear the error message box
@@ -115,6 +110,5 @@ class FolderConfigTab(ConfigTab):
         # begin the simulation and progress checking timer
         self.simulation_result_window.begin()
 
-        if self.simulation_show_results_window:
-            # show the results window if option is checked
+        if self.show_results_btn.isChecked():
             self.simulation_result_window.showMaximized()

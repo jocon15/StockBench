@@ -82,25 +82,15 @@ class Simulator:
 
     def enable_logging(self) -> None:
         """Enable user logging_handlers."""
-        # set the logging_handlers level to info
         log.setLevel(logging.INFO)
-
-        # build the filepath
         user_logging_filepath = os.path.join(self.LOGS_FOLDER, f'RunLog_{datetime_timestamp()}')
-
-        # build the formatters
-        user_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
 
         # make the directories if they don't already exist
         os.makedirs(os.path.dirname(user_logging_filepath), exist_ok=True)
 
-        # create the handler
+        user_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
         user_handler = logging.FileHandler(user_logging_filepath)
-
-        # set the format of the handler
         user_handler.setFormatter(user_logging_formatter)
-
-        # add the handler to the logger
         log.addHandler(user_handler)
 
     def enable_developer_logging(self, level: int = 2) -> None:
@@ -109,41 +99,29 @@ class Simulator:
         Args:
             level: The logging level for the logger.
         """
-        # set the logging_handlers level
         if level == 1:
             log.setLevel(logging.DEBUG)
-            # build the formatter
             developer_logging_formatter = logging.Formatter('%(funcName)s:%(lineno)d|%(levelname)s|%(message)s')
         elif level == 3:
             log.setLevel(logging.WARNING)
-            # build the formatter
             developer_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
         elif level == 4:
             log.setLevel(logging.ERROR)
-            # build the formatter
             developer_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
         elif level == 5:
             log.setLevel(logging.CRITICAL)
-            # build the formatter
             developer_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
         else:
             log.setLevel(logging.INFO)
-            # build the formatter
             developer_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
 
-        # build the filepath
         developer_logging_filepath = os.path.join(self.DEV_FOLDER, f'DevLog_{datetime_timestamp()}')
 
         # make the directories if they don't already exist
         os.makedirs(os.path.dirname(developer_logging_filepath), exist_ok=True)
 
-        # create the handler
         developer_handler = logging.FileHandler(developer_logging_filepath)
-
-        # set the format of the handler
         developer_handler.setFormatter(developer_logging_formatter)
-
-        # add the handler to the logger
         log.addHandler(developer_handler)
 
     def enable_reporting(self):
@@ -156,7 +134,6 @@ class Simulator:
          Args:
              strategy: The strategy as a dictionary.
          """
-        # build the algorithm using the strategy
         self.__algorithm = Algorithm(strategy, self.__available_indicators.values())
 
     def run(self, symbol: str, results_depth: int = CHARTS_AND_DATA,
@@ -172,9 +149,11 @@ class Simulator:
         """
         start_time = perf_counter()
 
+        # broker only excepts capitalized symbols
+        symbol = symbol.upper()
+
         if not self.__running_multiple:
             if progress_observer:
-                # enable the progress message handler to capture the logs
                 gui_terminal_log.setLevel(logging.INFO)
                 gui_terminal_log.addHandler(ProgressMessageHandler(progress_observer))
 
@@ -184,18 +163,13 @@ class Simulator:
         log.info(f'Starting simulation for symbol: {symbol}...')
         gui_terminal_log.info(f'Starting simulation for {symbol}...')
 
-        # broker only excepts capitalized symbols
-        symbol = symbol.upper()
-
-        # perform the pre-simulation tasks
         sim_window_start_day, trade_able_days, increment = self.__pre_process(symbol, progress_observer)
 
         # ===================== Simulation Loop ======================
         buy_mode = True
         position = None
-        # Loop from the focus start day (ex. 200) to the total amount of days in the set (ex. 400).
+        # loop from the window start day (ex. 200) to the total amount of days in the set (ex. 400)
         for current_day_index in range(sim_window_start_day, self.__data_manager.get_data_length()):
-            # simulate the current day
             buy_mode, position = self.__simulate_day(current_day_index, buy_mode, position, progress_observer,
                                                      increment)
         # ============================================================
@@ -302,22 +276,19 @@ class Simulator:
                 self.__liquidate_position(position, current_day_index, 'end of simulation window')
                 position = None
         else:
-            # current day is not the end of the simulation (free to buy and sell)
             if buy_mode:
                 was_triggered, rule = self.__algorithm.check_triggers_by_side(self.__data_manager, current_day_index,
                                                                               None, BUY_SIDE)
                 if was_triggered:
                     position = self.__create_position(current_day_index, rule)
-                    # switch to selling
-                    buy_mode = False
+                    buy_mode = False  # switch to selling
             else:
                 was_triggered, rule = self.__algorithm.check_triggers_by_side(self.__data_manager, current_day_index,
                                                                               position, SELL_SIDE)
                 if was_triggered:
                     self.__liquidate_position(position, current_day_index, rule)
                     position = None
-                    # switch to buying
-                    buy_mode = True
+                    buy_mode = True  # switch to buying
 
             if progress_observer is not None:
                 progress_observer.update_progress(increment)
@@ -438,7 +409,6 @@ class Simulator:
 
     def __multi_pre_process(self, symbols: List[str], progress_observer: ProgressObserver) -> float:
         log.debug('Running multi simulation pre-process...')
-        # disable printing for TQDM
         self.__running_multiple = True
 
         # reset the multiple simulation archived symbols to clear any data from previous multiple simulations
@@ -504,7 +474,6 @@ class Simulator:
         gui_terminal_log.info('Analytics complete \u2705')
 
         if progress_observer:
-            # inform the progress observer that the analytics is complete
             progress_observer.set_analytics_complete()
 
         return {
@@ -549,8 +518,6 @@ class Simulator:
         log.info('Creating the position...')
 
         buy_price = self.__data_manager.get_data_point(self.__data_manager.CLOSE, current_day_index)
-
-        # calculate the withdrawal amount (nearest whole share - floor direction)
         share_count = float(math.floor(self.__account.get_balance() / buy_price))
 
         new_position = Position(buy_price, share_count, current_day_index, rule)
@@ -571,10 +538,8 @@ class Simulator:
         """
         log.info('Closing the position...')
 
-        # get the cosing price
         sell_price = float(self.__data_manager.get_data_point(self.__data_manager.CLOSE, current_day_index))
 
-        # close the position
         position.close_position(sell_price, current_day_index, rule)
 
         if self.__is_stock_split(position, sell_price):
@@ -585,12 +550,10 @@ class Simulator:
             # skip adding the position to the list
             return
 
-        # add the position to the archive
         self.__single_simulation_position_archive.append(position)
 
         log.info('Position closed successfully')
 
-        # deposit the value of the position to the account
         self.__account.deposit(round(sell_price * position.get_share_count(), 3))
 
     def __add_positions_to_data(self) -> None:

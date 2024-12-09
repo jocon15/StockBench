@@ -76,7 +76,7 @@ class CompareConfigTab(ConfigTab):
 
         self.layout.addWidget(self.show_results_label)
 
-        self.layout.addWidget(self.show_sim_results_btn)
+        self.layout.addWidget(self.show_results_btn)
 
         self.layout.addWidget(self.results_depth_label)
 
@@ -115,14 +115,12 @@ class CompareConfigTab(ConfigTab):
             simulation_symbols.append(symbol.upper().strip())
         simulation_balance = float(self.initial_balance_tbox.text())
 
-        # check the balance for negative numbers
         if simulation_balance <= 0:
             raise MessageBoxCaptureException('Initial account balance must be a positive number!')
 
         # reminder: h2h will store the references of these simulations, so we do not need to attribute them with self
         # also, h2h will call the begin functions
 
-        # create simulation number 1
         simulation_result_window_1 = MultiResultsWindow(
             simulation_symbols,
             strategy1,
@@ -130,12 +128,11 @@ class CompareConfigTab(ConfigTab):
             self.simulator,
             self.progress_bar_observer,
             self.worker,
-            self.simulation_logging,
-            self.simulation_reporting,
-            self.simulation_unique_chart_saving,
+            self.logging_btn.isChecked(),
+            self.reporting_btn.isChecked(),
+            self.unique_chart_save_btn.isChecked(),
             self.results_depth)
 
-        # create simulation number 2
         simulation_result_window_2 = MultiResultsWindow(
             simulation_symbols,
             strategy2,
@@ -143,14 +140,12 @@ class CompareConfigTab(ConfigTab):
             self.simulator,
             self.progress_bar_observer,
             self.worker,
-            self.simulation_logging,
-            self.simulation_reporting,
+            self.logging_btn.isChecked(),
+            self.reporting_btn.isChecked(),
             True,  # prevent the second chart from loading the temp chart (being used by sim 1)
             self.results_depth)
 
-        # create the h2h window - passing the simulations into the constructor
         self.head_to_head_window = CompareResultsWindow(simulation_result_window_1, simulation_result_window_2)
 
-        if self.simulation_show_results_window:
-            # show the results window if option is checked
+        if self.show_results_btn.isChecked():
             self.head_to_head_window.showMaximized()

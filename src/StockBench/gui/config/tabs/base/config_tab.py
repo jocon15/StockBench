@@ -64,11 +64,8 @@ class ConfigTab(QWidget):
         self.simulation_result_window = None
         self.strategy_studio_window = None
 
+        # config options
         self.simulation_length = None
-        self.simulation_logging = False
-        self.simulation_reporting = False
-        self.simulation_unique_chart_saving = False
-        self.simulation_show_results_window = True
         self.head_to_head_window = None
         self.results_depth = Simulator.CHARTS_AND_DATA
 
@@ -140,11 +137,11 @@ class ConfigTab(QWidget):
         self.show_results_label.setText('Show Results:')
         self.show_results_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # show results button
-        self.show_sim_results_btn = QPushButton()
-        self.show_sim_results_btn.setCheckable(True)
-        self.show_sim_results_btn.setText('ON')
-        self.show_sim_results_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
-        self.show_sim_results_btn.clicked.connect(self.on_show_results_btn_clicked)  # noqa
+        self.show_results_btn = QPushButton()
+        self.show_results_btn.setCheckable(True)
+        self.show_results_btn.setText('ON')
+        self.show_results_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
+        self.show_results_btn.clicked.connect(self.on_show_results_btn_clicked)  # noqa
 
         # results depth label
         self.results_depth_label = QLabel()
@@ -201,43 +198,35 @@ class ConfigTab(QWidget):
 
     def on_logging_btn_clicked(self):
         if self.logging_btn.isChecked():
-            self.simulation_logging = True
             self.logging_btn.setText('ON')
             self.logging_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
-            self.simulation_logging = False
             self.logging_btn.setText('OFF')
             self.logging_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def on_reporting_btn_clicked(self):
         if self.reporting_btn.isChecked():
-            self.simulation_reporting = True
             self.reporting_btn.setText('ON')
             self.reporting_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
-            self.simulation_reporting = False
             self.reporting_btn.setText('OFF')
             self.reporting_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def on_chart_saving_btn_clicked(self):
         if self.unique_chart_save_btn.isChecked():
-            self.simulation_unique_chart_saving = True
             self.unique_chart_save_btn.setText('ON')
             self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
-            self.simulation_unique_chart_saving = False
             self.unique_chart_save_btn.setText('OFF')
             self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def on_show_results_btn_clicked(self):
-        if self.show_sim_results_btn.isChecked():
-            self.simulation_show_results_window = True
-            self.show_sim_results_btn.setText('ON')
-            self.show_sim_results_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
+        if self.show_results_btn.isChecked():
+            self.show_results_btn.setText('ON')
+            self.show_results_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
-            self.simulation_show_results_window = False
-            self.show_sim_results_btn.setText('OFF')
-            self.show_sim_results_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
+            self.show_results_btn.setText('OFF')
+            self.show_results_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def data_and_charts_btn_selected(self, selected):
         if selected:

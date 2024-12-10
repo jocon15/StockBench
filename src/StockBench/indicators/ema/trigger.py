@@ -22,7 +22,6 @@ class EMATrigger(Trigger):
         nums = list(map(int, self.find_all_nums_in_str(rule_key)))
         if nums:
             return max(nums)
-        # nums is empty
         raise StrategyIndicatorError(f'{self.strategy_symbol} key: {rule_key} must have an indicator length!')
 
     def add_to_data(self, rule_key, rule_value, side, data_manager):
@@ -38,7 +37,6 @@ class EMATrigger(Trigger):
         if len(nums) > 0:
             # element 0 will be the indicator length
             indicator_length = int(nums[0])
-            # add the EMA data to the df
             self.__add_ema(indicator_length, data_manager)
         else:
             raise StrategyIndicatorError(f'{self.strategy_symbol} key: {rule_key} must have an indicator length!')
@@ -58,50 +56,44 @@ class EMATrigger(Trigger):
         """
         log.debug(f'Checking {self.strategy_symbol} algorithm: {rule_key}...')
 
-        # get the indicator value from the key
         indicator_value = self.__parse_key(rule_key, data_manager, current_day_index)
 
-        # get the operator and algorithm value from the value
         operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
 
         log.debug(f'{self.strategy_symbol} algorithm: {rule_key} checked successfully')
 
-        # algorithm checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
     def __parse_key(self, key, data_manager, current_day_index) -> float:
         """Parser for parsing the key into the indicator value."""
-        # find the indicator value (left hand side of the comparison)
+        # find the indicator value (left side of the comparison)
         nums = self.find_all_nums_in_str(key)
         if len(nums) == 1:
             if SLOPE_SYMBOL in key:
                 raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} does not contain enough number '
                                              f'groupings!')
             # title of the column in the data
-            title = f'{self.strategy_symbol}{int(nums[0])}'
-            indicator_value = float(data_manager.get_data_point(title, current_day_index))
+            column_title = f'{self.strategy_symbol}{int(nums[0])}'
+            indicator_value = float(data_manager.get_data_point(column_title, current_day_index))
         elif len(nums) == 2:
-            # title of the column in the data
-            title = f'{self.strategy_symbol}{int(nums[0])}'
-            # likely that the $slope indicator is being used
+            column_title = f'{self.strategy_symbol}{int(nums[0])}'
+            # 2 number groupings suggests  the $slope indicator is being used
             if SLOPE_SYMBOL in key:
-                # get the length of the slope window
                 slope_window_length = int(nums[1])
 
                 # data request length is window - 1 to account for the current day index being a part of the window
                 slope_data_request_length = slope_window_length - 1
 
-                # calculate slope
                 indicator_value = self.calculate_slope(
-                    float(data_manager.get_data_point(title, current_day_index)),
-                    float(data_manager.get_data_point(title, current_day_index - slope_data_request_length)),
+                    float(data_manager.get_data_point(column_title, current_day_index)),
+                    float(data_manager.get_data_point(column_title, current_day_index - slope_data_request_length)),
                     slope_window_length
                 )
             else:
                 raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains too many number groupings! '
                                              f'Are you missing a $slope emblem?')
         else:
-            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains too many number groupings!')
+            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains invalid number groupings!')
 
         return indicator_value
 
@@ -112,7 +104,6 @@ class EMATrigger(Trigger):
             length (int): The length of the EMA to use.
             data_manager (any): The data object.
         """
-        # get a list of close price values
         column_title = f'{self.strategy_symbol}{length}'
 
         # if we already have EMA values in the df, we don't need to add them again
@@ -120,13 +111,10 @@ class EMATrigger(Trigger):
             if column_title in col_name:
                 return
 
-        # get a list of price values as a list
         price_data = data_manager.get_column_data(data_manager.CLOSE)
 
-        # calculate the EMA values
         ema_values = EMATrigger.__calculate_ema(length, price_data)
 
-        # add the calculated values to the df
         data_manager.add_column(column_title, ema_values)
 
     @staticmethod
@@ -140,7 +128,6 @@ class EMATrigger(Trigger):
         return:
             list: The list of calculated EMA values.
         """
-        # calculate k
         k = 2 / (length + 1)
 
         # get the initial ema value (uses sma of length days)

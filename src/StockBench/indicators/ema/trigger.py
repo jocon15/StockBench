@@ -3,6 +3,7 @@ import statistics
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
 from StockBench.indicator.exceptions import StrategyIndicatorError
+from StockBench.simulation_data.data_manager import DataManager
 
 log = logging.getLogger()
 
@@ -31,11 +32,10 @@ class EMATrigger(Trigger):
             rule_key (any): The key value from the strategy.
             rule_value (any): The value from thr strategy.
             side (str): The side (buy/sell).
-            data_manager (any): The data object.
+            data_manager (DataManager): The data object.
         """
         nums = self.find_all_nums_in_str(rule_key)
         if len(nums) > 0:
-            # element 0 will be the indicator length
             indicator_length = int(nums[0])
             self.__add_ema(indicator_length, data_manager)
         else:
@@ -45,9 +45,9 @@ class EMATrigger(Trigger):
         """Trigger logic for EMA.
 
         Args:
-            rule_key (str): The key value of the algorithm.
-            rule_value (str): The value of the algorithm.
-            data_manager (any): The data API object.
+            rule_key (any): The key value of the algorithm.
+            rule_value (any): The value of the algorithm.
+            data_manager (DataManager): The data API object.
             position (any): The position object.
             current_day_index (int): The index of the current day.
 
@@ -64,22 +64,21 @@ class EMATrigger(Trigger):
 
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
-    def __parse_key(self, key, data_manager, current_day_index) -> float:
+    def __parse_key(self, rule_key: str, data_manager: DataManager, current_day_index: int) -> float:
         """Parser for parsing the key into the indicator value."""
-        # find the indicator value (left side of the comparison)
-        nums = self.find_all_nums_in_str(key)
-        if len(nums) == 1:
-            if SLOPE_SYMBOL in key:
-                raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} does not contain enough number '
-                                             f'groupings!')
-            # title of the column in the data
-            column_title = f'{self.strategy_symbol}{int(nums[0])}'
+        key_number_groupings = self.find_all_nums_in_str(rule_key)
+
+        if len(key_number_groupings) == 1:
+            if SLOPE_SYMBOL in rule_key:
+                raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} does not contain '
+                                             f'enough number groupings!')
+            column_title = f'{self.strategy_symbol}{int(key_number_groupings[0])}'
             indicator_value = float(data_manager.get_data_point(column_title, current_day_index))
-        elif len(nums) == 2:
-            column_title = f'{self.strategy_symbol}{int(nums[0])}'
-            # 2 number groupings suggests  the $slope indicator is being used
-            if SLOPE_SYMBOL in key:
-                slope_window_length = int(nums[1])
+        elif len(key_number_groupings) == 2:
+            column_title = f'{self.strategy_symbol}{int(key_number_groupings[0])}'
+            # 2 number groupings suggests the $slope indicator is being used
+            if SLOPE_SYMBOL in rule_key:
+                slope_window_length = int(key_number_groupings[1])
 
                 # data request length is window - 1 to account for the current day index being a part of the window
                 slope_data_request_length = slope_window_length - 1
@@ -90,20 +89,16 @@ class EMATrigger(Trigger):
                     slope_window_length
                 )
             else:
-                raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains too many number groupings! '
-                                             f'Are you missing a $slope emblem?')
+                raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} contains too many number '
+                                             f'groupings! Are you missing a $slope emblem?')
         else:
-            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains invalid number groupings!')
+            raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} contains invalid number '
+                                         f'groupings!')
 
         return indicator_value
 
-    def __add_ema(self, length, data_manager):
-        """Pre-calculate the EMA values and add them to the df.
-
-        Args:
-            length (int): The length of the EMA to use.
-            data_manager (any): The data object.
-        """
+    def __add_ema(self, length: int, data_manager: DataManager):
+        """Pre-calculate the EMA values and add them to the df."""
         column_title = f'{self.strategy_symbol}{length}'
 
         # if we already have EMA values in the df, we don't need to add them again
@@ -119,15 +114,7 @@ class EMATrigger(Trigger):
 
     @staticmethod
     def __calculate_ema(length: int, price_data: list) -> list:
-        """Calculates the EMA values for a list of price values.
-
-        Args:
-            length (int): The length of the EMA to calculate.
-            price_data (list): The price data to calculate the EMA from.
-
-        return:
-            list: The list of calculated EMA values.
-        """
+        """Calculates the EMA values for a list of price values"""
         k = 2 / (length + 1)
 
         # get the initial ema value (uses sma of length days)
@@ -145,15 +132,7 @@ class EMATrigger(Trigger):
 
     @staticmethod
     def __calculate_sma(length: int, price_data: list) -> list:
-        """Calculates the SMA values for a list of price values.
-
-        Args:
-            length (int): The length of the SMA to calculate.
-            price_data (list): The price data to calculate the SMA from.
-
-        return:
-            list: The list of calculated SMA values.
-        """
+        """Calculates the SMA values for a list of price values."""
         price_values = []
         sma_values = []
         for day in price_data:

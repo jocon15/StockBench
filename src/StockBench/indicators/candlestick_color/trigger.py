@@ -1,6 +1,8 @@
 import logging
 from StockBench.indicator.trigger import Trigger
 from StockBench.indicator.exceptions import StrategyIndicatorError
+from StockBench.simulation_data.data_manager import DataManager
+from StockBench.position.position import Position
 
 log = logging.getLogger()
 
@@ -33,7 +35,7 @@ class CandlestickColorTrigger(Trigger):
             rule_key (any): The key value from the strategy.
             rule_value (any): The value from thr strategy.
             side (str): The side (buy/sell).
-            data_manager (any): The data object.
+            data_manager (DataManager): The data object.
         """
         # candle colors are included by default
         return
@@ -42,10 +44,10 @@ class CandlestickColorTrigger(Trigger):
         """Trigger logic for candlestick color.
 
         Args:
-            rule_key (str): The key value of the algorithm.
-            rule_value (dict): The value of the algorithm.
-            data_manager (any): The data API object.
-            position (any): The position object.
+            rule_key (any): The key value of the algorithm.
+            rule_value (any): The value of the algorithm.
+            data_manager (DataManager): The data API object.
+            position (Position): The position object.
             current_day_index (int): The index of the current day.
 
         return:
@@ -53,14 +55,14 @@ class CandlestickColorTrigger(Trigger):
         """
         log.debug('Checking candle stick algorithm...')
 
-        num_keys = len(rule_value)
+        key_count = len(rule_value)
 
-        if num_keys == 0:
+        if key_count == 0:
             raise StrategyIndicatorError(f'{self.strategy_symbol} key: {rule_key} must have at least one color child '
                                          f'key')
 
         trigger_colors = [rule_value[value_key] for value_key in sorted(rule_value.keys())]
-        actual_colors = [data_manager.get_data_point(data_manager.COLOR, current_day_index-i) for i in range(num_keys)]
+        actual_colors = [data_manager.get_data_point(data_manager.COLOR, current_day_index-i) for i in range(key_count)]
 
         if actual_colors == trigger_colors:
             log.info('Candle stick algorithm hit!')

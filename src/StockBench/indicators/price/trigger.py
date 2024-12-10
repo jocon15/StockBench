@@ -32,8 +32,7 @@ class PriceTrigger(Trigger):
             side (str): The side (buy/sell).
             data_manager (any): The data object.
         """
-        # note price (OHLC) is in the data by default
-        # no need to add it
+        # note price (OHLC) is in the data by default, no need to add it
         return
 
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
@@ -51,49 +50,40 @@ class PriceTrigger(Trigger):
         """
         log.debug(f'Checking price algorithm: {rule_key}...')
 
-        # get the indicator value from the key
         indicator_value = self.__parse_key(rule_key, data_manager, current_day_index)
 
-        # get the operator and algorithm value from the value
         operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
 
         log.debug(f'Price algorithm: {rule_key} checked successfully')
 
-        # algorithm checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
-    def __parse_key(self, key, data_manager, current_day_index) -> float:
+    def __parse_key(self, rule_key, data_manager, current_day_index) -> float:
         """Parser for parsing the key into the indicator value."""
-        # find the indicator value (left hand side of the comparison)
-        nums = self.find_all_nums_in_str(key)
+        key_number_groupings = self.find_all_nums_in_str(rule_key)
 
-        # title of the column in the data
-        title = data_manager.CLOSE
-
-        if len(nums) == 0:
-            if SLOPE_SYMBOL in key:
-                raise StrategyIndicatorError(f'{self.DISPLAY_NAME} key: {key} does not contain enough number '
+        if len(key_number_groupings) == 0:
+            if SLOPE_SYMBOL in rule_key:
+                raise StrategyIndicatorError(f'{self.DISPLAY_NAME} rule key: {rule_key} does not contain enough number '
                                              f'groupings!')
-            indicator_value = float(data_manager.get_data_point(title, current_day_index))
-        elif len(nums) == 1:
-            # likely that the $slope indicator is being used
-            if SLOPE_SYMBOL in key:
-                # get the length of the slope window
-                slope_window_length = int(nums[0])
+            indicator_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
+        elif len(key_number_groupings) == 1:
+            # 1 number group suggests the $slope indicator is being used
+            if SLOPE_SYMBOL in rule_key:
+                slope_window_length = int(key_number_groupings[0])
 
                 # data request length is window - 1 to account for the current day index being a part of the window
                 slope_data_request_length = slope_window_length - 1
 
-                # calculate slope
                 indicator_value = self.calculate_slope(
-                    float(data_manager.get_data_point(title, current_day_index)),
-                    float(data_manager.get_data_point(title, current_day_index - slope_data_request_length)),
+                    float(data_manager.get_data_point(data_manager.CLOSE, current_day_index)),
+                    float(data_manager.get_data_point(data_manager.CLOSE, current_day_index - slope_data_request_length)),
                     slope_window_length
                 )
             else:
-                raise StrategyIndicatorError(f'{self.DISPLAY_NAME} key: {key} contains too many number groupings! '
-                                             f'Are you missing a $slope emblem?')
+                raise StrategyIndicatorError(f'{self.DISPLAY_NAME} rule key: {rule_key} contains too many number '
+                                             f'groupings! Are you missing a $slope emblem?')
         else:
-            raise StrategyIndicatorError(f'{self.DISPLAY_NAME} key: {key} contains too many number groupings!')
+            raise StrategyIndicatorError(f'{self.DISPLAY_NAME} rule key: {rule_key} contains invalid number groupings!')
 
         return indicator_value

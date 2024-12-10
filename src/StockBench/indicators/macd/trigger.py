@@ -3,6 +3,8 @@ import statistics
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
 from StockBench.indicator.exceptions import StrategyIndicatorError
+from StockBench.simulation_data.data_manager import DataManager
+from StockBench.position.position import Position
 
 log = logging.getLogger()
 
@@ -34,7 +36,7 @@ class MACDTrigger(Trigger):
             rule_key (any): The key value from the strategy.
             rule_value (any): The value from thr strategy.
             side (str): The side (buy/sell).
-            data_manager (any): The data object.
+            data_manager (DataManager): The data object.
         """
         # if we already have MACD values in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():
@@ -51,14 +53,14 @@ class MACDTrigger(Trigger):
         Args:
             rule_key (str): The key value of the algorithm.
             rule_value (str): The value of the algorithm.
-            data_manager (any): The data API object.
-            position (any): The position object.
+            data_manager (DataManager): The data API object.
+            position (Position): The position object.
             current_day_index (int): The index of the current day.
 
         return:
             bool: True if the algorithm was hit.
         """
-        log.debug(f'Checking MACD algorithm: {rule_key}...')
+        log.debug(f'Checking {self.strategy_symbol} algorithm: {rule_key}...')
 
         indicator_value = self.__parse_key(rule_key, data_manager, current_day_index)
 
@@ -68,30 +70,20 @@ class MACDTrigger(Trigger):
 
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
-    def __parse_key(self, key, data_manager, current_day_index) -> float:
-        """Parser for parsing the key into the indicator value.
-
-        Args:
-            key (any): The key value from the strategy.
-            data_manager (any): The data object.
-            current_day_index (int): The index of the current day.
-
-        return:
-            float: The indicator value found in the key.
-        """
-        # find the indicator value (left side of the comparison)
-        nums = self.find_all_nums_in_str(key)
+    def __parse_key(self, rule_key: str, data_manager: DataManager, current_day_index: int) -> float:
+        """Parser for parsing the key into the indicator value."""
+        key_number_groupings = self.find_all_nums_in_str(rule_key)
 
         # MACD can only have slope emblem therefore 1 or 0 number groupings are acceptable
-        if len(nums) == 0:
-            if SLOPE_SYMBOL in key:
-                raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} does not contain enough number '
-                                             f'groupings!')
+        if len(key_number_groupings) == 0:
+            if SLOPE_SYMBOL in rule_key:
+                raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} does not contain'
+                                             f' enough number groupings!')
             indicator_value = float(data_manager.get_data_point(self.DATA_COLUMN_TITLE, current_day_index))
-        elif len(nums) == 1:
+        elif len(key_number_groupings) == 1:
             # 1 number grouping suggests the $slope indicator is being used
-            if SLOPE_SYMBOL in key:
-                slope_window_length = int(nums[0])
+            if SLOPE_SYMBOL in rule_key:
+                slope_window_length = int(key_number_groupings[0])
 
                 # data request length is window - 1 to account for the current day index being a part of the window
                 slope_data_request_length = slope_window_length - 1
@@ -103,22 +95,16 @@ class MACDTrigger(Trigger):
                     slope_window_length
                 )
             else:
-                raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains too many number groupings! '
-                                             f'Are you missing a $slope emblem?')
+                raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} contains too many number '
+                                             f'groupings! Are you missing a $slope emblem?')
         else:
-            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains invalid number groupings!')
+            raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} contains '
+                                         f'invalid number groupings!')
 
         return indicator_value
 
     def __calculate_macd(self, price_data: list) -> list:
-        """Calculate MACD values for a list of price values.
-
-        Args:
-            price_data (list): The price data to calculate the MACD from.
-
-        return:
-            list: The list of calculated MACD values.
-        """
+        """Calculate MACD values for a list of price values"""
         large_ema_length_values = MACDTrigger.__calculate_ema(self.LARGE_EMA_LENGTH, price_data)
 
         small_ema_length_values = MACDTrigger.__calculate_ema(self.SMALL_EMA_LENGTH, price_data)
@@ -140,15 +126,7 @@ class MACDTrigger(Trigger):
 
     @staticmethod
     def __calculate_ema(length: int, price_data: list) -> list:
-        """Calculates the EMA values for a list of price values.
-
-        Args:
-            length (int): The length of the EMA to calculate.
-            price_data (list): The price data to calculate the EMA from.
-
-        return:
-            list: The list of calculated EMA values.
-        """
+        """Calculates the EMA values for a list of price values."""
         k = 2 / (length + 1)
 
         previous_ema = MACDTrigger.__calculate_sma(length, price_data[0:length])[-1]
@@ -165,15 +143,7 @@ class MACDTrigger(Trigger):
 
     @staticmethod
     def __calculate_sma(length: int, price_data: list) -> list:
-        """Calculates the SMA values for a list of price values.
-
-        Args:
-            length (int): The length of the SMA to calculate.
-            price_data (list): The price data to calculate the SMA from.
-
-        return:
-            list: The list of calculated SMA values.
-        """
+        """Calculates the SMA values for a list of price values."""
         price_values = []
         sma_values = []
         all_sma_values = []

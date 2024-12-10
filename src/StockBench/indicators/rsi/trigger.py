@@ -19,9 +19,9 @@ class RSITrigger(Trigger):
             rule_key (any): The key value from the strategy.
             value_value (any): The value from the strategy.
         """
-        nums = self.find_all_nums_in_str(rule_key)
-        if len(nums) > 0:
-            return max(list(map(int, nums)))
+        rule_key_number_groupings = self.find_all_nums_in_str(rule_key)
+        if len(rule_key_number_groupings) > 0:
+            return max(list(map(int, rule_key_number_groupings)))
         else:
             return DEFAULT_RSI_LENGTH
 
@@ -39,15 +39,12 @@ class RSITrigger(Trigger):
         nums = self.find_all_nums_in_str(rule_key)
         if len(nums) > 0:
             num = int(nums[0])
-            # add the RSI data to the df
             self.__add_rsi_column(num, data_manager)
         else:
-            # add the RSI data to the df
             self.__add_rsi_column(DEFAULT_RSI_LENGTH, data_manager)
         # ======== value based (rsi limit)=========
         # (adds the RSI limit values to the data for charting)
         nums = self.find_all_nums_in_str(rule_value)
-        # add the trigger to the df for charting
         if len(nums) > 0:
             trigger = float(nums[0])
             self.__add_rsi_trigger_column(trigger, data_manager)
@@ -65,66 +62,59 @@ class RSITrigger(Trigger):
         return:
             bool: True if the algorithm was hit.
         """
-        log.debug(f'Checking RSI algorithm: {rule_key}...')
+        log.debug(f'Checking {self.strategy_symbol} algorithm: {rule_key}...')
 
-        # get the indicator value from the key
         indicator_value = self.__parse_key(rule_key, data_manager, current_day_index)
 
-        # get the operator and algorithm value from the value
         operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
 
-        log.debug(f'RSI algorithm: {rule_key} checked successfully')
+        log.debug(f'{self.strategy_symbol} algorithm: {rule_key} checked successfully')
 
-        # algorithm checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
-    def __parse_key(self, key, data_manager, current_day_index) -> float:
+    def __parse_key(self, rule_key, data_manager, current_day_index) -> float:
         """Parser for parsing the key into the indicator value."""
-        # find the indicator value (left hand side of the comparison)
-        nums = self.find_all_nums_in_str(key)
+        rule_key_number_groupings = self.find_all_nums_in_str(rule_key)
 
-        if len(nums) == 0:
+        if len(rule_key_number_groupings) == 0:
             # RSI is default length (14)
-            if SLOPE_SYMBOL in key:
-                raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} does not contain enough number '
-                                             f'groupings!')
+            if SLOPE_SYMBOL in rule_key:
+                raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} does not contain '
+                                             f'enough number groupings!')
             indicator_value = float(data_manager.get_data_point(self.strategy_symbol, current_day_index))
-        elif len(nums) == 1:
-            if SLOPE_SYMBOL in key:
+        elif len(rule_key_number_groupings) == 1:
+            if SLOPE_SYMBOL in rule_key:
                 # make sure the number is after the slope emblem and not the RSI emblem
-                if key.split(str(nums))[0] == self.strategy_symbol + SLOPE_SYMBOL:
-                    raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} does not contain a slope value!')
+                if rule_key.split(str(rule_key_number_groupings))[0] == self.strategy_symbol + SLOPE_SYMBOL:
+                    raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} does not contain '
+                                                 f'a slope value!')
             # RSI is custom length (not 14)
-            # title of the column in the data
-            title = f'{self.strategy_symbol}{int(nums[0])}'
-            indicator_value = float(data_manager.get_data_point(title, current_day_index))
-        elif len(nums) == 2:
-            # title of the column in the data
-            title = f'RSI{int(nums[0])}'
-            # likely that the $slope indicator is being used
-            if SLOPE_SYMBOL in key:
-                # get the length of the slope window
-                slope_window_length = int(nums[1])
+            column_title = f'{self.strategy_symbol}{int(rule_key_number_groupings[0])}'
+            indicator_value = float(data_manager.get_data_point(column_title, current_day_index))
+        elif len(rule_key_number_groupings) == 2:
+            column_title = f'{self.strategy_symbol}{int(rule_key_number_groupings[0])}'
+            # 2 number groupings suggests the $slope indicator is being used
+            if SLOPE_SYMBOL in rule_key:
+                slope_window_length = int(rule_key_number_groupings[1])
 
                 # data request length is window - 1 to account for the current day index being a part of the window
                 slope_data_request_length = slope_window_length - 1
 
-                # calculate slope
                 indicator_value = self.calculate_slope(
-                    float(data_manager.get_data_point(title, current_day_index)),
-                    float(data_manager.get_data_point(title, current_day_index - slope_data_request_length)),
+                    float(data_manager.get_data_point(column_title, current_day_index)),
+                    float(data_manager.get_data_point(column_title, current_day_index - slope_data_request_length)),
                     slope_window_length
                 )
             else:
-                raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains too many number groupings! '
-                                             f'Are you missing a $slope emblem?')
+                raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} contains too many number '
+                                             f'groupings! Are you missing a $slope emblem?')
         else:
-            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains too many number groupings!')
+            raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} contains invalid number '
+                                         f'groupings!')
 
         return indicator_value
 
-    @staticmethod
-    def __add_rsi_column(length, data_manager):
+    def __add_rsi_column(self, length, data_manager):
         """Calculate the RSI values and add them to the df.
 
         Args:
@@ -133,17 +123,14 @@ class RSITrigger(Trigger):
         """
         # if we already have RSI upper values in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():
-            if 'RSI' in col_name:
+            if self.strategy_symbol in col_name:
                 return
 
-        # get a list of price values as a list
         price_data = data_manager.get_column_data(data_manager.CLOSE)
 
-        # calculate the RSI values from the indicator API
         rsi_values = RSITrigger.__calculate_rsi(length, price_data)
 
-        # add the calculated values to the df
-        data_manager.add_column('RSI', rsi_values)
+        data_manager.add_column(self.strategy_symbol, rsi_values)
 
     @staticmethod
     def __add_rsi_trigger_column(trigger_value: float, data_manager: DataManager):
@@ -164,10 +151,8 @@ class RSITrigger(Trigger):
             if trigger_column_name == col_name:
                 return
 
-        # create a list of the algorithm value repeated
         list_values = [trigger_value for _ in range(data_manager.get_data_length())]
 
-        # add the list to the data
         data_manager.add_column(trigger_column_name, list_values)
 
     @staticmethod

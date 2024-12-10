@@ -41,10 +41,8 @@ class MACDTrigger(Trigger):
             if self.DATA_COLUMN_TITLE == col_name:
                 return
 
-        # get a list of price values as a list
         price_data = data_manager.get_column_data(data_manager.CLOSE)
 
-        # add the calculated values to the df
         data_manager.add_column(self.DATA_COLUMN_TITLE, self.__calculate_macd(price_data))
 
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
@@ -62,15 +60,12 @@ class MACDTrigger(Trigger):
         """
         log.debug(f'Checking MACD algorithm: {rule_key}...')
 
-        # get the indicator value from the key
         indicator_value = self.__parse_key(rule_key, data_manager, current_day_index)
 
-        # get the operator and algorithm value from the value
         operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
 
         log.debug(f'{self.strategy_symbol} algorithm: {rule_key} checked successfully')
 
-        # algorithm checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
     def __parse_key(self, key, data_manager, current_day_index) -> float:
@@ -84,8 +79,7 @@ class MACDTrigger(Trigger):
         return:
             float: The indicator value found in the key.
         """
-
-        # find the indicator value (left hand side of the comparison)
+        # find the indicator value (left side of the comparison)
         nums = self.find_all_nums_in_str(key)
 
         # MACD can only have slope emblem therefore 1 or 0 number groupings are acceptable
@@ -95,15 +89,13 @@ class MACDTrigger(Trigger):
                                              f'groupings!')
             indicator_value = float(data_manager.get_data_point(self.DATA_COLUMN_TITLE, current_day_index))
         elif len(nums) == 1:
-            # likely that the $slope indicator is being used
+            # 1 number grouping suggests the $slope indicator is being used
             if SLOPE_SYMBOL in key:
-                # get the length of the slope window
                 slope_window_length = int(nums[0])
 
                 # data request length is window - 1 to account for the current day index being a part of the window
                 slope_data_request_length = slope_window_length - 1
 
-                # calculate slope
                 indicator_value = self.calculate_slope(
                     float(data_manager.get_data_point(self.DATA_COLUMN_TITLE, current_day_index)),
                     float(data_manager.get_data_point(self.DATA_COLUMN_TITLE, current_day_index -
@@ -114,7 +106,7 @@ class MACDTrigger(Trigger):
                 raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains too many number groupings! '
                                              f'Are you missing a $slope emblem?')
         else:
-            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains too many number groupings!')
+            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {key} contains invalid number groupings!')
 
         return indicator_value
 
@@ -142,7 +134,6 @@ class MACDTrigger(Trigger):
                 # just set the MACD to None in these situations
                 macd_values.append(None)
             else:
-                # calculate the actual MACD
                 macd_values.append(round(small_ema_length_values[i] - large_ema_length_values[i], 3))
 
         return macd_values
@@ -158,10 +149,8 @@ class MACDTrigger(Trigger):
         return:
             list: The list of calculated EMA values.
         """
-        # calculate k
         k = 2 / (length + 1)
 
-        # get the initial ema value (uses sma of length days)
         previous_ema = MACDTrigger.__calculate_sma(length, price_data[0:length])[-1]
 
         ema_values = []

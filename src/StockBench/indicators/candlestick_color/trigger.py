@@ -53,26 +53,15 @@ class CandlestickColorTrigger(Trigger):
         """
         log.debug('Checking candle stick algorithm...')
 
-        # find out how many keys there are (value is a dict)
         num_keys = len(rule_value)
 
         if num_keys == 0:
             raise StrategyIndicatorError(f'{self.strategy_symbol} key: {rule_key} must have at least one color child '
                                          f'key')
 
-        # these will both need to be in ascending order [today, yesterday...]
-        trigger_colors = []
-        actual_colors = []
+        trigger_colors = [rule_value[value_key] for value_key in sorted(rule_value.keys())]
+        actual_colors = [data_manager.get_data_point(data_manager.COLOR, current_day_index-i) for i in range(num_keys)]
 
-        # build the algorithm list
-        for value_key in sorted(rule_value.keys()):
-            trigger_colors.append(rule_value[value_key])
-
-        # build the actual list
-        for i in range(num_keys):
-            actual_colors.append(data_manager.get_data_point(data_manager.COLOR, current_day_index-i))
-
-        # check for algorithm
         if actual_colors == trigger_colors:
             log.info('Candle stick algorithm hit!')
             return True

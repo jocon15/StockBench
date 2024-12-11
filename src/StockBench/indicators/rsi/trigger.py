@@ -19,9 +19,9 @@ class RSITrigger(Trigger):
             rule_key (any): The key value from the strategy.
             value_value (any): The value from the strategy.
         """
-        rule_key_number_groupings = self.find_all_nums_in_str(rule_key)
-        if len(rule_key_number_groupings) > 0:
-            return max(list(map(int, rule_key_number_groupings)))
+        rule_key_number_groups = self.find_all_nums_in_str(rule_key)
+        if len(rule_key_number_groups) > 0:
+            return max(list(map(int, rule_key_number_groups)))
         else:
             return DEFAULT_RSI_LENGTH
 
@@ -74,28 +74,28 @@ class RSITrigger(Trigger):
 
     def __parse_key(self, rule_key, data_manager, current_day_index) -> float:
         """Parser for parsing the key into the indicator value."""
-        rule_key_number_groupings = self.find_all_nums_in_str(rule_key)
+        rule_key_number_groups = self.find_all_nums_in_str(rule_key)
 
-        if len(rule_key_number_groupings) == 0:
+        if len(rule_key_number_groups) == 0:
             # RSI is default length (14)
             if SLOPE_SYMBOL in rule_key:
                 raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} does not contain '
                                              f'enough number groupings!')
             indicator_value = float(data_manager.get_data_point(self.strategy_symbol, current_day_index))
-        elif len(rule_key_number_groupings) == 1:
+        elif len(rule_key_number_groups) == 1:
             if SLOPE_SYMBOL in rule_key:
                 # make sure the number is after the slope emblem and not the RSI emblem
-                if rule_key.split(str(rule_key_number_groupings))[0] == self.strategy_symbol + SLOPE_SYMBOL:
+                if rule_key.split(str(rule_key_number_groups))[0] == self.strategy_symbol + SLOPE_SYMBOL:
                     raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} does not contain '
                                                  f'a slope value!')
             # RSI is custom length (not 14)
-            column_title = f'{self.strategy_symbol}{int(rule_key_number_groupings[0])}'
+            column_title = f'{self.strategy_symbol}{int(rule_key_number_groups[0])}'
             indicator_value = float(data_manager.get_data_point(column_title, current_day_index))
-        elif len(rule_key_number_groupings) == 2:
-            column_title = f'{self.strategy_symbol}{int(rule_key_number_groupings[0])}'
+        elif len(rule_key_number_groups) == 2:
+            column_title = f'{self.strategy_symbol}{int(rule_key_number_groups[0])}'
             # 2 number groupings suggests the $slope indicator is being used
             if SLOPE_SYMBOL in rule_key:
-                slope_window_length = int(rule_key_number_groupings[1])
+                slope_window_length = int(rule_key_number_groups[1])
 
                 # data request length is window - 1 to account for the current day index being a part of the window
                 slope_data_request_length = slope_window_length - 1

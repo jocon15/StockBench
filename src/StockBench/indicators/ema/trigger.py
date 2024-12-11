@@ -19,7 +19,7 @@ class EMATrigger(Trigger):
             rule_key (any): The key value from the strategy.
             value_value (any): The value from the strategy.
         """
-        # map nums to a list of ints
+        # map to a list of ints
         nums = list(map(int, self.find_all_nums_in_str(rule_key)))
         if nums:
             return max(nums)

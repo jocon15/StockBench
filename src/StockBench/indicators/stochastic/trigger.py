@@ -1,8 +1,9 @@
 import logging
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
-from StockBench.simulation_data.data_manager import DataManager
 from StockBench.indicator.exceptions import StrategyIndicatorError
+from StockBench.simulation_data.data_manager import DataManager
+from StockBench.position.position import Position
 
 log = logging.getLogger()
 
@@ -21,11 +22,10 @@ class StochasticTrigger(Trigger):
             rule_key (any): The key value from the strategy.
             value_value (any): The value from the strategy.
         """
-        # map nums to a list of ints
-        nums = list(map(int, self.find_all_nums_in_str(rule_key)))
-        if nums:
-            return max(nums)
-        # nums is empty
+        # map to a list of ints
+        rule_key_number_groups = list(map(int, self.find_all_nums_in_str(rule_key)))
+        if rule_key_number_groups:
+            return max(rule_key_number_groups)
         return DEFAULT_STOCHASTIC_LENGTH
 
     def add_to_data(self, rule_key, rule_value, side, data_manager):
@@ -35,21 +35,19 @@ class StochasticTrigger(Trigger):
             rule_key (any): The key value from the strategy.
             rule_value (any): The value from thr strategy.
             side (str): The side (buy/sell).
-            data_manager (any): The data object.
+            data_manager (DataManager): The data object.
         """
         # ======== key based =========
-        nums = self.find_all_nums_in_str(rule_key)
-        if len(nums) > 0:
-            num = int(nums[0])
-            # add the stochastic data to the df
+        rule_key_number_groups = self.find_all_nums_in_str(rule_key)
+        if len(rule_key_number_groups) > 0:
+            num = int(rule_key_number_groups[0])
             self.__add_stochastic_column(num, data_manager)
         else:
-            # add the stochastic data to the df
             self.__add_stochastic_column(DEFAULT_STOCHASTIC_LENGTH, data_manager)
         # ======== value based (stochastic limit)=========
-        nums = self.find_all_nums_in_str(rule_value)
-        if len(nums) > 0:
-            trigger = float(nums[0])
+        rule_key_number_groups = self.find_all_nums_in_str(rule_value)
+        if len(rule_key_number_groups) > 0:
+            trigger = float(rule_key_number_groups[0])
             self.__add_stochastic_trigger_column(trigger, data_manager)
 
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
@@ -58,8 +56,8 @@ class StochasticTrigger(Trigger):
         Args:
             rule_key (str): The key value of the algorithm.
             rule_value (str): The value of the algorithm.
-            data_manager (any): The data API object.
-            position (any): The position object.
+            data_manager (DataManager): The data API object.
+            position (Position): The position object.
             current_day_index (int): The index of the current day.
 
         return:
@@ -67,83 +65,68 @@ class StochasticTrigger(Trigger):
         """
         log.debug(f'Checking stochastic algorithm: {rule_key}...')
 
-        # get the indicator value from the key
         indicator_value = self.__parse_key(rule_key, data_manager, current_day_index)
 
-        # get the operator and algorithm value from the value
         operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
 
         log.debug(f'{self.DISPLAY_NAME} algorithm: {rule_key} checked successfully')
 
-        # algorithm checks
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
-    def __parse_key(self, key, data_manager, current_day_index) -> float:
+    def __parse_key(self, rule_key, data_manager, current_day_index) -> float:
         """Parser for parsing the key into the indicator value."""
         # find the indicator value (left hand side of the comparison)
-        nums = self.find_all_nums_in_str(key)
+        rule_key_number_groups = self.find_all_nums_in_str(rule_key)
 
-        if len(nums) == 0:
-            # stochastic is default length (14)
-            if SLOPE_SYMBOL in key:
-                raise StrategyIndicatorError(f'{self.DISPLAY_NAME} key: {key} does not contain enough number '
+        if len(rule_key_number_groups) == 0:
+            if SLOPE_SYMBOL in rule_key:
+                raise StrategyIndicatorError(f'{self.DISPLAY_NAME} rule key: {rule_key} does not contain enough number '
                                              f'groupings!')
             indicator_value = float(data_manager.get_data_point(self.strategy_symbol, current_day_index))
-        elif len(nums) == 1:
-            if SLOPE_SYMBOL in key:
+        elif len(rule_key_number_groups) == 1:
+            if SLOPE_SYMBOL in rule_key:
                 # make sure the number is after the slope emblem and not the stochastic emblem
-                if key.split(str(nums))[0] == self.strategy_symbol + SLOPE_SYMBOL:
+                if rule_key.split(str(rule_key_number_groups))[0] == self.strategy_symbol + SLOPE_SYMBOL:
                     raise StrategyIndicatorError(
-                        f'{self.DISPLAY_NAME} key: {key} contains too many number groupings! '
+                        f'{self.DISPLAY_NAME} rule key: {rule_key} contains too many number groupings! '
                         f'Are you missing a $slope emblem?')
-            # stochastic is custom length (not 14)
             indicator_value = float(data_manager.get_data_point(self.strategy_symbol, current_day_index))
-        elif len(nums) == 2:
-            # title of the column in the data
-            title = f'{self.strategy_symbol}{int(nums[0])}'
-            # likely that the $slope indicator is being used
-            if SLOPE_SYMBOL in key:
-                # get the length of the slope window
-                slope_window_length = int(nums[1])
+        elif len(rule_key_number_groups) == 2:
+            title = f'{self.strategy_symbol}{int(rule_key_number_groups[0])}'
+            # 2 number groups suggests $slope indicator is being used
+            if SLOPE_SYMBOL in rule_key:
+                slope_window_length = int(rule_key_number_groups[1])
 
                 # data request length is window - 1 to account for the current day index being a part of the window
                 slope_data_request_length = slope_window_length - 1
 
-                # calculate slope
                 indicator_value = self.calculate_slope(
                     float(data_manager.get_data_point(title, current_day_index)),
                     float(data_manager.get_data_point(title, current_day_index - slope_data_request_length)),
                     slope_window_length
                 )
             else:
-                raise StrategyIndicatorError(f'{self.DISPLAY_NAME} key: {key} contains too many number groupings! '
-                                             f'Are you missing a $slope emblem?')
+                raise StrategyIndicatorError(f'{self.DISPLAY_NAME} rule key: {rule_key} contains '
+                                             f'too many number groupings! Are you missing a $slope emblem?')
         else:
-            raise StrategyIndicatorError(f'{self.DISPLAY_NAME} key: {key} contains too many number groupings!')
+            raise StrategyIndicatorError(f'{self.DISPLAY_NAME} rule key: {rule_key} contains '
+                                         f'too many number groupings!')
 
         return indicator_value
 
-    def __add_stochastic_column(self, length, data_manager):
-        """Calculate the stochastic values and add them to the df.
-
-        Args:
-            length (int): The length of the stochastic to use.
-            data_manager (any): The data object.
-        """
-        # if we already have SO values in the df, we don't need to add them again
+    def __add_stochastic_column(self, length: int, data_manager: DataManager):
+        """Calculate the stochastic values and add them to the df."""
+        # if we already have values in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():
             if self.strategy_symbol in col_name:
                 return
 
-        # get data to calculate the indicator value
         high_data = data_manager.get_column_data(data_manager.HIGH)
         low_data = data_manager.get_column_data(data_manager.LOW)
         close_data = data_manager.get_column_data(data_manager.CLOSE)
 
-        # calculate SO
         stochastic_values = StochasticTrigger.__stochastic_oscillator(length, high_data, low_data, close_data)
 
-        # add the calculated values to the df
         data_manager.add_column(self.strategy_symbol, stochastic_values)
 
     def __add_stochastic_trigger_column(self, trigger_value: float, data_manager: DataManager):
@@ -152,10 +135,6 @@ class StochasticTrigger(Trigger):
         In a stochastic chart, the stochastic triggers are mapped as horizontal bars on top of the stochastic chart.
         To ensure that these horizontal bars get mapped onto the chart, they must be added to the data as a column of
         static values that match the trigger value.
-
-        Args:
-            trigger_value: The algorithm value for the upper RSI.
-            data_manager: The simulation data manager.
         """
         trigger_column_name = f'{self.strategy_symbol}_{trigger_value}'
 
@@ -164,25 +143,13 @@ class StochasticTrigger(Trigger):
             if trigger_column_name == col_name:
                 return
 
-        # create a list of the algorithm value repeated
         list_values = [trigger_value for _ in range(data_manager.get_data_length())]
 
-        # add the list to the data
         data_manager.add_column(trigger_column_name, list_values)
 
     @staticmethod
     def __stochastic_oscillator(length: int, high_data: list, low_data: list, close_data: list) -> list:
-        """Calculate the stochastic values for a list of price values.
-
-        Args:
-            length (int): The length of the stochastic oscillator to calculate.
-            high_data (list): The high price data to calculate the stochastic oscillator from.
-            low_data (list): The high price data to calculate the stochastic oscillator from.
-            close_data (list): The close price data to calculate the stochastic oscillator from.
-
-        return:
-            list: The list of calculated stochastic values.
-        """
+        """Calculate the stochastic values for a list of price values."""
         past_length_days_high = []
         past_length_days_low = []
         past_length_days_close = []

@@ -20,10 +20,10 @@ class SMATrigger(Trigger):
             rule_key (any): The key value from the strategy.
             value_value (any): The value from the strategy.
         """
-        # map nums to a list of ints
-        rule_key_number_groupings = list(map(int, self.find_all_nums_in_str(rule_key)))
-        if rule_key_number_groupings:
-            return max(rule_key_number_groupings)
+        # map to a list of ints
+        rule_key_number_groups = list(map(int, self.find_all_nums_in_str(rule_key)))
+        if rule_key_number_groups:
+            return max(rule_key_number_groups)
         raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} must have an indicator length!')
 
     def add_to_data(self, rule_key, rule_value, side, data_manager):
@@ -35,9 +35,9 @@ class SMATrigger(Trigger):
             side (str): The side (buy/sell).
             data_manager (DataManager): The data object.
         """
-        nums = self.find_all_nums_in_str(rule_key)
-        if len(nums) > 0:
-            indicator_length = int(nums[0])
+        rule_key_number_groups = self.find_all_nums_in_str(rule_key)
+        if len(rule_key_number_groups) > 0:
+            indicator_length = int(rule_key_number_groups[0])
             self.__add_sma(indicator_length, data_manager)
         else:
             raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} must have an indicator length!')
@@ -68,21 +68,21 @@ class SMATrigger(Trigger):
     def __parse_key(self, rule_key: any, data_manager: DataManager, current_day_index: int) -> float:
         """Parser for parsing the key into the indicator value."""
         # find the indicator value (left hand side of the comparison)
-        rule_key_number_groupings = self.find_all_nums_in_str(rule_key)
+        rule_key_number_groups = self.find_all_nums_in_str(rule_key)
 
         # do not build title outside of conditional as nums could be [] which would result in index error
 
-        if len(rule_key_number_groupings) == 1:
+        if len(rule_key_number_groups) == 1:
             if SLOPE_SYMBOL in rule_key:
                 raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} does not contain '
                                              f'enough number groupings!')
-            title = f'{self.strategy_symbol}{int(rule_key_number_groupings[0])}'
+            title = f'{self.strategy_symbol}{int(rule_key_number_groups[0])}'
             indicator_value = float(data_manager.get_data_point(title, current_day_index))
-        elif len(rule_key_number_groupings) == 2:
-            title = f'{self.strategy_symbol}{int(rule_key_number_groupings[0])}'
+        elif len(rule_key_number_groups) == 2:
+            title = f'{self.strategy_symbol}{int(rule_key_number_groups[0])}'
             # likely that the $slope indicator is being used
             if SLOPE_SYMBOL in rule_key:
-                slope_window_length = int(rule_key_number_groupings[1])
+                slope_window_length = int(rule_key_number_groups[1])
 
                 # data request length is window - 1 to account for the current day index being a part of the window
                 slope_data_request_length = slope_window_length - 1

@@ -1,6 +1,8 @@
 import logging
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
+from StockBench.simulation_data.data_manager import DataManager
+from StockBench.position.position import Position
 
 log = logging.getLogger()
 
@@ -35,10 +37,10 @@ class VolumeTrigger(Trigger):
         """Trigger logic for volume.
 
         Args:
-            rule_key (str): The key value of the algorithm.
-            rule_value (str): The value of the algorithm.
-            data_manager (any): The data API object.
-            position (any): The position object.
+            rule_key (any): The key value of the algorithm.
+            rule_value (any): The value of the algorithm.
+            data_manager (DataManager): The data API object.
+            position (Position): The position object.
             current_day_index (int): The index of the current day.
 
         return:
@@ -50,12 +52,11 @@ class VolumeTrigger(Trigger):
             trigger_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
             operator = rule_value.replace(CURRENT_PRICE_SYMBOL, '')
         else:
-            # check that the value from {key: value} has a number in it
             trigger_value = Trigger.find_single_numeric_in_str(rule_value)
             operator = Trigger.find_operator_in_str(rule_value)
-        # algorithm checks
+
         result = Trigger.basic_trigger_check(volume, operator, trigger_value)
 
-        log.debug('All volume algorithm checked')
+        log.debug(f'{self.strategy_symbol} algorithm: {rule_key} checked successfully')
 
         return result

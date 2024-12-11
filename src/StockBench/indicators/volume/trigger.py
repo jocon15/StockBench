@@ -42,7 +42,7 @@ class VolumeTrigger(Trigger):
             current_day_index (int): The index of the current day.
 
         return:
-            bool: True if the algorithm was hit.
+            bool: True if a trigger was hit.
         """
         volume = data_manager.get_data_point(data_manager.VOLUME, current_day_index)
 

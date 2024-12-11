@@ -51,7 +51,7 @@ class CandlestickColorTrigger(Trigger):
             current_day_index (int): The index of the current day.
 
         return:
-            bool: True if the algorithm was hit.
+            bool: True if a trigger was hit.
         """
         log.debug('Checking candle stick algorithm...')
 

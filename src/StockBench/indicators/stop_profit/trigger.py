@@ -45,7 +45,7 @@ class StopProfitTrigger(Trigger):
             current_day_index: The index of the current day.
 
         return:
-            bool: True if the algorithm was hit.
+            bool: True if a trigger was hit.
         """
         log.debug('Checking stop profit algorithm...')
 

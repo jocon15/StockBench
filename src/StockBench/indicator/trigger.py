@@ -73,7 +73,7 @@ class Trigger:
             trigger_value: The value of the algorithm.
 
         returns:
-            bool: True if the algorithm was hit.
+            bool: True if a trigger was hit.
         """
         if operator_value == '<=':
             if indicator_value <= trigger_value:

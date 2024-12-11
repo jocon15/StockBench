@@ -52,7 +52,7 @@ class EMATrigger(Trigger):
             current_day_index (int): The index of the current day.
 
         return:
-            bool: True if the algorithm was hit.
+            bool: True if a trigger was hit.
         """
         log.debug(f'Checking {self.strategy_symbol} algorithm: {rule_key}...')
 

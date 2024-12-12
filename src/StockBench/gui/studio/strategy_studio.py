@@ -1,6 +1,6 @@
 import json
 from PyQt6 import QtGui
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QPushButton, QLabel, QFileDialog
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QPushButton, QLabel, QFileDialog, QMessageBox
 from StockBench.gui.palette.palette import Palette
 
 
@@ -87,6 +87,16 @@ class StrategyStudioWindow(QWidget):
     def __save_json_file(self, filepath):
         with open(filepath, 'w+') as file:
             json.dump(json.loads(self.text_edit.toPlainText()), file, indent=4)
+
+        self._show_message_box('File Save', 'Saved successfully!')
+
+    @staticmethod
+    def _show_message_box(title: str, message: str):
+        msgbox = QMessageBox()
+        msgbox.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
+        msgbox.setText(message)
+        msgbox.setWindowTitle(title)
+        msgbox.exec()
 
 
 class SaveButtons(QWidget):

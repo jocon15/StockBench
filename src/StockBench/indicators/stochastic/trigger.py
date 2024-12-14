@@ -47,8 +47,9 @@ class StochasticTrigger(Trigger):
         # ======== value based (stochastic limit)=========
         rule_key_number_groups = self.find_all_nums_in_str(rule_value)
         if len(rule_key_number_groups) > 0:
-            trigger = float(rule_key_number_groups[0])
-            self.__add_stochastic_trigger_column(trigger, data_manager)
+            trigger_value = float(rule_key_number_groups[0])
+            Trigger._add_trigger_column(f'{self.strategy_symbol}_{trigger_value}', trigger_value,
+                                        data_manager)
 
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for stochastic.
@@ -128,24 +129,6 @@ class StochasticTrigger(Trigger):
         stochastic_values = StochasticTrigger.__stochastic_oscillator(length, high_data, low_data, close_data)
 
         data_manager.add_column(self.strategy_symbol, stochastic_values)
-
-    def __add_stochastic_trigger_column(self, trigger_value: float, data_manager: DataManager):
-        """Add upper RSI algorithm to the df.
-
-        In a stochastic chart, the stochastic triggers are mapped as horizontal bars on top of the stochastic chart.
-        To ensure that these horizontal bars get mapped onto the chart, they must be added to the data as a column of
-        static values that match the trigger value.
-        """
-        trigger_column_name = f'{self.strategy_symbol}_{trigger_value}'
-
-        # if we already have a stochastic trigger column with this value in the df, we don't need to add it again
-        for col_name in data_manager.get_column_names():
-            if trigger_column_name == col_name:
-                return
-
-        list_values = [trigger_value for _ in range(data_manager.get_data_length())]
-
-        data_manager.add_column(trigger_column_name, list_values)
 
     @staticmethod
     def __stochastic_oscillator(length: int, high_data: list, low_data: list, close_data: list) -> list:

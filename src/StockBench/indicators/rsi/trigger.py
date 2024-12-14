@@ -46,8 +46,9 @@ class RSITrigger(Trigger):
         # (adds the RSI limit values to the data for charting)
         nums = self.find_all_nums_in_str(rule_value)
         if len(nums) > 0:
-            trigger = float(nums[0])
-            self.__add_rsi_trigger_column(trigger, data_manager)
+            trigger_value = float(nums[0])
+            Trigger._add_trigger_column(f'{self.strategy_symbol}_{trigger_value}', trigger_value,
+                                        data_manager)
 
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for RSI.
@@ -131,29 +132,6 @@ class RSITrigger(Trigger):
         rsi_values = RSITrigger.__calculate_rsi(length, price_data)
 
         data_manager.add_column(self.strategy_symbol, rsi_values)
-
-    @staticmethod
-    def __add_rsi_trigger_column(trigger_value: float, data_manager: DataManager):
-        """Add upper RSI algorithm to the df.
-
-        In an RSI chart, the RSI triggers are mapped as horizontal bars on top of the RSI chart. To ensure that
-        these horizontal bars get mapped onto the chart, they must be added to the data as a column of static values
-        that match the trigger value.
-
-        Args:
-            trigger_value: The algorithm value for the upper RSI.
-            data_manager: The data object.
-        """
-        trigger_column_name = f'RSI_{trigger_value}'
-
-        # if we already have an RSI trigger column with this value in the df, we don't need to add it again
-        for col_name in data_manager.get_column_names():
-            if trigger_column_name == col_name:
-                return
-
-        list_values = [trigger_value for _ in range(data_manager.get_data_length())]
-
-        data_manager.add_column(trigger_column_name, list_values)
 
     @staticmethod
     def __calculate_rsi(length: int, price_data: list) -> list:

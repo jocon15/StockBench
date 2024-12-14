@@ -3,6 +3,7 @@ import statistics
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
 from StockBench.simulation_data.data_manager import DataManager
+from StockBench.position.position import Position
 from StockBench.indicator.exceptions import StrategyIndicatorError
 
 log = logging.getLogger()
@@ -32,7 +33,7 @@ class RSITrigger(Trigger):
             rule_key (any): The key value from the strategy.
             rule_value (any): The value from thr strategy.
             side (str): The side (buy/sell).
-            data_manager (any): The data object.
+            data_manager (DataManager): The data object.
         """
         # ======== key based =========
         # (adds the RSI values to the data based on the key)
@@ -56,8 +57,8 @@ class RSITrigger(Trigger):
         Args:
             rule_key (str): The key value of the algorithm.
             rule_value (str): The value of the algorithm.
-            data_manager (any): The data API object.
-            position (any): The position object.
+            data_manager (DataManager): The data API object.
+            position (Position): The position object.
             current_day_index (int): The index of the current day.
 
         return:
@@ -73,7 +74,7 @@ class RSITrigger(Trigger):
 
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
-    def __parse_key(self, rule_key, data_manager, current_day_index) -> float:
+    def __parse_key(self, rule_key: any, data_manager: DataManager, current_day_index: int) -> float:
         """Parser for parsing the key into the indicator value."""
         rule_key_number_groups = self.find_all_nums_in_str(rule_key)
 
@@ -115,13 +116,8 @@ class RSITrigger(Trigger):
 
         return indicator_value
 
-    def __add_rsi_column(self, length, data_manager):
-        """Calculate the RSI values and add them to the df.
-
-        Args:
-            length (int): The length of the RSI to use.
-            data_manager (any): The data object.
-        """
+    def __add_rsi_column(self, length: int, data_manager: DataManager):
+        """Calculate the RSI values and add them to the df."""
         # if we already have RSI upper values in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():
             if self.strategy_symbol in col_name:
@@ -135,15 +131,7 @@ class RSITrigger(Trigger):
 
     @staticmethod
     def __calculate_rsi(length: int, price_data: list) -> list:
-        """Calculate the RSI values for a list of price values.
-
-        Args:
-            length (int): The length of the RSI to calculate.
-            price_data (list): The price data to calculate the RSI from.
-
-        return:
-            list: The list of calculated RSI values.
-        """
+        """Calculate the RSI values for a list of price values."""
         first_day_value = 0
         gain = []
         loss = []

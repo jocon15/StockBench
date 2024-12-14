@@ -33,6 +33,7 @@ class ADXTrigger(Trigger):
             if self.strategy_symbol in col_name:
                 return
 
+        # FIXME: this needs to fetch all O H L C values
         price_data = data_manager.get_column_data(data_manager.CLOSE)
 
         adx_values = self.
@@ -40,3 +41,6 @@ class ADXTrigger(Trigger):
     @staticmethod
     def __calculate_adx(length: int, price_data: list):
         """Calculate the ADX values for a list of price values."""
+        # FIXME, this needs to accepts O H L C lists
+
+        # https://www.youtube.com/watch?v=LKDJQLrXedg - ADX step by step

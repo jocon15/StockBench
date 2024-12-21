@@ -8,8 +8,8 @@ log = logging.getLogger()
 
 
 class CandlestickColorTrigger(Trigger):
-    def __init__(self, strategy_symbol):
-        super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
+    def __init__(self, indicator_symbol):
+        super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
     def additional_days(self, rule_key, value_value) -> int:
         """Calculate the additional days required.
@@ -19,7 +19,7 @@ class CandlestickColorTrigger(Trigger):
             value_value (any): The value from the strategy.
         """
         if len(value_value.keys()) == 0:
-            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {rule_key} must have at least one color child '
+            raise StrategyIndicatorError(f'{self.indicator_symbol} key: {rule_key} must have at least one color child '
                                          f'key')
 
         additional_days = 0
@@ -58,7 +58,7 @@ class CandlestickColorTrigger(Trigger):
         key_count = len(rule_value)
 
         if key_count == 0:
-            raise StrategyIndicatorError(f'{self.strategy_symbol} key: {rule_key} must have at least one color child '
+            raise StrategyIndicatorError(f'{self.indicator_symbol} key: {rule_key} must have at least one color child '
                                          f'key')
 
         trigger_colors = [rule_value[value_key] for value_key in sorted(rule_value.keys())]

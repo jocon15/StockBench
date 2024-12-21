@@ -79,7 +79,7 @@ class Algorithm:
             key = keys[i]
             value = values[i]
             for trigger in triggers:
-                if trigger.strategy_symbol in key:
+                if trigger.indicator_symbol in key:
                     num = trigger.additional_days(key, value)
                     if additional_days < num:
                         additional_days = num
@@ -95,11 +95,11 @@ class Algorithm:
         # find all buy algorithm and add their indicator to the data
         for key in self.strategy[BUY_SIDE].keys():
             for trigger in triggers:
-                if trigger.strategy_symbol in key:
+                if trigger.indicator_symbol in key:
                     trigger.add_to_data(key, self.strategy[BUY_SIDE][key], BUY_SIDE, data_manager)
                 elif AND_KEY in key:
                     for inner_key in self.strategy[BUY_SIDE][key].keys():
-                        if trigger.strategy_symbol in inner_key:
+                        if trigger.indicator_symbol in inner_key:
                             trigger.add_to_data(inner_key, self.strategy[BUY_SIDE][key][inner_key], BUY_SIDE,
                                                 data_manager)
 
@@ -109,11 +109,11 @@ class Algorithm:
         # find all sell algorithm and add their indicator to the data
         for key in self.strategy[SELL_SIDE].keys():
             for trigger in triggers:
-                if trigger.strategy_symbol in key:
+                if trigger.indicator_symbol in key:
                     trigger.add_to_data(key, self.strategy[SELL_SIDE][key], SELL_SIDE, data_manager)
                 elif AND_KEY in key:
                     for inner_key in self.strategy[SELL_SIDE][key].keys():
-                        if trigger.strategy_symbol in inner_key:
+                        if trigger.indicator_symbol in inner_key:
                             trigger.add_to_data(inner_key, self.strategy[SELL_SIDE][key][inner_key], SELL_SIDE,
                                                 data_manager)
 
@@ -244,7 +244,7 @@ class Algorithm:
             key_matched_with_trigger = False
             # check all algorithm
             for trigger in triggers:
-                if trigger.strategy_symbol in inner_key:
+                if trigger.indicator_symbol in inner_key:
                     key_matched_with_trigger = True
                     trigger_hit = trigger.check_trigger(
                         inner_key,
@@ -280,7 +280,7 @@ class Algorithm:
         key_matched_with_trigger = False
         # check all algorithm
         for trigger in triggers:
-            if trigger.strategy_symbol in key:
+            if trigger.indicator_symbol in key:
                 key_matched_with_trigger = True
                 trigger_hit = trigger.check_trigger(
                     key,

@@ -10,8 +10,8 @@ class PriceTrigger(Trigger):
     # cannot use strategy symbol because its "price"
     DISPLAY_NAME = 'Price'
 
-    def __init__(self, strategy_symbol):
-        super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
+    def __init__(self, indicator_symbol):
+        super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
     def additional_days(self, rule_key, value_value) -> int:
         """Calculate the additional days required.
@@ -50,6 +50,8 @@ class PriceTrigger(Trigger):
         """
         log.debug(f'Checking price algorithm: {rule_key}...')
 
+        # price uses special key parses because the indicator called 'price', but in the data it is 'close', to make it
+        # more clear we are using a dedicate parser
         indicator_value = self.__parse_key(rule_key, data_manager, current_day_index)
 
         operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
@@ -77,9 +79,8 @@ class PriceTrigger(Trigger):
 
                 indicator_value = self.calculate_slope(
                     float(data_manager.get_data_point(data_manager.CLOSE, current_day_index)),
-                    float(data_manager.get_data_point(data_manager.CLOSE, current_day_index - slope_data_request_length)),
-                    slope_window_length
-                )
+                    float(data_manager.get_data_point(data_manager.CLOSE, current_day_index -
+                                                      slope_data_request_length)), slope_window_length)
             else:
                 raise StrategyIndicatorError(f'{self.DISPLAY_NAME} rule key: {rule_key} contains too many number '
                                              f'groupings! Are you missing a $slope emblem?')

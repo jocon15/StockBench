@@ -15,10 +15,8 @@ class MACDTrigger(Trigger):
 
     SMALL_EMA_LENGTH = 12
 
-    DATA_COLUMN_TITLE = 'MACD'
-
-    def __init__(self, strategy_symbol):
-        super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
+    def __init__(self, indicator_symbol):
+        super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
     def additional_days(self, rule_key, value_value) -> int:
         """Calculate the additional days required.
@@ -40,12 +38,12 @@ class MACDTrigger(Trigger):
         """
         # if we already have MACD values in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():
-            if self.DATA_COLUMN_TITLE == col_name:
+            if self.indicator_symbol == col_name:
                 return
 
         price_data = data_manager.get_column_data(data_manager.CLOSE)
 
-        data_manager.add_column(self.DATA_COLUMN_TITLE, self.__calculate_macd(price_data))
+        data_manager.add_column(self.indicator_symbol, self.__calculate_macd(price_data))
 
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for EMA.
@@ -60,48 +58,16 @@ class MACDTrigger(Trigger):
         return:
             bool: True if a trigger was hit.
         """
-        log.debug(f'Checking {self.strategy_symbol} algorithm: {rule_key}...')
+        log.debug(f'Checking {self.indicator_symbol} algorithm: {rule_key}...')
 
-        indicator_value = self.__parse_key(rule_key, data_manager, current_day_index)
+        indicator_value = Trigger._parse_rule_key_no_indicator_length(rule_key, self.indicator_symbol, data_manager,
+                                                                      current_day_index)
 
         operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
 
-        log.debug(f'{self.strategy_symbol} algorithm: {rule_key} checked successfully')
+        log.debug(f'{self.indicator_symbol} algorithm: {rule_key} checked successfully')
 
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
-
-    def __parse_key(self, rule_key: str, data_manager: DataManager, current_day_index: int) -> float:
-        """Parser for parsing the key into the indicator value."""
-        key_number_groupings = self.find_all_nums_in_str(rule_key)
-
-        # MACD can only have slope emblem therefore 1 or 0 number groupings are acceptable
-        if len(key_number_groupings) == 0:
-            if SLOPE_SYMBOL in rule_key:
-                raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} does not contain'
-                                             f' enough number groupings!')
-            indicator_value = float(data_manager.get_data_point(self.DATA_COLUMN_TITLE, current_day_index))
-        elif len(key_number_groupings) == 1:
-            # 1 number grouping suggests the $slope indicator is being used
-            if SLOPE_SYMBOL in rule_key:
-                slope_window_length = int(key_number_groupings[0])
-
-                # data request length is window - 1 to account for the current day index being a part of the window
-                slope_data_request_length = slope_window_length - 1
-
-                indicator_value = self.calculate_slope(
-                    float(data_manager.get_data_point(self.DATA_COLUMN_TITLE, current_day_index)),
-                    float(data_manager.get_data_point(self.DATA_COLUMN_TITLE, current_day_index -
-                                                      slope_data_request_length)),
-                    slope_window_length
-                )
-            else:
-                raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} contains too many number '
-                                             f'groupings! Are you missing a $slope emblem?')
-        else:
-            raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} contains '
-                                         f'invalid number groupings!')
-
-        return indicator_value
 
     def __calculate_macd(self, price_data: list) -> list:
         """Calculate MACD values for a list of price values"""
@@ -110,7 +76,7 @@ class MACDTrigger(Trigger):
         small_ema_length_values = MACDTrigger.__calculate_ema(self.SMALL_EMA_LENGTH, price_data)
 
         if len(large_ema_length_values) != len(small_ema_length_values):
-            raise StrategyIndicatorError(f'{self.strategy_symbol} value lists for {self.strategy_symbol} must be the '
+            raise StrategyIndicatorError(f'{self.indicator_symbol} value lists for {self.indicator_symbol} must be the '
                                          f'same length!')
 
         macd_values = []

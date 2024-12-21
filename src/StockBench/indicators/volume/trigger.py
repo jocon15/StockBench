@@ -8,8 +8,8 @@ log = logging.getLogger()
 
 
 class VolumeTrigger(Trigger):
-    def __init__(self, strategy_symbol):
-        super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
+    def __init__(self, indicator_symbol):
+        super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
     def additional_days(self, rule_key, value_value) -> int:
         """Calculate the additional days required.
@@ -57,6 +57,6 @@ class VolumeTrigger(Trigger):
 
         result = Trigger.basic_trigger_check(volume, operator, trigger_value)
 
-        log.debug(f'{self.strategy_symbol} algorithm: {rule_key} checked successfully')
+        log.debug(f'{self.indicator_symbol} algorithm: {rule_key} checked successfully')
 
         return result

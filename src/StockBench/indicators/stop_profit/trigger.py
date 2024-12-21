@@ -7,8 +7,8 @@ log = logging.getLogger()
 
 
 class StopProfitTrigger(Trigger):
-    def __init__(self, strategy_symbol):
-        super().__init__(strategy_symbol, side=Trigger.SELL)
+    def __init__(self, indicator_symbol):
+        super().__init__(indicator_symbol, side=Trigger.SELL)
 
     def additional_days(self, rule_key: str, value_value: str) -> int:
         """Calculate the additional days required.

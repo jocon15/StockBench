@@ -18,8 +18,8 @@ class Trigger:
     SELL = 1
     AGNOSTIC = 2
 
-    def __init__(self, strategy_symbol: str, side: str):
-        self.strategy_symbol = strategy_symbol
+    def __init__(self, indicator_symbol: str, side: str):
+        self.indicator_symbol = indicator_symbol
         self.__side = side
 
     def get_side(self):
@@ -62,6 +62,123 @@ class Trigger:
             operator = self.find_operator_in_str(rule_value)
 
         return operator, trigger_value
+
+    @staticmethod
+    def _parse_rule_key(rule_key: str, indicator_symbol: str, data_manager: DataManager,
+                        current_day_index: int) -> float:
+        """Translates a complex rule key for an indicator value where the indicator has a default value.
+        Can have 0, 1, or 2 number groupings.
+        """
+        rule_key_number_groups = Trigger.find_all_nums_in_str(rule_key)
+        if len(rule_key_number_groups) == 0:
+            # rule key does not define an indicator length (use default)
+            if SLOPE_SYMBOL in rule_key:
+                raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} does not contain '
+                                             f'enough number groupings!')
+            indicator_value = float(data_manager.get_data_point(indicator_symbol, current_day_index))
+        elif len(rule_key_number_groups) == 1:
+            if SLOPE_SYMBOL in rule_key:
+                # make sure the number is after the slope emblem and not the RSI emblem
+                if rule_key.split(str(rule_key_number_groups))[0] == indicator_symbol + SLOPE_SYMBOL:
+                    raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} does not contain '
+                                                 f'a slope value!')
+            # rule key defines an indicator length (not using default)
+            column_title = f'{indicator_symbol}{int(rule_key_number_groups[0])}'
+            indicator_value = float(data_manager.get_data_point(column_title, current_day_index))
+        elif len(rule_key_number_groups) == 2:
+            column_title = f'{indicator_symbol}{int(rule_key_number_groups[0])}'
+            # 2 number groupings suggests the $slope indicator is being used
+            if SLOPE_SYMBOL in rule_key:
+                slope_window_length = int(rule_key_number_groups[1])
+
+                # data request length is window - 1 to account for the current day index being a part of the window
+                slope_data_request_length = slope_window_length - 1
+
+                indicator_value = Trigger.calculate_slope(
+                    float(data_manager.get_data_point(column_title, current_day_index)),
+                    float(data_manager.get_data_point(column_title, current_day_index - slope_data_request_length)),
+                    slope_window_length
+                )
+            else:
+                raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} contains too many number '
+                                             f'groupings! Are you missing a $slope emblem?')
+        else:
+            raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} contains invalid number '
+                                         f'groupings!')
+
+        return indicator_value
+
+    @staticmethod
+    def _parse_rule_key_no_default_indicator_length(rule_key: str, indicator_symbol: str, data_manager: DataManager,
+                                                    current_day_index: int) -> float:
+        """Translates a complex rule key for an indicator value where the indicator DOES NOT have a default value.
+        Can have 1, or 2 number groupings.
+        """
+        key_number_groupings = Trigger.find_all_nums_in_str(rule_key)
+
+        if len(key_number_groupings) == 1:
+            if SLOPE_SYMBOL in rule_key:
+                raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} does not contain '
+                                             f'enough number groupings!')
+            column_title = f'{indicator_symbol}{int(key_number_groupings[0])}'
+            indicator_value = float(data_manager.get_data_point(column_title, current_day_index))
+        elif len(key_number_groupings) == 2:
+            column_title = f'{indicator_symbol}{int(key_number_groupings[0])}'
+            # 2 number groupings suggests the $slope indicator is being used
+            if SLOPE_SYMBOL in rule_key:
+                slope_window_length = int(key_number_groupings[1])
+
+                # data request length is window - 1 to account for the current day index being a part of the window
+                slope_data_request_length = slope_window_length - 1
+
+                indicator_value = Trigger.calculate_slope(
+                    float(data_manager.get_data_point(column_title, current_day_index)),
+                    float(data_manager.get_data_point(column_title, current_day_index - slope_data_request_length)),
+                    slope_window_length
+                )
+            else:
+                raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} contains too many number '
+                                             f'groupings! Are you missing a $slope emblem?')
+        else:
+            raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} contains invalid number '
+                                         f'groupings!')
+
+        return indicator_value
+
+    @staticmethod
+    def _parse_rule_key_no_indicator_length(rule_key: str, indicator_symbol: str, data_manager: DataManager,
+                                            current_day_index: int) -> float:
+        """Parser for parsing the key into the indicator value."""
+        key_number_groupings = Trigger.find_all_nums_in_str(rule_key)
+
+        # MACD can only have slope emblem therefore 1 or 0 number groupings are acceptable
+        if len(key_number_groupings) == 0:
+            if SLOPE_SYMBOL in rule_key:
+                raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} does not contain'
+                                             f' enough number groupings!')
+            indicator_value = float(data_manager.get_data_point(indicator_symbol, current_day_index))
+        elif len(key_number_groupings) == 1:
+            # 1 number grouping suggests the $slope indicator is being used
+            if SLOPE_SYMBOL in rule_key:
+                slope_window_length = int(key_number_groupings[0])
+
+                # data request length is window - 1 to account for the current day index being a part of the window
+                slope_data_request_length = slope_window_length - 1
+
+                indicator_value = Trigger.calculate_slope(
+                    float(data_manager.get_data_point(indicator_symbol, current_day_index)),
+                    float(data_manager.get_data_point(indicator_symbol, current_day_index -
+                                                      slope_data_request_length)),
+                    slope_window_length
+                )
+            else:
+                raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} contains too many number '
+                                             f'groupings! Are you missing a $slope emblem?')
+        else:
+            raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} contains '
+                                         f'invalid number groupings!')
+
+        return indicator_value
 
     @staticmethod
     def _add_trigger_column(column_name: str, trigger_value: float, data_manager: DataManager):

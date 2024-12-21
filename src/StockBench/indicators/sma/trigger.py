@@ -10,8 +10,8 @@ log = logging.getLogger()
 
 
 class SMATrigger(Trigger):
-    def __init__(self, strategy_symbol):
-        super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
+    def __init__(self, indicator_symbol):
+        super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
     def additional_days(self, rule_key, value_value) -> int:
         """Calculate the additional days required.
@@ -24,7 +24,7 @@ class SMATrigger(Trigger):
         rule_key_number_groups = list(map(int, self.find_all_nums_in_str(rule_key)))
         if rule_key_number_groups:
             return max(rule_key_number_groups)
-        raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} must have an indicator length!')
+        raise StrategyIndicatorError(f'{self.indicator_symbol} rule key: {rule_key} must have an indicator length!')
 
     def add_to_data(self, rule_key, rule_value, side, data_manager):
         """Add data to the dataframe.
@@ -40,7 +40,7 @@ class SMATrigger(Trigger):
             indicator_length = int(rule_key_number_groups[0])
             self.__add_sma(indicator_length, data_manager)
         else:
-            raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} must have an indicator length!')
+            raise StrategyIndicatorError(f'{self.indicator_symbol} rule key: {rule_key} must have an indicator length!')
 
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for SMA.
@@ -55,55 +55,20 @@ class SMATrigger(Trigger):
         return:
             bool: True if a trigger was hit.
         """
-        log.debug(f'Checking {self.strategy_symbol} algorithm: {rule_key}...')
+        log.debug(f'Checking {self.indicator_symbol} algorithm: {rule_key}...')
 
-        indicator_value = self.__parse_key(rule_key, data_manager, current_day_index)
+        indicator_value = Trigger._parse_rule_key_no_default_indicator_length(rule_key, self.indicator_symbol, data_manager,
+                                                                              current_day_index)
 
         operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
 
-        log.debug(f'{self.strategy_symbol} algorithm: {rule_key} checked successfully')
+        log.debug(f'{self.indicator_symbol} algorithm: {rule_key} checked successfully')
 
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
-    def __parse_key(self, rule_key: any, data_manager: DataManager, current_day_index: int) -> float:
-        """Parser for parsing the key into the indicator value."""
-        # find the indicator value (left hand side of the comparison)
-        rule_key_number_groups = self.find_all_nums_in_str(rule_key)
-
-        # do not build title outside of conditional as nums could be [] which would result in index error
-
-        if len(rule_key_number_groups) == 1:
-            if SLOPE_SYMBOL in rule_key:
-                raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} does not contain '
-                                             f'enough number groupings!')
-            title = f'{self.strategy_symbol}{int(rule_key_number_groups[0])}'
-            indicator_value = float(data_manager.get_data_point(title, current_day_index))
-        elif len(rule_key_number_groups) == 2:
-            title = f'{self.strategy_symbol}{int(rule_key_number_groups[0])}'
-            # likely that the $slope indicator is being used
-            if SLOPE_SYMBOL in rule_key:
-                slope_window_length = int(rule_key_number_groups[1])
-
-                # data request length is window - 1 to account for the current day index being a part of the window
-                slope_data_request_length = slope_window_length - 1
-
-                indicator_value = self.calculate_slope(
-                    float(data_manager.get_data_point(title, current_day_index)),
-                    float(data_manager.get_data_point(title, current_day_index - slope_data_request_length)),
-                    slope_window_length
-                )
-            else:
-                raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} contains '
-                                             f'too many number groupings! Are you missing a $slope emblem?')
-        else:
-            raise StrategyIndicatorError(f'{self.strategy_symbol} rule key: {rule_key} contains '
-                                         f'invalid number groupings!')
-
-        return indicator_value
-
     def __add_sma(self, length: int, data_manager: DataManager):
         """Pre-calculate the SMA values and add them to the df."""
-        column_title = f'{self.strategy_symbol}{length}'
+        column_title = f'{self.indicator_symbol}{length}'
 
         # if SMA values ar already in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():

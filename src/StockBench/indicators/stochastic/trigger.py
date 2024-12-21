@@ -12,8 +12,8 @@ class StochasticTrigger(Trigger):
     # cannot use strategy symbol because it is "stochastic"
     DISPLAY_NAME = 'Stochastic'
 
-    def __init__(self, strategy_symbol):
-        super().__init__(strategy_symbol, side=Trigger.AGNOSTIC)
+    def __init__(self, indicator_symbol):
+        super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
     def additional_days(self, rule_key, value_value) -> int:
         """Calculate the additional days required.
@@ -48,7 +48,7 @@ class StochasticTrigger(Trigger):
         rule_key_number_groups = self.find_all_nums_in_str(rule_value)
         if len(rule_key_number_groups) > 0:
             trigger_value = float(rule_key_number_groups[0])
-            Trigger._add_trigger_column(f'{self.strategy_symbol}_{trigger_value}', trigger_value,
+            Trigger._add_trigger_column(f'{self.indicator_symbol}_{trigger_value}', trigger_value,
                                         data_manager)
 
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
@@ -66,7 +66,7 @@ class StochasticTrigger(Trigger):
         """
         log.debug(f'Checking stochastic algorithm: {rule_key}...')
 
-        indicator_value = self.__parse_key(rule_key, data_manager, current_day_index)
+        indicator_value = Trigger._parse_rule_key(rule_key, self.indicator_symbol, data_manager, current_day_index)
 
         operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
 
@@ -74,52 +74,11 @@ class StochasticTrigger(Trigger):
 
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
-    def __parse_key(self, rule_key, data_manager, current_day_index) -> float:
-        """Parser for parsing the key into the indicator value."""
-        # find the indicator value (left hand side of the comparison)
-        rule_key_number_groups = self.find_all_nums_in_str(rule_key)
-
-        if len(rule_key_number_groups) == 0:
-            if SLOPE_SYMBOL in rule_key:
-                raise StrategyIndicatorError(f'{self.DISPLAY_NAME} rule key: {rule_key} does not contain enough number '
-                                             f'groupings!')
-            indicator_value = float(data_manager.get_data_point(self.strategy_symbol, current_day_index))
-        elif len(rule_key_number_groups) == 1:
-            if SLOPE_SYMBOL in rule_key:
-                # make sure the number is after the slope emblem and not the stochastic emblem
-                if rule_key.split(str(rule_key_number_groups))[0] == self.strategy_symbol + SLOPE_SYMBOL:
-                    raise StrategyIndicatorError(
-                        f'{self.DISPLAY_NAME} rule key: {rule_key} contains too many number groupings! '
-                        f'Are you missing a $slope emblem?')
-            indicator_value = float(data_manager.get_data_point(self.strategy_symbol, current_day_index))
-        elif len(rule_key_number_groups) == 2:
-            title = f'{self.strategy_symbol}{int(rule_key_number_groups[0])}'
-            # 2 number groups suggests $slope indicator is being used
-            if SLOPE_SYMBOL in rule_key:
-                slope_window_length = int(rule_key_number_groups[1])
-
-                # data request length is window - 1 to account for the current day index being a part of the window
-                slope_data_request_length = slope_window_length - 1
-
-                indicator_value = self.calculate_slope(
-                    float(data_manager.get_data_point(title, current_day_index)),
-                    float(data_manager.get_data_point(title, current_day_index - slope_data_request_length)),
-                    slope_window_length
-                )
-            else:
-                raise StrategyIndicatorError(f'{self.DISPLAY_NAME} rule key: {rule_key} contains '
-                                             f'too many number groupings! Are you missing a $slope emblem?')
-        else:
-            raise StrategyIndicatorError(f'{self.DISPLAY_NAME} rule key: {rule_key} contains '
-                                         f'too many number groupings!')
-
-        return indicator_value
-
     def __add_stochastic_column(self, length: int, data_manager: DataManager):
         """Calculate the stochastic values and add them to the df."""
         # if we already have values in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():
-            if self.strategy_symbol in col_name:
+            if self.indicator_symbol in col_name:
                 return
 
         high_data = data_manager.get_column_data(data_manager.HIGH)
@@ -128,7 +87,7 @@ class StochasticTrigger(Trigger):
 
         stochastic_values = StochasticTrigger.__stochastic_oscillator(length, high_data, low_data, close_data)
 
-        data_manager.add_column(self.strategy_symbol, stochastic_values)
+        data_manager.add_column(self.indicator_symbol, stochastic_values)
 
     @staticmethod
     def __stochastic_oscillator(length: int, high_data: list, low_data: list, close_data: list) -> list:

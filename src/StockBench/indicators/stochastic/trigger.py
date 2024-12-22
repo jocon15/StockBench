@@ -85,12 +85,12 @@ class StochasticTrigger(Trigger):
         low_data = data_manager.get_column_data(data_manager.LOW)
         close_data = data_manager.get_column_data(data_manager.CLOSE)
 
-        stochastic_values = StochasticTrigger.__stochastic_oscillator(length, high_data, low_data, close_data)
+        stochastic_values = StochasticTrigger.stochastic_oscillator(length, high_data, low_data, close_data)
 
         data_manager.add_column(self.indicator_symbol, stochastic_values)
 
     @staticmethod
-    def __stochastic_oscillator(length: int, high_data: list, low_data: list, close_data: list) -> list:
+    def stochastic_oscillator(length: int, high_data: list, low_data: list, close_data: list) -> list:
         """Calculate the stochastic values for a list of price values."""
         past_length_days_high = []
         past_length_days_low = []

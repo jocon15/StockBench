@@ -29,17 +29,7 @@ class SingularChartingEngine(ChartingEngine):
     def build_indicator_chart(df: DataFrame, symbol: str, available_indicators: List[IndicatorInterface],
                               show_volume: bool,
                               save_option=ChartingEngine.TEMP_SAVE) -> str:
-        """Multi-plot chart for singular simulation indicators.
-
-        Args:
-            df: The full DataFrame post-simulation.
-            symbol: The symbol the simulation was run on.
-            available_indicators: The list of indicators.
-            save_option: Save the chart.
-
-        Return:
-            (str): The filepath of the chart
-        """
+        """Multi-plot chart for singular simulation indicators."""
         subplot_objects, subplot_types = SingularChartingEngine.__get_subplot_objects_and_types(df,
                                                                                                 available_indicators)
 
@@ -56,9 +46,9 @@ class SingularChartingEngine(ChartingEngine):
     def build_account_value_bar_chart(df: DataFrame, symbol: str, save_option=ChartingEngine.TEMP_SAVE) -> str:
         """Builds a chart for duration of positions.
 
-                return:
-                    str: The filepath of the built chart.
-                """
+        return:
+            str: The filepath of the built chart.
+        """
         rows = 1
         cols = 1
 

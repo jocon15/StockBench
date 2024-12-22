@@ -76,12 +76,12 @@ class EMATrigger(Trigger):
 
         price_data = data_manager.get_column_data(data_manager.CLOSE)
 
-        ema_values = EMATrigger.__calculate_ema(length, price_data)
+        ema_values = EMATrigger.calculate_ema(length, price_data)
 
         data_manager.add_column(column_title, ema_values)
 
     @staticmethod
-    def __calculate_ema(length: int, price_data: list) -> list:
+    def calculate_ema(length: int, price_data: list) -> list:
         """Calculates the EMA values for a list of price values"""
         k = 2 / (length + 1)
 

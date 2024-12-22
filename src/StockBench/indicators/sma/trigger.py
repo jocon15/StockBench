@@ -1,6 +1,5 @@
 import logging
 import statistics
-from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
 from StockBench.indicator.exceptions import StrategyIndicatorError
 from StockBench.simulation_data.data_manager import DataManager
@@ -77,12 +76,12 @@ class SMATrigger(Trigger):
 
         price_data = data_manager.get_column_data(data_manager.CLOSE)
 
-        sma_values = SMATrigger.__calculate_sma(length, price_data)
+        sma_values = SMATrigger.calculate_sma(length, price_data)
 
         data_manager.add_column(column_title, sma_values)
 
     @staticmethod
-    def __calculate_sma(length: int, price_data: list) -> list:
+    def calculate_sma(length: int, price_data: list) -> list:
         """Calculates the SMA values for a list of price values."""
         price_values = []
         sma_values = []

@@ -55,10 +55,10 @@ class StrategyStudioWindow(QWidget):
             self.on_save_as_btn_clicked()
 
     def on_save_as_btn_clicked(self):
-        fileName, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "", "JSON (*.json)")
-        if fileName is not None and fileName != '':
+        file_name, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "", "JSON (*.json)")
+        if file_name is not None and file_name != '':
             # only save the file if the user picked a location
-            self.__save_json_file(fileName)
+            self.__save_json_file(file_name)
 
     def __set_geometry(self, config_pos, config_width):
         # place the strategy studio to the right of the config window

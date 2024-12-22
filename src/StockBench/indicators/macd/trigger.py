@@ -1,10 +1,10 @@
 import logging
 import statistics
-from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
 from StockBench.indicator.exceptions import StrategyIndicatorError
 from StockBench.simulation_data.data_manager import DataManager
 from StockBench.position.position import Position
+from StockBench.indicators.ema.ema import EMATrigger
 
 log = logging.getLogger()
 
@@ -71,9 +71,9 @@ class MACDTrigger(Trigger):
 
     def __calculate_macd(self, price_data: list) -> list:
         """Calculate MACD values for a list of price values"""
-        large_ema_length_values = MACDTrigger.__calculate_ema(self.LARGE_EMA_LENGTH, price_data)
+        large_ema_length_values = EMATrigger.calculate_ema(self.LARGE_EMA_LENGTH, price_data)
 
-        small_ema_length_values = MACDTrigger.__calculate_ema(self.SMALL_EMA_LENGTH, price_data)
+        small_ema_length_values = EMATrigger.calculate_ema(self.SMALL_EMA_LENGTH, price_data)
 
         if len(large_ema_length_values) != len(small_ema_length_values):
             raise StrategyIndicatorError(f'{self.indicator_symbol} value lists for {self.indicator_symbol} must be the '
@@ -89,38 +89,3 @@ class MACDTrigger(Trigger):
                 macd_values.append(round(small_ema_length_values[i] - large_ema_length_values[i], 3))
 
         return macd_values
-
-    @staticmethod
-    def __calculate_ema(length: int, price_data: list) -> list:
-        """Calculates the EMA values for a list of price values."""
-        k = 2 / (length + 1)
-
-        previous_ema = MACDTrigger.__calculate_sma(length, price_data[0:length])[-1]
-
-        ema_values = []
-        for i in range(len(price_data)):
-            if i < length:
-                ema_values.append(None)
-            else:
-                ema = round((k * (float(price_data[i]) - previous_ema)) + previous_ema, 3)
-                ema_values.append(ema)
-                previous_ema = ema
-        return ema_values
-
-    @staticmethod
-    def __calculate_sma(length: int, price_data: list) -> list:
-        """Calculates the SMA values for a list of price values."""
-        price_values = []
-        sma_values = []
-        all_sma_values = []
-        for element in price_data:
-            if len(price_values) < length:
-                price_values.append(float(element))
-            else:
-                price_values.pop(0)
-                sma_values.pop(0)
-                price_values.append(float(element))
-            avg = round(statistics.mean(price_values), 3)
-            sma_values.append(avg)
-            all_sma_values.append(avg)
-        return all_sma_values

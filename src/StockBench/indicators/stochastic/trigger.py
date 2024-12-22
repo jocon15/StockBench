@@ -1,7 +1,6 @@
 import logging
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
-from StockBench.indicator.exceptions import StrategyIndicatorError
 from StockBench.simulation_data.data_manager import DataManager
 from StockBench.position.position import Position
 

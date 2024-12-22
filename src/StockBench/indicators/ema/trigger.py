@@ -3,6 +3,7 @@ import statistics
 from StockBench.indicator.trigger import Trigger
 from StockBench.indicator.exceptions import StrategyIndicatorError
 from StockBench.simulation_data.data_manager import DataManager
+from StockBench.indicators.sma.sma import SMATrigger
 
 log = logging.getLogger()
 
@@ -85,7 +86,7 @@ class EMATrigger(Trigger):
         k = 2 / (length + 1)
 
         # get the initial ema value (uses sma of length days)
-        previous_ema = EMATrigger.__calculate_sma(length, price_data[0:length])[-1]
+        previous_ema = SMATrigger.calculate_sma(length, price_data[0:length])[-1]
 
         ema_values = []
         for i in range(len(price_data)):
@@ -96,19 +97,3 @@ class EMATrigger(Trigger):
                 ema_values.append(ema_point)
                 previous_ema = ema_point
         return ema_values
-
-    @staticmethod
-    def __calculate_sma(length: int, price_data: list) -> list:
-        """Calculates the SMA values for a list of price values."""
-        price_values = []
-        sma_values = []
-        for day in price_data:
-            if len(price_values) < length:
-                price_values.append(float(day))
-            else:
-                price_values.pop(0)
-                sma_values.pop(0)
-                price_values.append(float(day))
-            avg = round(statistics.mean(price_values), 3)
-            sma_values.append(avg)
-        return sma_values

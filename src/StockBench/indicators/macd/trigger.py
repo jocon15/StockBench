@@ -43,7 +43,7 @@ class MACDTrigger(Trigger):
 
         price_data = data_manager.get_column_data(data_manager.CLOSE)
 
-        data_manager.add_column(self.indicator_symbol, self.__calculate_macd(price_data))
+        data_manager.add_column(self.indicator_symbol, self.calculate_macd(price_data))
 
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for EMA.
@@ -69,7 +69,7 @@ class MACDTrigger(Trigger):
 
         return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
 
-    def __calculate_macd(self, price_data: list) -> list:
+    def calculate_macd(self, price_data: list) -> list:
         """Calculate MACD values for a list of price values"""
         large_ema_length_values = EMATrigger.calculate_ema(self.LARGE_EMA_LENGTH, price_data)
 

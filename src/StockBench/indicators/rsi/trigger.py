@@ -82,12 +82,12 @@ class RSITrigger(Trigger):
 
         price_data = data_manager.get_column_data(data_manager.CLOSE)
 
-        rsi_values = RSITrigger.__calculate_rsi(length, price_data)
+        rsi_values = RSITrigger.calculate_rsi(length, price_data)
 
         data_manager.add_column(self.indicator_symbol, rsi_values)
 
     @staticmethod
-    def __calculate_rsi(length: int, price_data: list) -> list:
+    def calculate_rsi(length: int, price_data: list) -> list:
         """Calculate the RSI values for a list of price values."""
         first_day_value = 0
         gain = []

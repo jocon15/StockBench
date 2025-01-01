@@ -144,7 +144,7 @@ class Trigger:
         elif len(rule_key_number_groups) == 1:
             # 1 number grouping suggests the $slope indicator is being used
             if SLOPE_SYMBOL in rule_key:
-                indicator_value = Trigger.__slope_value(indicator_symbol, int(rule_key_number_groups[1]),
+                indicator_value = Trigger.__slope_value(indicator_symbol, int(rule_key_number_groups[0]),
                                                         current_day_index, data_manager)
             else:
                 raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} contains too many number '

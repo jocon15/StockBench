@@ -143,5 +143,4 @@ class SingularConfigTab(ConfigTab):
         # begin the simulation and progress checking timer
         self.simulation_result_window.begin()
 
-        if self.simulation_show_results_window:
-            self.simulation_result_window.showMaximized()
+        self.simulation_result_window.showMaximized()

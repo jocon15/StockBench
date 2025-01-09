@@ -57,10 +57,6 @@ class MultiConfigTab(ConfigTab):
 
         self.layout.addWidget(self.unique_chart_save_btn)
 
-        self.layout.addWidget(self.show_results_label)
-
-        self.layout.addWidget(self.show_sim_results_btn)
-
         self.layout.addWidget(self.results_depth_label)
 
         self.layout.addWidget(self.data_and_charts_radio_btn)
@@ -117,5 +113,4 @@ class MultiConfigTab(ConfigTab):
         # begin the simulation and progress checking timer
         self.simulation_result_window.begin()
 
-        if self.simulation_show_results_window:
-            self.simulation_result_window.showMaximized()
+        self.simulation_result_window.showMaximized()

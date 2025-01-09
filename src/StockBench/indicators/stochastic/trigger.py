@@ -67,11 +67,9 @@ class StochasticTrigger(Trigger):
 
         indicator_value = Trigger._parse_rule_key(rule_key, self.indicator_symbol, data_manager, current_day_index)
 
-        operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
-
         log.debug(f'{self.DISPLAY_NAME} algorithm: {rule_key} checked successfully')
 
-        return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
+        return self.basic_trigger_check(indicator_value, rule_value, data_manager, current_day_index)
 
     def __add_stochastic_column(self, length: int, data_manager: DataManager):
         """Calculate the stochastic values and add them to the df."""

@@ -68,7 +68,6 @@ class ConfigTab(QWidget):
         self.simulation_logging = False
         self.simulation_reporting = False
         self.simulation_unique_chart_saving = False
-        self.simulation_show_results_window = True
         self.head_to_head_window = None
         self.results_depth = Simulator.CHARTS_AND_DATA
 
@@ -134,17 +133,6 @@ class ConfigTab(QWidget):
         self.unique_chart_save_btn.setText('OFF')
         self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
         self.unique_chart_save_btn.clicked.connect(self.on_chart_saving_btn_clicked)  # noqa
-
-        # show results label
-        self.show_results_label = QLabel()
-        self.show_results_label.setText('Show Results:')
-        self.show_results_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
-        # show results button
-        self.show_sim_results_btn = QPushButton()
-        self.show_sim_results_btn.setCheckable(True)
-        self.show_sim_results_btn.setText('ON')
-        self.show_sim_results_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
-        self.show_sim_results_btn.clicked.connect(self.on_show_results_btn_clicked)  # noqa
 
         # results depth label
         self.results_depth_label = QLabel()
@@ -228,16 +216,6 @@ class ConfigTab(QWidget):
             self.simulation_unique_chart_saving = False
             self.unique_chart_save_btn.setText('OFF')
             self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
-
-    def on_show_results_btn_clicked(self):
-        if self.show_sim_results_btn.isChecked():
-            self.simulation_show_results_window = True
-            self.show_sim_results_btn.setText('ON')
-            self.show_sim_results_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
-        else:
-            self.simulation_show_results_window = False
-            self.show_sim_results_btn.setText('OFF')
-            self.show_sim_results_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def data_and_charts_btn_selected(self, selected):
         if selected:

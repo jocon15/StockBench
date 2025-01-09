@@ -75,10 +75,6 @@ class SingularConfigTab(ConfigTab):
         self.show_volume_btn.clicked.connect(self.on_show_volume_btn_clicked)  # noqa
         self.layout.addWidget(self.show_volume_btn)
 
-        self.layout.addWidget(self.show_results_label)
-
-        self.layout.addWidget(self.show_sim_results_btn)
-
         self.layout.addWidget(self.results_depth_label)
 
         self.layout.addWidget(self.data_and_charts_radio_btn)

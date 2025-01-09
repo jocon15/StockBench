@@ -63,6 +63,28 @@ class Trigger:
 
         return operator, trigger_value
 
+    def basic_trigger_check(self, indicator_value: float, rule_value: str, data_manager: DataManager,
+                            current_day_index: int) -> bool:
+        """Basic trigger check with comparison operators."""
+        operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
+
+        if operator == '<=':
+            if indicator_value <= trigger_value:
+                return True
+        elif operator == '>=':
+            if indicator_value >= trigger_value:
+                return True
+        elif operator == '<':
+            if indicator_value < trigger_value:
+                return True
+        elif operator == '>':
+            if indicator_value > trigger_value:
+                return True
+        elif operator == '=':
+            if abs(indicator_value - trigger_value) <= 0.001:  # DOUBLE_COMPARISON_EPSILON
+                return True
+        return False
+
     @staticmethod
     def _parse_rule_key(rule_key: str, indicator_symbol: str, data_manager: DataManager,
                         current_day_index: int) -> float:
@@ -166,35 +188,6 @@ class Trigger:
         list_values = [trigger_value for _ in range(data_manager.get_data_length())]
 
         data_manager.add_column(column_name, list_values)
-
-    @staticmethod
-    def basic_trigger_check(indicator_value: float, operator_value: str, trigger_value: float) -> bool:
-        """Abstraction for basic algorithm comparison operators.
-
-        Args:
-            indicator_value: The value of the indicator.
-            operator_value: The operator defined in the strategy
-            trigger_value: The value of the algorithm.
-
-        returns:
-            bool: True if a trigger was hit.
-        """
-        if operator_value == '<=':
-            if indicator_value <= trigger_value:
-                return True
-        elif operator_value == '>=':
-            if indicator_value >= trigger_value:
-                return True
-        elif operator_value == '<':
-            if indicator_value < trigger_value:
-                return True
-        elif operator_value == '>':
-            if indicator_value > trigger_value:
-                return True
-        elif operator_value == '=':
-            if abs(indicator_value - trigger_value) <= 0.001:  # DOUBLE_COMPARISON_EPSILON
-                return True
-        return False
 
     @staticmethod
     def find_single_numeric_in_str(rule_value: str) -> float:

@@ -48,14 +48,7 @@ class VolumeTrigger(Trigger):
         """
         volume = data_manager.get_data_point(data_manager.VOLUME, current_day_index)
 
-        if CURRENT_PRICE_SYMBOL in rule_value:
-            trigger_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
-            operator = rule_value.replace(CURRENT_PRICE_SYMBOL, '')
-        else:
-            trigger_value = Trigger.find_single_numeric_in_str(rule_value)
-            operator = Trigger.find_operator_in_str(rule_value)
-
-        result = Trigger.basic_trigger_check(volume, operator, trigger_value)
+        result = self.basic_trigger_check(volume, rule_value, data_manager, current_day_index)
 
         log.debug(f'{self.indicator_symbol} algorithm: {rule_key} checked successfully')
 

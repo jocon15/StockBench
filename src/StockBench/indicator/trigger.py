@@ -202,7 +202,7 @@ class Trigger:
         raises:
             ValueError: If the passed value is not in the correct format (contains >1 or no numerics).
         """
-        nums = re.findall(r'\d+', rule_value)
+        nums = re.findall(r'\d+(?:\.\d+)?', rule_value)
         if len(nums) == 1:
             return float(nums[0])
         else:
@@ -219,7 +219,7 @@ class Trigger:
             list: A list of numbers in the string.
 
         """
-        return re.findall(r'\d+', rule_value)
+        return re.findall(r'\d+(?:\.\d+)?', rule_value)
 
     @staticmethod
     def find_operator_in_str(rule_value: str) -> str:
@@ -234,7 +234,7 @@ class Trigger:
         raises:
             ValueError: If the passed value has incorrect amount of number groupings.
         """
-        nums = re.findall(r'\d+', rule_value)
+        nums = re.findall(r'\d+(?:\.\d+)?', rule_value)
         if len(nums) == 1:
             return rule_value.replace(str(nums[0]), '')
         else:

@@ -62,11 +62,9 @@ class MACDTrigger(Trigger):
         indicator_value = Trigger._parse_rule_key_no_indicator_length(rule_key, self.indicator_symbol, data_manager,
                                                                       current_day_index)
 
-        operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
-
         log.debug(f'{self.indicator_symbol} algorithm: {rule_key} checked successfully')
 
-        return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
+        return self.basic_trigger_check(indicator_value, rule_value, data_manager, current_day_index)
 
     def calculate_macd(self, price_data: list) -> list:
         """Calculate MACD values for a list of price values"""

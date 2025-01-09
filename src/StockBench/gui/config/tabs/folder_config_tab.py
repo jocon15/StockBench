@@ -50,10 +50,6 @@ class FolderConfigTab(ConfigTab):
 
         self.layout.addWidget(self.unique_chart_save_btn)
 
-        self.layout.addWidget(self.show_results_label)
-
-        self.layout.addWidget(self.show_sim_results_btn)
-
         self.layout.addWidget(self.run_btn, alignment=Qt.AlignmentFlag.AlignRight)
 
         self.layout.addWidget(self.error_message_box)
@@ -111,5 +107,4 @@ class FolderConfigTab(ConfigTab):
         # begin the simulation and progress checking timer
         self.simulation_result_window.begin()
 
-        if self.simulation_show_results_window:
-            self.simulation_result_window.showMaximized()
+        self.simulation_result_window.showMaximized()

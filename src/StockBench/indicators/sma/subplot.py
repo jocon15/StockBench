@@ -21,7 +21,7 @@ class SMASubplot(Subplot):
         traces = []
         for (column_name, column_data) in df.items():
             if self.data_symbol in column_name:
-                nums = re.findall(r'\d+', column_name)
+                nums = re.findall(r'\d+(?:\.\d+)?', column_name)
                 length = nums[0]
                 traces.append(fplt.Scatter(
                     x=df['Date'],

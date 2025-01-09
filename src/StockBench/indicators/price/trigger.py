@@ -54,11 +54,9 @@ class PriceTrigger(Trigger):
         # more clear we are using a dedicate parser
         indicator_value = self.__parse_key(rule_key, data_manager, current_day_index)
 
-        operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
-
         log.debug(f'Price algorithm: {rule_key} checked successfully')
 
-        return Trigger.basic_trigger_check(indicator_value, operator, trigger_value)
+        return self.basic_trigger_check(indicator_value, rule_value, data_manager, current_day_index)
 
     def __parse_key(self, rule_key, data_manager, current_day_index) -> float:
         """Parser for parsing the key into the indicator value."""

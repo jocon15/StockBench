@@ -1,6 +1,8 @@
 from unittest.mock import patch
+
 from StockBench.indicator.trigger import Trigger
 from StockBench.indicator.exceptions import StrategyIndicatorError
+from StockBench.indicators.sma.trigger import SMATrigger
 
 
 def test_get_side():
@@ -40,30 +42,32 @@ def test__parse_value(data_mocker):
 
 def test_basic_trigger_check():
     # ============= Arrange ==============
+    test_object = SMATrigger('SMA')
 
     # ============= Act ==================
 
     # ============= Assert ===============
+
     # gt true
-    assert Trigger.basic_trigger_check(200.0, '>', 150.0) is True
+    assert test_object.basic_trigger_check(200.0, '>150.0', None, 1) is True  # noqa
     # gt false
-    assert Trigger.basic_trigger_check(200.0, '>', 250.0) is False
+    assert test_object.basic_trigger_check(200.0, '>250.0', None, 1) is False  # noqa
     # lt true
-    assert Trigger.basic_trigger_check(100.0, '<', 150.0) is True
+    assert test_object.basic_trigger_check(100.0, '<150.0', None, 1) is True  # noqa
     # lt false
-    assert Trigger.basic_trigger_check(300.0, '<', 250.0) is False
+    assert test_object.basic_trigger_check(300.0, '<250.0', None, 1) is False  # noqa
     # gt eq true
-    assert Trigger.basic_trigger_check(300.0, '>=', 250.0) is True
+    assert test_object.basic_trigger_check(300.0, '>=250.0', None, 1) is True  # noqa
     # gt eq false
-    assert Trigger.basic_trigger_check(200.0, '>=', 250.0) is False
+    assert test_object.basic_trigger_check(200.0, '>=250.0', None, 1) is False  # noqa
     # lt eq true
-    assert Trigger.basic_trigger_check(200.0, '<=', 250.0) is True
+    assert test_object.basic_trigger_check(200.0, '<=250.0', None, 1) is True  # noqa
     # lt eq false
-    assert Trigger.basic_trigger_check(300.0, '<=', 250.0) is False
+    assert test_object.basic_trigger_check(300.0, '<=250.0', None, 1) is False  # noqa
     # eq true
-    assert Trigger.basic_trigger_check(200.0, '=', 200.0) is True
+    assert test_object.basic_trigger_check(200.0, '=200.0', None, 1) is True  # noqa
     # eq false
-    assert Trigger.basic_trigger_check(200.0, '=', 250.0) is False
+    assert test_object.basic_trigger_check(200.0, '=250.0', None, 1) is False  # noqa
 
 
 def test_find_single_numeric_in_str():

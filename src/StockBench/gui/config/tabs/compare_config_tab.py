@@ -74,10 +74,6 @@ class CompareConfigTab(ConfigTab):
 
         self.layout.addWidget(self.reporting_btn)
 
-        self.layout.addWidget(self.show_results_label)
-
-        self.layout.addWidget(self.show_sim_results_btn)
-
         self.layout.addWidget(self.results_depth_label)
 
         self.layout.addWidget(self.data_and_charts_radio_btn)
@@ -147,5 +143,4 @@ class CompareConfigTab(ConfigTab):
 
         self.head_to_head_window = CompareResultsWindow(simulation_result_window_1, simulation_result_window_2)
 
-        if self.simulation_show_results_window:
-            self.head_to_head_window.showMaximized()
+        self.head_to_head_window.showMaximized()

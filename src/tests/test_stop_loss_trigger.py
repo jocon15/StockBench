@@ -40,7 +40,7 @@ def test_add_to_data_from_rule_key(test_object):
         assert False
 
 
-def test_add_to_data_from_rulevaluey(test_object):
+def test_add_to_data_from_rule_value(test_object):
     # ============= Arrange ==============
 
     # ============= Act ==================

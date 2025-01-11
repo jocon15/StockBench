@@ -60,6 +60,9 @@ class CandlestickColorTrigger(Trigger):
         # candle colors are included in the data by default
         return
 
+    def get_value_when_referenced(self, rule_value: str, current_day_index) -> float:
+        raise NotImplementedError('Candle stick color cannot be referenced in a rule value!')
+
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for candlestick color.
 

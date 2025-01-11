@@ -793,7 +793,11 @@ def test_check_trigger_2_numbers_present_bad_format(data_mocker, test_object):
 
     # ============= Assert ===============
     # has 2 numbers but does not include slope symbol
-    assert test_object.check_trigger('stochasticran50', '>price', data_mocker, None, 0) is False  # noqa
+    try:
+        test_object.check_trigger('stochasticran50', '>price', data_mocker, None, 0)
+        assert False
+    except StrategyIndicatorError:
+        assert True
 
 
 @patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')

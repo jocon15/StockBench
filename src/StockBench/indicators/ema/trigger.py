@@ -11,22 +11,22 @@ class EMATrigger(Trigger):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days_from_rule_key(self, rule_key, rule_value) -> int:
+    def additional_days_from_rule_key(self, rule_key) -> int:
         """Calculate the additional days required.
 
         Args:
             rule_key (any): The key value from the strategy.
-            rule_value (any): The value from the strategy.
         """
         # get all numbers from rule key
         nums = list(map(int, self.find_all_nums_in_str(rule_key)))
-
-        # get all numbers from rule value if this symbol is
-        if self.indicator_symbol in rule_value:
-            nums = nums + list(map(int, self.find_all_nums_in_str(rule_value)))
         if nums:
             return max(nums)
         raise StrategyIndicatorError(f'{self.indicator_symbol} key: {rule_key} must have an indicator length!')
+
+    def additional_days_from_rule_value(self, rule_value: any) -> int:
+        """Calculate the additional days required from rule value."""
+        # logic for rule value is the same as the logic for rule key
+        return self.additional_days_from_rule_key(rule_value)
 
     def add_to_data(self, rule_key, rule_value, side, data_manager):
         """Add data to the dataframe.

@@ -29,12 +29,11 @@ class MACDTrigger(Trigger):
         """Calculate the additional days required from rule value."""
         return self.LARGE_EMA_LENGTH
 
-    def add_to_data_from_rule_key(self, rule_key, rule_value, side, data_manager):
-        """Add data to the dataframe.
+    def add_to_data_from_rule_key(self, rule_key, side, data_manager):
+        """Add data to the dataframe from rule key.
 
         Args:
             rule_key (any): The key value from the strategy.
-            rule_value (any): The value from thr strategy.
             side (str): The side (buy/sell).
             data_manager (DataManager): The data object.
         """
@@ -46,6 +45,11 @@ class MACDTrigger(Trigger):
         price_data = data_manager.get_column_data(data_manager.CLOSE)
 
         data_manager.add_column(self.indicator_symbol, self.calculate_macd(price_data))
+
+    def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
+        """Add data to the dataframe from rule value."""
+        # logic for rule value is the same as the logic for rule key
+        return self.add_to_data_from_rule_key(rule_value, side, data_manager)
 
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for EMA.

@@ -14,12 +14,12 @@ class StochasticTrigger(Trigger):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days(self, rule_key, value_value) -> int:
+    def additional_days(self, rule_key, rule_value) -> int:
         """Calculate the additional days required.
 
         Args:
             rule_key (any): The key value from the strategy.
-            value_value (any): The value from the strategy.
+            rule_value (any): The value from the strategy.
         """
         # map to a list of ints
         rule_key_number_groups = list(map(int, self.find_all_nums_in_str(rule_key)))

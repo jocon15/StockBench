@@ -11,19 +11,19 @@ class CandlestickColorTrigger(Trigger):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days(self, rule_key, value_value) -> int:
+    def additional_days(self, rule_key, rule_value) -> int:
         """Calculate the additional days required.
 
         Args:
             rule_key (any): The key value from the strategy (unused in this function).
-            value_value (any): The value from the strategy.
+            rule_value (any): The value from the strategy.
         """
-        if len(value_value.keys()) == 0:
+        if len(rule_value.keys()) == 0:
             raise StrategyIndicatorError(f'{self.indicator_symbol} key: {rule_key} must have at least one color child '
                                          f'key')
 
         additional_days = 0
-        for sub_key in value_value.keys():
+        for sub_key in rule_value.keys():
             if int(sub_key) > additional_days:
                 additional_days = int(sub_key)
         return additional_days

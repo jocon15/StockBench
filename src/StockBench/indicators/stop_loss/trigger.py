@@ -10,12 +10,12 @@ class StopLossTrigger(Trigger):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=Trigger.SELL)
 
-    def additional_days(self, rule_key, value_value) -> int:
+    def additional_days(self, rule_key, rule_value) -> int:
         """Calculate the additional days required.
 
         Args:
             rule_key (any): The key value from the strategy.
-            value_value (any): The value from the strategy.
+            rule_value (any): The value from the strategy.
         """
         # note stop loss does not require additional days
         return 0

@@ -39,7 +39,7 @@ class Trigger:
     def add_to_data_from_rule_key(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
         # Must include rule value as a parameter because oscillator triggers (RSI, stochastic,...) have literal
         # threshold values in the rule value that need to be added to the data. Literal threshold values cannot be
-        # identified with only the rule key.
+        # identified with only the rule value.
         raise NotImplementedError('Add to data from rule key not implemented!')
 
     @abstractmethod

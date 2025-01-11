@@ -21,7 +21,7 @@ class EMATrigger(Trigger):
         nums = list(map(int, self.find_all_nums_in_str(rule_key)))
         if nums:
             return max(nums)
-        raise StrategyIndicatorError(f'{self.indicator_symbol} key: {rule_key} must have an indicator length!')
+        raise StrategyIndicatorError(f'{self.indicator_symbol} indicator must have an indicator length!')
 
     def additional_days_from_rule_value(self, rule_value: any) -> int:
         """Calculate the additional days required from rule value."""

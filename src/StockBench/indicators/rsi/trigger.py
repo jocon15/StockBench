@@ -12,18 +12,22 @@ class RSITrigger(Trigger):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days_from_rule_key(self, rule_key, rule_value) -> int:
-        """Calculate the additional days required.
+    def additional_days_from_rule_key(self, rule_key) -> int:
+        """Calculate the additional days required from rule key.
 
         Args:
             rule_key (any): The key value from the strategy.
-            rule_value (any): The value from the strategy.
         """
         rule_key_number_groups = self.find_all_nums_in_str(rule_key)
         if len(rule_key_number_groups) > 0:
             return max(list(map(int, rule_key_number_groups)))
         else:
             return DEFAULT_RSI_LENGTH
+
+    def additional_days_from_rule_value(self, rule_value: any) -> int:
+        """Calculate the additional days required from rule value."""
+        # logic for rule value is the same as the logic for rule key
+        return self.additional_days_from_rule_key(rule_value)
 
     def add_to_data(self, rule_key, rule_value, side, data_manager):
         """Add data to the dataframe.

@@ -47,6 +47,10 @@ class Trigger:
         raise NotImplementedError('Add to data not implemented!')
 
     @abstractmethod
+    def get_value_when_referenced(self, rule_value: str, current_day_index) -> float:
+        raise NotImplementedError('Get value when referenced not implemented!')
+
+    @abstractmethod
     def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,
                       current_day_index: int) -> bool:
         raise NotImplementedError('Check algorithm from rule value not implemented!')

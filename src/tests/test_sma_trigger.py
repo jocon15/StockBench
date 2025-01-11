@@ -47,12 +47,12 @@ def test_add_to_data(data_mocker, logger_mocker, test_object):
 
     # ============= Act ==================
     # test normal case
-    test_object.add_to_data_from_rule_key('SMA20', '>30', 'buy', data_mocker)
+    test_object.add_to_data_from_rule_key('SMA20', None, '>30', 'buy')
     # assertions are done in side effect function
 
     # test console output if no indicator length is provided
     try:
-        test_object.add_to_data_from_rule_key('SMA', '>30', 'buy', data_mocker)
+        test_object.add_to_data_from_rule_key('SMA', None, '>30', 'buy')
         assert False
     except StrategyIndicatorError:
         assert True

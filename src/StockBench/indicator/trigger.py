@@ -36,8 +36,9 @@ class Trigger:
         raise NotImplementedError('Additional days from rule value not implemented!')
 
     @abstractmethod
-    def add_to_data_from_rule_key(self, rule_key: str, side: str, data_manager: DataManager):
-        # candlestick does not need rule value here because candlestick does not have any add to data logic
+    def add_to_data_from_rule_key(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
+        # must include rule value as a parameter because some triggers (candlestick) cannot deduce indicator length from
+        # the rule key and cannot be identified from the rule value
         raise NotImplementedError('Add to data from rule key not implemented!')
 
     @abstractmethod

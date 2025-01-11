@@ -25,7 +25,7 @@ class StopProfitTrigger(Trigger):
         # stop profit does not require additional days
         return 0
 
-    def add_to_data_from_rule_key(self, rule_key: str, rule_value: str, side: str, data_manager: DataManager):
+    def add_to_data_from_rule_key(self, rule_key: str, rule_value, side: str, data_manager: str):
         """Add data to the dataframe.
 
         Args:

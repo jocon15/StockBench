@@ -47,7 +47,7 @@ def test_add_to_data(data_mocker, logger_mocker, test_object):
     data_mocker.get_data_length.return_value = 200
 
     # test normal case
-    test_object.add_to_data_from_rule_key('stochastic', '>30', 'buy', data_mocker)
+    test_object.add_to_data_from_rule_key('stochastic', None, '>30', 'buy')
     # assertions are done in side effect function
 
 

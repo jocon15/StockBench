@@ -55,6 +55,15 @@ class RSITrigger(Trigger):
             Trigger._add_trigger_column(f'{self.indicator_symbol}_{trigger_value}', trigger_value,
                                         data_manager)
 
+    def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
+        """corrected ema trigger add to data functions."""
+        nums = self.find_all_nums_in_str(rule_value)
+        if len(nums) > 0:
+            num = int(nums[0])
+            self.__add_rsi_column(num, data_manager)
+        else:
+            self.__add_rsi_column(DEFAULT_RSI_LENGTH, data_manager)
+
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for RSI.
 

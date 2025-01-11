@@ -43,11 +43,12 @@ class CandlestickColorTrigger(Trigger):
         # cannot deduce additional days from color rule value
         return 0
 
-    def add_to_data_from_rule_key(self, rule_key, side, data_manager):
+    def add_to_data_from_rule_key(self, rule_key, rule_value, side, data_manager):
         """Add data to the dataframe from rule key.
 
         Args:
             rule_key (any): The key value from the strategy.
+            rule_value (any): The value from thr strategy.
             side (str): The side (buy/sell).
             data_manager (DataManager): The data object.
         """

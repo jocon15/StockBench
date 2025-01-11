@@ -10,20 +10,14 @@ def test_object():
     return RSITrigger('RSI')
 
 
-@patch('StockBench.simulation_data.data_manager.DataManager')
-def test_additional_days_from_rule_key(data_mocker, test_object):
-    data_mocker.get_data_length.return_value = 200
-
+def test_additional_days_from_rule_key(test_object):
     assert test_object.additional_days_from_rule_key('RSI', None) == 14
     assert test_object.additional_days_from_rule_key('RSI50', None) == 50
     assert test_object.additional_days_from_rule_key('RSI20$slope10', None) == 20
     assert test_object.additional_days_from_rule_key('RSI20$slope30', None) == 30
 
 
-@patch('StockBench.simulation_data.data_manager.DataManager')
-def test_additional_days_from_rule_value(data_mocker, test_object):
-    data_mocker.get_data_length.return_value = 200
-
+def test_additional_days_from_rule_value(test_object):
     assert test_object.additional_days_from_rule_value('RSI') == 14
     assert test_object.additional_days_from_rule_value('RSI50') == 50
     assert test_object.additional_days_from_rule_value('RSI20$slope10') == 20

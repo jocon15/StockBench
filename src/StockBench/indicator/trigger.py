@@ -38,7 +38,7 @@ class Trigger:
         raise NotImplementedError('Add to data from rule key not implemented!')
 
     @abstractmethod
-    def add_to_data_from_rule_value(self, rule_key: str, side: str, data_manager: DataManager):
+    def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
         raise NotImplementedError('Add to data not implemented!')
 
     @abstractmethod

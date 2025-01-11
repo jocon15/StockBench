@@ -79,10 +79,12 @@ class Algorithm:
             key = keys[i]
             value = values[i]
             for trigger in triggers:
+                # rule keys get checked for indicators
                 if trigger.indicator_symbol in key:
                     rule_key_additional_days = trigger.additional_days_from_rule_key(key)
                     if additional_days < rule_key_additional_days:
                         additional_days = rule_key_additional_days
+                # rule values get checked for indicators
                 if trigger.indicator_symbol in value:
                     rule_value_additional_days = trigger.additional_days_from_rule_value(value)
                     if additional_days < rule_value_additional_days:

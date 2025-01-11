@@ -33,7 +33,7 @@ class StochasticTrigger(Trigger):
         return self.additional_days_from_rule_key(rule_value, None)
 
     def add_to_data_from_rule_key(self, rule_key, rule_value, side, data_manager):
-        """Add data to the dataframe.
+        """Add data to the dataframe from rule key.
 
         Args:
             rule_key (any): The key value from the strategy.
@@ -54,6 +54,15 @@ class StochasticTrigger(Trigger):
             trigger_value = float(rule_key_number_groups[0])
             Trigger._add_trigger_column(f'{self.indicator_symbol}_{trigger_value}', trigger_value,
                                         data_manager)
+
+    def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
+        """Add data to the dataframe from rule value."""
+        rule_key_number_groups = self.find_all_nums_in_str(rule_value)
+        if len(rule_key_number_groups) > 0:
+            num = int(rule_key_number_groups[0])
+            self.__add_stochastic_column(num, data_manager)
+        else:
+            self.__add_stochastic_column(DEFAULT_STOCHASTIC_LENGTH, data_manager)
 
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for stochastic.

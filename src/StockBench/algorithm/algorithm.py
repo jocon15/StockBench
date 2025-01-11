@@ -256,15 +256,18 @@ class Algorithm:
             bool: True if triggered, false if not.
         """
         for inner_key in self.strategy[side][key].keys():
+            inner_value = self.strategy[side][key][inner_key]
             trigger_hit = False
             key_matched_with_trigger = False
             # check all algorithm
             for trigger in triggers:
                 if trigger.indicator_symbol in inner_key:
                     key_matched_with_trigger = True
+                    # replace any rule values with indicator references with their actual value
+                    injected_inner_value = self._inject_rule_value_with_values(inner_value, triggers, current_day_index)
                     trigger_hit = trigger.check_trigger(
                         inner_key,
-                        self.strategy[side][key][inner_key],
+                        injected_inner_value,
                         data_manager,
                         position,
                         current_day_index)
@@ -293,17 +296,15 @@ class Algorithm:
         return:
             bool: True if triggered, false if not.
         """
+        rule_value = self.strategy[side][key]
         key_matched_with_trigger = False
         # check all algorithm
         for trigger in triggers:
             if trigger.indicator_symbol in key:
                 key_matched_with_trigger = True
-                trigger_hit = trigger.check_trigger(
-                    key,
-                    self.strategy[side][key],
-                    data_manager,
-                    position,
-                    current_day_index)
+                # replace any rule values with indicator references with their actual value
+                injected_rule_value = self._inject_rule_value_with_values(rule_value, triggers, current_day_index)
+                trigger_hit = trigger.check_trigger(key, injected_rule_value, data_manager, position, current_day_index)
                 if trigger_hit:
                     # any 'OR' algorithm was hit
                     return True
@@ -324,6 +325,20 @@ class Algorithm:
             The full strategy rule as a string
         """
         return f'{key}:{self.strategy[side][key]}'
+
+    @staticmethod
+    def _inject_rule_value_with_values(rule_value: any, triggers: list, current_day_index: int) -> str:
+        """Replaces indicators in rule value with indicator values."""
+        for trigger in triggers:
+            if trigger.indicator_symbol in rule_value:
+                # pull out comparison operator (comparison operator always comes before indicator symbol in rule value)
+                injected_rule_value = rule_value.split(trigger.indicator_symbol)[0]
+                # inject the indicator value into the right side of the comparison
+                injected_rule_value += trigger.get_value_when_referenced(rule_value, current_day_index)
+                return injected_rule_value
+
+        # not all rules will require an injection which is ok, just return the rule_value
+        return rule_value
 
     @staticmethod
     def __validate_timestamps(start_time_unix: int, end_time_unix: int) -> None:

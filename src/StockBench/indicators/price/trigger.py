@@ -2,6 +2,7 @@ import logging
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
 from StockBench.indicator.exceptions import StrategyIndicatorError
+from StockBench.simulation_data.data_manager import DataManager
 
 log = logging.getLogger()
 
@@ -28,16 +29,20 @@ class PriceTrigger(Trigger):
         # price does not require any additional days
         return 0
 
-    def add_to_data_from_rule_key(self, rule_key, rule_value, side, data_manager):
+    def add_to_data_from_rule_key(self, rule_key, side, data_manager):
         """Add data to the dataframe.
 
         Args:
             rule_key (any): The key value from the strategy.
-            rule_value (any): The value from thr strategy.
             side (str): The side (buy/sell).
             data_manager (any): The data object.
         """
-        # note price (OHLC) is in the data by default, no need to add it
+        # price is in the data by default, no need to add it
+        return
+
+    def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
+        """Add data to the dataframe from rule value."""
+        # price is in the data by default, no need to add it
         return
 
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:

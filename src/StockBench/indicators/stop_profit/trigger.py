@@ -42,6 +42,9 @@ class StopProfitTrigger(Trigger):
         # stop profit does not require any additional data to be added to the data
         return
 
+    def get_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index: int) -> float:
+        raise NotImplementedError('Candle stick color cannot be referenced in a rule value!')
+
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for stop profit.
 

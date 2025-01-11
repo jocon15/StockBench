@@ -81,7 +81,7 @@ class Algorithm:
             for trigger in triggers:
                 # rule keys get checked for indicators
                 if trigger.indicator_symbol in key:
-                    rule_key_additional_days = trigger.additional_days_from_rule_key(key)
+                    rule_key_additional_days = trigger.additional_days_from_rule_key(key, None)
                     if additional_days < rule_key_additional_days:
                         additional_days = rule_key_additional_days
                 # rule values get checked for indicators

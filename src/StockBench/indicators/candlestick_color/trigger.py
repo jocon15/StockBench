@@ -11,17 +11,24 @@ class CandlestickColorTrigger(Trigger):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days_from_rule_key(self, rule_key) -> int:
+    def additional_days_from_rule_key(self, rule_key, rule_value) -> int:
         """Calculate the additional days required from rule key.
 
         Args:
             rule_key (any): The key value from the strategy (unused in this function).
+            rule_value (any): The key value from the strategy.
         """
-        # cannot deduce additional days from color rule key
-        return 0
+        # Candlestick is a unique one
+        #   color: {
+        #       "0", "red",
+        #       "1", "green"
+        #       }
+        #   Key = color
+        #   Value = {...}
+        # You cannot deduce the length from the key, and you cannot identify the indicator from the value.
+        # Therefore, we must have rule_value as a parameter to this function because rule_key identifies this as a color
+        # trigger, and rule_value shows us the length.
 
-    def additional_days_from_rule_value(self, rule_value: any) -> int:
-        """Calculate the additional days required from rule value."""
         if len(rule_value.keys()) == 0:
             raise StrategyIndicatorError(f'Color rules must have at least one color child!')
 
@@ -30,6 +37,11 @@ class CandlestickColorTrigger(Trigger):
             if int(sub_key) > additional_days:
                 additional_days = int(sub_key)
         return additional_days
+
+    def additional_days_from_rule_value(self, rule_value: any) -> int:
+        """Calculate the additional days required from rule value."""
+        # cannot deduce additional days from color rule value
+        return 0
 
     def add_to_data_from_rule_key(self, rule_key, side, data_manager):
         """Add data to the dataframe from rule key.

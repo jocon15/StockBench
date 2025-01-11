@@ -6,4 +6,4 @@ test_obj = VolumeTrigger('volume')
 
 
 def test_additional_days():
-    assert test_obj.additional_days_from_rule_key('', '') == 0
+    assert test_obj.additional_days_from_rule_key('', None) == 0

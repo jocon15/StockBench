@@ -14,15 +14,15 @@ def test_object():
 def test_additional_days(data_mocker, test_object):
     data_mocker.get_data_length.return_value = 200
 
-    assert test_object.additional_days_from_rule_key('RSI', '>20') == 14
+    assert test_object.additional_days_from_rule_key('RSI', None) == 14
 
-    assert test_object.additional_days_from_rule_key('RSI50', '>20') == 50
+    assert test_object.additional_days_from_rule_key('RSI50', None) == 50
 
-    assert test_object.additional_days_from_rule_key('RSI50$price', '>20') == 50
+    assert test_object.additional_days_from_rule_key('RSI50$price', None) == 50
 
-    assert test_object.additional_days_from_rule_key('RSI20$slope10', '>20') == 20
+    assert test_object.additional_days_from_rule_key('RSI20$slope10', None) == 20
 
-    assert test_object.additional_days_from_rule_key('RSI20$slope30', '>20') == 30
+    assert test_object.additional_days_from_rule_key('RSI20$slope30', None) == 30
 
 
 @patch('logging.getLogger')

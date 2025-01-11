@@ -16,8 +16,8 @@ def test_additional_days(test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.additional_days_from_rule_key('MACD', '>250') == 26
-    assert test_object.additional_days_from_rule_key('MACD', '<$price') == 26
+    assert test_object.additional_days_from_rule_key('MACD', None) == 26
+    assert test_object.additional_days_from_rule_key('MACD', None) == 26
 
 
 @patch('logging.getLogger')

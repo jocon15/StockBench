@@ -10,7 +10,7 @@ def test_object():
     return SMATrigger('SMA')
 
 
-def test_additional_days(test_object):
+def test_additional_days_from_rule_key(test_object):
     # ============= Arrange ==============
 
     # ============= Act ==================
@@ -18,8 +18,6 @@ def test_additional_days(test_object):
     # ============= Assert ===============
     assert test_object.additional_days_from_rule_key('SMA20', None) == 20
     assert type(test_object.additional_days_from_rule_key('SMA20', None)) is int
-    assert test_object.additional_days_from_rule_key('SMA50$price', None) == 50
-    assert test_object.additional_days_from_rule_key('SMA50$price', None) == 50
     assert test_object.additional_days_from_rule_key('SMA20$slope10', None) == 20
     assert test_object.additional_days_from_rule_key('SMA20$slope30', None) == 30
     try:
@@ -29,9 +27,26 @@ def test_additional_days(test_object):
         assert True
 
 
+def test_additional_days_from_rule_value(test_object):
+    # ============= Arrange ==============
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    assert test_object.additional_days_from_rule_value('SMA20') == 20
+    assert type(test_object.additional_days_from_rule_value('SMA20')) is int
+    assert test_object.additional_days_from_rule_value('SMA20$slope10') == 20
+    assert test_object.additional_days_from_rule_value('SMA20$slope30') == 30
+    try:
+        test_object.additional_days_from_rule_value('SMA')
+        assert False
+    except StrategyIndicatorError:
+        assert True
+
+
 @patch('logging.getLogger')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_add_to_data(data_mocker, logger_mocker, test_object):
+def test_add_to_data_from_rule_key(data_mocker, logger_mocker, test_object):
     # ============= Arrange ==============
     logger_mocker.return_value = logger_mocker
     logger_mocker.warning.side_effect = logger_side_effect
@@ -47,12 +62,44 @@ def test_add_to_data(data_mocker, logger_mocker, test_object):
 
     # ============= Act ==================
     # test normal case
-    test_object.add_to_data_from_rule_key('SMA20', None, '>30', 'buy')
+    test_object.add_to_data_from_rule_key('SMA20', '>30', 'buy', data_mocker)
     # assertions are done in side effect function
 
     # test console output if no indicator length is provided
     try:
-        test_object.add_to_data_from_rule_key('SMA', None, '>30', 'buy')
+        test_object.add_to_data_from_rule_key('SMA', '>30', 'buy', data_mocker)
+        assert False
+    except StrategyIndicatorError:
+        assert True
+
+    # ============= Assert ===============
+    # assertions are done in side effect function
+
+
+@patch('logging.getLogger')
+@patch('StockBench.simulation_data.data_manager.DataManager')
+def test_add_to_data_from_rule_value(data_mocker, logger_mocker, test_object):
+    # ============= Arrange ==============
+    logger_mocker.return_value = logger_mocker
+    logger_mocker.warning.side_effect = logger_side_effect
+    data_mocker.add_column.side_effect = add_column_side_effect
+
+    # assemble a price list from the example data
+    price_data = []
+    for day in EXAMPLE_DATA_MSFT['MSFT']:
+        price_data.append(float(day['c']))
+
+    data_mocker.get_column_data.return_value = price_data
+    data_mocker.get_column_nmes.return_value = []
+
+    # ============= Act ==================
+    # test normal case
+    test_object.add_to_data_from_rule_value('>SMA20', 'buy', data_mocker)
+    # assertions are done in side effect function
+
+    # test console output if no indicator length is provided
+    try:
+        test_object.add_to_data_from_rule_value('<SMA', 'sell', data_mocker)
         assert False
     except StrategyIndicatorError:
         assert True
@@ -272,6 +319,17 @@ def logger_side_effect(*args):
         assert False
 
 
+@patch('StockBench.simulation_data.data_manager.DataManager')
+def test_get_value_when_referenced(data_mocker, test_object):
+    # ============= Arrange ==============
+    data_mocker.get_data_point.return_value = 234.5
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    assert test_object.get_value_when_referenced('>=SMA20', data_mocker, 25) == 234.5
+
+
 @patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')
 @patch('StockBench.algorithm.algorithm.Trigger.find_operator_in_str')
 @patch('StockBench.algorithm.algorithm.Trigger.basic_trigger_check')
@@ -287,11 +345,11 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
 
     # ============= Assert ===============
     # simple algorithm not hit case
-    assert test_object.check_trigger('SMA20', '>60', data_mocker, None, 0) is False
+    assert test_object.check_trigger('SMA20', '>60', data_mocker, None, 0) is False  # noqa
 
     # simple algorithm hit case
     basic_trigger_mocker.return_value = True
-    assert test_object.check_trigger('SMA20', '>60', data_mocker, None, 0) is True
+    assert test_object.check_trigger('SMA20', '>60', data_mocker, None, 0) is True  # noqa
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
@@ -305,7 +363,7 @@ def test_check_trigger_value_error(data_mocker, test_object):
     # ============= Assert ===============
     # simple algorithm not hit case
     try:
-        test_object.check_trigger('SMA', '>', data_mocker, None, 0)
+        test_object.check_trigger('SMA', '>', data_mocker, None, 0)  # noqa
         assert False
     except StrategyIndicatorError:
         assert True
@@ -329,7 +387,7 @@ def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mock
 
     # ============= Assert ===============
     # simple algorithm not hit case
-    assert test_object.check_trigger('SMA20', '>$price', data_mocker, None, 0) is False
+    assert test_object.check_trigger('SMA20', '>price', data_mocker, None, 0) is False  # noqa
 
 
 def data_side_effect(*args):
@@ -352,7 +410,7 @@ def test_check_trigger_2_numbers_present_bad_format(data_mocker, test_object):
     # ============= Assert ===============
     # has 2 numbers but does not include slope symbol
     try:
-        test_object.check_trigger('SMA20ran50', '>$price', data_mocker, None, 0)
+        test_object.check_trigger('SMA20ran50', '>price', data_mocker, None, 0)  # noqa
         assert False
     except StrategyIndicatorError:
         assert True
@@ -373,11 +431,11 @@ def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mo
 
     # ============= Assert ===============
     # slope used algorithm not hit case
-    assert test_object.check_trigger('SMA20$slope2', '>50', data_mocker, None, 2) is False
+    assert test_object.check_trigger('SMA20$slope2', '>50', data_mocker, None, 2) is False  # noqa
 
     # slope used algorithm hit case
     basic_trigger_mocker.return_value = True
-    assert test_object.check_trigger('SMA20$slope2', '>50', data_mocker, None, 2) is True
+    assert test_object.check_trigger('SMA20$slope2', '>50', data_mocker, None, 2) is True  # noqa
 
 
 def slope_data_side_effect(*args):
@@ -399,7 +457,7 @@ def test_check_trigger_slope_value_error(data_mocker, test_object):
     # ============= Assert ===============
     # simple algorithm not hit case
     try:
-        test_object.check_trigger('SMA20$slope', '>60', data_mocker, None, 0)
+        test_object.check_trigger('SMA20$slope', '>60', data_mocker, None, 0)  # noqa
         assert False
     except StrategyIndicatorError:
         assert True

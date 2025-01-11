@@ -99,29 +99,39 @@ class Algorithm:
         triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
 
         # find all buy algorithm and add their indicator to the data
-        for key in self.strategy[BUY_SIDE].keys():
+        for rule_key in self.strategy[BUY_SIDE].keys():
+            rule_value = self.strategy[BUY_SIDE][rule_key]
             for trigger in triggers:
-                if trigger.indicator_symbol in key:
-                    trigger.add_to_data_from_rule_key(key, self.strategy[BUY_SIDE][key], BUY_SIDE, data_manager)
-                elif AND_KEY in key:
-                    for inner_key in self.strategy[BUY_SIDE][key].keys():
+                if trigger.indicator_symbol in rule_key:
+                    trigger.add_to_data_from_rule_key(rule_key, BUY_SIDE, data_manager)
+                elif trigger.indicator_symbol in rule_value:
+                    trigger.add_to_data_from_rule_value(rule_value, BUY_SIDE, data_manager)
+                elif AND_KEY in rule_key:
+                    for inner_key in rule_value.keys():
+                        inner_value = rule_value[inner_key]
                         if trigger.indicator_symbol in inner_key:
-                            trigger.add_to_data_from_rule_key(inner_key, self.strategy[BUY_SIDE][key][inner_key], BUY_SIDE,
-                                                              data_manager)
+                            trigger.add_to_data_from_rule_key(inner_key, BUY_SIDE, data_manager)
+                        elif trigger.indicator_symbol in inner_value:
+                            trigger.add_to_data_from_rule_value(inner_value, BUY_SIDE, data_manager)
 
         # create a list of all algorithm except sell algorithm
         triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
 
         # find all sell algorithm and add their indicator to the data
-        for key in self.strategy[SELL_SIDE].keys():
+        for rule_key in self.strategy[SELL_SIDE].keys():
+            rule_value = self.strategy[SELL_SIDE][rule_key]
             for trigger in triggers:
-                if trigger.indicator_symbol in key:
-                    trigger.add_to_data_from_rule_key(key, self.strategy[SELL_SIDE][key], SELL_SIDE, data_manager)
-                elif AND_KEY in key:
-                    for inner_key in self.strategy[SELL_SIDE][key].keys():
+                if trigger.indicator_symbol in rule_key:
+                    trigger.add_to_data_from_rule_key(rule_key, SELL_SIDE, data_manager)
+                elif trigger.indicator_symbol in rule_value:
+                    trigger.add_to_data_from_rule_value(rule_value, SELL_SIDE, data_manager)
+                elif AND_KEY in rule_key:
+                    for inner_key in rule_value.keys():
+                        inner_value = rule_value[inner_key]
                         if trigger.indicator_symbol in inner_key:
-                            trigger.add_to_data_from_rule_key(inner_key, self.strategy[SELL_SIDE][key][inner_key], SELL_SIDE,
-                                                              data_manager)
+                            trigger.add_to_data_from_rule_key(inner_key, SELL_SIDE, data_manager)
+                        elif trigger.indicator_symbol in inner_value:
+                            trigger.add_to_data_from_rule_value(inner_value, SELL_SIDE, data_manager)
 
     def check_triggers_by_side(self, data_manager: DataManager, current_day_index: int, position: Position,
                                side: str) -> Tuple[bool, str]:

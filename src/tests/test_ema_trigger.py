@@ -10,7 +10,7 @@ def test_object():
     return EMATrigger('EMA')
 
 
-def test_additional_days(test_object):
+def test_additional_days_from_rule_key(test_object):
     # ============= Arrange ==============
 
     # ============= Act ==================
@@ -24,6 +24,25 @@ def test_additional_days(test_object):
     assert test_object.additional_days_from_rule_key('EMA20$slope30', None) == 30
     try:
         test_object.additional_days_from_rule_key('EMA', None)
+        assert False
+    except StrategyIndicatorError:
+        assert True
+
+
+def test_additional_days_from_rule_value(test_object):
+    # ============= Arrange ==============
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    assert test_object.additional_days_from_rule_value('>EMA20') == 20
+    assert type(test_object.additional_days_from_rule_value('=EMA20')) is int
+    assert test_object.additional_days_from_rule_value('>EMA50$price') == 50
+    assert test_object.additional_days_from_rule_value('<EMA50$price') == 50
+    assert test_object.additional_days_from_rule_value('<=EMA20$slope10') == 20
+    assert test_object.additional_days_from_rule_value('>=EMA20$slope30') == 30
+    try:
+        test_object.additional_days_from_rule_value('>EMA')
         assert False
     except StrategyIndicatorError:
         assert True

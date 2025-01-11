@@ -31,7 +31,7 @@ class SMATrigger(Trigger):
         return self.additional_days_from_rule_key(rule_value, None)
 
     def add_to_data_from_rule_key(self, rule_key, rule_value, side, data_manager):
-        """Add data to the dataframe.
+        """Add data to the dataframe from rule key.
 
         Args:
             rule_key (any): The key value from the strategy.
@@ -45,6 +45,11 @@ class SMATrigger(Trigger):
             self.__add_sma(indicator_length, data_manager)
         else:
             raise StrategyIndicatorError(f'{self.indicator_symbol} rule key: {rule_key} must have an indicator length!')
+
+    def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
+        """Add data to the dataframe from rule value."""
+        # logic for rule value is the same as the logic for rule key
+        return self.add_to_data_from_rule_key(rule_value, None, side, data_manager)
 
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for SMA.

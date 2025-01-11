@@ -60,7 +60,7 @@ class VolumeTrigger(Trigger):
         """
         volume = data_manager.get_data_point(data_manager.VOLUME, current_day_index)
 
-        result = self.basic_trigger_check(volume, rule_value, data_manager, current_day_index)
+        result = self.basic_trigger_check(volume, rule_value)
 
         log.debug(f'{self.indicator_symbol} algorithm: {rule_key} checked successfully')
 

@@ -88,7 +88,7 @@ class RSITrigger(Trigger):
 
         log.debug(f'{self.indicator_symbol} algorithm: {rule_key} checked successfully')
 
-        return self.basic_trigger_check(indicator_value, rule_value, data_manager, current_day_index)
+        return self.basic_trigger_check(indicator_value, rule_value)
 
     def __add_rsi_column(self, length: int, data_manager: DataManager):
         """Calculate the RSI values and add them to the df."""

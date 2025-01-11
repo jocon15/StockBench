@@ -72,7 +72,7 @@ class PriceTrigger(Trigger):
 
         log.debug(f'Price algorithm: {rule_key} checked successfully')
 
-        return self.basic_trigger_check(indicator_value, rule_value, data_manager, current_day_index)
+        return self.basic_trigger_check(indicator_value, rule_value)
 
     def __parse_key(self, rule_key, data_manager, current_day_index) -> float:
         """Parser for parsing the key into the indicator value."""

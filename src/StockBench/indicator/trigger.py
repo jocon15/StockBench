@@ -55,35 +55,21 @@ class Trigger:
                       current_day_index: int) -> bool:
         raise NotImplementedError('Check algorithm from rule value not implemented!')
 
-    def _parse_rule_value(self, rule_value: str, data_manager: DataManager,
-                          current_day_index: int) -> Tuple[str, float]:
+    def _parse_rule_value(self, rule_value: str) -> Tuple[str, float]:
         """Parser for parsing the operator and algorithm value from the value.
-
-        NOTE: This is the default implementation for this, since it is used frequently in this form.
-            For abnormal algorithm like candle colors, you can override this with another implementation.
 
         Args:
              rule_value: The rule's value.
-             data_manager: The simulation data manager.
-             current_day_index: The current day index.
 
         returns:
             Tuple: The operator and the trigger value.
         """
         # find the operator and algorithm value (right hand side of the comparison)
-        if CURRENT_PRICE_SYMBOL in rule_value:
-            trigger_value = float(data_manager.get_data_point(data_manager.CLOSE, current_day_index))
-            operator = rule_value.replace(CURRENT_PRICE_SYMBOL, '')
-        else:
-            trigger_value = self.find_single_numeric_in_str(rule_value)
-            operator = self.find_operator_in_str(rule_value)
+        return self.find_operator_in_str(rule_value), self.find_single_numeric_in_str(rule_value)
 
-        return operator, trigger_value
-
-    def basic_trigger_check(self, indicator_value: float, rule_value: str, data_manager: DataManager,
-                            current_day_index: int) -> bool:
+    def basic_trigger_check(self, indicator_value: float, rule_value: str) -> bool:
         """Basic trigger check with comparison operators."""
-        operator, trigger_value = self._parse_rule_value(rule_value, data_manager, current_day_index)
+        operator, trigger_value = self._parse_rule_value(rule_value)
 
         if operator == '<=':
             if indicator_value <= trigger_value:

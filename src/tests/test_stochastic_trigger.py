@@ -11,23 +11,23 @@ def test_object():
     return StochasticTrigger('stochastic')
 
 
-def test_additional_days(test_object):
+def test_additional_days_from_rule_key(test_object):
     assert test_object.additional_days_from_rule_key('stochastic', None) == 14
-
     assert test_object.additional_days_from_rule_key('stochastic20', None) == 20
-
-    assert test_object.additional_days_from_rule_key('stochastic50$price', None) == 50
-
-    assert test_object.additional_days_from_rule_key('stochastic50$price', None) == 50
-
     assert test_object.additional_days_from_rule_key('stochastic20$slope10', None) == 20
-
     assert test_object.additional_days_from_rule_key('stochastic20$slope30', None) == 30
+
+
+def test_additional_days_from_rule_value(test_object):
+    assert test_object.additional_days_from_rule_value('stochastic') == 14
+    assert test_object.additional_days_from_rule_value('stochastic20') == 20
+    assert test_object.additional_days_from_rule_value('stochastic20$slope10') == 20
+    assert test_object.additional_days_from_rule_value('stochastic20$slope30') == 30
 
 
 @patch('logging.getLogger')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_add_to_data(data_mocker, logger_mocker, test_object):
+def test_add_to_data_rule_key(data_mocker, logger_mocker, test_object):
     logger_mocker.return_value = logger_mocker
     logger_mocker.warning.side_effect = logger_side_effect
 
@@ -47,7 +47,33 @@ def test_add_to_data(data_mocker, logger_mocker, test_object):
     data_mocker.get_data_length.return_value = 200
 
     # test normal case
-    test_object.add_to_data_from_rule_key('stochastic', None, '>30', 'buy')
+    test_object.add_to_data_from_rule_key('stochastic', '>30', 'buy', data_mocker)
+    # assertions are done in side effect function
+
+
+@patch('logging.getLogger')
+@patch('StockBench.simulation_data.data_manager.DataManager')
+def test_add_to_data_rule_value(data_mocker, logger_mocker, test_object):
+    logger_mocker.return_value = logger_mocker
+    logger_mocker.warning.side_effect = logger_side_effect
+
+    data_mocker.add_column.side_effect = add_column_side_effect
+
+    # assemble a price list from the example data
+    price_data = []
+    for day in EXAMPLE_DATA_MSFT['MSFT']:
+        price_data.append(float(day['c']))
+
+    data_mocker.HIGH = DataManager.HIGH
+    data_mocker.LOW = DataManager.LOW
+    data_mocker.CLOSE = DataManager.CLOSE
+
+    data_mocker.get_column_data.side_effect = get_column_data_side_effect
+    data_mocker.get_column_names.return_value = []
+    data_mocker.get_data_length.return_value = 200
+
+    # test normal case
+    test_object.add_to_data_from_rule_value('>stochastic', 'buy', data_mocker)
     # assertions are done in side effect function
 
 
@@ -681,6 +707,17 @@ def logger_side_effect(*args):
         assert False
 
 
+@patch('StockBench.simulation_data.data_manager.DataManager')
+def test_get_value_when_referenced(data_mocker, test_object):
+    # ============= Arrange ==============
+    data_mocker.get_data_point.return_value = 234.5
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    assert test_object.get_value_when_referenced('>=MACD', data_mocker, 25) == 234.5
+
+
 @patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')
 @patch('StockBench.algorithm.algorithm.Trigger.find_operator_in_str')
 @patch('StockBench.algorithm.algorithm.Trigger.basic_trigger_check')
@@ -695,9 +732,9 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.check_trigger('stochastic', '>60', data_mocker, None, 0) is False
+    assert test_object.check_trigger('stochastic', '>60', data_mocker, None, 0) is False  # noqa
 
-    assert test_object.check_trigger('stochastic', '>60', data_mocker, None, 0) is False
+    assert test_object.check_trigger('stochastic', '>60', data_mocker, None, 0) is False  # noqa
 
 
 @patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')
@@ -711,7 +748,7 @@ def test_check_trigger_value_error(data_mocker, numeric_mocker, test_object):
     # ============= Assert ===============
     # simple algorithm not hit case
     try:
-        assert test_object.check_trigger('12stochastic12', '>60', data_mocker, None, 0)
+        assert test_object.check_trigger('12stochastic12', '>60', data_mocker, None, 0)  # noqa
         assert False
     except StrategyIndicatorError:
         assert True
@@ -735,7 +772,7 @@ def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mock
 
     # ============= Assert ===============
     # simple algorithm not hit case
-    assert test_object.check_trigger('stochastic20', '>$price', data_mocker, None, 0) is False
+    assert test_object.check_trigger('stochastic20', '>price', data_mocker, None, 0) is False  # noqa
 
 
 def data_side_effect(*args):
@@ -757,7 +794,7 @@ def test_check_trigger_2_numbers_present_bad_format(data_mocker, test_object):
 
     # ============= Assert ===============
     # has 2 numbers but does not include slope symbol
-    assert test_object.check_trigger('stochasticran50', '>$price', data_mocker, None, 0) is False
+    assert test_object.check_trigger('stochasticran50', '>price', data_mocker, None, 0) is False  # noqa
 
 
 @patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')
@@ -775,11 +812,11 @@ def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mo
 
     # ============= Assert ===============
     # slope used algorithm not hit case
-    assert test_object.check_trigger('stochastic$slope2', '>50', data_mocker, None, 2) is False
+    assert test_object.check_trigger('stochastic$slope2', '>50', data_mocker, None, 2) is False  # noqa
 
     # slope used algorithm hit case
     basic_trigger_mocker.return_value = True
-    assert test_object.check_trigger('stochastic$slope2', '>50', data_mocker, None, 2) is True
+    assert test_object.check_trigger('stochastic$slope2', '>50', data_mocker, None, 2) is True  # noqa
 
 
 def slope_data_side_effect(*args):
@@ -801,7 +838,7 @@ def test_check_trigger_slope_value_error(data_mocker, test_object):
     # ============= Assert ===============
     # simple algorithm not hit case
     try:
-        assert test_object.check_trigger('stochastic$slope', '>60', data_mocker, None, 0) is False
+        assert test_object.check_trigger('stochastic$slope', '>60', data_mocker, None, 0) is False  # noqa
         assert False
     except StrategyIndicatorError:
         assert True

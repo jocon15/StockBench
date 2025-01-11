@@ -12,7 +12,7 @@ class EMATrigger(Trigger):
         super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
     def additional_days_from_rule_key(self, rule_key) -> int:
-        """Calculate the additional days required.
+        """Calculate the additional days required from rule key.
 
         Args:
             rule_key (any): The key value from the strategy.

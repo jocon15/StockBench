@@ -16,14 +16,14 @@ def test_additional_days(test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.additional_days('SMA20', '>20') == 20
-    assert type(test_object.additional_days('SMA20', '>20')) is int
-    assert test_object.additional_days('SMA50$price', '>20') == 50
-    assert test_object.additional_days('SMA50$price', '>20') == 50
-    assert test_object.additional_days('SMA20$slope10', '>20') == 20
-    assert test_object.additional_days('SMA20$slope30', '>20') == 30
+    assert test_object.additional_days_from_rule_key('SMA20', '>20') == 20
+    assert type(test_object.additional_days_from_rule_key('SMA20', '>20')) is int
+    assert test_object.additional_days_from_rule_key('SMA50$price', '>20') == 50
+    assert test_object.additional_days_from_rule_key('SMA50$price', '>20') == 50
+    assert test_object.additional_days_from_rule_key('SMA20$slope10', '>20') == 20
+    assert test_object.additional_days_from_rule_key('SMA20$slope30', '>20') == 30
     try:
-        test_object.additional_days('SMA', '>20')
+        test_object.additional_days_from_rule_key('SMA', '>20')
         assert False
     except StrategyIndicatorError:
         assert True

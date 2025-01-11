@@ -13,7 +13,7 @@ def test_additional_days_normal(test_object):
     # ============= Arrange ==============
 
     # ============= Act ==================
-    actual = test_object.additional_days('color', {'1': 'red', '0': 'green'})
+    actual = test_object.additional_days_from_rule_key('color', {'1': 'red', '0': 'green'})
 
     # ============= Assert ===============
     assert type(actual) is int
@@ -27,7 +27,7 @@ def test_additional_days_no_values(test_object):
 
     # ============= Assert ===============
     try:
-        test_object.additional_days('color', {})
+        test_object.additional_days_from_rule_key('color', {})
         assert False
     except StrategyIndicatorError:
         assert True

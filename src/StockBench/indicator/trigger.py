@@ -26,8 +26,12 @@ class Trigger:
         return self.__side
 
     @abstractmethod
-    def additional_days(self, rule_key: str, rule_value: any) -> int:
-        raise NotImplementedError('Additional days not implemented!')
+    def additional_days_from_rule_key(self, rule_key: str) -> int:
+        raise NotImplementedError('Additional days from rule key not implemented!')
+
+    @abstractmethod
+    def additional_days_from_rule_value(self, rule_value: any) -> int:
+        raise NotImplementedError('Additional days from rule value not implemented!')
 
     @abstractmethod
     def add_to_data(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):

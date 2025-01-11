@@ -56,7 +56,7 @@ class Algorithm:
 
     def get_additional_days(self) -> int:
         """Calculate number of additional days required for the strategy."""
-        # build a list algorithm keys and algorithm values
+        # build a list of algorithm keys and algorithm values
         keys = []
         values = []
         if BUY_SIDE in self.strategy.keys():
@@ -68,7 +68,7 @@ class Algorithm:
                 keys.append(key)
                 values.append(self.strategy[SELL_SIDE][key])
 
-        # assemble all algorithm into a single list
+        # assemble all triggers into a single list
         triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
         triggers = [x for n in (triggers, self.__sell_only_triggers) for x in n]
 
@@ -80,7 +80,7 @@ class Algorithm:
             value = values[i]
             for trigger in triggers:
                 if trigger.indicator_symbol in key:
-                    num = trigger.additional_days(key, value)
+                    num = trigger.additional_days_from_rule_key(key, value)
                     if additional_days < num:
                         additional_days = num
 

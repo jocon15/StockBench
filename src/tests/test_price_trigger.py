@@ -13,7 +13,7 @@ def test_additional_days(test_object):
     # ============= Arrange ==============
 
     # ============= Act ==================
-    actual = test_object.additional_days('none', '')
+    actual = test_object.additional_days_from_rule_key('none', '')
 
     # ============= Assert ===============
     assert type(actual) is int

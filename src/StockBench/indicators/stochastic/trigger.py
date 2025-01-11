@@ -64,6 +64,11 @@ class StochasticTrigger(Trigger):
         else:
             self.__add_stochastic_column(DEFAULT_STOCHASTIC_LENGTH, data_manager)
 
+    def get_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index) -> float:
+        """Get the value of the indicator when referenced in a rule value."""
+        # parse rule key will work even when passed a rule value
+        return Trigger._parse_rule_key(rule_value, self.indicator_symbol, data_manager, current_day_index)
+
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for stochastic.
 

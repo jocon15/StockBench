@@ -737,9 +737,8 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
     assert test_object.check_trigger('stochastic', '>60', data_mocker, None, 0) is False  # noqa
 
 
-@patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_check_trigger_value_error(data_mocker, numeric_mocker, test_object):
+def test_check_trigger_value_error(data_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 90
 

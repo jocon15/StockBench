@@ -81,7 +81,7 @@ class Algorithm:
             for trigger in triggers:
                 # rule keys get checked for indicators
                 if trigger.indicator_symbol in key:
-                    rule_key_additional_days = trigger.additional_days_from_rule_key(key, None)
+                    rule_key_additional_days = trigger.additional_days_from_rule_key(key, value)
                     if additional_days < rule_key_additional_days:
                         additional_days = rule_key_additional_days
                 # rule values get checked for indicators
@@ -103,14 +103,14 @@ class Algorithm:
             rule_value = self.strategy[BUY_SIDE][rule_key]
             for trigger in triggers:
                 if trigger.indicator_symbol in rule_key:
-                    trigger.add_to_data_from_rule_key(rule_key, None, BUY_SIDE, data_manager)
+                    trigger.add_to_data_from_rule_key(rule_key, rule_value, BUY_SIDE, data_manager)
                 elif trigger.indicator_symbol in rule_value:
                     trigger.add_to_data_from_rule_value(rule_value, BUY_SIDE, data_manager)
                 elif AND_KEY in rule_key:
                     for inner_key in rule_value.keys():
                         inner_value = rule_value[inner_key]
                         if trigger.indicator_symbol in inner_key:
-                            trigger.add_to_data_from_rule_key(inner_key, None, BUY_SIDE, data_manager)
+                            trigger.add_to_data_from_rule_key(inner_key, inner_value, BUY_SIDE, data_manager)
                         elif trigger.indicator_symbol in inner_value:
                             trigger.add_to_data_from_rule_value(inner_value, BUY_SIDE, data_manager)
 
@@ -122,14 +122,14 @@ class Algorithm:
             rule_value = self.strategy[SELL_SIDE][rule_key]
             for trigger in triggers:
                 if trigger.indicator_symbol in rule_key:
-                    trigger.add_to_data_from_rule_key(rule_key, None, SELL_SIDE, data_manager)
+                    trigger.add_to_data_from_rule_key(rule_key, rule_value, SELL_SIDE, data_manager)
                 elif trigger.indicator_symbol in rule_value:
                     trigger.add_to_data_from_rule_value(rule_value, SELL_SIDE, data_manager)
                 elif AND_KEY in rule_key:
                     for inner_key in rule_value.keys():
                         inner_value = rule_value[inner_key]
                         if trigger.indicator_symbol in inner_key:
-                            trigger.add_to_data_from_rule_key(inner_key, None, SELL_SIDE, data_manager)
+                            trigger.add_to_data_from_rule_key(inner_key, inner_value, SELL_SIDE, data_manager)
                         elif trigger.indicator_symbol in inner_value:
                             trigger.add_to_data_from_rule_value(inner_value, SELL_SIDE, data_manager)
 

@@ -298,7 +298,6 @@ class Algorithm:
         """
         rule_value = self.strategy[side][key]
         key_matched_with_trigger = False
-        # check all algorithm
         for trigger in triggers:
             if trigger.indicator_symbol in key:
                 key_matched_with_trigger = True

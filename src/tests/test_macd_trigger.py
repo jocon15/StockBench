@@ -38,7 +38,7 @@ def test_add_to_data(data_mocker, logger_mocker, test_object):
 
     # ============= Act ==================
     # test normal case
-    test_object.add_to_data('MACD', '>30', 'buy', data_mocker)
+    test_object.add_to_data_from_rule_key('MACD', '>30', 'buy', data_mocker)
     # assertions are done in side effect function
 
     # ============= Assert ===============

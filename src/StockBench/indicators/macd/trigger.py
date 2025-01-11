@@ -29,7 +29,7 @@ class MACDTrigger(Trigger):
         """Calculate the additional days required from rule value."""
         return self.LARGE_EMA_LENGTH
 
-    def add_to_data(self, rule_key, rule_value, side, data_manager):
+    def add_to_data_from_rule_key(self, rule_key, rule_value, side, data_manager):
         """Add data to the dataframe.
 
         Args:

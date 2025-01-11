@@ -31,7 +31,7 @@ class CandlestickColorTrigger(Trigger):
                 additional_days = int(sub_key)
         return additional_days
 
-    def add_to_data(self, rule_key, rule_value, side, data_manager):
+    def add_to_data_from_rule_key(self, rule_key, rule_value, side, data_manager):
         """Add data to the dataframe.
 
         Args:

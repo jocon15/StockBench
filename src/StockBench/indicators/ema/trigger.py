@@ -28,7 +28,7 @@ class EMATrigger(Trigger):
         # logic for rule value is the same as the logic for rule key
         return self.additional_days_from_rule_key(rule_value)
 
-    def add_to_data(self, rule_key, rule_value, side, data_manager):
+    def add_to_data_from_rule_key(self, rule_key, rule_value, side, data_manager):
         """Add data to the dataframe.
 
         Args:

@@ -27,7 +27,7 @@ def test_add_to_data(test_object):
 
     # ============= Assert ===============
     try:
-        test_object.add_to_data('', '', '', None)
+        test_object.add_to_data_from_rule_key('', '', '', None)
         assert True
     except Exception as e:
         print(f'Unexpected exception {e}')

@@ -34,13 +34,17 @@ class Trigger:
         raise NotImplementedError('Additional days from rule value not implemented!')
 
     @abstractmethod
-    def add_to_data(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
+    def add_to_data_from_rule_key(self, rule_key: str, side: str, data_manager: DataManager):
+        raise NotImplementedError('Add to data from rule key not implemented!')
+
+    @abstractmethod
+    def add_to_data_from_rule_value(self, rule_key: str, side: str, data_manager: DataManager):
         raise NotImplementedError('Add to data not implemented!')
 
     @abstractmethod
     def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,
                       current_day_index: int) -> bool:
-        raise NotImplementedError('Check algorithm not implemented!')
+        raise NotImplementedError('Check algorithm from rule value not implemented!')
 
     def _parse_rule_value(self, rule_value: str, data_manager: DataManager,
                           current_day_index: int) -> Tuple[str, float]:

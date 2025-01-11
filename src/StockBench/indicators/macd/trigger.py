@@ -17,13 +17,16 @@ class MACDTrigger(Trigger):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days_from_rule_key(self, rule_key, rule_value) -> int:
-        """Calculate the additional days required.
+    def additional_days_from_rule_key(self, rule_key) -> int:
+        """Calculate the additional days required from rule key.
 
         Args:
             rule_key (any): The key value from the strategy.
-            rule_value (any): The value from the strategy.
         """
+        return self.LARGE_EMA_LENGTH
+
+    def additional_days_from_rule_value(self, rule_value: any) -> int:
+        """Calculate the additional days required from rule value."""
         return self.LARGE_EMA_LENGTH
 
     def add_to_data(self, rule_key, rule_value, side, data_manager):

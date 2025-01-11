@@ -259,7 +259,6 @@ class Algorithm:
             inner_value = self.strategy[side][key][inner_key]
             trigger_hit = False
             key_matched_with_trigger = False
-            # check all algorithm
             for trigger in triggers:
                 if trigger.indicator_symbol in inner_key:
                     key_matched_with_trigger = True

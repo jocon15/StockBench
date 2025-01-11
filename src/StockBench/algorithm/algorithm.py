@@ -302,7 +302,7 @@ class Algorithm:
         for trigger in triggers:
             if trigger.indicator_symbol in key:
                 key_matched_with_trigger = True
-                # replace any rule values with indicator references with their actual value
+                # replace any rule values that have indicator references with their actual value
                 injected_rule_value = self._inject_rule_value_with_values(rule_value, triggers, current_day_index)
                 trigger_hit = trigger.check_trigger(key, injected_rule_value, data_manager, position, current_day_index)
                 if trigger_hit:

@@ -10,14 +10,18 @@ class StopProfitTrigger(Trigger):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=Trigger.SELL)
 
-    def additional_days_from_rule_key(self, rule_key: str, rule_value: str) -> int:
-        """Calculate the additional days required.
+    def additional_days_from_rule_key(self, rule_key: str) -> int:
+        """Calculate the additional days required from rule key.
 
         Args:
             rule_key: The key value from the strategy.
-            rule_value: The value from the strategy.
         """
-        # note stop profit does not require additional days
+        # stop profit does not require additional days
+        return 0
+
+    def additional_days_from_rule_value(self, rule_value: any) -> int:
+        """Calculate the additional days required from rule value."""
+        # stop profit does not require additional days
         return 0
 
     def add_to_data(self, rule_key: str, rule_value: str, side: str, data_manager: DataManager):

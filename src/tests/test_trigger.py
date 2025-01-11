@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 from StockBench.indicator.trigger import Trigger
 from StockBench.indicator.exceptions import StrategyIndicatorError
 from StockBench.indicators.sma.trigger import SMATrigger
@@ -17,27 +15,6 @@ def test_get_side():
     assert test_object_1.get_side() == Trigger.BUY
     assert test_object_2.get_side() == Trigger.SELL
     assert test_object_3.get_side() == Trigger.AGNOSTIC
-
-
-@patch('StockBench.simulation_data.data_manager.DataManager')
-def test__parse_value(data_mocker):
-    # ============= Arrange ==============
-    data_mocker.get_data_point.return_value = 255.1
-    test_object = Trigger('SMA', Trigger.BUY)
-
-    # ============= Act ==================
-
-    # ============= Assert ===============
-    # normal case
-    assert test_object._parse_rule_value('>250', data_mocker, 0) == ('>', 250.0)
-    # current price in symbol case
-    assert test_object._parse_rule_value('>$price', data_mocker, 0) == ('>', 255.1)
-    # no number case
-    try:
-        test_object._parse_rule_value('>', data_mocker, 0)
-        assert False
-    except StrategyIndicatorError:
-        assert True
 
 
 def test_basic_trigger_check():

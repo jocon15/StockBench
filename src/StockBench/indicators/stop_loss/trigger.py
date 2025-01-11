@@ -26,7 +26,7 @@ class StopLossTrigger(Trigger):
         return 0
 
     def add_to_data_from_rule_key(self, rule_key, rule_value, side, data_manager):
-        """Add data to the dataframe.
+        """Add data to the dataframe from rule key.
 
         Args:
             rule_key (any): The key value from the strategy.
@@ -34,8 +34,12 @@ class StopLossTrigger(Trigger):
             side (str): The side (buy/sell).
             data_manager (DataManager): The data object.
         """
-        # note stop loss algorithm is not an additional indicator and does not
-        # require any additional data to be added to the data
+        # stop loss does not require any additional data to be added to the data
+        return
+
+    def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
+        """Add data to the dataframe from rule value."""
+        # stop loss does not require any additional data to be added to the data
         return
 
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:

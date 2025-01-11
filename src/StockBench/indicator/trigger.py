@@ -27,8 +27,8 @@ class Trigger:
 
     @abstractmethod
     def additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
-        # must include rule value as a parameter because some triggers (candlestick) cannot deduce indicator length from
-        # the rule key and cannot be identified from the rule value
+        # Must include rule value as a parameter because some triggers (candlestick) cannot deduce indicator length from
+        # the rule key and cannot be identified from the rule value.
         raise NotImplementedError('Additional days from rule key not implemented!')
 
     @abstractmethod
@@ -37,8 +37,9 @@ class Trigger:
 
     @abstractmethod
     def add_to_data_from_rule_key(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
-        # must include rule value as a parameter because some triggers (candlestick) cannot deduce indicator length from
-        # the rule key and cannot be identified from the rule value
+        # Must include rule value as a parameter because oscillator triggers (RSI, stochastic,...) have literal
+        # threshold values in the rule value that need to be added to the data. Literal threshold values cannot be
+        # identified with only the rule key.
         raise NotImplementedError('Add to data from rule key not implemented!')
 
     @abstractmethod

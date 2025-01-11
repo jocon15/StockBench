@@ -26,25 +26,25 @@ def test_basic_trigger_check():
     # ============= Assert ===============
 
     # gt true
-    assert test_object.basic_trigger_check(200.0, '>150.0', None, 1) is True  # noqa
+    assert test_object.basic_trigger_check(200.0, '>150.0') is True
     # gt false
-    assert test_object.basic_trigger_check(200.0, '>250.0', None, 1) is False  # noqa
+    assert test_object.basic_trigger_check(200.0, '>250.0') is False
     # lt true
-    assert test_object.basic_trigger_check(100.0, '<150.0', None, 1) is True  # noqa
+    assert test_object.basic_trigger_check(100.0, '<150.0') is True
     # lt false
-    assert test_object.basic_trigger_check(300.0, '<250.0', None, 1) is False  # noqa
+    assert test_object.basic_trigger_check(300.0, '<250.0') is False
     # gt eq true
-    assert test_object.basic_trigger_check(300.0, '>=250.0', None, 1) is True  # noqa
+    assert test_object.basic_trigger_check(300.0, '>=250.0') is True
     # gt eq false
-    assert test_object.basic_trigger_check(200.0, '>=250.0', None, 1) is False  # noqa
+    assert test_object.basic_trigger_check(200.0, '>=250.0') is False
     # lt eq true
-    assert test_object.basic_trigger_check(200.0, '<=250.0', None, 1) is True  # noqa
+    assert test_object.basic_trigger_check(200.0, '<=250.0') is True
     # lt eq false
-    assert test_object.basic_trigger_check(300.0, '<=250.0', None, 1) is False  # noqa
+    assert test_object.basic_trigger_check(300.0, '<=250.0') is False
     # eq true
-    assert test_object.basic_trigger_check(200.0, '=200.0', None, 1) is True  # noqa
+    assert test_object.basic_trigger_check(200.0, '=200.0') is True
     # eq false
-    assert test_object.basic_trigger_check(200.0, '=250.0', None, 1) is False  # noqa
+    assert test_object.basic_trigger_check(200.0, '=250.0') is False
 
 
 def test_find_single_numeric_in_str():

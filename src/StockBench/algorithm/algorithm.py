@@ -271,7 +271,7 @@ class Algorithm:
                         data_manager,
                         position,
                         current_day_index)
-            # note: placement of this conditional can be here or inside key check (doesn't matter)
+            # placement of this conditional can be here or inside key check (doesn't matter)
             if not trigger_hit:
                 # not all AND_KEY triggers were hit
                 return False
@@ -305,7 +305,7 @@ class Algorithm:
                 injected_rule_value = self._inject_rule_value_with_values(rule_value, triggers, current_day_index)
                 trigger_hit = trigger.check_trigger(key, injected_rule_value, data_manager, position, current_day_index)
                 if trigger_hit:
-                    # any 'OR' algorithm was hit
+                    # any 'OR' trigger was hit
                     return True
         if not key_matched_with_trigger:
             raise ValueError(f'Strategy key: {key} did not match any available indicators!')

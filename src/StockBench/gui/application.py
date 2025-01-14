@@ -10,7 +10,7 @@ from StockBench.gui.config.tabs.folder_config_tab import FolderConfigTab
 
 class ConfigMainWindow(QMainWindow):
     WIDTH = 400
-    HEIGHT = 750
+    HEIGHT = 680
 
     def __init__(self, splash):
         super().__init__()

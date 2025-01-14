@@ -56,6 +56,8 @@ class Algorithm:
 
     def get_additional_days(self) -> int:
         """Calculate number of additional days required for the strategy."""
+        log.debug('Calculating additional days required data based on strategy...')
+
         additional_days = 0
 
         # assemble a list of triggers that could cause a buy

@@ -14,12 +14,12 @@ class StochasticTrigger(Trigger):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days(self, rule_key, value_value) -> int:
-        """Calculate the additional days required.
+    def additional_days_from_rule_key(self, rule_key, rule_value) -> int:
+        """Calculate the additional days required from rule key.
 
         Args:
             rule_key (any): The key value from the strategy.
-            value_value (any): The value from the strategy.
+            rule_value (any): The key value from the strategy (unused in this function).
         """
         # map to a list of ints
         rule_key_number_groups = list(map(int, self.find_all_nums_in_str(rule_key)))
@@ -27,8 +27,13 @@ class StochasticTrigger(Trigger):
             return max(rule_key_number_groups)
         return DEFAULT_STOCHASTIC_LENGTH
 
-    def add_to_data(self, rule_key, rule_value, side, data_manager):
-        """Add data to the dataframe.
+    def additional_days_from_rule_value(self, rule_value: any) -> int:
+        """Calculate the additional days required from rule value."""
+        # logic for rule value is the same as the logic for rule key
+        return self.additional_days_from_rule_key(rule_value, None)
+
+    def add_to_data_from_rule_key(self, rule_key, rule_value, side, data_manager):
+        """Add data to the dataframe from rule key.
 
         Args:
             rule_key (any): The key value from the strategy.
@@ -50,6 +55,20 @@ class StochasticTrigger(Trigger):
             Trigger._add_trigger_column(f'{self.indicator_symbol}_{trigger_value}', trigger_value,
                                         data_manager)
 
+    def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
+        """Add data to the dataframe from rule value."""
+        rule_key_number_groups = self.find_all_nums_in_str(rule_value)
+        if len(rule_key_number_groups) > 0:
+            num = int(rule_key_number_groups[0])
+            self.__add_stochastic_column(num, data_manager)
+        else:
+            self.__add_stochastic_column(DEFAULT_STOCHASTIC_LENGTH, data_manager)
+
+    def get_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index) -> float:
+        """Get the value of the indicator when referenced in a rule value."""
+        # parse rule key will work even when passed a rule value
+        return Trigger._parse_rule_key(rule_value, self.indicator_symbol, data_manager, current_day_index)
+
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for stochastic.
 
@@ -69,7 +88,7 @@ class StochasticTrigger(Trigger):
 
         log.debug(f'{self.DISPLAY_NAME} algorithm: {rule_key} checked successfully')
 
-        return self.basic_trigger_check(indicator_value, rule_value, data_manager, current_day_index)
+        return self.basic_trigger_check(indicator_value, rule_value)
 
     def __add_stochastic_column(self, length: int, data_manager: DataManager):
         """Calculate the stochastic values and add them to the df."""

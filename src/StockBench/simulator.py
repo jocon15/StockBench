@@ -238,7 +238,7 @@ class Simulator:
 
         self.__reset_singular_attributes()
 
-        start_date_unix, end_date_unix, additional_days = self.__algorithm.get_window()
+        start_date_unix, end_date_unix, additional_days = self.__algorithm.get_simulation_window()
         augmented_start_date_unix = start_date_unix - (additional_days * SECONDS_1_DAY)
 
         temp_df = self.__broker.get_daily_data(symbol, augmented_start_date_unix, end_date_unix)

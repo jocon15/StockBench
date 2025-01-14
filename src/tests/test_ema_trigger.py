@@ -10,20 +10,35 @@ def test_object():
     return EMATrigger('EMA')
 
 
-def test_additional_days(test_object):
+def test_additional_days_from_rule_key(test_object):
     # ============= Arrange ==============
 
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.additional_days('EMA20', '>20') == 20
-    assert type(test_object.additional_days('EMA20', '>20')) is int
-    assert test_object.additional_days('EMA50$price', '>20') == 50
-    assert test_object.additional_days('EMA50$price', '>20') == 50
-    assert test_object.additional_days('EMA20$slope10', '>20') == 20
-    assert test_object.additional_days('EMA20$slope30', '>20') == 30
+    assert test_object.additional_days_from_rule_key('EMA20', None) == 20
+    assert type(test_object.additional_days_from_rule_key('EMA20', None)) is int
+    assert test_object.additional_days_from_rule_key('EMA20$slope10', None) == 20
+    assert test_object.additional_days_from_rule_key('EMA20$slope30', None) == 30
     try:
-        test_object.additional_days('EMA', '>20')
+        test_object.additional_days_from_rule_key('EMA', None)
+        assert False
+    except StrategyIndicatorError:
+        assert True
+
+
+def test_additional_days_from_rule_value(test_object):
+    # ============= Arrange ==============
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    assert test_object.additional_days_from_rule_value('>EMA20') == 20
+    assert type(test_object.additional_days_from_rule_value('=EMA20')) is int
+    assert test_object.additional_days_from_rule_value('<=EMA20$slope10') == 20
+    assert test_object.additional_days_from_rule_value('>=EMA20$slope30') == 30
+    try:
+        test_object.additional_days_from_rule_value('>EMA')
         assert False
     except StrategyIndicatorError:
         assert True
@@ -31,7 +46,7 @@ def test_additional_days(test_object):
 
 @patch('logging.getLogger')
 @patch('StockBench.simulation_data.data_manager.DataManager')
-def test_add_to_data(data_mocker, logger_mocker, test_object):
+def test_add_to_data_from_rule_key(data_mocker, logger_mocker, test_object):
     # ============= Arrange ==============
     logger_mocker.return_value = logger_mocker
     logger_mocker.warning.side_effect = logger_side_effect
@@ -47,18 +62,61 @@ def test_add_to_data(data_mocker, logger_mocker, test_object):
 
     # ============= Act ==================
     # test normal case
-    test_object.add_to_data('EMA20', '>30', 'buy', data_mocker)
+    test_object.add_to_data_from_rule_key('EMA20', '>120', 'buy', data_mocker)
     # assertions are done in side effect function
 
     # test console output if no indicator length is provided
     try:
-        test_object.add_to_data('EMA', '>30', 'buy', data_mocker)
+        test_object.add_to_data_from_rule_key('EMA', '>120', 'buy', data_mocker)
         assert False
     except StrategyIndicatorError:
         assert True
 
     # ============= Assert ===============
     # assertions are done in side effect function
+
+
+@patch('logging.getLogger')
+@patch('StockBench.simulation_data.data_manager.DataManager')
+def test_add_to_data_from_rule_value(data_mocker, logger_mocker, test_object):
+    # ============= Arrange ==============
+    logger_mocker.return_value = logger_mocker
+    logger_mocker.warning.side_effect = logger_side_effect
+    data_mocker.add_column.side_effect = add_column_side_effect
+
+    # assemble a price list from the example data
+    price_data = []
+    for day in EXAMPLE_DATA_MSFT['MSFT']:
+        price_data.append(float(day['c']))
+
+    data_mocker.get_column_data.return_value = price_data
+    data_mocker.get_column_nmes.return_value = []
+
+    # ============= Act ==================
+    # test normal case
+    test_object.add_to_data_from_rule_value('>EMA20', '>30', data_mocker)
+    # assertions are done in side effect function
+
+    # test console output if no indicator length is provided
+    try:
+        test_object.add_to_data_from_rule_value('<EMA', '>30', data_mocker)
+        assert False
+    except StrategyIndicatorError:
+        assert True
+
+    # ============= Assert ===============
+    # assertions are done in side effect function
+
+
+@patch('StockBench.simulation_data.data_manager.DataManager')
+def test_get_value_when_referenced(data_mocker, test_object):
+    # ============= Arrange ==============
+    data_mocker.get_data_point.return_value = 234.5
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    assert test_object.get_value_when_referenced('>=EMA20', data_mocker, 25) == 234.5
 
 
 def add_column_side_effect(*args):
@@ -350,7 +408,7 @@ def test_check_trigger_2_numbers_present_bad_format(test_object):
     # ============= Assert ===============
     # has 2 numbers but does not include slope symbol
     try:
-        assert test_object.check_trigger('EMA20ran50', '>$price', None, None, 0)
+        assert test_object.check_trigger('EMA20ran50', '>$price', None, None, 0)  # noqa
         assert False
     except StrategyIndicatorError:
         assert True

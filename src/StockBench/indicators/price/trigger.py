@@ -2,6 +2,7 @@ import logging
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
 from StockBench.indicator.exceptions import StrategyIndicatorError
+from StockBench.simulation_data.data_manager import DataManager
 
 log = logging.getLogger()
 
@@ -13,17 +14,22 @@ class PriceTrigger(Trigger):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days(self, rule_key, value_value) -> int:
-        """Calculate the additional days required.
+    def additional_days_from_rule_key(self, rule_key, rule_value) -> int:
+        """Calculate the additional days required from rule key.
 
         Args:
             rule_key (any): The key value from the strategy.
-            value_value (any): The value from the strategy.
+            rule_value (any): The key value from the strategy (unused in this function).
         """
-        # note price does not require any additional days
+        # price does not require any additional days
         return 0
 
-    def add_to_data(self, rule_key, rule_value, side, data_manager):
+    def additional_days_from_rule_value(self, rule_value: any) -> int:
+        """Calculate the additional days required from rule value."""
+        # price does not require any additional days
+        return 0
+
+    def add_to_data_from_rule_key(self, rule_key, rule_value, side, data_manager):
         """Add data to the dataframe.
 
         Args:
@@ -32,8 +38,18 @@ class PriceTrigger(Trigger):
             side (str): The side (buy/sell).
             data_manager (any): The data object.
         """
-        # note price (OHLC) is in the data by default, no need to add it
+        # price is in the data by default, no need to add it
         return
+
+    def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
+        """Add data to the dataframe from rule value."""
+        # price is in the data by default, no need to add it
+        return
+
+    def get_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index) -> float:
+        """Get the value of the indicator when referenced in a rule value."""
+        # parse rule key will work even when passed a rule value
+        return self.__parse_key(rule_value, data_manager, current_day_index)
 
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for price.
@@ -56,7 +72,7 @@ class PriceTrigger(Trigger):
 
         log.debug(f'Price algorithm: {rule_key} checked successfully')
 
-        return self.basic_trigger_check(indicator_value, rule_value, data_manager, current_day_index)
+        return self.basic_trigger_check(indicator_value, rule_value)
 
     def __parse_key(self, rule_key, data_manager, current_day_index) -> float:
         """Parser for parsing the key into the indicator value."""

@@ -9,42 +9,78 @@ def test_object():
     return CandlestickColorTrigger('color')
 
 
-def test_additional_days_normal(test_object):
+def test_additional_days_from_rule_key_normal(test_object):
     # ============= Arrange ==============
 
     # ============= Act ==================
-    actual = test_object.additional_days('color', {'1': 'red', '0': 'green'})
+    actual = test_object.additional_days_from_rule_key('color', {'0': 'green', '1': 'red'})
 
     # ============= Assert ===============
     assert type(actual) is int
     assert actual == 1
 
 
-def test_additional_days_no_values(test_object):
+def test_additional_days_from_rule_key_no_values(test_object):
     # ============= Arrange ==============
 
     # ============= Act ==================
 
     # ============= Assert ===============
     try:
-        test_object.additional_days('color', {})
+        test_object.additional_days_from_rule_key('color', {})
         assert False
     except StrategyIndicatorError:
         assert True
 
 
-def test_add_to_data(test_object):
+def test_additional_days_from_rule_value(test_object):
+    # ============= Arrange ==============
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    assert test_object.additional_days_from_rule_value({'0': 'green', '1': 'red'}) == 0
+
+
+def test_add_to_data_from_rule_key(test_object):
     # ============= Arrange ==============
 
     # ============= Act ==================
 
     # ============= Assert ===============
     try:
-        test_object.add_to_data('', '', '', None)
+        test_object.add_to_data_from_rule_key('', '', '', None)  # noqa
         assert True
     except Exception as e:
         print(e)
         assert False
+
+
+def test_add_to_data_from_rule_value(test_object):
+    # ============= Arrange ==============
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    try:
+        test_object.add_to_data_from_rule_value('', '', None)  # noqa
+        assert True
+    except Exception as e:
+        print(e)
+        assert False
+
+
+def test_get_value_when_referenced(test_object):
+    # ============= Arrange ==============
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    try:
+        test_object.get_value_when_referenced({'0': 'green', '1': 'red'}, None, 1)  # noqa
+        assert False
+    except NotImplementedError:
+        assert True
 
 
 @patch('StockBench.simulation_data.data_manager.DataManager')
@@ -58,10 +94,10 @@ def test_check_trigger(data_mocker, test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.check_trigger('color', {'0': 'green', '1': 'red'}, data_mocker, None,
+    assert test_object.check_trigger('color', {'0': 'green', '1': 'red'}, data_mocker, None,  # noqa
                                      current_day_index) is True
 
-    assert test_object.check_trigger('color', {'0': 'red', '1': 'green'}, data_mocker, None,
+    assert test_object.check_trigger('color', {'0': 'red', '1': 'green'}, data_mocker, None,  # noqa
                                      current_day_index) is False
 
 
@@ -77,7 +113,7 @@ def test_check_trigger_no_values(data_mocker, test_object):
 
     # ============= Assert ===============
     try:
-        test_object.check_trigger('color', {}, data_mocker, None, current_day_index)
+        test_object.check_trigger('color', {}, data_mocker, None, current_day_index)  # noqa
         assert False
     except StrategyIndicatorError:
         assert True

@@ -8,29 +8,63 @@ def test_object():
     return StopProfitTrigger('stop_profit')
 
 
-def test_additional_days(test_object):
+def test_additional_days_from_rule_key(test_object):
     # ============= Arrange ==============
 
     # ============= Act ==================
-    actual = test_object.additional_days('', '')
 
     # ============= Assert ===============
-    assert type(actual) is int
-    assert actual == 0
+    assert test_object.additional_days_from_rule_key('', None) == 0
 
 
-def test_add_to_data(test_object):
+def test_additional_days_from_rule_value(test_object):
+    # ============= Arrange ==============
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    assert test_object.additional_days_from_rule_value('') == 0
+
+
+def test_add_to_data_from_rule_key(test_object):
     # ============= Arrange ==============
 
     # ============= Act ==================
 
     # ============= Assert ===============
     try:
-        test_object.add_to_data('', '', '', None)
+        test_object.add_to_data_from_rule_key('', '', '', None)  # noqa
         assert True
     except Exception as e:
         print(e)
         assert False
+
+
+def test_add_to_data_from_rule_value(test_object):
+    # ============= Arrange ==============
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    try:
+        test_object.add_to_data_from_rule_value('', '', None)  # noqa
+        assert True
+    except Exception as e:
+        print(e)
+        assert False
+
+
+def test_get_value_when_referenced(test_object):
+    # ============= Arrange ==============
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    try:
+        test_object.get_value_when_referenced('', None, 25)  # noqa
+        assert False
+    except NotImplementedError:
+        assert True
 
 
 @patch('StockBench.position.position.Position')

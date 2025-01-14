@@ -11,21 +11,26 @@ class EMATrigger(Trigger):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days(self, rule_key, value_value) -> int:
-        """Calculate the additional days required.
+    def additional_days_from_rule_key(self, rule_key, rule_value) -> int:
+        """Calculate the additional days required from rule key.
 
         Args:
             rule_key (any): The key value from the strategy.
-            value_value (any): The value from the strategy.
+            rule_value (any): The key value from the strategy (unused in this function).
         """
-        # map to a list of ints
+        # get all numbers from rule key
         nums = list(map(int, self.find_all_nums_in_str(rule_key)))
         if nums:
             return max(nums)
-        raise StrategyIndicatorError(f'{self.indicator_symbol} key: {rule_key} must have an indicator length!')
+        raise StrategyIndicatorError(f'{self.indicator_symbol} indicator must have an indicator length!')
 
-    def add_to_data(self, rule_key, rule_value, side, data_manager):
-        """Add data to the dataframe.
+    def additional_days_from_rule_value(self, rule_value: any) -> int:
+        """Calculate the additional days required from rule value."""
+        # logic for rule value is the same as the logic for rule key
+        return self.additional_days_from_rule_key(rule_value, None)
+
+    def add_to_data_from_rule_key(self, rule_key, rule_value, side, data_manager):
+        """Add data to the dataframe from rule key.
 
         Args:
             rule_key (any): The key value from the strategy.
@@ -39,6 +44,17 @@ class EMATrigger(Trigger):
             self.__add_ema(indicator_length, data_manager)
         else:
             raise StrategyIndicatorError(f'{self.indicator_symbol} key: {rule_key} must have an indicator length!')
+
+    def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
+        """Add data to the dataframe from rule value."""
+        # logic for rule value is the same as the logic for rule key
+        return self.add_to_data_from_rule_key(rule_value, None, side, data_manager)
+
+    def get_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index) -> float:
+        """Get the value of the indicator when referenced in a rule value."""
+        # parse rule key will work even when passed a rule value
+        return Trigger._parse_rule_key_no_default_indicator_length(rule_value, self.indicator_symbol, data_manager,
+                                                                   current_day_index)
 
     def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
         """Trigger logic for EMA.
@@ -60,7 +76,7 @@ class EMATrigger(Trigger):
 
         log.debug(f'{self.indicator_symbol} algorithm: {rule_key} checked successfully')
 
-        return self.basic_trigger_check(indicator_value, rule_value, data_manager, current_day_index)
+        return self.basic_trigger_check(indicator_value, rule_value)
 
     def __add_ema(self, length: int, data_manager: DataManager):
         """Pre-calculate the EMA values and add them to the df."""

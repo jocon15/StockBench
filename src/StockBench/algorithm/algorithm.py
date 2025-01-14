@@ -58,88 +58,35 @@ class Algorithm:
         """Calculate number of additional days required for the strategy."""
         additional_days = 0
 
-        # create a list of agnostic and buy-only triggers
+        # assemble a list of triggers that could cause a buy
         triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
 
         # search all buy triggers for additional days
-        for rule_key in self.strategy[BUY_SIDE].keys():
-            rule_value = self.strategy[BUY_SIDE][rule_key]
-            for trigger in triggers:
-                if AND_KEY in rule_key:
-                    for inner_key in rule_value.keys():
-                        inner_value = rule_value[inner_key]
-                        if trigger.indicator_symbol in inner_key:
-                            additional_days = max(additional_days, trigger.additional_days_from_rule_key(inner_key,
-                                                                                                         inner_value))
-                        elif trigger.indicator_symbol in inner_value:
-                            additional_days = max(additional_days, trigger.additional_days_from_rule_value(inner_value))
-                elif trigger.indicator_symbol in rule_key:
-                    additional_days = max(additional_days, trigger.additional_days_from_rule_key(rule_key, rule_value))
-                elif trigger.indicator_symbol in rule_value:
-                    additional_days = max(additional_days, trigger.additional_days_from_rule_value(rule_value))
+        additional_days = max(additional_days, self.__get_additional_days_per_side(triggers, BUY_SIDE))
 
-        # create a list of agnostic and sell-only triggers
+        # assemble a list of triggers that could cause a sell
         triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
 
         # search all sell triggers for additional days
-        for rule_key in self.strategy[SELL_SIDE].keys():
-            rule_value = self.strategy[SELL_SIDE][rule_key]
-            for trigger in triggers:
-                if AND_KEY in rule_key:
-                    for inner_key in rule_value.keys():
-                        inner_value = rule_value[inner_key]
-                        if trigger.indicator_symbol in inner_key:
-                            additional_days = max(additional_days, trigger.additional_days_from_rule_key(inner_key,
-                                                                                                         inner_value))
-                        elif trigger.indicator_symbol in inner_value:
-                            additional_days = max(additional_days, trigger.additional_days_from_rule_value(inner_value))
-                elif trigger.indicator_symbol in rule_key:
-                    additional_days = max(additional_days, trigger.additional_days_from_rule_key(rule_key, rule_value))
-                elif trigger.indicator_symbol in rule_value:
-                    additional_days = max(additional_days, trigger.additional_days_from_rule_value(rule_value))
+        additional_days = max((additional_days, self.__get_additional_days_per_side(triggers, SELL_SIDE)))
 
         return additional_days
 
     def add_indicator_data(self, data_manager) -> None:
         """Add indicator data from each algorithm"""
         log.debug('Adding indicators to data based on strategy...')
-        # create a list of all triggers except sell algorithm
+
+        # assemble a list of triggers that could cause a buy
         triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
 
-        # find all buy algorithm and add their indicator to the data
-        for rule_key in self.strategy[BUY_SIDE].keys():
-            rule_value = self.strategy[BUY_SIDE][rule_key]
-            for trigger in triggers:
-                if AND_KEY in rule_key:
-                    for inner_key in rule_value.keys():
-                        inner_value = rule_value[inner_key]
-                        if trigger.indicator_symbol in inner_key:
-                            trigger.add_to_data_from_rule_key(inner_key, inner_value, BUY_SIDE, data_manager)
-                        elif trigger.indicator_symbol in inner_value:
-                            trigger.add_to_data_from_rule_value(inner_value, BUY_SIDE, data_manager)
-                elif trigger.indicator_symbol in rule_key:
-                    trigger.add_to_data_from_rule_key(rule_key, rule_value, BUY_SIDE, data_manager)
-                elif trigger.indicator_symbol in rule_value:
-                    trigger.add_to_data_from_rule_value(rule_value, BUY_SIDE, data_manager)
+        # find all buy triggers and add their indicator to the data
+        self.__add_to_data_per_side(triggers, BUY_SIDE, data_manager)
 
-        # create a list of all triggers except sell algorithm
+        # assemble a list of triggers that could cause a sell
         triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
 
         # find all sell triggers and add their indicator to the data
-        for rule_key in self.strategy[SELL_SIDE].keys():
-            rule_value = self.strategy[SELL_SIDE][rule_key]
-            for trigger in triggers:
-                if AND_KEY in rule_key:
-                    for inner_key in rule_value.keys():
-                        inner_value = rule_value[inner_key]
-                        if trigger.indicator_symbol in inner_key:
-                            trigger.add_to_data_from_rule_key(inner_key, inner_value, SELL_SIDE, data_manager)
-                        elif trigger.indicator_symbol in inner_value:
-                            trigger.add_to_data_from_rule_value(inner_value, SELL_SIDE, data_manager)
-                elif trigger.indicator_symbol in rule_key:
-                    trigger.add_to_data_from_rule_key(rule_key, rule_value, SELL_SIDE, data_manager)
-                elif trigger.indicator_symbol in rule_value:
-                    trigger.add_to_data_from_rule_value(rule_value, SELL_SIDE, data_manager)
+        self.__add_to_data_per_side(triggers, SELL_SIDE, data_manager)
 
     def check_triggers_by_side(self, data_manager: DataManager, current_day_index: int, position: Position,
                                side: str) -> Tuple[bool, str]:
@@ -165,7 +112,6 @@ class Algorithm:
         triggered_key = ''
         side_keys = self.strategy[side].keys()
         for key in side_keys:
-            # handle algorithm
             triggered_key = key
             was_triggered = self.__handle_triggers_by_side(data_manager, current_day_index, position, key, side)
             if was_triggered:
@@ -222,6 +168,43 @@ class Algorithm:
             else:
                 self.__buy_only_triggers.append(indicator.get_trigger())
 
+    def __get_additional_days_per_side(self, triggers: list, side: str) -> int:
+        """Finds the number of additional days required per side."""
+        additional_days = 0
+        for rule_key in self.strategy[side].keys():
+            rule_value = self.strategy[side][rule_key]
+            for trigger in triggers:
+                if AND_KEY in rule_key:
+                    for inner_key in rule_value.keys():
+                        inner_value = rule_value[inner_key]
+                        if trigger.indicator_symbol in inner_key:
+                            additional_days = max(additional_days, trigger.additional_days_from_rule_key(inner_key,
+                                                                                                         inner_value))
+                        elif trigger.indicator_symbol in inner_value:
+                            additional_days = max(additional_days, trigger.additional_days_from_rule_value(inner_value))
+                elif trigger.indicator_symbol in rule_key:
+                    additional_days = max(additional_days, trigger.additional_days_from_rule_key(rule_key, rule_value))
+                elif trigger.indicator_symbol in rule_value:
+                    additional_days = max(additional_days, trigger.additional_days_from_rule_value(rule_value))
+        return additional_days
+
+    def __add_to_data_per_side(self, triggers: list, side: str, data_manager: DataManager):
+        """Adds the indicator data to the data manager per side."""
+        for rule_key in self.strategy[side].keys():
+            rule_value = self.strategy[side][rule_key]
+            for trigger in triggers:
+                if AND_KEY in rule_key:
+                    for inner_key in rule_value.keys():
+                        inner_value = rule_value[inner_key]
+                        if trigger.indicator_symbol in inner_key:
+                            trigger.add_to_data_from_rule_key(inner_key, inner_value, side, data_manager)
+                        elif trigger.indicator_symbol in inner_value:
+                            trigger.add_to_data_from_rule_value(inner_value, side, data_manager)
+                elif trigger.indicator_symbol in rule_key:
+                    trigger.add_to_data_from_rule_key(rule_key, rule_value, side, data_manager)
+                elif trigger.indicator_symbol in rule_value:
+                    trigger.add_to_data_from_rule_value(rule_value, side, data_manager)
+
     def __handle_triggers_by_side(self, data_manager: DataManager, current_day_index: int, position: Position, key: str,
                                   side: str) -> bool:
         """Check all triggers of a side for hits.
@@ -237,10 +220,10 @@ class Algorithm:
             bool: True if triggered, false if not.
         """
         if side == BUY_SIDE:
-            # concatenate the agnostic list with the buy list
+            # assemble triggers that could cause a buy
             triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
         else:
-            # concatenate the agnostic list with the sell list
+            # assemble triggers that could trigger a sell
             triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
 
         if AND_KEY in key:

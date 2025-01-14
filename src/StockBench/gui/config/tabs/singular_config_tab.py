@@ -63,7 +63,7 @@ class SingularConfigTab(ConfigTab):
         self.layout.addWidget(self.unique_chart_save_btn)
 
         self.show_volume_label = QLabel()
-        self.show_volume_label.setText('Show Volume')
+        self.show_volume_label.setText('Show Volume:')
         self.show_volume_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(self.show_volume_label)
 

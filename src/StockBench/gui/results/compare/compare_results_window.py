@@ -6,7 +6,7 @@ from StockBench.gui.results.multi.multi_results_window import MultiResultsWindow
 class CompareResultsWindow(QWidget):
     def __init__(self, simulation1: MultiResultsWindow, simulation2: MultiResultsWindow):
         super().__init__()
-
+        self.setWindowTitle('Simulation Results')
         self.setStyleSheet(Palette.WINDOW_STYLESHEET)
 
         self.layout = QHBoxLayout()

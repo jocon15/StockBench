@@ -34,7 +34,7 @@ class Algorithm:
 
         self.__validate_strategy()
 
-    def get_window(self) -> Tuple:
+    def get_simulation_window(self) -> Tuple:
         """Parse the strategy for relevant information needed to make the API request."""
         log.debug('Parsing strategy for timestamps...')
 

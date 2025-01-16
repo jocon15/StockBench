@@ -2,7 +2,7 @@ import os
 import time
 import logging
 import requests
-import pandas as pd
+from pandas import DataFrame
 from datetime import datetime
 from StockBench.constants import DELAY_SECONDS_15MIN
 from StockBench.function_tools.function_wrappers import performance_timer
@@ -90,7 +90,9 @@ class Broker:
             if response_data['bars'] == {}:
                 # misspelled symbols return blank data for bars
                 raise ValueError(f'Invalid symbol {symbol}')
-            return self.__json_to_df(response_data['bars'][symbol], start_date_unix, end_date_unix)
+            ohlc_data = response_data['bars'][symbol]
+            self.__validate_ohlc_data(ohlc_data, start_date_unix, end_date_unix)
+            return self.__json_to_df(ohlc_data)
         except requests.exceptions.ConnectionError:
             # do something if the request fails
             log.critical('Connection error during request')
@@ -135,20 +137,8 @@ class Broker:
         return (datetime.fromtimestamp(start_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'),
                 datetime.fromtimestamp(end_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'))
 
-    def __json_to_df(self, ohlc_data: list, start_date_unix: int, end_date_unix: int):
-        """Convert JSON to Pandas.DataFrame.
-
-        Args:
-            ohlc_data : The JSON data to convert.
-
-        return
-            Pandas.DataFrame: The converted data as a DateFrame.
-
-        raises
-            ValueError: If the symbol does not have sufficient data.
-        """
-        log.debug('Converting JSON to DF...')
-
+    def __validate_ohlc_data(self, ohlc_data: list, start_date_unix: int, end_date_unix: int):
+        """Validate that the broker returned the data range requested by matching timestamps with buffer applied."""
         timestamp_format = '%Y-%m-%dT%H:%M:%SZ'
 
         actual_start_timestamp = ohlc_data[0]['t']
@@ -168,6 +158,18 @@ class Broker:
             raise ValueError('Broker returned end date does not match requested start date! This symbol may not have '
                              'enough data!')
 
+    @staticmethod
+    def __json_to_df(ohlc_data: list) -> DataFrame:
+        """Convert JSON to Pandas.DataFrame.
+
+        Args:
+            ohlc_data : The JSON data to convert.
+
+        return
+            Pandas.DataFrame: The converted data as a DateFrame.
+        """
+        log.debug('Converting JSON data to DataFrame...')
+
         time_values = [str(data_point['t']) for data_point in ohlc_data]
         open_values = [float(data_point['o']) for data_point in ohlc_data]
         high_values = [float(data_point['h']) for data_point in ohlc_data]
@@ -175,12 +177,13 @@ class Broker:
         close_values = [float(data_point['c']) for data_point in ohlc_data]
         volume_values = [float(data_point['v']) for data_point in ohlc_data]
 
-        df = pd.DataFrame()
+        df = DataFrame()
         df.insert(0, 'Date', time_values)  # noqa
         df.insert(1, 'Open', open_values)  # noqa
         df.insert(2, 'High', high_values)  # noqa
         df.insert(3, 'Low', low_values)  # noqa
         df.insert(4, 'Close', close_values)  # noqa
         df.insert(5, 'volume', volume_values)  # noqa
+
         log.debug('Conversion complete')
         return df

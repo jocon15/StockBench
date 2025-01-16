@@ -48,9 +48,8 @@ class Broker:
             JSON: The request data.
         """
         log.debug('Building URI...')
-        # convert dates from unix to utc
+
         start_date_utc, end_date_utc = self.__unix_to_utc_date(start_date_unix, end_date_unix)
-        # convert times from unix to utc
         start_time_utc, end_time_utc = self.__unix_to_utc_time(start_date_unix, end_date_unix)
 
         day_bars_url = f'{self._BARS_URL}' \

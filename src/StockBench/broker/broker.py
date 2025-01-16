@@ -85,7 +85,7 @@ class Broker:
             response_data = response.json()
             log.debug('Request made successfully')
             if 'bars' not in response_data.keys():
-                # symbols with numeric characters are flagged by the broker
+                # symbols with numeric characters are flagged by broker
                 raise ValueError(f'Invalid symbol {symbol}')
             if response_data['bars'] == {}:
                 # misspelled symbols return blank data for bars
@@ -94,7 +94,6 @@ class Broker:
             self.__validate_ohlc_data(ohlc_data, start_date_unix, end_date_unix)
             return self.__json_to_df(ohlc_data)
         except requests.exceptions.ConnectionError:
-            # do something if the request fails
             log.critical('Connection error during request')
             print('Connection error trying to connect to brokerage servers!')
 

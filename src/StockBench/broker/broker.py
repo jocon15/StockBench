@@ -127,31 +127,14 @@ class Broker:
 
     @staticmethod
     def __unix_to_utc_date(start_date_unix: int, end_date_unix: int) -> tuple:
-        """Convert 2 dates from unix to UTC-date.
-
-        Args:
-            start_date_unix: Start date in unix.
-            end_date_unix: End date in unix.
-
-        return:
-            tuple: The converted dates in UTC-date format.
-
-        """
+        """Convert 2 dates from unix to UTC-date."""
         # Note: end_date_utc is - 16 minutes to adjust for 15 minute historical data delay
         return (datetime.fromtimestamp(start_date_unix).strftime('%Y-%m-%d'),
                 datetime.fromtimestamp(end_date_unix - DELAY_SECONDS_15MIN).strftime('%Y-%m-%d'))
 
     @staticmethod
     def __unix_to_utc_time(start_date_unix: int, end_date_unix: int) -> tuple:
-        """Convert 2 dates from unix to UTC-time.
-
-        Args:
-            start_date_unix: Start date in unix.
-            end_date_unix: End date in unix.
-
-        return:
-            tuple: The converted dates in UTC-time format.
-        """
+        """Convert 2 dates from unix to UTC-time."""
         # Note: end_date_utc is - 16 minutes to adjust for 15 minute historical data delay
         return (datetime.fromtimestamp(start_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'),
                 datetime.fromtimestamp(end_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'))

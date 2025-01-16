@@ -98,6 +98,27 @@ class Broker:
             log.critical('Connection error during request')
             print('Connection error trying to connect to brokerage servers!')
 
+    def __validate_ohlc_data(self, ohlc_data: list, start_date_unix: int, end_date_unix: int):
+        """Validate that the broker returned the data range requested by matching timestamps with buffer applied."""
+        timestamp_format = '%Y-%m-%dT%H:%M:%SZ'
+
+        actual_start_timestamp = ohlc_data[0]['t']
+        actual_end_timestamp = ohlc_data[-1]['t']
+
+        actual_start_timestamp_datetime = datetime.strptime(actual_start_timestamp, timestamp_format)
+        actual_end_timestamp_datetime = datetime.strptime(actual_end_timestamp, timestamp_format)
+
+        actual_start_timestamp_unix = int(time.mktime(actual_start_timestamp_datetime.timetuple()))
+        actual_end_timestamp_unix = int(time.mktime(actual_end_timestamp_datetime.timetuple()))
+
+        if abs(actual_start_timestamp_unix - start_date_unix) > self._4_DAYS_IN_SECONDS_EPSILON:
+            raise ValueError('Broker returned start date does not match requested start date! This symbol may not have '
+                             'enough data!')
+
+        if abs(actual_end_timestamp_unix - end_date_unix) > self._4_DAYS_IN_SECONDS_EPSILON:
+            raise ValueError('Broker returned end date does not match requested start date! This symbol may not have '
+                             'enough data!')
+
     @staticmethod
     def get_hourly_data():
         return NotImplementedError('Hourly bar data is not supported yet.')
@@ -136,27 +157,6 @@ class Broker:
         # Note: end_date_utc is - 16 minutes to adjust for 15 minute historical data delay
         return (datetime.fromtimestamp(start_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'),
                 datetime.fromtimestamp(end_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'))
-
-    def __validate_ohlc_data(self, ohlc_data: list, start_date_unix: int, end_date_unix: int):
-        """Validate that the broker returned the data range requested by matching timestamps with buffer applied."""
-        timestamp_format = '%Y-%m-%dT%H:%M:%SZ'
-
-        actual_start_timestamp = ohlc_data[0]['t']
-        actual_end_timestamp = ohlc_data[-1]['t']
-
-        actual_start_timestamp_datetime = datetime.strptime(actual_start_timestamp, timestamp_format)
-        actual_end_timestamp_datetime = datetime.strptime(actual_end_timestamp, timestamp_format)
-
-        actual_start_timestamp_unix = int(time.mktime(actual_start_timestamp_datetime.timetuple()))
-        actual_end_timestamp_unix = int(time.mktime(actual_end_timestamp_datetime.timetuple()))
-
-        if abs(actual_start_timestamp_unix - start_date_unix) > self._4_DAYS_IN_SECONDS_EPSILON:
-            raise ValueError('Broker returned start date does not match requested start date! This symbol may not have '
-                             'enough data!')
-
-        if abs(actual_end_timestamp_unix - end_date_unix) > self._4_DAYS_IN_SECONDS_EPSILON:
-            raise ValueError('Broker returned end date does not match requested start date! This symbol may not have '
-                             'enough data!')
 
     @staticmethod
     def __json_to_df(ohlc_data: list) -> DataFrame:

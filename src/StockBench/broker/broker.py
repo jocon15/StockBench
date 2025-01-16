@@ -28,11 +28,6 @@ class Broker:
     _4_DAYS_IN_SECONDS_EPSILON = 345600
 
     def __init__(self, timeout=15):
-        """Constructor.
-
-        Args:
-            timeout: Timeout length (seconds).
-        """
         self.__timeout = timeout
 
     @performance_timer

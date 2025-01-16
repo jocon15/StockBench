@@ -1,4 +1,5 @@
 import os
+import time
 import logging
 import requests
 import pandas as pd
@@ -21,6 +22,10 @@ class Broker:
     # this allows us to support 5 year simulation with a single request and not have to use the next page token
     _LIMIT = 10000
 
+    # leeway for matching actual request dates with requested dates
+    # takes into account that there may be weekends or holidays at the requested start date which means the broker
+    # returns a slightly different date than requested
+    _4_DAYS_IN_SECONDS_EPSILON = 345600
 
     def __init__(self, timeout=15):
         """Constructor.
@@ -130,8 +135,7 @@ class Broker:
         return (datetime.fromtimestamp(start_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'),
                 datetime.fromtimestamp(end_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'))
 
-    @staticmethod
-    def __json_to_df(ohlc_data: list, start_date_unix: int, end_date_unix: int):
+    def __json_to_df(self, ohlc_data: list, start_date_unix: int, end_date_unix: int):
         """Convert JSON to Pandas.DataFrame.
 
         Args:
@@ -144,33 +148,33 @@ class Broker:
             ValueError: If the symbol does not have sufficient data.
         """
         log.debug('Converting JSON to DF...')
-        time_values = []
-        open_values = []
-        high_values = []
-        low_values = []
-        close_values = []
-        volume_values = []
 
-        start_timestamp = ohlc_data[0]['t']
-        end_timestamp = ohlc_data[-1]['t']
+        timestamp_format = '%Y-%m-%dT%H:%M:%SZ'
 
-        for data_point in ohlc_data:
-            # check for duplicated data (implies this symbol has not been around long enough)
-            # Alpaca records all points as the same value if this happens
+        actual_start_timestamp = ohlc_data[0]['t']
+        actual_end_timestamp = ohlc_data[-1]['t']
 
+        actual_start_timestamp_datetime = datetime.strptime(actual_start_timestamp, timestamp_format)
+        actual_end_timestamp_datetime = datetime.strptime(actual_end_timestamp, timestamp_format)
 
+        actual_start_timestamp_unix = int(time.mktime(actual_start_timestamp_datetime.timetuple()))
+        actual_end_timestamp_unix = int(time.mktime(actual_end_timestamp_datetime.timetuple()))
 
+        if abs(actual_start_timestamp_unix - start_date_unix) > self._4_DAYS_IN_SECONDS_EPSILON:
+            raise ValueError('Broker returned start date does not match requested start date! This symbol may not have '
+                             'enough data!')
 
-            if data_point['h'] == data_point['c'] and data_point['l'] == data_point['c']:
-                raise ValueError('This symbol does not have enough data!')
+        if abs(actual_end_timestamp_unix - end_date_unix) > self._4_DAYS_IN_SECONDS_EPSILON:
+            raise ValueError('Broker returned end date does not match requested start date! This symbol may not have '
+                             'enough data!')
 
-            time_values.append(str(data_point['t']))
-            open_values.append(float(data_point['o']))
-            high_values.append(float(data_point['h']))
-            low_values.append(float(data_point['l']))
-            close_values.append(float(data_point['c']))
+        time_values = [str(data_point['t']) for data_point in ohlc_data]
+        open_values = [float(data_point['o']) for data_point in ohlc_data]
+        high_values = [float(data_point['h']) for data_point in ohlc_data]
+        low_values = [float(data_point['l']) for data_point in ohlc_data]
+        close_values = [float(data_point['c']) for data_point in ohlc_data]
+        volume_values = [float(data_point['v']) for data_point in ohlc_data]
 
-            volume_values.append(float(data_point['v']))
         df = pd.DataFrame()
         df.insert(0, 'Date', time_values)  # noqa
         df.insert(1, 'Open', open_values)  # noqa

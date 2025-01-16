@@ -17,6 +17,11 @@ class Broker:
     _BARS_URL = 'https://data.alpaca.markets/v2/stocks/bars?'
     _HEADERS = {'APCA-API-KEY-ID': _API_KEY, 'APCA-API-SECRET-KEY': _SECRET_KEY}
 
+    # alpaca defaults to 1,000 ohlc bars per request, but we can set it all the way to 10,000
+    # this allows us to support 5 year simulation with a single request and not have to use the next page token
+    _LIMIT = 10000
+
+
     def __init__(self, timeout=15):
         """Constructor.
 
@@ -49,11 +54,12 @@ class Broker:
                        f'T{start_time_utc}Z' \
                        f'&end={end_date_utc}' \
                        f'T{end_time_utc}Z' \
+                       f'&limit={self._LIMIT}' \
                        f'&timeframe=1D'
         log.debug(f'Completed URI: {day_bars_url}')
-        return self.__make_request(day_bars_url, symbol)
+        return self.__make_request(day_bars_url, symbol, start_date_unix, end_date_unix)
 
-    def __make_request(self, uri: str, symbol: str):
+    def __make_request(self, uri: str, symbol: str, start_date_unix: int, end_date_unix: int):
         """Make the Brokerage API request.
 
         Args:
@@ -79,7 +85,7 @@ class Broker:
             if response_data['bars'] == {}:
                 # misspelled symbols return blank data for bars
                 raise ValueError(f'Invalid symbol {symbol}')
-            return self.__json_to_df(response_data['bars'][symbol])
+            return self.__json_to_df(response_data['bars'][symbol], start_date_unix, end_date_unix)
         except requests.exceptions.ConnectionError:
             # do something if the request fails
             log.critical('Connection error during request')
@@ -125,11 +131,11 @@ class Broker:
                 datetime.fromtimestamp(end_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'))
 
     @staticmethod
-    def __json_to_df(json_data):
+    def __json_to_df(ohlc_data: list, start_date_unix: int, end_date_unix: int):
         """Convert JSON to Pandas.DataFrame.
 
         Args:
-            json_data (JSON): The JSON data to convert.
+            ohlc_data : The JSON data to convert.
 
         return
             Pandas.DataFrame: The converted data as a DateFrame.
@@ -144,9 +150,17 @@ class Broker:
         low_values = []
         close_values = []
         volume_values = []
-        for data_point in json_data:
+
+        start_timestamp = ohlc_data[0]['t']
+        end_timestamp = ohlc_data[-1]['t']
+
+        for data_point in ohlc_data:
             # check for duplicated data (implies this symbol has not been around long enough)
             # Alpaca records all points as the same value if this happens
+
+
+
+
             if data_point['h'] == data_point['c'] and data_point['l'] == data_point['c']:
                 raise ValueError('This symbol does not have enough data!')
 

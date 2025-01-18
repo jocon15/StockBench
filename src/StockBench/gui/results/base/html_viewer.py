@@ -49,5 +49,4 @@ class HTMLViewer(QFrame):
         if os.path.isfile(chart_filepath):
             self.web_engine.load(QtCore.QUrl().fromLocalFile(os.path.abspath(chart_filepath)))
         else:
-            # load the default html file
-            self.web_engine.load(QtCore.QUrl().fromLocalFile(os.path.abspath(self.UNAVAILABLE_REL_PATH)))
+            self.render_chart_unavailable()

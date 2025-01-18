@@ -118,6 +118,8 @@ class SimulationResultsWindow(QWidget):
             message = f'Charting error: {e}'
         except Exception as e:
             message = f'Unexpected error: {type(e)} {e} {traceback.print_exc()}'
+        # if any error happens - inform the child component by using the callback to run some custom logic
+        self._on_error()
 
         # log all errors and display error message in console box
         log.error(message)
@@ -131,6 +133,10 @@ class SimulationResultsWindow(QWidget):
     @abstractmethod
     def _render_data(self, simulation_results: dict):
         raise NotImplementedError('You must define an implementation for _render_data()!')
+
+    @abstractmethod
+    def _on_error(self):
+        raise NotImplementedError('You must define an implementation for _on_error()!')
 
     def __update_data(self):
         """Get updated data by running the simulation on a QThread. (different thread from the Qt app)

@@ -50,6 +50,7 @@ class SingularResultsWindow(SimulationResultsWindow):
     def _render_data(self, simulation_results: dict):
         """Render the updated data in the window's shared_components."""
         if simulation_results.keys():
+            # the simulation succeeded - render the results
             self.overview_tab.render_data(simulation_results)
             self.buy_rules_tab.render_chart(simulation_results)
             self.sell_rules_tab.render_chart(simulation_results)
@@ -57,3 +58,12 @@ class SingularResultsWindow(SimulationResultsWindow):
             self.positions_duration_bar_tab.render_chart(simulation_results)
             self.positions_profit_loss_bar_tab.render_chart(simulation_results)
             self.positions_histogram_tab.render_chart(simulation_results)
+        else:
+            # the simulation failed - render the chart unavailable html
+            self.overview_tab.html_viewer.render_chart_unavailable()
+            self.buy_rules_tab.html_viewer.render_chart_unavailable()
+            self.sell_rules_tab.html_viewer.render_chart_unavailable()
+            self.account_value_bar_tab.html_viewer.render_chart_unavailable()
+            self.positions_duration_bar_tab.html_viewer.render_chart_unavailable()
+            self.positions_profit_loss_bar_tab.html_viewer.render_chart_unavailable()
+            self.positions_histogram_tab.html_viewer.render_chart_unavailable()

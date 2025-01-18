@@ -10,6 +10,11 @@ from StockBench.function_tools.function_wrappers import performance_timer
 log = logging.getLogger()
 
 
+class InvalidSymbolError(Exception):
+    """Custom exception for when an unrecognized symbol is passed in."""
+    pass
+
+
 class Broker:
     """Interface for broker data."""
     _API_KEY = os.environ['ALPACA_API_KEY']
@@ -80,10 +85,10 @@ class Broker:
             log.debug('Request made successfully')
             if 'bars' not in response_data.keys():
                 # symbols with numeric characters are flagged by broker
-                raise ValueError(f'Invalid symbol {symbol}')
+                raise InvalidSymbolError(f'Invalid symbol {symbol}')
             if response_data['bars'] == {}:
                 # misspelled symbols return blank data for bars
-                raise ValueError(f'Invalid symbol {symbol}')
+                raise InvalidSymbolError(f'Invalid symbol {symbol}')
             ohlc_data = response_data['bars'][symbol]
             self.__validate_ohlc_data(ohlc_data, start_date_unix, end_date_unix)
             return self.__json_to_df(ohlc_data)

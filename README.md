@@ -32,22 +32,6 @@ Powerful interactive analytics allow you to compare multiple strategies at once.
     <img src="https://github.com/jocon15/StockBench/blob/master/images/histogram.png" />
 </p>
 
-## Head to Head
-
-Want to run 2 strategies side by side? We have you covered with the compare tab!
-
-<p align="center">
-    <img src="https://github.com/jocon15/StockBench/blob/master/images/compare.gif" />
-</p>
-
-## Additional Results Analytics
-
-Simulation results are split up into different tabs within the results window, giving you an in-depth look at how your strategy performed.
-
-<p align="center">
-    <img src="https://github.com/jocon15/StockBench/blob/master/images/additional_analytics.gif" />
-</p>
-
 ## Getting Started
 
 1. First, you need to get your own API keys from [Alpaca Markets](https://alpaca.markets/).
@@ -70,6 +54,22 @@ Strategy Studio allows you to create and update strategy .json files. You can ed
 
 <p align="center">
     <img src="https://github.com/jocon15/StockBench/blob/master/images/strategy_studio.gif" />
+</p>
+
+## Additional Results Analytics
+
+Simulation results are split up into different tabs within the results window, giving you an in-depth look at how your strategy performed.
+
+<p align="center">
+    <img src="https://github.com/jocon15/StockBench/blob/master/images/additional_analytics.gif" />
+</p>
+
+## Head to Head
+
+Want to run 2 strategies side by side? We have you covered with the compare tab!
+
+<p align="center">
+    <img src="https://github.com/jocon15/StockBench/blob/master/images/compare.gif" />
 </p>
 
 ## Diving Deeper

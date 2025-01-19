@@ -46,7 +46,7 @@ Or test your strategy on multiple symbols and see overview analytics:
 ## In-Depth Results Across Multiple Strategies
 
 <p align="center">
-    <img src="https://github.com/jocon15/StockBench/blob/master/images/histogram.gif" />
+    <img src="https://github.com/jocon15/StockBench/blob/master/images/histogram.png" />
 </p>
 
 ## Head to Head

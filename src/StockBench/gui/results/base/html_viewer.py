@@ -10,7 +10,7 @@ class HTMLViewer(QFrame):
     wraps the QWebEngineView widget which allows us to access the styles of a normal QWidget.
     """
     LOADING_REL_PATH = os.path.join('resources', 'default', 'chart_loading.html')
-    BACKUP_REL_PATH = os.path.join('resources', 'default', 'chart_unavailable.html')
+    UNAVAILABLE_REL_PATH = os.path.join('resources', 'default', 'chart_unavailable.html')
 
     HTML_VIEWER_STYLESHEET = """margin: 8px; border: 5px solid #111111; border-radius: 10px; 
     background-color: #111111;"""
@@ -39,11 +39,14 @@ class HTMLViewer(QFrame):
         """Render the chart-loading file."""
         self.web_engine.load(QtCore.QUrl().fromLocalFile(os.path.abspath(self.LOADING_REL_PATH)))
 
+    def render_chart_unavailable(self):
+        """Render the chart-unavailable file."""
+        self.web_engine.load(QtCore.QUrl().fromLocalFile(os.path.abspath(self.UNAVAILABLE_REL_PATH)))
+
     def render_data(self, chart_filepath: str):
         """Render the chart created from the simulation."""
         # check the chart exists
         if os.path.isfile(chart_filepath):
             self.web_engine.load(QtCore.QUrl().fromLocalFile(os.path.abspath(chart_filepath)))
         else:
-            # load the default html file
-            self.web_engine.load(QtCore.QUrl().fromLocalFile(os.path.abspath(self.BACKUP_REL_PATH)))
+            self.render_chart_unavailable()

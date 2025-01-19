@@ -2,6 +2,7 @@ import logging
 import traceback
 from abc import abstractmethod
 
+from StockBench.broker.broker import InvalidSymbolError
 from StockBench.charting.charting_engine import ChartingEngine
 from PyQt6.QtWidgets import QWidget, QProgressBar, QTabWidget, QVBoxLayout
 from PyQt6.QtCore import QTimer, QThreadPool
@@ -116,8 +117,14 @@ class SimulationResultsWindow(QWidget):
             message = f'Strategy error: {e}'
         except ChartingError as e:
             message = f'Charting error: {e}'
+        except InvalidSymbolError as e:
+            message = f'Invalid symbol error: {e}'
         except Exception as e:
             message = f'Unexpected error: {type(e)} {e} {traceback.print_exc()}'
+        # WARNING, trying to interact with UI components here (calling a custom abstract signature) will not work
+        # because the simulation is on a different QThread and will cause crash with no traceback, you must instead take
+        # any simulation failure action in the _render_data implementation because _render_data is the callback called
+        # by the QThread when it is done, success or failure.
 
         # log all errors and display error message in console box
         log.error(message)

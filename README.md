@@ -40,9 +40,6 @@ And just like that, you have simulated a strategy on historical data. Have fun!
 |:-------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------:|
 | ![single](https://github.com/jocon15/StockBench/blob/master/images/configuration.png) | ![multi](https://github.com/jocon15/StockBench/blob/master/images/results.png) |
 
-Or test your strategy on multiple symbols and see overview analytics:
-![chart](https://github.com/jocon15/StockBench/blob/master/images/multi_display.png)
-
 ## In-Depth Results Across Multiple Strategies
 
 <p align="center">

@@ -26,6 +26,8 @@ And just like that, you have simulated a strategy on historical data. Have fun!
 
 ## In-Depth Results Across Multiple Strategies
 
+Powerful interactive analytics allow you to compare multiple strategies at once.
+
 <p align="center">
     <img src="https://github.com/jocon15/StockBench/blob/master/images/histogram.png" />
 </p>

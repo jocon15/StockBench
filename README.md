@@ -43,6 +43,12 @@ And just like that, you have simulated a strategy on historical data. Have fun!
 Or test your strategy on multiple symbols and see overview analytics:
 ![chart](https://github.com/jocon15/StockBench/blob/master/images/multi_display.png)
 
+## In-Depth Results Across Multiple Strategies
+
+<p align="center">
+    <img src="https://github.com/jocon15/StockBench/blob/master/images/histogram.gif" />
+</p>
+
 ## Head to Head
 
 Want to run 2 strategies side by side? We have you covered with the compare tab!

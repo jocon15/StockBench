@@ -116,6 +116,16 @@ class FolderResultsWindow(SimulationResultsWindow):
             self.median_pl_tab.render_chart(simulation_results)
             self.stddev_pl_tab.render_chart(simulation_results)
             self.positions_histogram_tab.render_chart(simulation_results)
+        else:
+            # the simulation failed - render the chart unavailable html
+            self.overview_tab.html_viewer.render_chart_unavailable()
+            self.trades_made_tab.html_viewer.render_chart_unavailable()
+            self.effectiveness_tab.html_viewer.render_chart_unavailable()
+            self.total_pl_tab.html_viewer.render_chart_unavailable()
+            self.average_pl_tab.html_viewer.render_chart_unavailable()
+            self.median_pl_tab.html_viewer.render_chart_unavailable()
+            self.stddev_pl_tab.html_viewer.render_chart_unavailable()
+            self.positions_histogram_tab.html_viewer.render_chart_unavailable()
 
     @staticmethod
     def _get_strategy_name(filepath: str):

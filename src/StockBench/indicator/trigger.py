@@ -56,14 +56,7 @@ class Trigger:
         raise NotImplementedError('Check algorithm from rule value not implemented!')
 
     def _parse_rule_value(self, rule_value: str) -> Tuple[str, float]:
-        """Parser for parsing the operator and algorithm value from the value.
-
-        Args:
-             rule_value: The rule's value.
-
-        returns:
-            Tuple: The operator and the trigger value.
-        """
+        """Parser for parsing the operator and algorithm value from the value."""
         # find the operator and algorithm value (right hand side of the comparison)
         return self.find_operator_in_str(rule_value), self.find_single_numeric_in_str(rule_value)
 

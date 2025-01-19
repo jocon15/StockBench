@@ -83,7 +83,6 @@ class FolderResultsWindow(SimulationResultsWindow):
         if all_bars_complete:
             # set bar to full
             self.progress_bar.setValue(100)
-            # stop the timer
             self.timer.stop()
 
     def _run_simulation(self, save_option) -> dict:

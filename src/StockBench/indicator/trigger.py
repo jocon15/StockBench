@@ -156,9 +156,9 @@ class Trigger:
         column in the data is called "Close". In this case "Close" would be the alt data access key.
         """
         if alt_data_access_key:
-            data_access_key = alt_data_access_key
+            column_title = alt_data_access_key
         else:
-            data_access_key = indicator_symbol
+            column_title = indicator_symbol
 
         rule_key_number_groups = Trigger.find_all_nums_in_str(rule_key)
 
@@ -167,11 +167,11 @@ class Trigger:
             if SLOPE_SYMBOL in rule_key:
                 raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} does not contain'
                                              f' enough number groupings!')
-            indicator_value = float(data_manager.get_data_point(data_access_key, current_day_index))
+            indicator_value = float(data_manager.get_data_point(column_title, current_day_index))
         elif len(rule_key_number_groups) == 1:
             # 1 number grouping suggests the $slope indicator is being used
             if SLOPE_SYMBOL in rule_key:
-                indicator_value = Trigger.__slope_value(data_access_key, int(rule_key_number_groups[0]),
+                indicator_value = Trigger.__slope_value(column_title, int(rule_key_number_groups[0]),
                                                         current_day_index, data_manager)
             else:
                 raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} contains too many number '

@@ -20,22 +20,6 @@ Now that you have everything the way you like, you can start the simulation. The
 
 And just like that, you have simulated a strategy on historical data. Have fun!
 
-## Getting Started
-
-1. First, you need to get your own API keys from [Alpaca Markets](https://alpaca.markets/).
-
-2. Add them as [Environment Variables](https://github.com/jocon15/StockBench/wiki/Environment-Variables).
-
-3. Restart your PC to enable the [Environment Variables](https://github.com/jocon15/StockBench/wiki/Environment-Variables).
-
-4. Build your strategy .JSON file. See [Building a Strategy](https://github.com/jocon15/StockBench/wiki/Building-a-Strategy) or try our new [Strategy Studio](#Strategy-Studio).
-
-5. Run the StockBench.exe.
-
-6. Set your simuation parameters.
-
-7. Run the simulation and view the results.
-
 | Configuration                                                                         | Results                                                                        |
 |:-------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------:|
 | ![single](https://github.com/jocon15/StockBench/blob/master/images/configuration.png) | ![multi](https://github.com/jocon15/StockBench/blob/master/images/results.png) |
@@ -61,6 +45,22 @@ Simulation results are split up into different tabs within the results window, g
 <p align="center">
     <img src="https://github.com/jocon15/StockBench/blob/master/images/additional_analytics.gif" />
 </p>
+
+## Getting Started
+
+1. First, you need to get your own API keys from [Alpaca Markets](https://alpaca.markets/).
+
+2. Add them as [Environment Variables](https://github.com/jocon15/StockBench/wiki/Environment-Variables).
+
+3. Restart your PC to enable the [Environment Variables](https://github.com/jocon15/StockBench/wiki/Environment-Variables).
+
+4. Build your strategy .JSON file. See [Building a Strategy](https://github.com/jocon15/StockBench/wiki/Building-a-Strategy) or try our new [Strategy Studio](#Strategy-Studio).
+
+5. Run the StockBench.exe.
+
+6. Set your simuation parameters.
+
+7. Run the simulation and view the results.
 
 ## Strategy Studio
 

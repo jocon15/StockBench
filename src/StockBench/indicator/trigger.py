@@ -56,14 +56,7 @@ class Trigger:
         raise NotImplementedError('Check algorithm from rule value not implemented!')
 
     def _parse_rule_value(self, rule_value: str) -> Tuple[str, float]:
-        """Parser for parsing the operator and algorithm value from the value.
-
-        Args:
-             rule_value: The rule's value.
-
-        returns:
-            Tuple: The operator and the trigger value.
-        """
+        """Parser for parsing the operator and algorithm value from the value."""
         # find the operator and algorithm value (right hand side of the comparison)
         return self.find_operator_in_str(rule_value), self.find_single_numeric_in_str(rule_value)
 
@@ -156,8 +149,17 @@ class Trigger:
 
     @staticmethod
     def _parse_rule_key_no_indicator_length(rule_key: str, indicator_symbol: str, data_manager: DataManager,
-                                            current_day_index: int) -> float:
-        """Parser for parsing the key into the indicator value."""
+                                            current_day_index: int, alt_data_access_key: str = None) -> float:
+        """Parser for parsing the key into the indicator value.
+
+        Alt data access key is used for triggers like price where the indicator in the strategy is "Price" but the
+        column in the data is called "Close". In this case "Close" would be the alt data access key.
+        """
+        if alt_data_access_key:
+            column_title = alt_data_access_key
+        else:
+            column_title = indicator_symbol
+
         rule_key_number_groups = Trigger.find_all_nums_in_str(rule_key)
 
         # MACD can only have slope emblem therefore 1 or 0 number groupings are acceptable
@@ -165,11 +167,11 @@ class Trigger:
             if SLOPE_SYMBOL in rule_key:
                 raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} does not contain'
                                              f' enough number groupings!')
-            indicator_value = float(data_manager.get_data_point(indicator_symbol, current_day_index))
+            indicator_value = float(data_manager.get_data_point(column_title, current_day_index))
         elif len(rule_key_number_groups) == 1:
             # 1 number grouping suggests the $slope indicator is being used
             if SLOPE_SYMBOL in rule_key:
-                indicator_value = Trigger.__slope_value(indicator_symbol, int(rule_key_number_groups[0]),
+                indicator_value = Trigger.__slope_value(column_title, int(rule_key_number_groups[0]),
                                                         current_day_index, data_manager)
             else:
                 raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} contains too many number '

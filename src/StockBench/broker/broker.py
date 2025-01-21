@@ -36,7 +36,7 @@ class Broker:
         self.__timeout = timeout
 
     @performance_timer
-    def get_daily_data(self, symbol: str, start_date_unix: int, end_date_unix: int):
+    def get_daily_data(self, symbol: str, start_date_unix: int, end_date_unix: int) -> DataFrame:
         """Retrieve bars data with 1-Day resolution.
 
         Args:
@@ -63,7 +63,7 @@ class Broker:
         log.debug(f'Completed URI: {day_bars_url}')
         return self.__make_request(day_bars_url, symbol, start_date_unix, end_date_unix)
 
-    def __make_request(self, uri: str, symbol: str, start_date_unix: int, end_date_unix: int):
+    def __make_request(self, uri: str, symbol: str, start_date_unix: int, end_date_unix: int) -> DataFrame:
         """Make the Brokerage API request.
 
         Args:
@@ -95,6 +95,7 @@ class Broker:
         except requests.exceptions.ConnectionError:
             log.critical('Connection error during request')
             print('Connection error trying to connect to brokerage servers!')
+            raise requests.exceptions.ConnectionError
 
     def __validate_ohlc_data(self, ohlc_data: list, start_date_unix: int, end_date_unix: int):
         """Validate that the broker returned the data range requested by matching timestamps with buffer applied."""

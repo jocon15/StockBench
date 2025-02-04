@@ -386,7 +386,6 @@ class Simulator:
 
     def __multi_post_process(self, results: List[dict], start_time: float, results_depth: int, save_option: int,
                              progress_observer: ProgressObserver) -> dict:
-        # re-enable printing for TQDM
         log.info('Running multi simulation post-process...')
         gui_terminal_log.info('Starting analytics...')
         self.__running_multiple = False

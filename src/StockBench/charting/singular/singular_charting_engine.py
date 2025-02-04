@@ -14,6 +14,7 @@ from StockBench.charting.display_constants import *
 
 log = logging.getLogger()
 
+
 class VolumeNotFoundException(Exception):
     pass
 
@@ -207,4 +208,3 @@ class SingularChartingEngine(ChartingEngine):
                 subplot_types.pop(index)
                 return subplot_objects, subplot_types
         raise VolumeNotFoundException('A volume subplot was not provided in the data')
-

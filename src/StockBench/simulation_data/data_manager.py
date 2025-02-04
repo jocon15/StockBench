@@ -1,3 +1,6 @@
+from pandas import DataFrame
+
+
 class DataManager:
     """Interface for the simulation dataframe."""
     CLOSE = 'Close'
@@ -36,7 +39,7 @@ class DataManager:
             col_names.append(col_name)
         return col_names
 
-    def get_data_point(self, column_name: str, current_day_index: int):
+    def get_data_point(self, column_name: str, current_day_index: int) -> any:
         """Gets a single data point from the DataFrame."""
         if type(column_name) is not str:
             raise Exception('Input name type must be a string!')
@@ -49,7 +52,7 @@ class DataManager:
         # Also, the "outside" is just going to be the simulator.
         return self.__df[column_name][current_day_index]
 
-    def get_multiple_data_points(self, name: str, current_day_index: int, num_points: int):
+    def get_multiple_data_points(self, name: str, current_day_index: int, num_points: int) -> list:
         """Gets multiple data points from the DataFrame"""
         return_values = []
         for i in range(num_points):
@@ -57,13 +60,13 @@ class DataManager:
 
         return return_values
 
-    def get_column_data(self, name: str):
+    def get_column_data(self, name: str) -> list:
         """Gets a column of data from the DataFrame."""
         if type(name) is not str:
             raise Exception('Input name type must be a string!')
         return self.__df[name].values.tolist()
 
-    def get_chopped_df(self, window_start_day: int):
+    def get_chopped_df(self, window_start_day: int) -> DataFrame:
         """chop the dataframe and reset index
 
         NOTE: The df is no longer usable for a simulation once this function is called!

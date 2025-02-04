@@ -3,12 +3,16 @@ import sys
 import time
 import math
 import logging
+
+from pandas import DataFrame
 from tqdm import tqdm
 from time import perf_counter
 from datetime import datetime
 from typing import Optional, List, Tuple
 from concurrent.futures import ProcessPoolExecutor
 
+from StockBench.bundles.multi_simulation_chart_path_bundle import MultiSimulationChartPathBundle
+from StockBench.bundles.singular_simulation_chart_path_bundle import SingularSimulationChartPathBundle
 from StockBench.constants import *
 from StockBench.credential.credential import Credentials
 from StockBench.broker.broker import Broker
@@ -19,7 +23,7 @@ from StockBench.charting.charting_engine import ChartingEngine
 from StockBench.charting.singular.singular_charting_engine import SingularChartingEngine
 from StockBench.charting.multi.multi_charting_engine import MultiChartingEngine
 from StockBench.account.user_account import UserAccount
-from StockBench.analysis.analyzer import SimulationAnalyzer
+from StockBench.analysis.positions_analyzer import PositionsAnalyzer
 from StockBench.algorithm.algorithm import Algorithm
 from StockBench.function_tools.timestamp import datetime_timestamp
 from StockBench.simulation_data.data_manager import DataManager
@@ -321,7 +325,10 @@ class Simulator:
 
         chopped_temp_df = self.__data_manager.get_chopped_df(window_start_day)
 
-        analyzer = SimulationAnalyzer(self.__single_simulation_position_archive)
+        analyzer = PositionsAnalyzer(self.__single_simulation_position_archive)
+
+        chart_paths_bundle = self.__create_singular_charts(symbol, chopped_temp_df, results_depth, save_option,
+                                                           show_volume)
 
         end_time = perf_counter()
         elapsed_time = round(end_time - start_time, 4)
@@ -334,52 +341,6 @@ class Simulator:
         if self.__reporting_on:
             exporter = WindowDataExporter()
             exporter.export(chopped_temp_df, symbol)
-
-        overview_chart_filepath = ''
-        buy_rules_chart_filepath = ''
-        sell_rules_chart_filepath = ''
-        account_value_bar_chart_filepath = ''
-        positions_duration_bar_chart_filepath = ''
-        positions_profit_loss_bar_chart_filepath = ''
-        positions_profit_loss_histogram_chart_filepath = ''
-        if not self.__running_multiple:
-            if results_depth == self.CHARTS_AND_DATA:
-                # faster to do it synchronously for singular
-                gui_terminal_log.info('Building overview chart...')
-                overview_chart_filepath = (
-                    SingularChartingEngine.build_indicator_chart(chopped_temp_df, symbol,
-                                                                 [*self.__available_indicators.values()],
-                                                                 show_volume, save_option))
-
-                gui_terminal_log.info('Building buy rules bar chart...')
-                buy_rules_chart_filepath = (
-                    ChartingEngine.build_rules_bar_chart(self.__single_simulation_position_archive, BUY_SIDE, symbol,
-                                                         save_option))
-
-                gui_terminal_log.info('Building sell rules bar chart...')
-                sell_rules_chart_filepath = (
-                    ChartingEngine.build_rules_bar_chart(self.__single_simulation_position_archive, SELL_SIDE, symbol,
-                                                         save_option))
-
-                gui_terminal_log.info('Building account value bar chart...')
-                account_value_bar_chart_filepath = (
-                    SingularChartingEngine.build_account_value_bar_chart(chopped_temp_df, symbol, save_option))
-
-                gui_terminal_log.info('Building positions duration bar chart...')
-                positions_duration_bar_chart_filepath = (
-                    ChartingEngine.build_positions_duration_bar_chart(self.__single_simulation_position_archive, symbol,
-                                                                      save_option))
-
-                gui_terminal_log.info('Building positions profit loss bar chart...')
-                positions_profit_loss_bar_chart_filepath = (
-                    SingularChartingEngine.build_positions_profit_loss_bar_chart(
-                        self.__single_simulation_position_archive, symbol, save_option))
-
-                gui_terminal_log.info('Building positions profit loss histogram chart...')
-                positions_profit_loss_histogram_chart_filepath = (
-                    ChartingEngine.build_positions_profit_loss_histogram_chart(
-                        self.__single_simulation_position_archive, self.__algorithm.strategy_filename, symbol,
-                        save_option))
 
         log.info('Simulation complete!')
 
@@ -405,13 +366,13 @@ class Simulator:
             MEDIAN_PROFIT_LOSS_KEY: analyzer.median_profit_loss(),
             STANDARD_PROFIT_LOSS_DEVIATION_KEY: analyzer.standard_profit_loss_deviation(),
             ACCOUNT_VALUE_KEY: self.__account.get_balance(),
-            OVERVIEW_CHART_FILEPATH_KEY: overview_chart_filepath,
-            BUY_RULES_CHART_FILEPATH_KEY: buy_rules_chart_filepath,
-            SELL_RULES_CHART_FILEPATH_KEY: sell_rules_chart_filepath,
-            ACCOUNT_VALUE_BAR_CHART_FILEPATH: account_value_bar_chart_filepath,
-            POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: positions_duration_bar_chart_filepath,
-            POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY: positions_profit_loss_bar_chart_filepath,
-            POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY: positions_profit_loss_histogram_chart_filepath
+            OVERVIEW_CHART_FILEPATH_KEY: chart_paths_bundle.overview_chart_filepath,
+            BUY_RULES_CHART_FILEPATH_KEY: chart_paths_bundle.buy_rules_chart_filepath,
+            SELL_RULES_CHART_FILEPATH_KEY: chart_paths_bundle.sell_rules_chart_filepath,
+            ACCOUNT_VALUE_BAR_CHART_FILEPATH: chart_paths_bundle.account_value_bar_chart_filepath,
+            POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: chart_paths_bundle.positions_duration_bar_chart_filepath,
+            POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_bar_chart_filepath,
+            POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_histogram_chart_filepath
         }
 
     def __multi_pre_process(self, symbols: List[str], progress_observer: ProgressObserver) -> float:
@@ -425,7 +386,6 @@ class Simulator:
 
     def __multi_post_process(self, results: List[dict], start_time: float, results_depth: int, save_option: int,
                              progress_observer: ProgressObserver) -> dict:
-        # re-enable printing for TQDM
         log.info('Running multi simulation post-process...')
         gui_terminal_log.info('Starting analytics...')
         self.__running_multiple = False
@@ -433,47 +393,9 @@ class Simulator:
         self.__stored_results = results
 
         # initiate an analyzer with the positions data
-        analyzer = SimulationAnalyzer(self.__multiple_simulation_position_archive)
+        analyzer = PositionsAnalyzer(self.__multiple_simulation_position_archive)
 
-        overview_chart_filepath = ''
-        buy_rules_chart_filepath = ''
-        sell_rules_chart_filepath = ''
-        positions_duration_bar_chart_filepath = ''
-        positions_profit_loss_bar_chart_filepath = ''
-        positions_profit_loss_histogram_chart_filepath = ''
-        if results_depth == self.CHARTS_AND_DATA:
-            with ProcessPoolExecutor() as executor:
-                gui_terminal_log.info('Building overview chart...')
-                future1 = executor.submit(MultiChartingEngine.build_overview_chart, results,
-                                          self.__account.get_initial_balance(), save_option)
-
-                gui_terminal_log.info('Building buy rules bar chart...')
-                future2 = executor.submit(ChartingEngine.build_rules_bar_chart,
-                                          self.__single_simulation_position_archive, BUY_SIDE, None, save_option)
-
-                gui_terminal_log.info('Building sell rules bar chart...')
-                future3 = executor.submit(ChartingEngine.build_rules_bar_chart,
-                                          self.__single_simulation_position_archive, SELL_SIDE, None, save_option)
-
-                gui_terminal_log.info('Building positions duration bar chart...')
-                future4 = executor.submit(ChartingEngine.build_positions_duration_bar_chart,
-                                          self.__single_simulation_position_archive, None, save_option)
-
-                gui_terminal_log.info('Building positions profit loss bar chart...')
-                future5 = executor.submit(ChartingEngine.build_positions_profit_loss_bar_chart,
-                                          self.__single_simulation_position_archive, None, save_option)
-
-                gui_terminal_log.info('Building positions profit loss histogram chart...')
-                future6 = executor.submit(ChartingEngine.build_positions_profit_loss_histogram_chart,
-                                          self.__single_simulation_position_archive, self.__algorithm.strategy_filename,
-                                          None, save_option)
-
-                overview_chart_filepath = future1.result()
-                buy_rules_chart_filepath = future2.result()
-                sell_rules_chart_filepath = future3.result()
-                positions_duration_bar_chart_filepath = future4.result()
-                positions_profit_loss_bar_chart_filepath = future5.result()
-                positions_profit_loss_histogram_chart_filepath = future6.result()
+        chart_paths_bundle = self.__create_multi_charts(results, results_depth, save_option)
 
         end_time = perf_counter()
         elapsed_time = round(end_time - start_time, 4)
@@ -495,12 +417,12 @@ class Simulator:
             AVERAGE_PROFIT_LOSS_KEY: analyzer.average_profit_loss(),
             MEDIAN_PROFIT_LOSS_KEY: analyzer.median_profit_loss(),
             STANDARD_PROFIT_LOSS_DEVIATION_KEY: analyzer.standard_profit_loss_deviation(),
-            OVERVIEW_CHART_FILEPATH_KEY: overview_chart_filepath,
-            BUY_RULES_CHART_FILEPATH_KEY: buy_rules_chart_filepath,
-            SELL_RULES_CHART_FILEPATH_KEY: sell_rules_chart_filepath,
-            POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: positions_duration_bar_chart_filepath,
-            POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY: positions_profit_loss_bar_chart_filepath,
-            POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY: positions_profit_loss_histogram_chart_filepath
+            OVERVIEW_CHART_FILEPATH_KEY: chart_paths_bundle.overview_chart_filepath,
+            BUY_RULES_CHART_FILEPATH_KEY: chart_paths_bundle.buy_rules_chart_filepath,
+            SELL_RULES_CHART_FILEPATH_KEY: chart_paths_bundle.sell_rules_chart_filepath,
+            POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: chart_paths_bundle.positions_duration_bar_chart_filepath,
+            POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_bar_chart_filepath,
+            POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_histogram_chart_filepath
         }
 
     def __reset_singular_attributes(self):
@@ -605,6 +527,111 @@ class Simulator:
 
         self.__data_manager.add_column('Account Value', account_values_list)
 
+    def __create_singular_charts(self, symbol: str, chopped_temp_df: DataFrame, results_depth: int, save_option: int,
+                                 show_volume: bool) -> SingularSimulationChartPathBundle:
+        overview_chart_filepath = ''
+        buy_rules_chart_filepath = ''
+        sell_rules_chart_filepath = ''
+        account_value_bar_chart_filepath = ''
+        positions_duration_bar_chart_filepath = ''
+        positions_profit_loss_bar_chart_filepath = ''
+        positions_profit_loss_histogram_chart_filepath = ''
+
+        if not self.__running_multiple:
+            if results_depth == self.CHARTS_AND_DATA:
+                # faster to do it synchronously for singular
+                gui_terminal_log.info('Building overview chart...')
+                overview_chart_filepath = (
+                    SingularChartingEngine.build_indicator_chart(chopped_temp_df, symbol,
+                                                                 [*self.__available_indicators.values()],
+                                                                 show_volume, save_option))
+
+                gui_terminal_log.info('Building buy rules bar chart...')
+                buy_rules_chart_filepath = (
+                    ChartingEngine.build_rules_bar_chart(self.__single_simulation_position_archive, BUY_SIDE, symbol,
+                                                         save_option))
+
+                gui_terminal_log.info('Building sell rules bar chart...')
+                sell_rules_chart_filepath = (
+                    ChartingEngine.build_rules_bar_chart(self.__single_simulation_position_archive, SELL_SIDE, symbol,
+                                                         save_option))
+
+                gui_terminal_log.info('Building account value bar chart...')
+                account_value_bar_chart_filepath = (
+                    SingularChartingEngine.build_account_value_bar_chart(chopped_temp_df, symbol, save_option))
+
+                gui_terminal_log.info('Building positions duration bar chart...')
+                positions_duration_bar_chart_filepath = (
+                    ChartingEngine.build_positions_duration_bar_chart(self.__single_simulation_position_archive, symbol,
+                                                                      save_option))
+
+                gui_terminal_log.info('Building positions profit loss bar chart...')
+                positions_profit_loss_bar_chart_filepath = (
+                    SingularChartingEngine.build_positions_profit_loss_bar_chart(
+                        self.__single_simulation_position_archive, symbol, save_option))
+
+                gui_terminal_log.info('Building positions profit loss histogram chart...')
+                positions_profit_loss_histogram_chart_filepath = (
+                    ChartingEngine.build_positions_profit_loss_histogram_chart(
+                        self.__single_simulation_position_archive, self.__algorithm.strategy_filename, symbol,
+                        save_option))
+
+        return SingularSimulationChartPathBundle(overview_chart_filepath,
+                                                 buy_rules_chart_filepath,
+                                                 sell_rules_chart_filepath,
+                                                 account_value_bar_chart_filepath,
+                                                 positions_duration_bar_chart_filepath,
+                                                 positions_profit_loss_bar_chart_filepath,
+                                                 positions_profit_loss_histogram_chart_filepath)
+
+    def __create_multi_charts(self, results, results_depth: int, save_option: int) -> MultiSimulationChartPathBundle:
+        overview_chart_filepath = ''
+        buy_rules_chart_filepath = ''
+        sell_rules_chart_filepath = ''
+        positions_duration_bar_chart_filepath = ''
+        positions_profit_loss_bar_chart_filepath = ''
+        positions_profit_loss_histogram_chart_filepath = ''
+        if results_depth == self.CHARTS_AND_DATA:
+            with ProcessPoolExecutor() as executor:
+                gui_terminal_log.info('Building overview chart...')
+                future1 = executor.submit(MultiChartingEngine.build_overview_chart, results,
+                                          self.__account.get_initial_balance(), save_option)
+
+                gui_terminal_log.info('Building buy rules bar chart...')
+                future2 = executor.submit(ChartingEngine.build_rules_bar_chart,
+                                          self.__single_simulation_position_archive, BUY_SIDE, None, save_option)
+
+                gui_terminal_log.info('Building sell rules bar chart...')
+                future3 = executor.submit(ChartingEngine.build_rules_bar_chart,
+                                          self.__single_simulation_position_archive, SELL_SIDE, None, save_option)
+
+                gui_terminal_log.info('Building positions duration bar chart...')
+                future4 = executor.submit(ChartingEngine.build_positions_duration_bar_chart,
+                                          self.__single_simulation_position_archive, None, save_option)
+
+                gui_terminal_log.info('Building positions profit loss bar chart...')
+                future5 = executor.submit(ChartingEngine.build_positions_profit_loss_bar_chart,
+                                          self.__single_simulation_position_archive, None, save_option)
+
+                gui_terminal_log.info('Building positions profit loss histogram chart...')
+                future6 = executor.submit(ChartingEngine.build_positions_profit_loss_histogram_chart,
+                                          self.__single_simulation_position_archive, self.__algorithm.strategy_filename,
+                                          None, save_option)
+
+                overview_chart_filepath = future1.result()
+                buy_rules_chart_filepath = future2.result()
+                sell_rules_chart_filepath = future3.result()
+                positions_duration_bar_chart_filepath = future4.result()
+                positions_profit_loss_bar_chart_filepath = future5.result()
+                positions_profit_loss_histogram_chart_filepath = future6.result()
+
+        return MultiSimulationChartPathBundle(overview_chart_filepath,
+                                              buy_rules_chart_filepath,
+                                              sell_rules_chart_filepath,
+                                              positions_duration_bar_chart_filepath,
+                                              positions_profit_loss_bar_chart_filepath,
+                                              positions_profit_loss_histogram_chart_filepath)
+
     def __calculate_progress_bar_increment(self, progress_observer: ProgressObserver,
                                            sim_window_start_day: int) -> float:
         """Calculate the progress bar increment per day.
@@ -683,7 +710,7 @@ class Simulator:
         log.info('=============================')
 
     @staticmethod
-    def __log_results(elapsed_time: float, analyzer: SimulationAnalyzer, balance: float) -> None:
+    def __log_results(elapsed_time: float, analyzer: PositionsAnalyzer, balance: float) -> None:
         log.info('====== Simulation Results ======')
         log.info(f'Elapsed Time  : {elapsed_time} seconds')
         log.info(f'Trades Made   : {analyzer.total_trades()}')
@@ -696,7 +723,7 @@ class Simulator:
         log.info('================================')
 
     @staticmethod
-    def __print_singular_results(elapsed_time: float, analyzer: SimulationAnalyzer, balance: float) -> None:
+    def __print_singular_results(elapsed_time: float, analyzer: PositionsAnalyzer, balance: float) -> None:
         """Prints the simulation results."""
         print('====== Simulation Results ======')
         print(f'Elapsed Time  : {elapsed_time} seconds')

@@ -1,6 +1,6 @@
 import pytest
 from StockBench.position.position import Position
-from StockBench.analysis.analyzer import SimulationAnalyzer
+from StockBench.analysis.positions_analyzer import PositionsAnalyzer
 
 
 @pytest.fixture
@@ -20,7 +20,7 @@ def test_positions():
 
 def test_total_trades(test_positions):
     # ============= Arrange ==============
-    test_object = SimulationAnalyzer(test_positions)
+    test_object = PositionsAnalyzer(test_positions)
 
     # ============= Act ==================
     actual = test_object.total_trades()
@@ -32,7 +32,7 @@ def test_total_trades(test_positions):
 
 def test_effectiveness_normal(test_positions):
     # ============= Arrange ==============
-    test_object = SimulationAnalyzer(test_positions)
+    test_object = PositionsAnalyzer(test_positions)
 
     # ============= Act ==================
     actual = test_object.effectiveness()
@@ -44,7 +44,7 @@ def test_effectiveness_normal(test_positions):
 
 def test_effectiveness_empty():
     # ============= Arrange ==============
-    test_object = SimulationAnalyzer([])
+    test_object = PositionsAnalyzer([])
 
     # ============= Act ==================
 
@@ -54,7 +54,7 @@ def test_effectiveness_empty():
 
 def test_total_profit_loss(test_positions):
     # ============= Arrange ==============
-    test_object = SimulationAnalyzer(test_positions)
+    test_object = PositionsAnalyzer(test_positions)
 
     # ============= Act ==================
     actual = test_object.total_profit_loss()
@@ -66,7 +66,7 @@ def test_total_profit_loss(test_positions):
 
 def test_average_profit_loss_normal(test_positions):
     # ============= Arrange ==============
-    test_object = SimulationAnalyzer(test_positions)
+    test_object = PositionsAnalyzer(test_positions)
 
     # ============= Act ==================
     actual = test_object.average_profit_loss()
@@ -78,7 +78,7 @@ def test_average_profit_loss_normal(test_positions):
 
 def test_average_profit_loss_empty():
     # ============= Arrange ==============
-    test_object = SimulationAnalyzer([])
+    test_object = PositionsAnalyzer([])
 
     # ============= Act ==================
 
@@ -88,7 +88,7 @@ def test_average_profit_loss_empty():
 
 def test_median_profit_loss_normal(test_positions):
     # ============= Arrange ==============
-    test_object = SimulationAnalyzer(test_positions)
+    test_object = PositionsAnalyzer(test_positions)
 
     # ============= Act ==================
     actual = test_object.median_profit_loss()
@@ -100,7 +100,7 @@ def test_median_profit_loss_normal(test_positions):
 
 def test_median_profit_loss_empty():
     # ============= Arrange ==============
-    test_object = SimulationAnalyzer([])
+    test_object = PositionsAnalyzer([])
 
     # ============= Act ==================
 
@@ -110,7 +110,7 @@ def test_median_profit_loss_empty():
 
 def test_standard_profit_loss_deviation_normal(test_positions):
     # ============= Arrange ==============
-    test_object = SimulationAnalyzer(test_positions)
+    test_object = PositionsAnalyzer(test_positions)
 
     # ============= Act ==================
     actual = test_object.standard_profit_loss_deviation()
@@ -122,7 +122,7 @@ def test_standard_profit_loss_deviation_normal(test_positions):
 
 def test_standard_profit_loss_deviation_empty():
     # ============= Arrange ==============
-    test_object = SimulationAnalyzer([])
+    test_object = PositionsAnalyzer([])
 
     # ============= Act ==================
 

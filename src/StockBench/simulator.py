@@ -10,6 +10,7 @@ from typing import Optional, List, Tuple
 from concurrent.futures import ProcessPoolExecutor
 
 from StockBench.constants import *
+from StockBench.credential.credential import Credentials
 from StockBench.broker.broker import Broker
 from StockBench.export.window_data_exporter import WindowDataExporter
 from StockBench.observers.progress_observer import ProgressObserver
@@ -62,7 +63,7 @@ class Simulator:
         """
         # dependencies
         self.__account = UserAccount(initial_balance)
-        self.__broker = Broker()
+        self.__broker = Broker(Credentials(os.environ['ALPACA_API_KEY'], os.environ['ALPACA_SECRET_KEY']))
         self.__data_manager = None  # gets constructed once we request the data
         self.__algorithm = None  # gets constructed once we have the strategy
         self.__available_indicators = IndicatorManager.load_indicators()

@@ -14,33 +14,17 @@ class StochasticTrigger(Trigger):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days_from_rule_key(self, rule_key, rule_value) -> int:
-        """Calculate the additional days required from rule key.
-
-        Args:
-            rule_key (any): The key value from the strategy.
-            rule_value (any): The key value from the strategy (unused in this function).
-        """
-        # map to a list of ints
+    def additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
         rule_key_number_groups = list(map(int, self.find_all_nums_in_str(rule_key)))
         if rule_key_number_groups:
             return max(rule_key_number_groups)
         return DEFAULT_STOCHASTIC_LENGTH
 
     def additional_days_from_rule_value(self, rule_value: any) -> int:
-        """Calculate the additional days required from rule value."""
         # logic for rule value is the same as the logic for rule key
         return self.additional_days_from_rule_key(rule_value, None)
 
-    def add_to_data_from_rule_key(self, rule_key, rule_value, side, data_manager):
-        """Add data to the dataframe from rule key.
-
-        Args:
-            rule_key (any): The key value from the strategy.
-            rule_value (any): The value from thr strategy.
-            side (str): The side (buy/sell).
-            data_manager (DataManager): The data object.
-        """
+    def add_to_data_from_rule_key(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
         # ======== key based =========
         rule_key_number_groups = self.find_all_nums_in_str(rule_key)
         if len(rule_key_number_groups) > 0:
@@ -56,7 +40,6 @@ class StochasticTrigger(Trigger):
                                         data_manager)
 
     def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
-        """Add data to the dataframe from rule value."""
         rule_key_number_groups = self.find_all_nums_in_str(rule_value)
         if len(rule_key_number_groups) > 0:
             num = int(rule_key_number_groups[0])
@@ -64,24 +47,12 @@ class StochasticTrigger(Trigger):
         else:
             self.__add_stochastic_column(DEFAULT_STOCHASTIC_LENGTH, data_manager)
 
-    def get_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index) -> float:
-        """Get the value of the indicator when referenced in a rule value."""
+    def get_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index: int) -> float:
         # parse rule key will work even when passed a rule value
         return Trigger._parse_rule_key(rule_value, self.indicator_symbol, data_manager, current_day_index)
 
-    def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
-        """Trigger logic for stochastic.
-
-        Args:
-            rule_key (str): The key value of the algorithm.
-            rule_value (str): The value of the algorithm.
-            data_manager (DataManager): The data API object.
-            position (Position): The position object.
-            current_day_index (int): The index of the current day.
-
-        return:
-            bool: True if a trigger was hit.
-        """
+    def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,
+                      current_day_index: int) -> bool:
         log.debug(f'Checking stochastic algorithm: {rule_key}...')
 
         indicator_value = Trigger._parse_rule_key(rule_key, self.indicator_symbol, data_manager, current_day_index)
@@ -107,7 +78,7 @@ class StochasticTrigger(Trigger):
 
     @staticmethod
     def stochastic_oscillator(length: int, high_data: list, low_data: list, close_data: list) -> list:
-        """Calculate the stochastic values for a list of price values."""
+        """Calculate stochastic oscillator values for a list of price values."""
         past_length_days_high = []
         past_length_days_low = []
         past_length_days_close = []

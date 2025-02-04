@@ -1,9 +1,10 @@
-import os
 import time
 import logging
 import requests
 from pandas import DataFrame
 from datetime import datetime
+
+from StockBench.credential.credential import Credentials
 from StockBench.constants import DELAY_SECONDS_15MIN
 from StockBench.function_tools.function_wrappers import performance_timer
 
@@ -16,12 +17,8 @@ class InvalidSymbolError(Exception):
 
 
 class Broker:
-    """Interface for broker data."""
-    _API_KEY = os.environ['ALPACA_API_KEY']
-    _SECRET_KEY = os.environ['ALPACA_SECRET_KEY']
-
+    """Encapsulates a broker interface."""
     _BARS_URL = 'https://data.alpaca.markets/v2/stocks/bars?'
-    _HEADERS = {'APCA-API-KEY-ID': _API_KEY, 'APCA-API-SECRET-KEY': _SECRET_KEY}
 
     # alpaca defaults to 1,000 ohlc bars per request, but we can set it all the way to 10,000
     # this allows us to support 5 year simulation with a single request and not have to use the next page token
@@ -32,7 +29,11 @@ class Broker:
     # returns a slightly different date than requested
     _4_DAYS_IN_SECONDS_EPSILON = 345600
 
-    def __init__(self, timeout=15):
+    def __init__(self, credentials: Credentials, timeout=15):
+        self._API_KEY = credentials.api_public_key
+        self._SECRET_KEY = credentials.api_secret_key
+        self._HEADERS = {'APCA-API-KEY-ID': self._API_KEY, 'APCA-API-SECRET-KEY': self._SECRET_KEY}
+
         self.__timeout = timeout
 
     @performance_timer

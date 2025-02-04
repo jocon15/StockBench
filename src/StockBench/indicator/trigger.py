@@ -27,16 +27,19 @@ class Trigger:
 
     @abstractmethod
     def additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
+        """Calculate the additional days required from rule key and rule value."""
         # Must include rule value as a parameter because some triggers (candlestick) cannot deduce indicator length from
         # the rule key and cannot be identified from the rule value.
         raise NotImplementedError('Additional days from rule key not implemented!')
 
     @abstractmethod
     def additional_days_from_rule_value(self, rule_value: any) -> int:
+        """Calculate the additional days required from rule value."""
         raise NotImplementedError('Additional days from rule value not implemented!')
 
     @abstractmethod
     def add_to_data_from_rule_key(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
+        """Add data to the dataframe from rule key."""
         # Must include rule value as a parameter because oscillator triggers (RSI, stochastic,...) have literal
         # threshold values in the rule value that need to be added to the data. Literal threshold values cannot be
         # identified with only the rule value.
@@ -44,15 +47,18 @@ class Trigger:
 
     @abstractmethod
     def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
+        """Add data to the dataframe from rule value."""
         raise NotImplementedError('Add to data not implemented!')
 
     @abstractmethod
     def get_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index) -> float:
+        """Get the value of the indicator when referenced in another rule"""
         raise NotImplementedError('Get value when referenced not implemented!')
 
     @abstractmethod
     def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,
                       current_day_index: int) -> bool:
+        """Evaluate the trigger."""
         raise NotImplementedError('Check algorithm from rule value not implemented!')
 
     def _parse_rule_value(self, rule_value: str) -> Tuple[str, float]:

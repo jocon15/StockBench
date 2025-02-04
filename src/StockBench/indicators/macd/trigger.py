@@ -16,28 +16,13 @@ class MACDTrigger(Trigger):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days_from_rule_key(self, rule_key, rule_value) -> int:
-        """Calculate the additional days required from rule key.
-
-        Args:
-            rule_key (any): The key value from the strategy.
-            rule_value (any): The key value from the strategy (unused in this function).
-        """
+    def additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
         return self.LARGE_EMA_LENGTH
 
     def additional_days_from_rule_value(self, rule_value: any) -> int:
-        """Calculate the additional days required from rule value."""
         return self.LARGE_EMA_LENGTH
 
-    def add_to_data_from_rule_key(self, rule_key, rule_value, side, data_manager):
-        """Add data to the dataframe from rule key.
-
-        Args:
-            rule_key (any): The key value from the strategy.
-            rule_value (any): The value from thr strategy.
-            side (str): The side (buy/sell).
-            data_manager (DataManager): The data object.
-        """
+    def add_to_data_from_rule_key(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
         # if we already have MACD values in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():
             if self.indicator_symbol == col_name:
@@ -48,29 +33,16 @@ class MACDTrigger(Trigger):
         data_manager.add_column(self.indicator_symbol, self.calculate_macd(price_data))
 
     def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
-        """Add data to the dataframe from rule value."""
         # logic for rule value is the same as the logic for rule key
         return self.add_to_data_from_rule_key(rule_value, None, side, data_manager)
 
-    def get_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index) -> float:
-        """Get the value of the indicator when referenced in a rule value."""
+    def get_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index: int) -> float:
         # parse rule key will work even when passed a rule value
         return Trigger._parse_rule_key_no_indicator_length(rule_value, self.indicator_symbol, data_manager,
                                                            current_day_index)
 
-    def check_trigger(self, rule_key, rule_value, data_manager, position, current_day_index) -> bool:
-        """Trigger logic for EMA.
-
-        Args:
-            rule_key (str): The key value of the algorithm.
-            rule_value (str): The value of the algorithm.
-            data_manager (DataManager): The data API object.
-            position (Position): The position object.
-            current_day_index (int): The index of the current day.
-
-        return:
-            bool: True if a trigger was hit.
-        """
+    def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,
+                      current_day_index: int) -> bool:
         log.debug(f'Checking {self.indicator_symbol} algorithm: {rule_key}...')
 
         indicator_value = Trigger._parse_rule_key_no_indicator_length(rule_key, self.indicator_symbol, data_manager,
@@ -81,7 +53,7 @@ class MACDTrigger(Trigger):
         return self.basic_trigger_check(indicator_value, rule_value)
 
     def calculate_macd(self, price_data: list) -> list:
-        """Calculate MACD values for a list of price values"""
+        """Calculate MACD values for a list of price values."""
         large_ema_length_values = EMATrigger.calculate_ema(self.LARGE_EMA_LENGTH, price_data)
 
         small_ema_length_values = EMATrigger.calculate_ema(self.SMALL_EMA_LENGTH, price_data)

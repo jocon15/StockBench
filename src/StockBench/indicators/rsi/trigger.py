@@ -41,9 +41,9 @@ class RSITrigger(Trigger):
                                         data_manager)
 
     def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
-        rule_key_number_groups = self.find_all_nums_in_str(rule_value)
-        if len(rule_key_number_groups) > 0:
-            num = int(rule_key_number_groups[0])
+        rule_value_number_groups = self.find_all_nums_in_str(rule_value)
+        if len(rule_value_number_groups) > 0:
+            num = int(rule_value_number_groups[0])
             self.__add_rsi_column(num, data_manager)
         else:
             self.__add_rsi_column(DEFAULT_RSI_LENGTH, data_manager)

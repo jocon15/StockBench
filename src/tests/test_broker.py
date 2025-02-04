@@ -19,15 +19,20 @@ __copyright__ = "Copyright (c) Jason O'Connell 2022 to present"
 import json
 import time
 import requests
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 from requests.models import Response
 from StockBench.broker.broker import Broker, InvalidSymbolError
 from tests.example_data.ExampleBarsData import EXAMPLE_UN_KEYED_MSFT
 from tests.example_data.ExampleAPIData import ORDER_DATA, BAD_ORDER_DATA, CLOSE_DATA
 
 
+# setup mock credentials
+mock_credentials = Mock()
+mock_credentials.api_public_key.return_value = 'Pretend Key'
+mock_credentials.api_secret_key.return_value = 'Pretend Key'
+
 # set up an instance of the broker to test
-test_object = Broker()
+test_object = Broker(mock_credentials)
 
 # setting up the response object that we are hijacking with
 the_response = Response()

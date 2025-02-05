@@ -7,13 +7,14 @@ from StockBench.indicator.trigger import Trigger
 from StockBench.constants import BUY_SIDE, SELL_SIDE, START_KEY, END_KEY, AND_KEY
 from StockBench.simulation_data.data_manager import DataManager
 from StockBench.position.position import Position
+from StockBench.algorithm.exceptions import MalformedStrategyError
 
 log = logging.getLogger()
 
 
 class Algorithm:
     """
-    The Algorithm class encapsulates a strategy dictionary along with other functionality related to using an algorithm.
+    Encapsulates a strategy dictionary along with other functionality related to using an algorithm.
 
     The available triggers are selected and stored based on the strategy. This allows the simulator to simply use the
     algorithm as a delegate for checking the rules of the strategy for trigger events.
@@ -127,9 +128,12 @@ class Algorithm:
     def __load_strategy_filename(self) -> str:
         """Load the filename from the strategy if it is available."""
         filename = 'unknown'
-        if self.FILEPATH_KEY in self.strategy:
-            # extract filepath to class attribute
-            filename = os.path.basename(self.strategy[self.FILEPATH_KEY])
+        try:
+            if self.FILEPATH_KEY in self.strategy:
+                # extract filepath to class attribute
+                filename = os.path.basename(self.strategy[self.FILEPATH_KEY])
+        except TypeError:
+            raise MalformedStrategyError('Filepath is not defined in strategy!')
         return filename
 
     def __validate_strategy(self) -> None:

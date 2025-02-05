@@ -11,6 +11,8 @@ from StockBench.gui.palette.palette import Palette
 from StockBench.simulator import Simulator
 from StockBench.indicator.exceptions import StrategyIndicatorError
 from StockBench.charting.exceptions import ChartingError
+from StockBench.algorithm.exceptions import MalformedStrategyError
+
 log = logging.getLogger()
 
 
@@ -113,6 +115,8 @@ class SimulationResultsWindow(QWidget):
         # run the simulation and catch any errors - keep the app from crashing even if the sim fails
         try:
             return self._run_simulation(save_option)
+        except MalformedStrategyError as e:
+            message = f'Malformed strategy error: {e}'
         except StrategyIndicatorError as e:
             message = f'Strategy error: {e}'
         except ChartingError as e:

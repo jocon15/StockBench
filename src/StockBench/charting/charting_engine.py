@@ -327,10 +327,13 @@ class ChartingEngine:
     def _build_multi_dataset_histogram(strategy_names: list, positions_data: list, title: str):
         """Build a multi-dataset histogram chart."""
         fig = create_distplot(positions_data, strategy_names)
-        fig.add_vline(0)
 
         # set the layout
-        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, title=title)
+        fig.update_layout(xaxis=dict(
+            zeroline=True,  # Enable the zero line
+            zerolinewidth=1,  # Adjust line width
+            zerolinecolor='#283442'),  # Customize color
+            template='plotly_dark', xaxis_rangeslider_visible=False, title=title)
 
         # format the chart (remove plotly white border)
         return ChartingEngine.format_chart(fig)

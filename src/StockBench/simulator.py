@@ -11,8 +11,8 @@ from datetime import datetime
 from typing import Optional, List, Tuple
 from concurrent.futures import ProcessPoolExecutor
 
-from StockBench.bundles.multi_simulation_chart_path_bundle import MultiSimulationChartPathBundle
-from StockBench.bundles.singular_simulation_chart_path_bundle import SingularSimulationChartPathBundle
+from StockBench.bundles.chart_path.multi_bundle import MultiSimulationChartPathBundle
+from StockBench.bundles.chart_path.singular_bundle import SingularSimulationChartPathBundle
 from StockBench.constants import *
 from StockBench.credential.credential import Credentials
 from StockBench.broker.broker import Broker

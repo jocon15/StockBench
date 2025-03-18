@@ -5,7 +5,6 @@ from pandas import DataFrame
 from datetime import datetime
 
 from StockBench.credential.credential import Credentials
-from StockBench.constants import DELAY_SECONDS_15MIN
 from StockBench.function_tools.function_wrappers import performance_timer
 
 log = logging.getLogger()
@@ -132,14 +131,14 @@ class Broker:
         """Convert 2 dates from unix to UTC-date."""
         # Note: end_date_utc is - 16 minutes to adjust for 15 minute historical data delay
         return (datetime.fromtimestamp(start_date_unix).strftime('%Y-%m-%d'),
-                datetime.fromtimestamp(end_date_unix - DELAY_SECONDS_15MIN).strftime('%Y-%m-%d'))
+                datetime.fromtimestamp(end_date_unix).strftime('%Y-%m-%d'))
 
     @staticmethod
     def __unix_to_utc_time(start_date_unix: int, end_date_unix: int) -> tuple:
         """Convert 2 dates from unix to UTC-time."""
         # Note: end_date_utc is - 16 minutes to adjust for 15 minute historical data delay
-        return (datetime.fromtimestamp(start_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'),
-                datetime.fromtimestamp(end_date_unix - DELAY_SECONDS_15MIN).strftime('%H:%M:%S'))
+        return (datetime.fromtimestamp(start_date_unix).strftime('%H:%M:%S'),
+                datetime.fromtimestamp(end_date_unix).strftime('%H:%M:%S'))
 
     @staticmethod
     def __json_to_df(ohlc_data: list) -> DataFrame:

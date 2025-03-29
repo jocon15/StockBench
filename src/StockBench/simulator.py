@@ -14,9 +14,9 @@ from concurrent.futures import ProcessPoolExecutor
 from StockBench.bundles.chart_path.multi_bundle import MultiSimulationChartPathBundle
 from StockBench.bundles.chart_path.singular_bundle import SingularSimulationChartPathBundle
 from StockBench.constants import *
-from StockBench.credential.credential import Credentials
-from StockBench.broker.broker import Broker
+from StockBench.broker.broker_client import BrokerClient
 from StockBench.export.window_data_exporter import WindowDataExporter
+from StockBench.factories.configuration import ClientConfigurationFactory
 from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.position.position import Position
 from StockBench.charting.charting_engine import ChartingEngine
@@ -67,7 +67,7 @@ class Simulator:
         """
         # dependencies
         self.__account = UserAccount(initial_balance)
-        self.__broker = Broker(Credentials(os.environ['ALPACA_API_KEY'], os.environ['ALPACA_SECRET_KEY']))
+        self.__broker = BrokerClient(ClientConfigurationFactory.create_broker_config())
         self.__data_manager = None  # gets constructed once we request the data
         self.__algorithm = None  # gets constructed once we have the strategy
         self.__available_indicators = IndicatorManager.load_indicators()
@@ -246,7 +246,7 @@ class Simulator:
         start_date_unix, end_date_unix, additional_days = self.__algorithm.get_simulation_window()
         augmented_start_date_unix = start_date_unix - (additional_days * SECONDS_1_DAY)
 
-        temp_df = self.__broker.get_daily_data(symbol, augmented_start_date_unix, end_date_unix)
+        temp_df = self.__broker.get_bars_data(symbol, augmented_start_date_unix, end_date_unix)
 
         self.__data_manager = DataManager(temp_df)
 

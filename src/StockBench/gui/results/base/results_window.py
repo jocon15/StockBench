@@ -2,7 +2,7 @@ import logging
 import traceback
 from abc import abstractmethod
 
-from StockBench.broker.broker import InvalidSymbolError
+from StockBench.broker.broker_client import InvalidSymbolError, InsufficientDataError, MissingCredentialError
 from StockBench.charting.charting_engine import ChartingEngine
 from PyQt6.QtWidgets import QWidget, QProgressBar, QTabWidget, QVBoxLayout
 from PyQt6.QtCore import QTimer, QThreadPool
@@ -121,8 +121,12 @@ class SimulationResultsWindow(QWidget):
             message = f'Strategy error: {e}'
         except ChartingError as e:
             message = f'Charting error: {e}'
+        except MissingCredentialError as e:
+            message = f'Missing credential error: {e}'
         except InvalidSymbolError as e:
             message = f'Invalid symbol error: {e}'
+        except InsufficientDataError as e:
+            message = f'Insufficient data error {e}'
         except Exception as e:
             message = f'Unexpected error: {type(e)} {e} {traceback.print_exc()}'
         # WARNING, trying to interact with UI components here (calling a custom abstract signature) will not work

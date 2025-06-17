@@ -40,11 +40,11 @@ Powerful interactive analytics allow you to compare multiple strategies at once.
 
 3. Restart your PC to enable the [Environment Variables](https://github.com/jocon15/StockBench/wiki/Environment-Variables).
 
-4. Build your strategy .JSON file. See [Building a Strategy](https://github.com/jocon15/StockBench/wiki/Building-a-Strategy) or try our new [Strategy Studio](#Strategy-Studio).
+4. Build your strategy JSON file. See [Building a Strategy](https://github.com/jocon15/StockBench/wiki/Building-a-Strategy) or try our new [Strategy Studio](#Strategy-Studio).
 
-5. Run the StockBench.exe.
+5. Run the StockBench.exe file.
 
-6. Set your simuation parameters.
+6. Set your simulation parameters.
 
 7. Run the simulation and view the results.
 

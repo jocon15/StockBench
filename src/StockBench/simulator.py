@@ -275,12 +275,12 @@ class Simulator:
             if progress_observer is not None:
                 progress_observer.update_progress(increment)
 
-        self.__record_account_value(position, current_day_index)
+        self.__record_day_end_account_value(position, current_day_index)
 
         return buy_mode, position
 
-    def __record_account_value(self, position: Optional[Position], current_day_index: int) -> None:
-        """Add the account value to the data."""
+    def __record_day_end_account_value(self, position: Optional[Position], current_day_index: int) -> None:
+        """Record the end of day account value."""
         account_value = self.__account.get_balance()
         if position:
             # if a position is currently open, add the position value to the account value

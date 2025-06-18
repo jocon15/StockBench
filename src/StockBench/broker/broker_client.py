@@ -39,7 +39,7 @@ def logged_request(original_fxn: Callable):
             log.exception(f'Connection error in {context}!')
             raise requests.exceptions.ConnectionError(f'Connection error in {context}!')
 
-        if ResponseUtil.is_response_success(response.status_code):
+        if not ResponseUtil.is_response_success(response.status_code):
             log.exception(f'API returned: {response.status_code} on {context} PATCH request!')
 
         return response

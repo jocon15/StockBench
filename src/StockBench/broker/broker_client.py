@@ -67,7 +67,13 @@ class BrokerClient:
         self.__additional_payload = None
 
     def get_bars_data(self, symbol: str, start_date_unix: int, end_date_unix: int) -> DataFrame:
-        """Get bars data with 1-Day resolution."""
+        """Get bars data with 1-Day resolution.
+
+        Note: If you run this in a container like docker, the time stamp time.time() will return a UTC timestamp, not
+        a timestamp in local time. Because the NYSE operates on eastern time, the timestamp will be wrong, causing
+        a 403 response because data was requested for a time in the future. The end date is maintained here to allow
+        users to still retain control the end date.
+        """
         day_bars_url = f'{self._BARS_URL}' \
                        f'symbols={symbol}' \
                        f'&start={self.unix_to_utc_date(start_date_unix)}' \

@@ -27,17 +27,15 @@ def main():
     with open(os.path.join('resources', 'version.txt'), 'w') as file:
         file.write(f'Version: {version}')
 
-    version_commas = version.replace('.', ', ')
+    version_commas = version.replace('.', ', ') + ", 0"
 
     print('Creating version config from template...')
     fin = open("version_template.YAML", "rt")
     data = fin.read()
-    data = data.replace('filevers=(78, 0, 3904, 108)',
+    data = data.replace('filevers=(0, 0, 0, 0)',
                         'filevers=(' + version_commas + ')')
-    data = data.replace('prodvers=(78, 0, 3904, 108)',
+    data = data.replace('prodvers=(0, 0, 0, 0)',
                         'prodvers=(' + version_commas + ')')
-    data = data.replace("u'FileVersion', u'0, 0, 0'",
-                        "u'FileVersion', u'" + version + "'")
     data = data.replace("u'ProductVersion', u'0.0.0'",
                         "u'ProductVersion', u'" + version + "'")
     fin.close()

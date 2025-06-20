@@ -8,11 +8,11 @@ SRC_RESOURCES = os.path.join(os.getcwd(), 'resources')
 
 DIST_PATH = os.path.join(os.getcwd(), 'dist', 'release')
 DIST_RESOURCES = os.path.join(DIST_PATH, 'resources')
-DIST_RESOURCES_WILDCARD = os.path.join(DIST_PATH, 'resources', '*')
 
 
 def main():
-    branch_name = run_command(['git', 'branch', '--show-current'])
+    print('Extracting branch version...')
+    branch_name = run_command(['git', 'branch', '--show-current']).strip()
 
     if "/" not in branch_name:
         print('WARNING: You must checkout a branch in format {release_type}/{X.X.X}')
@@ -25,16 +25,16 @@ def main():
 
     version_commas = version.replace('.', ', ')
 
-    # Read data from template file
+    print('Creating version config from template...')
     fin = open("version_template.YAML", "rt")
     data = fin.read()
     data = data.replace('filevers=(78, 0, 3904, 108)',
                         'filevers=(' + version_commas + ')')
     data = data.replace('prodvers=(78, 0, 3904, 108)',
                         'prodvers=(' + version_commas + ')')
-    data = data.replace("u'FileVersion', u'78, 0, 3904, 108'",
+    data = data.replace("u'FileVersion', u'0.0.0'",
                         "u'FileVersion', u'" + version + "'")
-    data = data.replace("u'ProductVersion', u'78, 0, 3904, 108'",
+    data = data.replace("u'ProductVersion', u'0.0.0'",
                         "u'ProductVersion', u'" + version + "'")
     fin.close()
 
@@ -43,20 +43,18 @@ def main():
     fin.write(data)
     fin.close()
 
-    # FIXME: this is commented out until we can get the bottom working
-    # run_long_command(['pyinstaller', 'main.py', '--name', 'StockBench', '--onefile', '--windowed', '--noconfirm',
-    #                   '--distpath=dist/release', '--icon=resources/images/candle.ico',
-    #                   '--version-file=version_spec.YAML'])
+    print('Building application...')
+    run_long_command(['pyinstaller', 'main.py', '--name', 'StockBench', '--onefile', '--windowed', '--noconfirm',
+                      '--distpath=dist/release', '--icon=resources/images/candle.ico',
+                      '--version-file=version_spec.YAML'])
 
-    # FIXME: we need to replace this with shutil, the filepaths for dist just are not working
-    #   delete resources in dist if it exists
-    #   copy/paste resources into dist
-
-    # make the directories if they don't already exist
+    print('Building resource directories...')
     os.makedirs(os.path.dirname(DIST_RESOURCES), exist_ok=True)
 
-    # copy resources over to dist
+    print('Copying resource directories...')
     shutil.copytree(SRC_RESOURCES, DIST_RESOURCES, dirs_exist_ok=True)
+
+    print('Build complete.')
 
 
 def run_command(args: list) -> str:

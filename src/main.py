@@ -6,6 +6,7 @@ from PyQt6 import QtGui, QtWidgets
 from PyQt6.QtWidgets import QApplication
 from StockBench.gui.application import ConfigMainWindow
 from StockBench.caching.file_cache import load_cache_file
+from StockBench.factories.configuration import ApplicationConfigurationFactory
 
 
 def main():
@@ -18,7 +19,8 @@ def main():
     splash.show()
     splash.showMessage("Loading GUI application...", color=QColor(255, 255, 255),
                        alignment=Qt.AlignmentFlag.AlignBaseline)
-    window = ConfigMainWindow(splash)
+    app_config = ApplicationConfigurationFactory.create_app_config()
+    window = ConfigMainWindow(splash, app_config)
     window.show()
 
     app.exec()

@@ -6,11 +6,15 @@ from subprocess import Popen, PIPE, CalledProcessError
 
 SRC_RESOURCES = os.path.join(os.getcwd(), 'resources')
 
-DIST_PATH = os.path.join(os.getcwd(), 'dist', 'release')
-DIST_RESOURCES = os.path.join(DIST_PATH, 'resources')
-
 
 def main():
+    if '-d' in sys.argv:
+        print('Building debug app...')
+        DIST_PATH = os.path.join(os.getcwd(), 'dist', 'debug')
+    else:
+        DIST_PATH = os.path.join(os.getcwd(), 'dist', 'release')
+    DIST_RESOURCES = os.path.join(DIST_PATH, 'resources')
+
     print('Extracting branch version...')
     branch_name = run_command(['git', 'branch', '--show-current']).strip()
 
@@ -32,7 +36,7 @@ def main():
                         'filevers=(' + version_commas + ')')
     data = data.replace('prodvers=(78, 0, 3904, 108)',
                         'prodvers=(' + version_commas + ')')
-    data = data.replace("u'FileVersion', u'0.0.0'",
+    data = data.replace("u'FileVersion', u'0, 0, 0'",
                         "u'FileVersion', u'" + version + "'")
     data = data.replace("u'ProductVersion', u'0.0.0'",
                         "u'ProductVersion', u'" + version + "'")
@@ -45,7 +49,7 @@ def main():
 
     print('Building application...')
     run_long_command(['pyinstaller', 'main.py', '--name', 'StockBench', '--onefile', '--windowed', '--noconfirm',
-                      '--distpath=dist/release', '--icon=resources/images/candle.ico',
+                      f'--distpath={DIST_PATH}', '--icon=resources/images/candle.ico',
                       '--version-file=version_spec.YAML'])
 
     print('Building resource directories...')

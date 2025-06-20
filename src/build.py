@@ -1,10 +1,13 @@
 import os
+import shutil
 import sys
 import subprocess
 from subprocess import Popen, PIPE, CalledProcessError
 
-DIST_PATH = 'dist/release'
-DIST_RESOURCES = f"{DIST_PATH}/resources"
+SRC_RESOURCES = os.path.join(os.getcwd(), 'resources')
+
+DIST_PATH = os.path.join(os.getcwd(), 'dist', 'release')
+DIST_RESOURCES = os.path.join(DIST_PATH, 'resources')
 DIST_RESOURCES_WILDCARD = os.path.join(DIST_PATH, 'resources', '*')
 
 
@@ -49,11 +52,11 @@ def main():
     #   delete resources in dist if it exists
     #   copy/paste resources into dist
 
-    if os.path.exists(DIST_RESOURCES):
-        run_command(['del', '/f', '/s', '/q', f'"{DIST_RESOURCES}"'])
-    run_command(['rmdir', '/s', '/q', f'"{DIST_RESOURCES}"'])
-    run_command(['mkdir', f'"{DIST_RESOURCES}"'])
-    run_command(['xcopy', f'"{DIST_RESOURCES}"', f'"{DIST_RESOURCES_WILDCARD}"', '/E', '/H', '/C', '/I', '/Y'])
+    # make the directories if they don't already exist
+    os.makedirs(os.path.dirname(DIST_RESOURCES), exist_ok=True)
+
+    # copy resources over to dist
+    shutil.copytree(SRC_RESOURCES, DIST_RESOURCES, dirs_exist_ok=True)
 
 
 def run_command(args: list) -> str:

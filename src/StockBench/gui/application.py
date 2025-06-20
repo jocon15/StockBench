@@ -1,6 +1,5 @@
-from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTabWidget, QLabel, QFrame, QHBoxLayout
+from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTabWidget, QLabel
 from PyQt6 import QtGui
-from PyQt6.QtCore import Qt
 
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.config.tabs.singular_config_tab import SingularConfigTab

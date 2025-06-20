@@ -20,8 +20,7 @@ class ConfigMainWindow(QMainWindow):
         # main window styling (do it first to prevent window shifting)
         self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
         self.setWindowTitle('Configuration')
-        # set window geometry
-        self.__set_geometry()
+        self.setFixedSize(self.WIDTH, self.HEIGHT)
 
         self.layout = QVBoxLayout()
 
@@ -48,6 +47,3 @@ class ConfigMainWindow(QMainWindow):
 
         # close the splash window
         self.splash.close()
-
-    def __set_geometry(self):
-        self.setFixedSize(self.WIDTH, self.HEIGHT)

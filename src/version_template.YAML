@@ -30,11 +30,11 @@ StringFileInfo(
   StringTable(
     u'040904B0',
     [StringStruct(u'FileDescription', u'StockBench Application'),
+    StringStruct(u'ProductVersion', u'0.0.0'),
     StringStruct(u'InternalName', u'StockBench'),
-    StringStruct(u'LegalCopyright', u'Copyright (c) The Apache Software Foundation'),
+    StringStruct(u'LegalCopyright', u'Copyright (c) Jason OConnell'),
     StringStruct(u'OriginalFilename', u'StockBench.exe'),
-    StringStruct(u'ProductName', u'StockBench'),
-    StringStruct(u'ProductVersion', u'1.9.1')])
+    StringStruct(u'ProductName', u'StockBench')])
   ]), 
 VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
   ]

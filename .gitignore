@@ -7,12 +7,15 @@ displays/
 excel/
 figures/
 logs/
+src/resources/version.txt
 saved_simulations/
 offline_images/
 out/
 .idea/
 cache.json
 ignored_archive/
+src/version_spec.YAML
+
 
 # allowable files
 !src/resources/default/*

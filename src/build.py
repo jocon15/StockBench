@@ -14,7 +14,7 @@ def main():
     print('Extracting branch version...')
     branch_name = run_command(['git', 'branch', '--show-current']).strip()
 
-    if "/" not in branch_name:
+    if "/" not in branch_name or "." not in branch_name:
         print('WARNING: You must checkout a branch in format {release_type}/{X.X.X}')
         sys.exit()
 
@@ -63,9 +63,6 @@ def run_command(args: list) -> str:
         # capture_output=True captures stdout and stderr
         # text=True decodes the output as text (UTF-8 by default)
         result = subprocess.run(args, capture_output=True, text=True, shell=True, check=True)
-
-        # Access the standard output
-        print("Standard Output:")
 
         # Access the standard error (if any)
         if result.stderr:

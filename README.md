@@ -12,7 +12,7 @@
 
 # How it Works
 
-StockBench is a stock simulation suite designed for testing strategies on historical data. StockBench sources market data from [Alpaca Markets](https://alpaca.markets/).
+StockBench is a stock simulation suite designed for testing strategies on historical data. StockBench sources market data from [Alpaca Markets](https://alpaca.markets/). You will need an Alpaca account to use this app.
 
 StockBench is designed to test strategies that use technical analysis. StockBench allows for quite some freedom in defining a strategy. It can be simple or complex. Once you have a strategy picked out, you can play with the simulation settings. Check out the [StockBench Wiki](https://github.com/jocon15/StockBench/wiki) for more information on settings, indicators, and rules.
 

@@ -11,6 +11,7 @@ src/resources/version.txt
 saved_simulations/
 offline_images/
 out/
+markdown/
 .idea/
 cache.json
 ignored_archive/

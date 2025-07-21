@@ -6,6 +6,7 @@ Steps to Build
     2. Checkout the branch
     3. Run the respective build script in the terminal ex: >build_release.bat
     4. Check console for any logged issues with the build.
+    5. Your release will be zipped for you in the /dist folder.
 
 
 How the new system works:
@@ -13,13 +14,14 @@ How the new system works:
 The only versioning the developer has to do is the branch version number. The rest is automated.
 
 To perform the branch name parsing, we switched to python for the build script implementation. You can run build.py
-if you'd like. In fact, the build batch files do the same thing, just sets a flag if debug mode.
+directly if you'd like. In fact, the build batch files do the same thing, just sets a flag if debug mode.
 
 Pulls the version number from the branch name.
 Builds the version_spec.yml file using the version number and template.
 Writes the version to the version.txt file in the resources folder.
 Builds the app.
 Copies over the resources.
+Zips the release.
 
 The StockBench app now uses the version.txt file to dynamically display its version in QT windows. The version_spec.yaml
 file also makes it so that the physical executable file properties display the same version as well.

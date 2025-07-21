@@ -5,6 +5,7 @@ import subprocess
 from subprocess import Popen, PIPE, CalledProcessError
 
 SRC_RESOURCES = os.path.join(os.getcwd(), 'resources')
+ZIP_PLACEMENT_PATH = os.path.join(os.getcwd(), 'dist')
 
 
 def main():
@@ -57,6 +58,15 @@ def main():
     shutil.copytree(SRC_RESOURCES, DIST_RESOURCES, dirs_exist_ok=True)
 
     print('Build complete.')
+
+    print('Zipping release...')
+
+    zip_base_filepath = os.path.join(ZIP_PLACEMENT_PATH, f'StochBench{version}')
+    zip_type = 'zip'
+
+    shutil.make_archive(zip_base_filepath, zip_type, DIST_PATH)
+
+    print('Zip complete.')
 
 
 def run_command(args: list) -> str:

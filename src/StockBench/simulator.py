@@ -334,6 +334,8 @@ class Simulator:
 
         return {
             STRATEGY_KEY: self.__algorithm.strategy_filename,
+            SIMULATION_START_TIMESTAMP_KEY: self.__algorithm.strategy[START_KEY],
+            SIMULATION_END_TIMESTAMP_KEY: self.__algorithm.strategy[END_KEY],
             SYMBOL_KEY: symbol,
             POSITIONS_KEY: self.__single_simulation_position_archive,
             TRADE_ABLE_DAYS_KEY: trade_able_days,
@@ -391,6 +393,8 @@ class Simulator:
 
         return {
             STRATEGY_KEY: self.__algorithm.strategy_filename,
+            SIMULATION_START_TIMESTAMP_KEY: self.__algorithm.strategy[START_KEY],
+            SIMULATION_END_TIMESTAMP_KEY: self.__algorithm.strategy[END_KEY],
             POSITIONS_KEY: self.__multiple_simulation_position_archive,
             TRADE_ABLE_DAYS_KEY: results[0][TRADE_ABLE_DAYS_KEY],
             ELAPSED_TIME_KEY: elapsed_time,

@@ -13,7 +13,12 @@ class FSController:
         for item in FSController.FIGURES_PATH.glob('*'):
             if item.is_file():
                 if 'temp' in item.name:
-                    item.unlink()
+                    try:
+                        item.unlink()
+                    except (FileNotFoundError, PermissionError):
+                        # h2h will both try to clear the temp folder as separate threads, this prevents race conditions
+                        # from throwing errors, the first one deletes the file and that's all we need
+                        continue
 
     @staticmethod
     def build_figures_dir_if_not_present():

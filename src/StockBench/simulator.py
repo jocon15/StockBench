@@ -212,7 +212,7 @@ class Simulator:
         log.info('Multi-simulation complete')
         gui_terminal_log.info('Multiple symbol simulation complete')
 
-        return self.__multi_post_process(results, start_time, results_depth,
+        return self.__multi_post_process(symbols, results, start_time, results_depth,
                                          save_option, progress_observer)
 
     def __pre_process(self, symbol: str, progress_observer: ProgressObserver) -> Tuple[int, int, float]:
@@ -370,8 +370,8 @@ class Simulator:
 
         return self.__calculate_multi_progress_bar_increment(symbols, progress_observer)
 
-    def __multi_post_process(self, results: List[dict], start_time: float, results_depth: int, save_option: int,
-                             progress_observer: ProgressObserver) -> dict:
+    def __multi_post_process(self, symbols: List[str], results: List[dict], start_time: float, results_depth: int,
+                             save_option: int, progress_observer: ProgressObserver) -> dict:
         """Post-process tasks for a multi-sim."""
         log.info('Running multi simulation post-process...')
         gui_terminal_log.info('Starting analytics...')
@@ -394,6 +394,7 @@ class Simulator:
 
         return {
             STRATEGY_KEY: self.__algorithm.strategy_filename,
+            SYMBOLS_KEY: symbols,
             SIMULATION_START_TIMESTAMP_KEY: self.__algorithm.strategy[START_KEY],
             SIMULATION_END_TIMESTAMP_KEY: self.__algorithm.strategy[END_KEY],
             INITIAL_ACCOUNT_VALUE_KEY: self.__account.get_initial_balance(),

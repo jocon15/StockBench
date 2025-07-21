@@ -7,6 +7,8 @@ from StockBench.constants import *
 
 
 class MarkdownExporter:
+    MARKDOWN_DIR = "markdown"
+
     @staticmethod
     def export_singular_simulation_to_md(simulation_results: dict) -> str:
         """Export a singular simulation to markdown.
@@ -45,7 +47,8 @@ class MarkdownExporter:
             "[Insert your analysis here]",
         ]
 
-        rel_filepath = os.path.join("markdown", f"Singular_Results_{MarkdownExporter._datetime_filename()}.md")
+        rel_filepath = os.path.join(MarkdownExporter.MARKDOWN_DIR,
+                                    f"Singular_Results_{MarkdownExporter._datetime_filename()}.md")
 
         os.makedirs(os.path.dirname(rel_filepath), exist_ok=True)
 

@@ -17,6 +17,7 @@ from StockBench.constants import *
 from StockBench.broker.broker_client import BrokerClient
 from StockBench.export.window_data_exporter import WindowDataExporter
 from StockBench.factories.configuration import ClientConfigurationFactory
+from StockBench.filesystem.fs_controller import FSController
 from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.position.position import Position
 from StockBench.charting.charting_engine import ChartingEngine
@@ -218,6 +219,8 @@ class Simulator:
         """Setup for the simulation."""
         log.info(f'Setting up simulation for symbol: {symbol}...')
 
+        FSController.remove_temp_figures()
+
         self.__reset_singular_attributes()
 
         start_date_unix, end_date_unix, additional_days = self.__algorithm.get_simulation_window()
@@ -356,6 +359,8 @@ class Simulator:
         """Pre-process tasks for a multi-sim."""
         log.debug('Running multi simulation pre-process...')
         self.__running_multiple = True
+
+        FSController.remove_temp_figures()
 
         # reset the multiple simulation archived symbols to clear any data from previous multiple simulations
         self.__multiple_simulation_position_archive = []

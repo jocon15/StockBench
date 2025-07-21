@@ -75,6 +75,10 @@ class FolderOverviewSidebar(OverviewSideBar):
             # show a message box indicating the file was saved
             self._show_message_box('Export Notification', f'File has been saved to {filepath}')
 
+    def on_export_md_btn_clicked(self):
+        """Export simulation results to markdown."""
+        raise NotImplementedError('Not implemented yet!')
+
     def _update_output_box(self):
         """Update the output box with messages from the progress observer."""
         all_observers_complete = True

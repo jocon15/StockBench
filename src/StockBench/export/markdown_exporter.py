@@ -15,9 +15,9 @@ class MarkdownExporter:
         Because of how much data and wrapping code is in the file, the md file becomes un-loadable in any application.
         """
         df = DataFrame()
-        df["Metric"] = ["Start Date", "End Date", "Initial Account Balance", "Trade-able Days", "Trades Made",
+        df["Metric"] = ["Start Date", "End Date", "Initial Account Value", "Trade-able Days", "Trades Made",
                         "Average Trade Duration", "Effectiveness", "Total Profit/Loss", "Average Profit/Loss",
-                        "Median Profit/Loss", "Standard Profit/Loss Deviation", "Account Value"]
+                        "Median Profit/Loss", "Standard Profit/Loss Deviation", "Final Account Value"]
         df["Value"] = [MarkdownExporter._unix_to_date(simulation_results[SIMULATION_START_TIMESTAMP_KEY]),
                        MarkdownExporter._unix_to_date(simulation_results[SIMULATION_END_TIMESTAMP_KEY]),
                        f"$ {simulation_results[INITIAL_ACCOUNT_VALUE_KEY]}",

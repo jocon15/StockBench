@@ -45,7 +45,10 @@ class SingularOverviewSideBar(OverviewSideBar):
     def on_export_md_btn_clicked(self):
         """Export simulation results to markdown."""
         if self.simulation_results_to_export:
-            MarkdownExporter.export_singular_simulation_to_md(self.simulation_results_to_export)
+            filepath = MarkdownExporter.export_singular_simulation_to_md(self.simulation_results_to_export)
+
+            # show a message box indicating results were copied
+            self._show_message_box('Export Notification', f'Results exported to {filepath}')
 
     def _remove_extraneous_info(self, results: dict) -> dict:
         """Remove info from the simulation results that is not relevant to exporting."""

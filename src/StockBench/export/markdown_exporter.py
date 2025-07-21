@@ -15,10 +15,14 @@ class MarkdownExporter:
         Because of how much data and wrapping code is in the file, the md file becomes un-loadable in any application.
         """
         df = DataFrame()
-        df["Metric"] = ["Trade-able Days", "Trades Made", "Average Trade Duration", "Effectiveness",
-                        "Total Profit/Loss", "Average Profit/Loss", "Median Profit/Loss",
-                        "Standard Profit/Loss Deviation", "Account Value"]
-        df["Value"] = [simulation_results[TRADE_ABLE_DAYS_KEY], simulation_results[TRADES_MADE_KEY],
+        df["Metric"] = ["Start Date", "End Date", "Initial Account Balance", "Trade-able Days", "Trades Made",
+                        "Average Trade Duration", "Effectiveness", "Total Profit/Loss", "Average Profit/Loss",
+                        "Median Profit/Loss", "Standard Profit/Loss Deviation", "Account Value"]
+        df["Value"] = [MarkdownExporter._unix_to_date(simulation_results[SIMULATION_START_TIMESTAMP_KEY]),
+                       MarkdownExporter._unix_to_date(simulation_results[SIMULATION_END_TIMESTAMP_KEY]),
+                       f"$ {simulation_results[INITIAL_ACCOUNT_VALUE_KEY]}",
+                       simulation_results[TRADE_ABLE_DAYS_KEY],
+                       simulation_results[TRADES_MADE_KEY],
                        f"{simulation_results[AVERAGE_TRADE_DURATION_KEY]} days",
                        f"{simulation_results[EFFECTIVENESS_KEY]} %",
                        f"$ {simulation_results[TOTAL_PROFIT_LOSS_KEY]}",
@@ -58,3 +62,8 @@ class MarkdownExporter:
     def _datetime_filename(timestamp_format="%m_%d_%Y__%H_%M_%S") -> str:
         """Create a datetime filename using the current timestamp."""
         return datetime.now().strftime(timestamp_format)
+
+    @staticmethod
+    def _unix_to_date(timestamp: int) -> str:
+        """Convert a unix timestamp to a date."""
+        return datetime.fromtimestamp(timestamp).strftime("%m/%d/%Y")

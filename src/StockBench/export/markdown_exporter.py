@@ -8,7 +8,7 @@ from StockBench.constants import *
 
 class MarkdownExporter:
     @staticmethod
-    def export_singular_simulation_to_md(simulation_results: dict):
+    def export_singular_simulation_to_md(simulation_results: dict) -> str:
         """Export a singular simulation to markdown.
 
         Pasting the chart file html into the md file seems like a good idea, but the html file is too big (2MB)
@@ -47,6 +47,8 @@ class MarkdownExporter:
 
         with open(rel_filepath, 'w') as file:
             file.writelines(MarkdownExporter._add_new_line_chars(lines))
+
+        return rel_filepath
 
     @staticmethod
     def _add_new_line_chars(lines: list) -> list:

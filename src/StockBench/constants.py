@@ -32,6 +32,9 @@ LIQUIDATION = 'Liquidation'
 
 # ========== Results =====================
 STRATEGY_KEY = 'strategy'
+INITIAL_ACCOUNT_VALUE_KEY = 'initial_account_balance'
+SIMULATION_START_TIMESTAMP_KEY = 'start_timestamp'
+SIMULATION_END_TIMESTAMP_KEY = 'end_timestamp'
 SYMBOL_KEY = 'symbol'
 POSITIONS_KEY = 'positions'
 TRADE_ABLE_DAYS_KEY = 'trade_able_days'

@@ -44,6 +44,12 @@ class OverviewSideBar(QWidget):
         self.export_excel_btn.setStyleSheet(Palette.SECONDARY_BTN)
         self.export_excel_btn.clicked.connect(self.on_export_excel_btn_clicked)  # noqa
 
+        # export markdown button
+        self.export_md_btn = QPushButton()
+        self.export_md_btn.setText('Export to Markdown (.md)')
+        self.export_md_btn.setStyleSheet(Palette.SECONDARY_BTN)
+        self.export_md_btn.clicked.connect(self.on_export_md_btn_clicked)  # noqa
+
         # output box (terminal)
         self.output_box = QListWidget()
         self.output_box.setWordWrap(True)
@@ -96,6 +102,10 @@ class OverviewSideBar(QWidget):
 
             # show a message box indicating the file was saved
             self._show_message_box('Export Notification', 'Results copied to clipboard')
+
+    @abstractmethod
+    def on_export_md_btn_clicked(self):
+        raise NotImplementedError('You must define an implementation for on_export_md_btn_clicked()!')
 
     @staticmethod
     def _copy_to_clipboard(text: str):

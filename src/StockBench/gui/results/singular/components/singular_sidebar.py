@@ -1,3 +1,4 @@
+from StockBench.export.markdown_exporter import MarkdownExporter
 from StockBench.gui.results.base.overview_sidebar import OverviewSideBar
 from StockBench.gui.results.singular.components.singular_sidebar_metadata_table import SingularMetadataSidebarTable
 from StockBench.gui.results.singular.components.singular_sidebar_results_table import SingularResultsSidebarTable
@@ -20,6 +21,7 @@ class SingularOverviewSideBar(OverviewSideBar):
         self.layout.addWidget(self.results_table)
 
         self.layout.addWidget(self.export_json_btn)
+        self.layout.addWidget(self.export_md_btn)
 
         # pushes the status header and output box to the bottom
         self.layout.addStretch()
@@ -39,6 +41,14 @@ class SingularOverviewSideBar(OverviewSideBar):
 
     def on_export_excel_btn_clicked(self):
         raise NotImplementedError('Singular does not use the export to excel button')
+
+    def on_export_md_btn_clicked(self):
+        """Export simulation results to markdown."""
+        if self.simulation_results_to_export:
+            filepath = MarkdownExporter.export_singular_simulation_to_md(self.simulation_results_to_export)
+
+            # show a message box indicating results were copied
+            self._show_message_box('Export Notification', f'Results exported to {filepath}')
 
     def _remove_extraneous_info(self, results: dict) -> dict:
         """Remove info from the simulation results that is not relevant to exporting."""

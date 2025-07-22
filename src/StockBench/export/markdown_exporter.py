@@ -59,7 +59,7 @@ class MarkdownExporter:
 
     @staticmethod
     def export_multi_simulation_to_md(simulation_results: dict) -> str:
-        """Export a singular simulation to markdown.
+        """Export a multi simulation to markdown.
 
         Pasting the chart file html into the md file seems like a good idea, but the html file is too big (2MB)
         Because of how much data and wrapping code is in the file, the md file becomes un-loadable in any application.
@@ -100,6 +100,60 @@ class MarkdownExporter:
 
         rel_filepath = os.path.join(MarkdownExporter.MARKDOWN_DIR,
                                     f"Multi_Results_{MarkdownExporter._datetime_filename()}.md")
+
+        os.makedirs(os.path.dirname(rel_filepath), exist_ok=True)
+
+        with open(rel_filepath, 'w') as file:
+            file.writelines(MarkdownExporter._add_new_line_chars(lines))
+
+        return rel_filepath
+
+    @staticmethod
+    def export_folder_simulation_to_md(simulation_results: dict) -> str:
+        """Export a folder simulation to markdown.
+
+        Pasting the chart file html into the md file seems like a good idea, but the html file is too big (2MB)
+        Because of how much data and wrapping code is in the file, the md file becomes un-loadable in any application.
+        """
+
+        df = DataFrame()
+        df["Metric"] = ["Start Date", "End Date", "Initial Account Value", "Trade-able Days", "Trades Made",
+                        "Average Trade Duration", "Effectiveness", "Total Profit/Loss", "Average Profit/Loss",
+                        "Median Profit/Loss", "Standard Profit/Loss Deviation"]
+
+        for strategy_results in simulation_results['results']:
+            df[strategy_results[STRATEGY_KEY]] = [
+                MarkdownExporter._unix_to_date(strategy_results[SIMULATION_START_TIMESTAMP_KEY]),
+                MarkdownExporter._unix_to_date(strategy_results[SIMULATION_END_TIMESTAMP_KEY]),
+                f"$ {strategy_results[INITIAL_ACCOUNT_VALUE_KEY]}",
+                strategy_results[TRADE_ABLE_DAYS_KEY],
+                strategy_results[TRADES_MADE_KEY],
+                f"{strategy_results[AVERAGE_TRADE_DURATION_KEY]} days",
+                f"{strategy_results[EFFECTIVENESS_KEY]} %",
+                f"$ {strategy_results[TOTAL_PROFIT_LOSS_KEY]}",
+                f"$ {strategy_results[AVERAGE_PROFIT_LOSS_KEY]}",
+                f"$ {strategy_results[MEDIAN_PROFIT_LOSS_KEY]}",
+                f"$ {strategy_results[STANDARD_PROFIT_LOSS_DEVIATION_KEY]}"
+            ]
+
+        markdown_table = df.to_markdown(index=False)
+
+        symbols_str = ", ".join(simulation_results['results'][0][SYMBOLS_KEY])
+
+        lines = [
+            f"# Simulation Results",
+            "#### Symbols",
+            f"{symbols_str}",
+            "#### Results",
+            f"{markdown_table}",
+            "#### Observations",
+            "[Insert your observations here]",
+            "#### Analysis",
+            "[Insert your analysis here]",
+        ]
+
+        rel_filepath = os.path.join(MarkdownExporter.MARKDOWN_DIR,
+                                    f"Folder_Results_{MarkdownExporter._datetime_filename()}.md")
 
         os.makedirs(os.path.dirname(rel_filepath), exist_ok=True)
 

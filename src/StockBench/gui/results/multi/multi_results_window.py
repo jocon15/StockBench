@@ -9,10 +9,10 @@ from StockBench.gui.results.base.positions_duration_tab import PositionsDuration
 class MultiResultsWindow(SimulationResultsWindow):
     """Simulation results window for a simulation on multiple symbols."""
 
-    def __init__(self, symbols, strategy, initial_balance, simulator, progress_observer, worker, logging_on, 
-                 reporting_on, unique_chart_saving_on, results_depth):
-        super().__init__(strategy, initial_balance, simulator, progress_observer, worker, logging_on, reporting_on,
-                         unique_chart_saving_on, results_depth)
+    def __init__(self, symbols, strategy, initial_balance, logging_on, reporting_on, unique_chart_saving_on,
+                 results_depth, identifier: int = 1):
+        super().__init__(strategy, initial_balance, logging_on, reporting_on, unique_chart_saving_on, results_depth,
+                         identifier=identifier)
         self.symbols = symbols
 
         # add shared_components to the layout

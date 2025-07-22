@@ -49,7 +49,7 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.tab_widget.addTab(self.average_pl_tab, 'Average P/L')
         self.tab_widget.addTab(self.median_pl_tab, 'Median P/L')
         self.tab_widget.addTab(self.stddev_pl_tab, 'Stddev P/L')
-        self.tab_widget.addTab(self.positions_histogram_tab, 'Positions (histogram)')
+        self.tab_widget.addTab(self.positions_histogram_tab, 'Positions P/L (histogram)')
         self.layout.addWidget(self.tab_widget)
 
         # error message

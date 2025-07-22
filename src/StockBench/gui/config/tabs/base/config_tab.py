@@ -70,9 +70,9 @@ class ConfigTab(QWidget):
         self.simulation_length_cbox.addItem('1 Year')
         self.simulation_length_cbox.addItem('2 Year')
         self.simulation_length_cbox.addItem('5 Year')
-        # set simulation length default to 2 years (must set attribute as well)
-        self.simulation_length_cbox.setCurrentIndex(1)
-        self.simulation_length = SECONDS_2_YEAR
+        # set simulation length default to 1 year (must set attribute as well)
+        self.simulation_length_cbox.setCurrentIndex(0)
+        self.simulation_length = SECONDS_1_YEAR
         self.simulation_length_cbox.setStyleSheet(Palette.COMBOBOX_STYLESHEET)
         self.simulation_length_cbox.currentIndexChanged.connect(self.on_simulation_length_cbox_index_changed)  # noqa
 

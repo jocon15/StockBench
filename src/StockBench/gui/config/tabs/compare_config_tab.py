@@ -2,7 +2,6 @@ from PyQt6.QtWidgets import QLabel, QPushButton, QLineEdit
 from PyQt6.QtCore import Qt
 
 from StockBench.gui.config.tabs.base.config_tab import ConfigTab, MessageBoxCaptureException, CaptureConfigErrors
-from StockBench.gui.results.multi.multi_results_window import MultiResultsWindow
 from StockBench.gui.results.compare.compare_results_window import CompareResultsWindow
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.config.components.strategy_selection import StrategySelection
@@ -117,30 +116,14 @@ class CompareConfigTab(ConfigTab):
         # reminder: h2h will store the references of these simulations, so we do not need to attribute them with self
         # also, h2h will call the begin functions
 
-        simulation_result_window_1 = MultiResultsWindow(
+        self.head_to_head_window = CompareResultsWindow(
             simulation_symbols,
             strategy1,
-            simulation_balance,
-            self.simulator,
-            self.progress_bar_observer,
-            self.worker,
-            self.simulation_logging,
-            self.simulation_reporting,
-            self.simulation_unique_chart_saving,
-            self.results_depth)
-
-        simulation_result_window_2 = MultiResultsWindow(
-            simulation_symbols,
             strategy2,
-            simulation_balance,
-            self.simulator,
-            self.progress_bar_observer,
-            self.worker,
             self.simulation_logging,
             self.simulation_reporting,
-            True,  # prevent the second chart from loading the temp chart (being used by sim 1)
-            self.results_depth)
-
-        self.head_to_head_window = CompareResultsWindow(simulation_result_window_1, simulation_result_window_2)
+            simulation_balance,
+            self.results_depth
+        )
 
         self.head_to_head_window.showMaximized()

@@ -12,12 +12,13 @@ class OverviewSideBar(QWidget):
 
     def __init__(self, progress_observer):
         super().__init__()
+        # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
+        self.threadpool = QThreadPool()
+
+        # attributes
         self.progress_observer = progress_observer
 
         self.simulation_results_to_export = {}
-
-        # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
-        self.threadpool = QThreadPool()
 
         # define layout type
         self.layout = QVBoxLayout()

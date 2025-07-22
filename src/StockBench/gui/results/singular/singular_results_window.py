@@ -10,10 +10,10 @@ from StockBench.gui.results.singular.tabs.singular_account_value_tab import Sing
 class SingularResultsWindow(SimulationResultsWindow):
     """Simulation results window for a simulation on a single symbol."""
 
-    def __init__(self, symbol, strategy, initial_balance, simulator, progress_observer, worker, logging_on,
-                 reporting_on, unique_chart_saving_on, show_volume, results_depth):
-        super().__init__(strategy, initial_balance, simulator, progress_observer, worker, logging_on, reporting_on,
-                         unique_chart_saving_on, show_volume, results_depth)
+    def __init__(self, symbol, strategy, initial_balance, logging_on, reporting_on, unique_chart_saving_on, show_volume,
+                 results_depth):
+        super().__init__(strategy, initial_balance, logging_on, reporting_on, unique_chart_saving_on, show_volume,
+                         results_depth)
         self.symbol = symbol
 
         # add shared_components to the layout

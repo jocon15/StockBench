@@ -8,6 +8,8 @@ from PyQt6.QtWidgets import QWidget, QProgressBar, QTabWidget, QVBoxLayout
 from PyQt6.QtCore import QTimer, QThreadPool
 from PyQt6 import QtGui
 from StockBench.gui.palette.palette import Palette
+from StockBench.gui.worker.worker import Worker
+from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.simulator import Simulator
 from StockBench.indicator.exceptions import StrategyIndicatorError
 from StockBench.charting.exceptions import ChartingError
@@ -33,14 +35,14 @@ class SimulationResultsWindow(QWidget):
     the window.
     """
 
-    def __init__(self, strategy, initial_balance, simulator, progress_observer, worker, logging_on=False,
-                 reporting_on=False, unique_chart_saving_on=False, show_volume=False,
-                 results_depth=Simulator.CHARTS_AND_DATA):
+    def __init__(self, strategy, initial_balance, logging_on=False, reporting_on=False, unique_chart_saving_on=False,
+                 show_volume=False, results_depth=Simulator.CHARTS_AND_DATA, identifier: int = 1):
         super().__init__()
+        self.id = identifier
         self.strategy = strategy
-        self.simulator = simulator(initial_balance)  # instantiate the class reference
-        self.progress_observer = progress_observer()  # instantiate the class reference
-        self.worker = worker
+        self.simulator = Simulator(initial_balance, identifier)  # instantiate the class reference
+        self.progress_observer = ProgressObserver()  # instantiate the class reference
+        self.worker = Worker  # gets instantiated later
         self.logging = logging_on
         self.reporting = reporting_on
         self.unique_chart_saving = unique_chart_saving_on

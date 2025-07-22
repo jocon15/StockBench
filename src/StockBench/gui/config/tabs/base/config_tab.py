@@ -6,12 +6,9 @@ from functools import wraps
 from typing import Callable
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QRadioButton, QComboBox
-from PyQt6.QtCore import QThreadPool
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtCore import QPoint
 
-from StockBench.gui.worker.worker import Worker
-from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.studio.strategy_studio import StrategyStudioWindow
 from StockBench.constants import *
@@ -48,17 +45,6 @@ class ConfigTab(QWidget):
 
     def __init__(self):
         super().__init__()
-        # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
-        self.threadpool = QThreadPool()
-
-        # since sim results window calls run(), this has to be passed to the sim results window to avoid
-        #   circular import error (maybe just pass class reference to window and let the window instantiate?)
-        self.progress_bar_observer = ProgressObserver
-        # pass an uninitialized reference of the worker object to the windows
-        self.worker = Worker
-        # pass an uninitialized reference of the simulator object to the windows
-        self.simulator = Simulator
-
         # windows launched from a class need to be attributes or else they will be closed when the function
         # scope that called them is exited
         self.simulation_result_window = None

@@ -10,27 +10,24 @@ from StockBench.gui.results.folder.tabs.folder_median_pl_tab import FolderMedian
 from StockBench.gui.results.folder.tabs.folder_stddev_pl_tab import FolderStandardDeviationProfitLossTabVertical
 from StockBench.gui.results.folder.tabs.folder_positions_histogram_tab import FolderPositionsHistogramTabVertical
 from StockBench.constants import *
+from StockBench.observers.progress_observer import ProgressObserver
 
 
 class FolderResultsWindow(SimulationResultsWindow):
-    def __init__(self, strategies, symbols, initial_balance, simulator, progress_observer, worker, logging_on,
-                 reporting_on, unique_chart_saving_on, results_depth):
+    def __init__(self, strategies, symbols, initial_balance, logging_on, reporting_on, unique_chart_saving_on,
+                 results_depth):
         # pass 1st strategy as a dummy strategy because we will load the strategy dynamically in _run_simulation
-        super().__init__(strategies[0], initial_balance, simulator, progress_observer, worker, logging_on,
-                         reporting_on, unique_chart_saving_on, results_depth)
+        super().__init__(strategies[0], initial_balance, logging_on, reporting_on, unique_chart_saving_on,
+                         results_depth)
         self.strategies = strategies
         self.symbols = symbols
-        self.simulator = simulator(initial_balance)  # instantiate the class reference
-        self.progress_observer = progress_observer  # store the class reference
-        self.worker = worker
         self.logging = logging_on
         self.reporting = reporting_on
         self.unique_chart_saving = unique_chart_saving_on
         self.results_depth = results_depth
-        self.worker = worker
 
         # create a list of progress observers for each strategy
-        self.progress_observers = [progress_observer() for _ in strategies]
+        self.progress_observers = [ProgressObserver() for _ in strategies]
 
         # add elements to the layout
         self.layout.addWidget(self.progress_bar)

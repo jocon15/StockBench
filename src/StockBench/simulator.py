@@ -34,9 +34,6 @@ from StockBench.logging_handlers.handlers import ProgressMessageHandler
 # generic logger used for debugging the application
 log = logging.getLogger()
 
-# logger dedicated to logging messages to the gui terminal
-gui_terminal_log = logging.getLogger('gui_terminal_logging')
-
 
 class Simulator:
     """
@@ -60,18 +57,22 @@ class Simulator:
     CHARTS_AND_DATA = 0
     DATA_ONLY = 1
 
-    def __init__(self, initial_balance: float):
+    def __init__(self, initial_balance: float, identifier: int = 1):
         """Constructor
 
         Args:
             initial_balance: The initial balance for the account.
         """
         # dependencies
+        self.id = identifier
         self.__account = UserAccount(initial_balance)
         self.__broker = BrokerClient(ClientConfigurationFactory.create_broker_config())
         self.__data_manager = None  # gets constructed once we request the data
         self.__algorithm = None  # gets constructed once we have the strategy
         self.__available_indicators = IndicatorManager.load_indicators()
+
+        # logger dedicated to logging messages to the gui terminal (must be here to avoid log duplication)
+        self.gui_terminal_log = logging.getLogger(f'gui_terminal_logging_{self.id}')
 
         # simulation settings
         self.__algorithm = None
@@ -144,14 +145,14 @@ class Simulator:
 
         if not self.__running_multiple:
             if progress_observer:
-                gui_terminal_log.setLevel(logging.INFO)
-                gui_terminal_log.addHandler(ProgressMessageHandler(progress_observer))
+                self.gui_terminal_log.setLevel(logging.INFO)
+                self.gui_terminal_log.addHandler(ProgressMessageHandler(progress_observer))
 
             log.info(f'Using strategy: {self.__algorithm.strategy_filename}')
-            gui_terminal_log.info(f'Using strategy: {self.__algorithm.strategy_filename}')
+            self.gui_terminal_log.info(f'Using strategy: {self.__algorithm.strategy_filename}')
 
         log.info(f'Starting simulation for symbol: {symbol}...')
-        gui_terminal_log.info(f'Starting simulation for {symbol}...')
+        self.gui_terminal_log.info(f'Starting simulation for {symbol}...')
 
         sim_window_start_day, trade_able_days, increment = self.__pre_process(symbol, progress_observer)
 
@@ -164,7 +165,7 @@ class Simulator:
                                                      increment)
         # ============================================================
 
-        gui_terminal_log.info(f'Simulation for {symbol} complete')
+        self.gui_terminal_log.info(f'Simulation for {symbol} complete')
 
         return self.__post_process(symbol, trade_able_days, sim_window_start_day, start_time, results_depth,
                                    save_option, show_volume, progress_observer)
@@ -178,13 +179,13 @@ class Simulator:
 
         if progress_observer:
             # enable the progress message handler to capture the logs
-            gui_terminal_log.setLevel(logging.INFO)
-            gui_terminal_log.addHandler(ProgressMessageHandler(progress_observer))
+            self.gui_terminal_log.setLevel(logging.INFO)
+            self.gui_terminal_log.addHandler(ProgressMessageHandler(progress_observer))
 
-        gui_terminal_log.info('Beginning multiple symbol simulation...')
+        self.gui_terminal_log.info('Beginning multiple symbol simulation...')
 
         log.info(f'Using strategy: {self.__algorithm.strategy_filename}')
-        gui_terminal_log.info(f'Using strategy: {self.__algorithm.strategy_filename}')
+        self.gui_terminal_log.info(f'Using strategy: {self.__algorithm.strategy_filename}')
 
         progress_bar_increment = self.__multi_pre_process(symbols, progress_observer)
 
@@ -210,7 +211,7 @@ class Simulator:
                 pbar.update(tqdm_increment)
 
         log.info('Multi-simulation complete')
-        gui_terminal_log.info('Multiple symbol simulation complete')
+        self.gui_terminal_log.info('Multiple symbol simulation complete')
 
         return self.__multi_post_process(symbols, results, start_time, results_depth,
                                          save_option, progress_observer)
@@ -297,7 +298,7 @@ class Simulator:
                        results_depth: int, save_option: int, show_volume: bool,
                        progress_observer: ProgressObserver) -> dict:
         """Cleanup and analysis after a simulation."""
-        gui_terminal_log.info(f'Starting analytics for {symbol}...')
+        self.gui_terminal_log.info(f'Starting analytics for {symbol}...')
 
         self.__add_positions_to_data()
 
@@ -325,12 +326,12 @@ class Simulator:
         log.info('Simulation complete!')
 
         if not self.__running_multiple:
-            gui_terminal_log.info(f'Analytics for {symbol} complete \u2705')
+            self.gui_terminal_log.info(f'Analytics for {symbol} complete \u2705')
             if progress_observer:
                 # inform the progress observer that the analytics is complete
                 progress_observer.set_analytics_complete()
         else:
-            gui_terminal_log.info(f'Analytics for {symbol} complete')
+            self.gui_terminal_log.info(f'Analytics for {symbol} complete')
 
         return {
             STRATEGY_KEY: self.__algorithm.strategy_filename,
@@ -374,7 +375,7 @@ class Simulator:
                              save_option: int, progress_observer: ProgressObserver) -> dict:
         """Post-process tasks for a multi-sim."""
         log.info('Running multi simulation post-process...')
-        gui_terminal_log.info('Starting analytics...')
+        self.gui_terminal_log.info('Starting analytics...')
         self.__running_multiple = False
         # save the results in case the user wants to write them to file
         self.__stored_results = results
@@ -387,7 +388,7 @@ class Simulator:
         end_time = perf_counter()
         elapsed_time = round(end_time - start_time, 4)
 
-        gui_terminal_log.info('Analytics complete \u2705')
+        self.gui_terminal_log.info('Analytics complete \u2705')
 
         if progress_observer:
             progress_observer.set_analytics_complete()
@@ -450,7 +451,7 @@ class Simulator:
         position.close_position(sell_price, current_day_index, rule)
 
         if self.__is_stock_split(position, sell_price):
-            gui_terminal_log.warning(f'Stock split avoided at day: {current_day_index}')
+            self.gui_terminal_log.warning(f'Stock split avoided at day: {current_day_index}')
             log.info('Position excluded due to stock split!')
             # deposit the initial investment amount (undoing the withdrawal)
             self.__account.deposit(position.get_buy_price() * position.get_share_count())
@@ -519,37 +520,37 @@ class Simulator:
         if not self.__running_multiple:
             if results_depth == self.CHARTS_AND_DATA:
                 # faster to do it synchronously for singular
-                gui_terminal_log.info('Building overview chart...')
+                self.gui_terminal_log.info('Building overview chart...')
                 overview_chart_filepath = (
                     SingularChartingEngine.build_indicator_chart(chopped_temp_df, symbol,
                                                                  [*self.__available_indicators.values()],
                                                                  show_volume, save_option))
 
-                gui_terminal_log.info('Building buy rules bar chart...')
+                self.gui_terminal_log.info('Building buy rules bar chart...')
                 buy_rules_chart_filepath = (
                     ChartingEngine.build_rules_bar_chart(self.__single_simulation_position_archive, BUY_SIDE, symbol,
                                                          save_option))
 
-                gui_terminal_log.info('Building sell rules bar chart...')
+                self.gui_terminal_log.info('Building sell rules bar chart...')
                 sell_rules_chart_filepath = (
                     ChartingEngine.build_rules_bar_chart(self.__single_simulation_position_archive, SELL_SIDE, symbol,
                                                          save_option))
 
-                gui_terminal_log.info('Building account value bar chart...')
+                self.gui_terminal_log.info('Building account value bar chart...')
                 account_value_bar_chart_filepath = (
                     SingularChartingEngine.build_account_value_bar_chart(chopped_temp_df, symbol, save_option))
 
-                gui_terminal_log.info('Building positions duration bar chart...')
+                self.gui_terminal_log.info('Building positions duration bar chart...')
                 positions_duration_bar_chart_filepath = (
                     ChartingEngine.build_positions_duration_bar_chart(self.__single_simulation_position_archive, symbol,
                                                                       save_option))
 
-                gui_terminal_log.info('Building positions profit loss bar chart...')
+                self.gui_terminal_log.info('Building positions profit loss bar chart...')
                 positions_profit_loss_bar_chart_filepath = (
                     SingularChartingEngine.build_positions_profit_loss_bar_chart(
                         self.__single_simulation_position_archive, symbol, save_option))
 
-                gui_terminal_log.info('Building positions profit loss histogram chart...')
+                self.gui_terminal_log.info('Building positions profit loss histogram chart...')
                 positions_profit_loss_histogram_chart_filepath = (
                     ChartingEngine.build_positions_profit_loss_histogram_chart(
                         self.__single_simulation_position_archive, self.__algorithm.strategy_filename, symbol,
@@ -573,27 +574,27 @@ class Simulator:
         positions_profit_loss_histogram_chart_filepath = ''
         if results_depth == self.CHARTS_AND_DATA:
             with ProcessPoolExecutor() as executor:
-                gui_terminal_log.info('Building overview chart...')
+                self.gui_terminal_log.info('Building overview chart...')
                 future1 = executor.submit(MultiChartingEngine.build_overview_chart, results,
                                           self.__account.get_initial_balance(), save_option)
 
-                gui_terminal_log.info('Building buy rules bar chart...')
+                self.gui_terminal_log.info('Building buy rules bar chart...')
                 future2 = executor.submit(ChartingEngine.build_rules_bar_chart,
                                           self.__single_simulation_position_archive, BUY_SIDE, None, save_option)
 
-                gui_terminal_log.info('Building sell rules bar chart...')
+                self.gui_terminal_log.info('Building sell rules bar chart...')
                 future3 = executor.submit(ChartingEngine.build_rules_bar_chart,
                                           self.__single_simulation_position_archive, SELL_SIDE, None, save_option)
 
-                gui_terminal_log.info('Building positions duration bar chart...')
+                self.gui_terminal_log.info('Building positions duration bar chart...')
                 future4 = executor.submit(ChartingEngine.build_positions_duration_bar_chart,
                                           self.__single_simulation_position_archive, None, save_option)
 
-                gui_terminal_log.info('Building positions profit loss bar chart...')
+                self.gui_terminal_log.info('Building positions profit loss bar chart...')
                 future5 = executor.submit(ChartingEngine.build_positions_profit_loss_bar_chart,
                                           self.__single_simulation_position_archive, None, save_option)
 
-                gui_terminal_log.info('Building positions profit loss histogram chart...')
+                self.gui_terminal_log.info('Building positions profit loss histogram chart...')
                 future6 = executor.submit(ChartingEngine.build_positions_profit_loss_histogram_chart,
                                           self.__single_simulation_position_archive, self.__algorithm.strategy_filename,
                                           None, save_option)

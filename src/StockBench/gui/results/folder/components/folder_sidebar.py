@@ -1,5 +1,7 @@
 from PyQt6.QtWidgets import QListWidgetItem
 from PyQt6.QtGui import QColor
+
+from StockBench.export.markdown_exporter import MarkdownExporter
 from StockBench.gui.results.multi.components.multi_sidebar_metadata_table import MultiMetadataSidebarTable
 from StockBench.gui.results.base.overview_sidebar import OverviewSideBar
 from StockBench.observers.progress_observer import ProgressObserver
@@ -32,6 +34,7 @@ class FolderOverviewSidebar(OverviewSideBar):
         self.layout.addWidget(self.folder_selection)
 
         self.layout.addWidget(self.export_excel_btn)
+        self.layout.addWidget(self.export_md_btn)
 
         # pushes the status header and output box to the bottom
         self.layout.addStretch()
@@ -77,7 +80,11 @@ class FolderOverviewSidebar(OverviewSideBar):
 
     def on_export_md_btn_clicked(self):
         """Export simulation results to markdown."""
-        raise NotImplementedError('Not implemented yet!')
+        if self.simulation_results_to_export:
+            filepath = MarkdownExporter.export_folder_simulation_to_md(self.simulation_results_to_export)
+
+            # show a message box indicating results were copied
+            self._show_message_box('Export Notification', f'Results exported to {filepath}')
 
     def _update_output_box(self):
         """Update the output box with messages from the progress observer."""

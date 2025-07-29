@@ -1,10 +1,12 @@
-import multiprocessing
 import os
 import sys
+import multiprocessing
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor
 from PyQt6 import QtGui, QtWidgets
 from PyQt6.QtWidgets import QApplication
+
 from StockBench.gui.application import ConfigMainWindow
 from StockBench.caching.file_cache import load_cache_file
 from StockBench.factories.configuration import ApplicationConfigurationFactory

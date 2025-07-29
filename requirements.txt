@@ -13,5 +13,5 @@ plotly~=5.9.0
 xlsxwriter~=3.1.9
 tqdm~=4.66.1
 numpy~=1.23.5
-pyinstaller~=6.3.0
+pyinstaller~=6.14.2
 scipy~=1.10.1

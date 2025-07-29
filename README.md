@@ -72,6 +72,13 @@ Want to run 2 strategies side by side? We have you covered with the compare tab!
     <img src="https://github.com/jocon15/StockBench/blob/master/images/compare.gif" />
 </p>
 
+## Exporting Results
+StockBench offers a set of exporting tools that allow you to keep simulation results. Check out our export to markdown 
+feature that allow you to export your results to a markdown file. Markdown is especially well-equipped for developing
+elegant documents with its simple and powerful syntax. Our markdown exporter creates a template for a study document 
+and inserts the results of the simulation for you, making it a breeze to create studies easily.
+![report](https://github.com/jocon15/StockBench/blob/master/images/markdown_export.png)
+
 ## Diving Deeper
 
 If you are curious to see the underlying data used by the simulation, you can choose to export the simulation data using the reporting option. When chosen, a report of all the data used during the simulation will be generated. The report will be an excel (.xlsx) file.

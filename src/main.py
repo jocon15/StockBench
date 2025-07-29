@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 import sys
 from PyQt6.QtCore import Qt
@@ -27,4 +28,5 @@ def main():
 
 
 if __name__ == '__main__':
+    multiprocessing.freeze_support()
     main()

@@ -44,7 +44,7 @@ class SingularChartingEngine(ChartingEngine):
                                                 'temp_overview_chart', f'figure_{symbol}')
 
     @staticmethod
-    def build_account_value_bar_chart(df: DataFrame, symbol: str, save_option=ChartingEngine.TEMP_SAVE) -> str:
+    def build_account_value_line_chart(df: DataFrame, symbol: str, save_option=ChartingEngine.TEMP_SAVE) -> str:
         """Builds a chart for duration of positions.
 
         return:
@@ -53,8 +53,8 @@ class SingularChartingEngine(ChartingEngine):
         rows = 1
         cols = 1
 
-        chart_list = [[{"type": "bar"}]]
-        chart_titles = ('Account Value per Position',)
+        chart_list = [[{"type": "scatter"}]]
+        chart_titles = ('Account Value',)
 
         # Parent Plot
         fig = make_subplots(rows=rows,
@@ -66,10 +66,12 @@ class SingularChartingEngine(ChartingEngine):
                             subplot_titles=chart_titles)
 
         # positions analysis traces
-        bar_chart_trace = plotter.Bar(y=df['Account Value'], marker=dict(color=OFF_BLUE), name='Account Value')
+        bar_chart_trace = plotter.Scatter(y=df['Account Value'], marker=dict(color=OFF_BLUE), fill='tozeroy',
+                                          name='Account Value')
 
-        # position analysis chart (overlayed traces)
+        # position analysis chart (overlaid traces)
         fig.add_trace(bar_chart_trace, 1, 1)
+        fig.add_hline(y=df['Account Value'][0], line_width=1, line_dash="dash", line_color='white')
 
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
@@ -77,8 +79,8 @@ class SingularChartingEngine(ChartingEngine):
         # format the chart (remove plotly white border)
         formatted_fig = ChartingEngine.format_chart(fig)
 
-        temp_filename = 'temp_account_value_bar_chart'
-        unique_prefix = f'{symbol}_account_value_bar_chart'
+        temp_filename = 'temp_account_value_line_chart'
+        unique_prefix = f'{symbol}_account_value_line_chart'
 
         # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)

@@ -28,6 +28,7 @@ class FolderResultsTable(QWidget):
         self.table = QTableWidget()
         self.table.setRowCount(len(strategies))
         self.table.setColumnCount(7)
+        self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table.setHorizontalHeaderLabels(self.TABLE_HEADERS)
         self.table.verticalHeader().setVisible(False)
         self.layout.addWidget(self.table)

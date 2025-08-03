@@ -536,9 +536,9 @@ class Simulator:
                     ChartingEngine.build_rules_bar_chart(self.__single_simulation_position_archive, SELL_SIDE, symbol,
                                                          save_option))
 
-                self.gui_terminal_log.info('Building account value bar chart...')
+                self.gui_terminal_log.info('Building account value line chart...')
                 account_value_bar_chart_filepath = (
-                    SingularChartingEngine.build_account_value_bar_chart(chopped_temp_df, symbol, save_option))
+                    SingularChartingEngine.build_account_value_line_chart(chopped_temp_df, symbol, save_option))
 
                 self.gui_terminal_log.info('Building positions duration bar chart...')
                 positions_duration_bar_chart_filepath = (

@@ -51,7 +51,7 @@ class ChartingEngine:
         # rule counts chart
         fig.add_trace(ChartingEngine.rule_count_bar(positions, side), 1, 1)
 
-        # rule plpc stats chart (overlayed charts)
+        # rule plpc stats chart (overlaid charts)
         rule_stats_traces = ChartingEngine.rule_stats_traces(positions, side)
         fig.add_trace(rule_stats_traces[0], 2, 1)
         fig.add_trace(rule_stats_traces[1], 2, 1)
@@ -97,13 +97,14 @@ class ChartingEngine:
         # positions analysis traces
         position_analysis_traces = ChartingEngine.positions_duration_bar(positions)
 
-        # position analysis chart (overlayed traces)
+        # position analysis chart (overlaid traces)
         fig.add_trace(position_analysis_traces[0], 1, 1)
         fig.add_trace(position_analysis_traces[1], 1, 1)
         fig.add_trace(position_analysis_traces[2], 1, 1)
 
         # set the layout
-        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, xaxis_title='Position',
+                          yaxis_title='Duration (days)')
 
         # format the chart (remove plotly white border)
         formatted_fig = ChartingEngine.format_chart(fig)
@@ -142,13 +143,14 @@ class ChartingEngine:
         # positions analysis traces
         position_analysis_traces = ChartingEngine.positions_total_pl_bar(positions)
 
-        # position analysis chart (overlayed traces)
+        # position analysis chart (overlaid traces)
         fig.add_trace(position_analysis_traces[0], 1, 1)
         fig.add_trace(position_analysis_traces[1], 1, 1)
         fig.add_trace(position_analysis_traces[2], 1, 1)
 
         # set the layout
-        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, xaxis_title='Position',
+                          yaxis_title='Profit/Loss ($)')
 
         # format the chart (remove plotly white border)
         formatted_fig = ChartingEngine.format_chart(fig)

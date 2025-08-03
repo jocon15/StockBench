@@ -74,7 +74,8 @@ class SingularChartingEngine(ChartingEngine):
         fig.add_hline(y=df['Account Value'][0], line_width=1, line_dash="dash", line_color='white')
 
         # set the layout
-        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
+        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, xaxis_title='Simulation Day',
+                          yaxis_title='Value ($)')
 
         # format the chart (remove plotly white border)
         formatted_fig = ChartingEngine.format_chart(fig)

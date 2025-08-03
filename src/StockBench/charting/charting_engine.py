@@ -298,8 +298,8 @@ class ChartingEngine:
 
         # build and return chart
         return [plotter.Bar(y=df['duration'], name='Duration'),
-                plotter.Scatter(y=mean_values, marker=dict(color=MED_COLOR), name='Mean'),
-                plotter.Scatter(y=median_values, marker=dict(color=STDDEV_COLOR), name='Median')]
+                plotter.Scatter(y=mean_values, marker=dict(color=MED_COLOR), name='Mean', mode='lines'),
+                plotter.Scatter(y=median_values, marker=dict(color=STDDEV_COLOR), name='Median', mode='lines')]
 
     @staticmethod
     def positions_total_pl_bar(positions):
@@ -322,8 +322,8 @@ class ChartingEngine:
 
         # build and return chart
         return [plotter.Bar(y=df['total_pl'], marker_color=df['color'], name='Profit/Loss'),
-                plotter.Scatter(y=mean_values, marker=dict(color=MED_COLOR), name='Mean'),
-                plotter.Scatter(y=median_values, marker=dict(color=STDDEV_COLOR), name='Median')]
+                plotter.Scatter(y=mean_values, marker=dict(color=MED_COLOR), name='Mean', mode='lines'),
+                plotter.Scatter(y=median_values, marker=dict(color=STDDEV_COLOR), name='Median', mode='lines')]
 
     @staticmethod
     def _build_multi_dataset_histogram(strategy_names: list, positions_data: list, title: str):

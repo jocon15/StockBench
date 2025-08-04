@@ -396,7 +396,7 @@ class ChartingEngine:
     @staticmethod
     def __get_rule_from_side(position, side):
         """Returns the correct rule used to algorithm a position based on side."""
-        if side == 'buy':
+        if side == BUY_SIDE:
             return position.get_buy_rule()
         else:
             return position.get_sell_rule()

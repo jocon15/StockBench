@@ -1,3 +1,4 @@
+from StockBench.constants import BUY_SIDE, SELL_SIDE
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.multi.tabs.multi_rules_tab import MultiRulesTab
 from StockBench.gui.results.multi.tabs.multi_overview_tab import MultiOverviewTab
@@ -21,8 +22,8 @@ class MultiResultsWindow(SimulationResultsWindow):
         # simulation results frame (gets added to layout via tab widget)
         self.overview_tab = MultiOverviewTab(self.progress_observer)
         # buy and sell rules analysis tabs (gets added to layout via tab widget)
-        self.buy_rules_tab = MultiRulesTab('buy')
-        self.sell_rules_tab = MultiRulesTab('sell')
+        self.buy_rules_tab = MultiRulesTab(BUY_SIDE)
+        self.sell_rules_tab = MultiRulesTab(SELL_SIDE)
         # positions analysis tab (gets added to layout via tab widget)
         self.positions_duration_bar_tab = PositionsDurationTabVertical()
         self.positions_profit_loss_bar_tab = PositionsProfitLossTabVertical()

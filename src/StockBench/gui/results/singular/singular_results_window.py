@@ -1,3 +1,4 @@
+from StockBench.constants import BUY_SIDE, SELL_SIDE
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.singular.tabs.singular_overview_tab import SingularOverviewTab
 from StockBench.gui.results.singular.tabs.singular_rules_tab import SingularRulesTab
@@ -22,8 +23,8 @@ class SingularResultsWindow(SimulationResultsWindow):
         # simulation results frame (gets added to layout via tab widget
         self.overview_tab = SingularOverviewTab(self.progress_observer)
         # buy and sell rules analysis tabs (gets added to layout via tab widget)
-        self.buy_rules_tab = SingularRulesTab('buy')
-        self.sell_rules_tab = SingularRulesTab('sell')
+        self.buy_rules_tab = SingularRulesTab(BUY_SIDE)
+        self.sell_rules_tab = SingularRulesTab(SELL_SIDE)
         # positions analysis tab (gets added to layout via tab widget)
         self.account_value_bar_tab = SingularAccountValueTabVertical()
         self.positions_duration_bar_tab = PositionsDurationTabVertical()

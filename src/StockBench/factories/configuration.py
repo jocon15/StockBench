@@ -28,7 +28,7 @@ class ApplicationConfigurationFactory:
             try:
                 version_number = version.split(':')[1].strip()
                 return AppConfiguration(version_number)
-            except:
+            except:  # noqa
                 # if there are any issues with the version parsing, just pass and mark unversioned
                 pass
 

@@ -1,6 +1,5 @@
 import os
 import sys
-import time
 import math
 import logging
 
@@ -698,13 +697,3 @@ class Simulator:
     def __unix_to_string(timestamp: int, date_format: str = '%m-%d-%Y') -> str:
         """Convert a unix date to a string of custom format."""
         return datetime.fromtimestamp(timestamp).strftime(date_format)
-
-    @staticmethod
-    def __validate_timestamps(start_timestamp: int, end_timestamp: int) -> None:
-        """Validate simulation timestamps."""
-        if start_timestamp > end_timestamp:
-            log.critical('Start timestamp must be before end timestamp')
-            raise Exception('Start timestamp must be before end timestamp')
-        if start_timestamp > int(time.time()):
-            log.critical('Start timestamp must not be in the future')
-            raise Exception('Start timestamp must not be in the future')

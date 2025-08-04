@@ -36,7 +36,8 @@ log = logging.getLogger()
 
 
 class Simulator:
-    """
+    """Encapsulates the simulation engine.
+
     Breakdown of the simulation data compared to the simulation window:
 
     ------------ - Additional days needed for accurate indicators at simulation start (algorithm defined)

@@ -427,7 +427,7 @@ class Simulator:
         """Creates a position and updates the account.
 
         Notes:
-            The assumption is that the user wants to use full buying power (for now)
+            The assumption is that the user wants to use full buying power (for now).
         """
         log.info('Creating the position...')
 

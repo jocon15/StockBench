@@ -31,4 +31,4 @@ class MultiMetadataSidebarTable(SidebarResultsTable):
         if simulation_results.keys():
             self.strategy_data_label.setText(f'{simulation_results["strategy"]}')
             self.trade_able_days_data_label.setText(f'{simulation_results["trade_able_days"]} days')
-            self.elapsed_time_data_label.setText(f'{simulation_results["elapsed_time"]} seconds')
+            self.elapsed_time_data_label.setText(f'{simulation_results["elapsed_time"]:,.2f} seconds')

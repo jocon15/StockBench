@@ -6,8 +6,8 @@ from StockBench.constants import *
 
 
 class FolderResultsTable(QWidget):
-    TABLE_HEADERS = ['Strategy', 'Trades Made', 'Effectiveness', 'Total P/L', 'Average P/L', 'Median P/L',
-                     'Stddev(P) P/L']
+    TABLE_HEADERS = ['Strategy', 'Trades Made', 'Effectiveness (%)', 'Total P/L ($)', 'Average P/L ($)',
+                     'Median P/L ($)', 'Stddev (P) P/L ($)']
 
     CELL_TEXT_COLOR = QColor(255, 255, 255)
 
@@ -39,13 +39,13 @@ class FolderResultsTable(QWidget):
         results = simulation_results['results']
 
         for row, result in enumerate(results):
-            strategy_cell = QTableWidgetItem(str(result[STRATEGY_KEY]))
-            trades_made_cell = QTableWidgetItem(str(result[TRADES_MADE_KEY]))
-            effectiveness_cell = QTableWidgetItem(str(result[EFFECTIVENESS_KEY]))
-            total_pl_cell = QTableWidgetItem(str(result[TOTAL_PROFIT_LOSS_KEY]))
-            avg_pl_cell = QTableWidgetItem(str(result[AVERAGE_PROFIT_LOSS_KEY]))
-            median_pl_cell = QTableWidgetItem(str(result[MEDIAN_PROFIT_LOSS_KEY]))
-            stddev_pl_cell = QTableWidgetItem(str(result[STANDARD_PROFIT_LOSS_DEVIATION_KEY]))
+            strategy_cell = QTableWidgetItem(f'{result[STRATEGY_KEY]}')
+            trades_made_cell = QTableWidgetItem(f'{result[TRADES_MADE_KEY]}')
+            effectiveness_cell = QTableWidgetItem(f'{result[EFFECTIVENESS_KEY]:,.2f}')
+            total_pl_cell = QTableWidgetItem(f'{result[TOTAL_PROFIT_LOSS_KEY]:,.2f}')
+            avg_pl_cell = QTableWidgetItem(f'{result[AVERAGE_PROFIT_LOSS_KEY]:,.2f}')
+            median_pl_cell = QTableWidgetItem(f'{result[MEDIAN_PROFIT_LOSS_KEY]:,.2f}')
+            stddev_pl_cell = QTableWidgetItem(f'{result[STANDARD_PROFIT_LOSS_DEVIATION_KEY]:,.2f}')
 
             strategy_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
             trades_made_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))

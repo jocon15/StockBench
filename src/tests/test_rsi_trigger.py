@@ -718,6 +718,7 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
 def test_check_trigger_value_error(data_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 90
+    numeric_mocker.return_value = None
 
     # ============= Act ==================
 

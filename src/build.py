@@ -12,8 +12,10 @@ def main():
     if '-d' in sys.argv:
         print('Building debug app...')
         DIST_PATH = os.path.join(os.getcwd(), 'dist', 'debug')
+        build_suffix = 'd'
     else:
         DIST_PATH = os.path.join(os.getcwd(), 'dist', 'release')
+        build_suffix = 'r'
     DIST_RESOURCES = os.path.join(DIST_PATH, 'resources')
 
     print('Extracting branch version...')
@@ -61,7 +63,7 @@ def main():
 
     print('Zipping release...')
 
-    zip_base_filepath = os.path.join(ZIP_PLACEMENT_PATH, f'StochBench{version}')
+    zip_base_filepath = os.path.join(ZIP_PLACEMENT_PATH, f'StochBench{version}{build_suffix}')
     zip_type = 'zip'
 
     shutil.make_archive(zip_base_filepath, zip_type, DIST_PATH)

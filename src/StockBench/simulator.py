@@ -672,7 +672,7 @@ class Simulator:
         log.info('====== Simulation Results ======')
         log.info(f'Elapsed Time  : {elapsed_time} seconds')
         log.info(f'Trades Made   : {analyzer.total_trades()}')
-        log.info(f'Effectiveness : {analyzer.effectiveness()}%')
+        log.info(f'Effectiveness : {analyzer.effectiveness()} %')
         log.info(f'Total P/L     : $ {analyzer.total_profit_loss()}')
         log.info(f'Average P/L   : $ {analyzer.average_profit_loss()}')
         log.info(f'Median P/L    : $ {analyzer.median_profit_loss()}')

@@ -235,8 +235,8 @@ class ConfigTab(QWidget):
 
         # inject the unix equivalent dates from the combobox to the dict
         strategy['strategy_filepath'] = filepath
-        strategy['start'] = int(time.time()) - self.simulation_length
-        strategy['end'] = int(time.time())
+        strategy[START_KEY] = int(time.time()) - self.simulation_length
+        strategy[END_KEY] = int(time.time())
 
         return strategy
 

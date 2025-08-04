@@ -138,7 +138,7 @@ class Simulator:
 
     def run(self, symbol: str, results_depth: int = CHARTS_AND_DATA,
             save_option: int = ChartingEngine.TEMP_SAVE, show_volume: bool = False, progress_observer=None) -> dict:
-        """Run a simulation on an asset."""
+        """Run a simulation on a single asset."""
         start_time = perf_counter()
 
         # broker only excepts capitalized symbols
@@ -175,7 +175,7 @@ class Simulator:
                      results_depth: int = CHARTS_AND_DATA,
                      save_option: int = ChartingEngine.TEMP_SAVE,
                      progress_observer: Optional[ProgressObserver] = None) -> dict:
-        """Simulate a list of assets."""
+        """Run a simulation on multiple assets."""
         start_time = perf_counter()
 
         if progress_observer:

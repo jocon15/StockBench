@@ -685,7 +685,7 @@ class Simulator:
         print('====== Simulation Results ======')
         print(f'Elapsed Time  : {elapsed_time} seconds')
         print(f'Trades Made   : {analyzer.total_trades()}')
-        print(f'Effectiveness : {analyzer.effectiveness()}%')
+        print(f'Effectiveness : {analyzer.effectiveness()} %')
         print(f'Total P/L     : $ {analyzer.total_profit_loss()}')
         print(f'Average P/L   : $ {analyzer.average_profit_loss()}')
         print(f'Median P/L    : $ {analyzer.median_profit_loss()}')

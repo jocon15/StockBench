@@ -2,6 +2,8 @@ import logging
 import traceback
 from abc import abstractmethod
 
+import requests.exceptions
+
 from StockBench.broker.broker_client import InvalidSymbolError, InsufficientDataError, MissingCredentialError
 from StockBench.charting.charting_engine import ChartingEngine
 from PyQt6.QtWidgets import QWidget, QProgressBar, QTabWidget, QVBoxLayout
@@ -117,6 +119,8 @@ class SimulationResultsWindow(QWidget):
         # run the simulation and catch any errors - keep the app from crashing even if the sim fails
         try:
             return self._run_simulation(save_option)
+        except requests.exceptions.ConnectionError:
+            message = 'Failed to connect to broker!'
         except MalformedStrategyError as e:
             message = f'Malformed strategy error: {e}'
         except StrategyIndicatorError as e:

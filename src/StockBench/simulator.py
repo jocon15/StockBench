@@ -356,7 +356,7 @@ class Simulator:
             ACCOUNT_VALUE_BAR_CHART_FILEPATH: chart_paths_bundle.account_value_bar_chart_filepath,
             POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: chart_paths_bundle.positions_duration_bar_chart_filepath,
             POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_bar_chart_filepath,
-            POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_histogram_chart_filepath
+            POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_histogram_chart_filepath  # noqa
         }
 
     def __multi_pre_process(self, symbols: List[str], progress_observer: ProgressObserver) -> float:
@@ -414,7 +414,7 @@ class Simulator:
             SELL_RULES_CHART_FILEPATH_KEY: chart_paths_bundle.sell_rules_chart_filepath,
             POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: chart_paths_bundle.positions_duration_bar_chart_filepath,
             POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_bar_chart_filepath,
-            POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_histogram_chart_filepath
+            POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_histogram_chart_filepath  # noqa
         }
 
     def __reset_singular_attributes(self):

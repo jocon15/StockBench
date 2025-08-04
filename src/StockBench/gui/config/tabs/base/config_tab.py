@@ -40,7 +40,7 @@ def CaptureConfigErrors(original_fxn: Callable):
 
 
 class ConfigTab(QWidget):
-
+    """Abstract base class for a configuration tab."""
     ON = 'ON'
     OFF = 'OFF'
 

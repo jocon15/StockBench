@@ -70,7 +70,7 @@ class SingularConfigTab(ConfigTab):
         self.show_volume_btn = QPushButton()
         self.show_volume_btn.setCheckable(True)
         self.show_volume_btn.setChecked(True)
-        self.show_volume_btn.setText('On')
+        self.show_volume_btn.setText(self.ON)
         self.show_volume_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         self.show_volume_btn.clicked.connect(self.on_show_volume_btn_clicked)  # noqa
         self.layout.addWidget(self.show_volume_btn)
@@ -90,11 +90,11 @@ class SingularConfigTab(ConfigTab):
     def on_show_volume_btn_clicked(self):
         if self.show_volume_btn.isChecked():
             self.show_volume = True
-            self.show_volume_btn.setText('ON')
+            self.show_volume_btn.setText(self.ON)
             self.show_volume_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
             self.show_volume = False
-            self.show_volume_btn.setText('OFF')
+            self.show_volume_btn.setText(self.OFF)
             self.show_volume_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     @CaptureConfigErrors

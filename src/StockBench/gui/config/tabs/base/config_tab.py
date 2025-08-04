@@ -41,6 +41,9 @@ def CaptureConfigErrors(original_fxn: Callable):
 
 class ConfigTab(QWidget):
 
+    ON = 'ON'
+    OFF = 'OFF'
+
     DEFAULT_CACHE_KEY = 'cached_strategy_filepath'
 
     def __init__(self):
@@ -94,7 +97,7 @@ class ConfigTab(QWidget):
         # logging button
         self.logging_btn = QPushButton()
         self.logging_btn.setCheckable(True)
-        self.logging_btn.setText('OFF')
+        self.logging_btn.setText(self.OFF)
         self.logging_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
         self.logging_btn.clicked.connect(self.on_logging_btn_clicked)  # noqa
 
@@ -105,7 +108,7 @@ class ConfigTab(QWidget):
         # reporting button
         self.reporting_btn = QPushButton()
         self.reporting_btn.setCheckable(True)
-        self.reporting_btn.setText('OFF')
+        self.reporting_btn.setText(self.OFF)
         self.reporting_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
         self.reporting_btn.clicked.connect(self.on_reporting_btn_clicked)  # noqa
 
@@ -116,7 +119,7 @@ class ConfigTab(QWidget):
 
         self.unique_chart_save_btn = QPushButton()
         self.unique_chart_save_btn.setCheckable(True)
-        self.unique_chart_save_btn.setText('OFF')
+        self.unique_chart_save_btn.setText(self.OFF)
         self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
         self.unique_chart_save_btn.clicked.connect(self.on_chart_saving_btn_clicked)  # noqa
 
@@ -176,31 +179,31 @@ class ConfigTab(QWidget):
     def on_logging_btn_clicked(self):
         if self.logging_btn.isChecked():
             self.simulation_logging = True
-            self.logging_btn.setText('ON')
+            self.logging_btn.setText(self.ON)
             self.logging_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
             self.simulation_logging = False
-            self.logging_btn.setText('OFF')
+            self.logging_btn.setText(self.OFF)
             self.logging_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def on_reporting_btn_clicked(self):
         if self.reporting_btn.isChecked():
             self.simulation_reporting = True
-            self.reporting_btn.setText('ON')
+            self.reporting_btn.setText(self.ON)
             self.reporting_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
             self.simulation_reporting = False
-            self.reporting_btn.setText('OFF')
+            self.reporting_btn.setText(self.OFF)
             self.reporting_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def on_chart_saving_btn_clicked(self):
         if self.unique_chart_save_btn.isChecked():
             self.simulation_unique_chart_saving = True
-            self.unique_chart_save_btn.setText('ON')
+            self.unique_chart_save_btn.setText(self.ON)
             self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
             self.simulation_unique_chart_saving = False
-            self.unique_chart_save_btn.setText('OFF')
+            self.unique_chart_save_btn.setText(self.OFF)
             self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     def data_and_charts_btn_selected(self, selected):

@@ -26,8 +26,6 @@ class FolderOverviewSidebar(OverviewSideBar):
         self.metadata_table = MultiMetadataSidebarTable()
         self.layout.addWidget(self.metadata_table)
 
-        self.layout.addWidget(self.results_header)
-
         self.layout.addWidget(self.export_json_btn)
 
         self.folder_selection = FolderSelector()

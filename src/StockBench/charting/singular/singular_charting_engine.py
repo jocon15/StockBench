@@ -158,7 +158,7 @@ class SingularChartingEngine(ChartingEngine):
 
     @staticmethod
     def __update_layout(df: DataFrame, symbol: str, fig: Figure, save_option: int) -> Figure:
-        # update the layout
+        """Update the layout with our custom format."""
         window_size = len(df[SingularChartingEngine.CLOSE_COLUMN])
         if save_option != ChartingEngine.TEMP_SAVE:
             # non-temp save should show the simulation metadata in the title (uses DEFAULT margin)
@@ -184,26 +184,23 @@ class SingularChartingEngine(ChartingEngine):
 
     @staticmethod
     def __find_ohlc_indicator(available_indicators: List[IndicatorInterface]):
-        """"""
-        # find the OHLC indicator
+        """Locates the OHLC indicator."""
         ohlc_indicator = None
         for indicator in available_indicators:
             indicator_subplot = indicator.get_subplot()
             if indicator_subplot is not None:
                 try:
                     if indicator_subplot.get_type()[0]['type'] == 'ohlc':
-                        ohlc_indicator = indicator
-                        break
+                        return indicator
                 except (KeyError, TypeError):
                     continue
 
         if not ohlc_indicator:
             raise ChartingError('No OHLC indicator found, cannot chart!')
 
-        return ohlc_indicator
-
     @staticmethod
     def __remove_volume_subplot(subplot_objects: List[Subplot], subplot_types: List[List]) -> tuple:
+        """Removes the volume subplot from the subplots."""
         for index, subplot in enumerate(subplot_objects):
             if type(subplot) is VolumeSubplot:
                 # remove the volume subplot and the volume subplot type

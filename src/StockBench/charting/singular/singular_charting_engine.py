@@ -75,7 +75,7 @@ class SingularChartingEngine(ChartingEngine):
 
         # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, xaxis_title='Simulation Day',
-                          yaxis_title='Value ($)')
+                          yaxis_title='Account Value ($)')
 
         # format the chart (remove plotly white border)
         formatted_fig = ChartingEngine.format_chart(fig)

@@ -39,7 +39,7 @@ class ChartingEngine:
         chart_list = [[{"type": "bar"}], [{"type": "bar"}]]
         chart_titles = (f'{side_title} Count per Rule', f'Position Profit/Loss % Analytics per {side_title} Rule')
 
-        # Parent Plot
+        # parent plot
         fig = make_subplots(rows=rows,
                             cols=cols,
                             shared_xaxes=True,
@@ -85,7 +85,7 @@ class ChartingEngine:
         chart_list = [[{"type": "bar"}]]
         chart_titles = ('Duration per Position',)
 
-        # Parent Plot
+        # parent plot
         fig = make_subplots(rows=rows,
                             cols=cols,
                             shared_xaxes=True,
@@ -131,7 +131,7 @@ class ChartingEngine:
         chart_list = [[{"type": "bar"}]]
         chart_titles = ('Total Profit/Loss per Position',)
 
-        # Parent Plot
+        # parent plot
         fig = make_subplots(rows=rows,
                             cols=cols,
                             shared_xaxes=True,

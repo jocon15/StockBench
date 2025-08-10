@@ -552,7 +552,7 @@ class Simulator:
 
                 self.gui_status_log.info('Building positions profit loss histogram chart...')
                 positions_profit_loss_histogram_chart_filepath = (
-                    ChartingEngine.build_positions_profit_loss_histogram_chart(
+                    ChartingEngine.build_positions_profit_loss_percent_histogram_chart(
                         self.__single_simulation_position_archive, self.__algorithm.strategy_filename, symbol,
                         save_option))
 
@@ -595,7 +595,7 @@ class Simulator:
                                           self.__single_simulation_position_archive, None, save_option)
 
                 self.gui_status_log.info('Building positions profit loss histogram chart...')
-                future6 = executor.submit(ChartingEngine.build_positions_profit_loss_histogram_chart,
+                future6 = executor.submit(ChartingEngine.build_positions_profit_loss_percent_histogram_chart,
                                           self.__single_simulation_position_archive, self.__algorithm.strategy_filename,
                                           None, save_option)
 

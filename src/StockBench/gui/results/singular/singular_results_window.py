@@ -28,16 +28,16 @@ class SingularResultsWindow(SimulationResultsWindow):
         # positions analysis tab (gets added to layout via tab widget)
         self.account_value_bar_tab = SingularAccountValueTabVertical()
         self.positions_duration_bar_tab = PositionsDurationTabVertical()
-        self.positions_profit_loss_bar_tab = PositionsProfitLossTabVertical()
-        self.positions_profit_loss_histogram_tab = PositionsHistogramTabVertical()
+        self.positions_pl_bar_tab = PositionsProfitLossTabVertical()
+        self.positions_plpc_histogram_tab = PositionsHistogramTabVertical()
         # tab widget
         self.tab_widget.addTab(self.overview_tab, 'Overview')
         self.tab_widget.addTab(self.buy_rules_tab, 'Buy Rules')
         self.tab_widget.addTab(self.sell_rules_tab, 'Sell Rules')
         self.tab_widget.addTab(self.account_value_bar_tab, 'Account Value')
         self.tab_widget.addTab(self.positions_duration_bar_tab, 'Positions Duration (bar)')
-        self.tab_widget.addTab(self.positions_profit_loss_bar_tab, 'Positions P/L (bar)')
-        self.tab_widget.addTab(self.positions_profit_loss_histogram_tab, 'Positions P/L (histogram)')
+        self.tab_widget.addTab(self.positions_pl_bar_tab, 'Positions P/L (bar)')
+        self.tab_widget.addTab(self.positions_plpc_histogram_tab, 'Positions P/L % (histogram)')
         self.layout.addWidget(self.tab_widget)
 
         # apply the layout to the window
@@ -57,8 +57,8 @@ class SingularResultsWindow(SimulationResultsWindow):
             self.sell_rules_tab.render_chart(simulation_results)
             self.account_value_bar_tab.render_chart(simulation_results)
             self.positions_duration_bar_tab.render_chart(simulation_results)
-            self.positions_profit_loss_bar_tab.render_chart(simulation_results)
-            self.positions_profit_loss_histogram_tab.render_chart(simulation_results)
+            self.positions_pl_bar_tab.render_chart(simulation_results)
+            self.positions_plpc_histogram_tab.render_chart(simulation_results)
         else:
             # the simulation failed - render the chart unavailable html
             self.overview_tab.html_viewer.render_chart_unavailable()
@@ -66,5 +66,5 @@ class SingularResultsWindow(SimulationResultsWindow):
             self.sell_rules_tab.html_viewer.render_chart_unavailable()
             self.account_value_bar_tab.html_viewer.render_chart_unavailable()
             self.positions_duration_bar_tab.html_viewer.render_chart_unavailable()
-            self.positions_profit_loss_bar_tab.html_viewer.render_chart_unavailable()
-            self.positions_profit_loss_histogram_tab.html_viewer.render_chart_unavailable()
+            self.positions_pl_bar_tab.html_viewer.render_chart_unavailable()
+            self.positions_plpc_histogram_tab.html_viewer.render_chart_unavailable()

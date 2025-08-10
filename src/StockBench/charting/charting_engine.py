@@ -165,8 +165,8 @@ class ChartingEngine:
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
 
     @staticmethod
-    def build_positions_profit_loss_histogram_chart(positions: list, strategy_name: str, symbol: Optional[str],
-                                                    save_option=TEMP_SAVE) -> str:
+    def build_positions_profit_loss_percent_histogram_chart(positions: list, strategy_name: str, symbol: Optional[str],
+                                                            save_option=TEMP_SAVE) -> str:
         """Build a chart for positions histogram.
 
         return:
@@ -182,7 +182,7 @@ class ChartingEngine:
         positions_data.append(data_list)
 
         formatted_fig = ChartingEngine._build_multi_dataset_histogram(strategy_names, positions_data,
-                                                                      'Position Profit/Loss Distribution')
+                                                                      'Position Profit/Loss Percent Distribution')
 
         temp_filename = 'temp_positions_profit_loss_histogram_chart'
         if symbol:
@@ -249,6 +249,7 @@ class ChartingEngine:
         return plotter.Bar(
             x=df['Rule'],
             y=df['Count'],
+            width=0.2,
             marker=dict(color=OFF_BLUE), name='Count')
 
     @staticmethod
@@ -274,9 +275,9 @@ class ChartingEngine:
         df['Stddev'] = stddev_list
 
         # build and return traces
-        return [plotter.Bar(x=df['Rule'], y=df['Avg'], marker=dict(color=AVG_COLOR), name='Mean'),
-                plotter.Bar(x=df['Rule'], y=df['Med'], marker=dict(color=MED_COLOR), name='Median'),
-                plotter.Bar(x=df['Rule'], y=df['Stddev'], marker=dict(color=STDDEV_COLOR), name='Stddev')]
+        return [plotter.Bar(x=df['Rule'], y=df['Avg'], width=0.2, marker=dict(color=AVG_COLOR), name='Mean'),
+                plotter.Bar(x=df['Rule'], y=df['Med'], width=0.2, marker=dict(color=MED_COLOR), name='Median'),
+                plotter.Bar(x=df['Rule'], y=df['Stddev'], width=0.2, marker=dict(color=STDDEV_COLOR), name='Stddev')]
 
     @staticmethod
     def positions_duration_bar(positions):

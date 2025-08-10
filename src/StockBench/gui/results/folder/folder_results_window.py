@@ -39,7 +39,7 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.average_pl_tab = FolderAverageProfitLossTabVertical()
         self.median_pl_tab = FolderMedianProfitLossTabVertical()
         self.stddev_pl_tab = FolderStandardDeviationProfitLossTabVertical()
-        self.positions_histogram_tab = FolderPositionsHistogramTabVertical()
+        self.positions_plpc_histogram_tab = FolderPositionsHistogramTabVertical()
 
         # tab widget
         self.tab_widget.addTab(self.overview_tab, 'Overview')
@@ -49,7 +49,7 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.tab_widget.addTab(self.average_pl_tab, 'Average P/L')
         self.tab_widget.addTab(self.median_pl_tab, 'Median P/L')
         self.tab_widget.addTab(self.stddev_pl_tab, 'Stddev P/L')
-        self.tab_widget.addTab(self.positions_histogram_tab, 'Positions P/L (histogram)')
+        self.tab_widget.addTab(self.positions_plpc_histogram_tab, 'Positions P/L % (histogram)')
         self.layout.addWidget(self.tab_widget)
 
         # error message
@@ -112,7 +112,7 @@ class FolderResultsWindow(SimulationResultsWindow):
             self.average_pl_tab.render_chart(simulation_results)
             self.median_pl_tab.render_chart(simulation_results)
             self.stddev_pl_tab.render_chart(simulation_results)
-            self.positions_histogram_tab.render_chart(simulation_results)
+            self.positions_plpc_histogram_tab.render_chart(simulation_results)
         else:
             # the simulation failed - render the chart unavailable html
             self.overview_tab.html_viewer.render_chart_unavailable()
@@ -122,7 +122,7 @@ class FolderResultsWindow(SimulationResultsWindow):
             self.average_pl_tab.html_viewer.render_chart_unavailable()
             self.median_pl_tab.html_viewer.render_chart_unavailable()
             self.stddev_pl_tab.html_viewer.render_chart_unavailable()
-            self.positions_histogram_tab.html_viewer.render_chart_unavailable()
+            self.positions_plpc_histogram_tab.html_viewer.render_chart_unavailable()
 
     @staticmethod
     def _get_strategy_name(filepath: str):

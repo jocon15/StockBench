@@ -150,8 +150,8 @@ class FolderChartingEngine(ChartingEngine):
                 data_list.append(position.lifetime_profit_loss())
             positions_data.append(data_list)
 
-        formatted_fig = ChartingEngine._build_multi_dataset_histogram(strategy_names, positions_data,
-                                                                      'Position Profit/Loss Distribution per Strategy')
+        formatted_fig = ChartingEngine._build_multi_dataset_histogram(
+            strategy_names, positions_data, 'Position Profit/Loss % Distribution per Strategy')
 
         # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,

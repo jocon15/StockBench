@@ -157,7 +157,7 @@ class SingularChartingEngine(ChartingEngine):
         return fig
 
     @staticmethod
-    def __update_layout(df: DataFrame, symbol: str, fig: Figure, save_option: int) -> Figure:
+    def __update_layout(df: DataFrame, symbol: str, fig: Figure, save_option: int) -> str:
         """Update the layout with our custom format."""
         window_size = len(df[SingularChartingEngine.CLOSE_COLUMN])
         if save_option != ChartingEngine.TEMP_SAVE:

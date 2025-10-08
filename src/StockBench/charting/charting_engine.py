@@ -2,15 +2,17 @@ import os
 import statistics
 import numpy as np
 import pandas as pd
-from typing import Optional
+from typing import Optional, List, Union
 import plotly.offline as offline
 import plotly.graph_objects as plotter
+from plotly.graph_objs import Bar, Scatter, Figure
 from plotly.subplots import make_subplots
 from plotly.figure_factory import create_distplot
 
 from StockBench.charting.display_constants import *
 from StockBench.function_tools.timestamp import datetime_timestamp
 from StockBench.constants import *
+from StockBench.position.position import Position
 
 
 class ChartingEngine:
@@ -25,12 +27,8 @@ class ChartingEngine:
     PLOTLY_CHART_MARGIN_RIGHT = 100
 
     @staticmethod
-    def build_rules_bar_chart(positions: list, side: str, symbol: Optional[str], save_option=TEMP_SAVE) -> str:
-        """Builds a multi-chart for an analysis of rules of a given side.
-
-        return:
-            str: The filepath of the built chart.
-        """
+    def build_rules_bar_chart(positions: list, side: str, symbol: Optional[str], save_option: int = TEMP_SAVE) -> str:
+        """Builds a subplot chart for rule analysis of a given side."""
         rows = 2
         cols = 1
 
@@ -39,7 +37,6 @@ class ChartingEngine:
         chart_list = [[{"type": "bar"}], [{"type": "bar"}]]
         chart_titles = (f'{side_title} Count per Rule', f'Position Profit/Loss % Analytics per {side_title} Rule')
 
-        # parent plot
         fig = make_subplots(rows=rows,
                             cols=cols,
                             shared_xaxes=True,
@@ -48,16 +45,13 @@ class ChartingEngine:
                             specs=chart_list,
                             subplot_titles=chart_titles)
 
-        # rule counts chart
-        fig.add_trace(ChartingEngine.rule_count_bar(positions, side), 1, 1)
+        fig.add_trace(ChartingEngine._build_rule_count_bar_trace(positions, side), 1, 1)
 
-        # rule plpc stats chart (overlaid charts)
-        rule_stats_traces = ChartingEngine.rule_stats_traces(positions, side)
+        rule_stats_traces = ChartingEngine._build_rule_stats_traces(positions, side)
         fig.add_trace(rule_stats_traces[0], 2, 1)
         fig.add_trace(rule_stats_traces[1], 2, 1)
         fig.add_trace(rule_stats_traces[2], 2, 1)
 
-        # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
 
         # format the chart (remove plotly white border)
@@ -69,23 +63,17 @@ class ChartingEngine:
         else:
             unique_prefix = f'multi_{side}_rules_bar_chart'
 
-        # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
 
     @staticmethod
-    def build_positions_duration_bar_chart(positions: list, symbol: Optional[str], save_option=TEMP_SAVE) -> str:
-        """Builds a chart for duration of positions.
-
-        return:
-            str: The filepath of the built chart.
-        """
+    def build_positions_duration_bar_chart(positions: list, symbol: Optional[str], save_option: int = TEMP_SAVE) -> str:
+        """Builds a bar chart for position duration analysis."""
         rows = 1
         cols = 1
 
         chart_list = [[{"type": "bar"}]]
         chart_titles = ('Duration per Position',)
 
-        # parent plot
         fig = make_subplots(rows=rows,
                             cols=cols,
                             shared_xaxes=True,
@@ -94,15 +82,11 @@ class ChartingEngine:
                             specs=chart_list,
                             subplot_titles=chart_titles)
 
-        # positions analysis traces
-        position_analysis_traces = ChartingEngine.positions_duration_bar(positions)
-
-        # position analysis chart (overlaid traces)
+        position_analysis_traces = ChartingEngine._build_positions_duration_bar_traces(positions)
         fig.add_trace(position_analysis_traces[0], 1, 1)
         fig.add_trace(position_analysis_traces[1], 1, 1)
         fig.add_trace(position_analysis_traces[2], 1, 1)
 
-        # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, xaxis_title='Position',
                           yaxis_title='Duration (days)')
 
@@ -115,23 +99,18 @@ class ChartingEngine:
         else:
             unique_prefix = 'multi_positions_duration_bar_chart'
 
-        # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
 
     @staticmethod
-    def build_positions_profit_loss_bar_chart(positions: list, symbol: Optional[str], save_option=TEMP_SAVE) -> str:
-        """Builds a chart for profit/loss analysis of positions.
-
-        return:
-            str: The filepath of the built chart.
-        """
+    def build_positions_profit_loss_bar_chart(positions: list, symbol: Optional[str],
+                                              save_option: int = TEMP_SAVE) -> str:
+        """Builds a bar chart for profit/loss analysis of positions."""
         rows = 1
         cols = 1
 
         chart_list = [[{"type": "bar"}]]
         chart_titles = ('Total Profit/Loss per Position',)
 
-        # parent plot
         fig = make_subplots(rows=rows,
                             cols=cols,
                             shared_xaxes=True,
@@ -140,15 +119,11 @@ class ChartingEngine:
                             specs=chart_list,
                             subplot_titles=chart_titles)
 
-        # positions analysis traces
-        position_analysis_traces = ChartingEngine.positions_total_pl_bar(positions)
-
-        # position analysis chart (overlaid traces)
+        position_analysis_traces = ChartingEngine._build_positions_total_pl_bar_traces(positions)
         fig.add_trace(position_analysis_traces[0], 1, 1)
         fig.add_trace(position_analysis_traces[1], 1, 1)
         fig.add_trace(position_analysis_traces[2], 1, 1)
 
-        # set the layout
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, xaxis_title='Position',
                           yaxis_title='Profit/Loss ($)')
 
@@ -161,25 +136,16 @@ class ChartingEngine:
         else:
             unique_prefix = 'multi_positions_profit_loss_bar_chart'
 
-        # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
 
     @staticmethod
     def build_positions_profit_loss_percent_histogram_chart(positions: list, strategy_name: str, symbol: Optional[str],
                                                             save_option=TEMP_SAVE) -> str:
-        """Build a chart for positions histogram.
-
-        return:
-            str: The filepath of the built chart.
-        """
-        # put the strategy name inside a list so we can use it in the dataset histogram
+        """Builds a histogram chart for positions profit/loss percent."""
+        # formatting a single data set inside a list in order to use the multi data set histogram builder
+        # (it will just build 1 histogram)
         strategy_names = [strategy_name]
-        positions_data = []
-
-        data_list = []
-        for position in positions:
-            data_list.append(position.lifetime_profit_loss())
-        positions_data.append(data_list)
+        positions_data = [[position.lifetime_profit_loss() for position in positions]]
 
         formatted_fig = ChartingEngine._build_multi_dataset_histogram(strategy_names, positions_data,
                                                                       'Position Profit/Loss % Distribution')
@@ -190,12 +156,11 @@ class ChartingEngine:
         else:
             unique_prefix = 'multi_positions_profit_loss_histogram_chart'
 
-        # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
 
     @staticmethod
-    def handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix) -> str:
-        """andle save options for charts"""
+    def handle_save_chart(formatted_fig: str, save_option: int, temp_filename: str, unique_prefix: str) -> str:
+        """Handles chart saving based on chart save option."""
         if save_option == ChartingEngine.TEMP_SAVE:
             # save chart as temporary file - will be overwritten by any new chart
             chart_filepath = ChartingEngine.__save_chart(formatted_fig, f'{temp_filename}.html')
@@ -209,7 +174,7 @@ class ChartingEngine:
         return chart_filepath
 
     @staticmethod
-    def format_chart(fig):
+    def format_chart(fig: Figure):
         config = dict({
             'scrollZoom': False,
             'displayModeBar': False,
@@ -229,23 +194,14 @@ class ChartingEngine:
         return formatted_fig
 
     @staticmethod
-    def rule_count_bar(positions, side):
-        """Build bar chart for the number of trades made for each buy rule."""
+    def _build_rule_count_bar_trace(positions: List[Position], side: str) -> Bar:
+        """Builds a bar trace for number of trades made for each rule."""
         stats = ChartingEngine.__get_rule_statistics(positions, side)
 
-        # extract the data from the stats dict
-        rules_list = []
-        counts_list = []
-        for key in stats.keys():
-            rules_list.append(key)
-            counts_list.append(stats[key]['count'])
-
-        # create df and add values
         df = pd.DataFrame()
-        df['Rule'] = rules_list
-        df['Count'] = counts_list
+        df['Rule'] = [key for key in stats.keys()]
+        df['Count'] = [stats[key]['count'] for key in stats.keys()]
 
-        # build and return trace
         return plotter.Bar(
             x=df['Rule'],
             y=df['Count'],
@@ -253,113 +209,81 @@ class ChartingEngine:
             marker=dict(color=OFF_BLUE), name='Count')
 
     @staticmethod
-    def rule_stats_traces(positions, side) -> list:
-        stats = ChartingEngine.__get_rule_statistics(positions, side)
+    def _build_rule_stats_traces(positions: List[Position], side: str) -> List[Bar]:
+        """Builds a list of traces for algorithm rule analysis."""
+        rule_stats = ChartingEngine.__get_rule_statistics(positions, side)
 
-        # extract the data from the stats dict
-        rules_list = []
-        avg_list = []
-        med_list = []
-        stddev_list = []
-        for key in stats.keys():
-            rules_list.append(key)
-            avg_list.append(stats[key]['average_plpc'])
-            med_list.append(stats[key]['median_plpc'])
-            stddev_list.append(stats[key]['stddev_plpc'])
-
-        # create df and add values
         df = pd.DataFrame()
-        df['Rule'] = rules_list
-        df['Avg'] = avg_list
-        df['Med'] = med_list
-        df['Stddev'] = stddev_list
+        df['Rule'] = [key for key in rule_stats.keys()]
+        df['Avg'] = [rule_stats[key]['average_plpc'] for key in rule_stats.keys()]
+        df['Med'] = [rule_stats[key]['median_plpc'] for key in rule_stats.keys()]
+        df['Stddev'] = [rule_stats[key]['stddev_plpc'] for key in rule_stats.keys()]
 
-        # build and return traces
         return [plotter.Bar(x=df['Rule'], y=df['Avg'], width=0.2, marker=dict(color=AVG_COLOR), name='Mean'),
                 plotter.Bar(x=df['Rule'], y=df['Med'], width=0.2, marker=dict(color=MED_COLOR), name='Median'),
                 plotter.Bar(x=df['Rule'], y=df['Stddev'], width=0.2, marker=dict(color=STDDEV_COLOR), name='Stddev')]
 
     @staticmethod
-    def positions_duration_bar(positions):
-        durations = []
-        for position in positions:
-            durations.append(position.duration())
+    def _build_positions_duration_bar_traces(positions: List[Position]) -> List[Union[Bar, Scatter]]:
+        """Builds a list of traces for position duration bar chart analysis."""
+        durations = [position.duration() for position in positions]
 
-        # create a df to use for total pls (so we can keep track of bar color as well
         df = pd.DataFrame()
         df['duration'] = durations
 
-        # calculate mean and median
-        mean = statistics.mean(durations)
-        median = statistics.median(durations)
+        mean_values = [statistics.mean(durations) for _ in durations]
+        median_values = [statistics.median(durations) for _ in durations]
 
-        # assemble the values into a list for plotting
-        mean_values = [mean for _ in durations]
-        median_values = [median for _ in durations]
-
-        # build and return chart
         return [plotter.Bar(y=df['duration'], name='Duration'),
                 plotter.Scatter(y=mean_values, marker=dict(color=MED_COLOR), name='Mean', mode='lines'),
                 plotter.Scatter(y=median_values, marker=dict(color=STDDEV_COLOR), name='Median', mode='lines')]
 
     @staticmethod
-    def positions_total_pl_bar(positions):
-        total_pls = []
-        for position in positions:
-            total_pls.append(position.lifetime_profit_loss())
+    def _build_positions_total_pl_bar_traces(positions: List[Position]) -> List[Union[Bar, Scatter]]:
+        """Builds a list of traces for position total profit/loss bar chart analysis."""
+        total_pls = [position.lifetime_profit_loss() for position in positions]
 
-        # create a df to use for total pls (so we can keep track of bar color as well
         df = pd.DataFrame()
         df['total_pl'] = total_pls
         df['color'] = np.where(df['total_pl'] < 0, BEAR_RED, BULL_GREEN)
 
-        # calculate mean and median
-        mean = statistics.mean(total_pls)
-        median = statistics.median(total_pls)
+        mean_values = [statistics.mean(total_pls) for _ in total_pls]
+        median_values = [statistics.median(total_pls) for _ in total_pls]
 
-        # assemble the values into a list for plotting
-        mean_values = [mean for _ in total_pls]
-        median_values = [median for _ in total_pls]
-
-        # build and return chart
         return [plotter.Bar(y=df['total_pl'], marker_color=df['color'], name='Profit/Loss'),
                 plotter.Scatter(y=mean_values, marker=dict(color=MED_COLOR), name='Mean', mode='lines'),
                 plotter.Scatter(y=median_values, marker=dict(color=STDDEV_COLOR), name='Median', mode='lines')]
 
     @staticmethod
-    def _build_multi_dataset_histogram(strategy_names: list, positions_data: list, title: str):
+    def _build_multi_dataset_histogram(strategy_names: list, positions_data: list, title: str) -> str:
         """Build a multi-dataset histogram chart."""
         fig = create_distplot(positions_data, strategy_names)
 
-        # set the layout
         fig.update_layout(xaxis=dict(
             zeroline=True,  # Enable the zero line
             zerolinewidth=1,  # Adjust line width
             zerolinecolor='#283442'),  # Customize color
             template='plotly_dark', xaxis_rangeslider_visible=False, title=title)
 
-        # format the chart (remove plotly white border)
         return ChartingEngine.format_chart(fig)
 
     @staticmethod
-    def __get_rule_statistics(positions, side) -> dict:
+    def __get_rule_statistics(positions: List[Position], side: str) -> dict:
         """Builds a dict of statistics for each rule based for the given side."""
         rule_stats = {}
         for position in positions:
             rule = ChartingEngine.__get_rule_from_side(position, side)
 
-            # create a new key : value for the rule
-            rule_stats[rule] = {}
-
-            # add statistics to the rule here
-            rule_stats[rule]['count'] = ChartingEngine.__calculate_rule_count(positions, side, rule)
-            rule_stats[rule]['average_plpc'] = ChartingEngine.__calculate_average_plpc(positions, side, rule)
-            rule_stats[rule]['median_plpc'] = ChartingEngine.__calculate_median_plpc(positions, side, rule)
-            rule_stats[rule]['stddev_plpc'] = ChartingEngine.__calculate_stddev_plpc(positions, side, rule)
+            rule_stats[rule] = {
+                'count': ChartingEngine.__calculate_rule_count(positions, side, rule),
+                'average_plpc': ChartingEngine.__calculate_average_plpc(positions, side, rule),
+                'median_plpc': ChartingEngine.__calculate_median_plpc(positions, side, rule),
+                'stddev_plpc': ChartingEngine.__calculate_stddev_plpc(positions, side, rule)
+            }
         return rule_stats
 
     @staticmethod
-    def __calculate_rule_count(positions, side, rule) -> int:
+    def __calculate_rule_count(positions: List[Position], side: str, rule: str) -> int:
         """Counts the number of positions that were triggered by the given rule."""
         count = 0
         for position in positions:
@@ -368,7 +292,7 @@ class ChartingEngine:
         return count
 
     @staticmethod
-    def __calculate_average_plpc(positions, side, rule) -> float:
+    def __calculate_average_plpc(positions: List[Position], side: str, rule: str) -> float:
         """Calculates the average profit/loss percent of the positions triggers by a given rule."""
         plpc_values = []
         for position in positions:
@@ -377,7 +301,7 @@ class ChartingEngine:
         return statistics.mean(plpc_values)
 
     @staticmethod
-    def __calculate_median_plpc(positions, side, rule) -> float:
+    def __calculate_median_plpc(positions: List[Position], side: str, rule: str) -> float:
         """Calculates the median profit/loss percent of the positions triggers by a given rule."""
         plpc_values = []
         for position in positions:
@@ -386,7 +310,7 @@ class ChartingEngine:
         return statistics.median(plpc_values)
 
     @staticmethod
-    def __calculate_stddev_plpc(positions, side, rule) -> float:
+    def __calculate_stddev_plpc(positions: List[Position], side: str, rule: str) -> float:
         """Calculates the stddev (population) profit/loss percent of the positions triggers by a given rule."""
         plpc_values = []
         for position in positions:
@@ -395,7 +319,7 @@ class ChartingEngine:
         return statistics.pstdev(plpc_values)
 
     @staticmethod
-    def __get_rule_from_side(position, side):
+    def __get_rule_from_side(position: Position, side: str):
         """Returns the correct rule used to algorithm a position based on side."""
         if side == BUY_SIDE:
             return position.get_buy_rule()
@@ -403,32 +327,21 @@ class ChartingEngine:
             return position.get_sell_rule()
 
     @staticmethod
-    def __save_chart(figure, filename) -> str:
-        """Saves a chart to a file.
-
-        Args:
-            figure(str): The html string of the chart.
-            filename(str): The name of the file to save as.
-
-        Return:
-            (str): The filepath of the saved chart.
-        """
+    def __save_chart(figure_html: str, filename: str) -> str:
+        """Saves a chart to a file."""
         chart_filepath = os.path.join('figures', filename)
+
         # make the directories if they don't already exist
         os.makedirs(os.path.dirname(chart_filepath), exist_ok=True)
 
         with open(chart_filepath, 'w', encoding="utf-8") as file:
-            file.write(figure)
+            file.write(figure_html)
 
         return chart_filepath
 
     @staticmethod
     def __translate_position_title_from_side(side: str) -> str:
-        """Translates the side to a position title.
-
-        return:
-            str: The translated position title.
-        """
+        """Translates the side to a position title."""
         if side == BUY_SIDE:
             return ACQUISITION
         return LIQUIDATION

@@ -522,9 +522,9 @@ class Simulator:
                 # faster to do it synchronously for singular
                 self.gui_status_log.info('Building overview chart...')
                 overview_chart_filepath = (
-                    SingularChartingEngine.build_indicator_chart(chopped_temp_df, symbol,
-                                                                 [*self.__available_indicators.values()],
-                                                                 show_volume, save_option))
+                    SingularChartingEngine.build_singular_overview_chart(chopped_temp_df, symbol,
+                                                                         [*self.__available_indicators.values()],
+                                                                         show_volume, save_option))
 
                 self.gui_status_log.info('Building buy rules bar chart...')
                 buy_rules_chart_filepath = (

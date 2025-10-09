@@ -1,8 +1,12 @@
 import statistics
+from typing import List
+
 import pandas as pd
-from StockBench.charting.display_constants import *
+from plotly.graph_objs import Bar, Indicator
 import plotly.graph_objects as plotter
 from plotly.subplots import make_subplots
+
+from StockBench.charting.display_constants import *
 from StockBench.charting.charting_engine import ChartingEngine
 from StockBench.constants import *
 
@@ -11,14 +15,15 @@ class MultiChartingEngine(ChartingEngine):
     """Charting tools for multiple simulation analysis."""
 
     @staticmethod
-    def build_overview_chart(data, initial_balance, save_option=ChartingEngine.TEMP_SAVE) -> str:
+    def build_multi_overview_chart(df: List[dict], initial_balance: float,
+                                   save_option: int = ChartingEngine.TEMP_SAVE) -> str:
+        """Builds the multi overview chart consisting of OHLC, volume, and other indicators."""
         rows = 2
         cols = 2
 
         chart_list = [[{"type": "bar"}, {"type": "indicator"}], [{"type": "bar"}, {"type": "indicator"}]]
         chart_titles = ('Total Profit/Loss per Symbol ($)', '', 'Trades Made per Symbol', '')
 
-        # Parent Plot
         fig = make_subplots(rows=rows,
                             cols=cols,
                             shared_xaxes=True,
@@ -27,33 +32,24 @@ class MultiChartingEngine(ChartingEngine):
                             specs=chart_list,
                             subplot_titles=chart_titles)
 
-        # Profit/Loss Bar
-        fig.add_trace(MultiChartingEngine.__overview_profit_loss_bar(data), row=1, col=1)
+        fig.add_trace(MultiChartingEngine.__build_overview_profit_loss_bar_subplot(df), row=1, col=1)
+        fig.add_trace(MultiChartingEngine.__overview_avg_effectiveness_gauge_subplot(df), row=1, col=2)
+        fig.add_trace(MultiChartingEngine.__build_overview_trades_made_bar_subplot(df), row=2, col=1)
+        fig.add_trace(MultiChartingEngine.__overview_avg_profit_loss_gauge(df, initial_balance), row=2, col=2)
 
-        # Avg effectiveness Gauge
-        fig.add_trace(MultiChartingEngine.__overview_avg_effectiveness_gauge(data), row=1, col=2)
-
-        # Total Trades Made Bar
-        fig.add_trace(MultiChartingEngine.__overview_trades_made_bar(data), row=2, col=1)
-
-        # Avg Profit/Loss Gauge
-        fig.add_trace(MultiChartingEngine.__overview_avg_profit_loss_gauge(data, initial_balance), row=2, col=2)
-
-        # set the layout
-        fig.update_layout(template='plotly_dark', title=f'Simulation Results for {len(data)} Symbols',
+        fig.update_layout(template='plotly_dark', title=f'Simulation Results for {len(df)} Symbols',
                           xaxis_rangeslider_visible=False, showlegend=False)
 
-        # format the chart (remove plotly white border)
         formatted_fig = ChartingEngine.format_chart(fig)
 
-        # perform and saving or showing (returns saved filepath)
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, 'temp_overview_chart', 'multi')
 
     @staticmethod
-    def __overview_profit_loss_bar(data):
+    def __build_overview_profit_loss_bar_subplot(results: List[dict]) -> Bar:
+        """Builds an overview profit/loss bar subplot."""
         color_df = pd.DataFrame()
         bar_colors = []
-        for value in MultiChartingEngine.__get_total_pl_per_symbol(data):
+        for value in MultiChartingEngine.__get_total_pl_per_symbol_from_results(results):
             if value > 0:
                 bar_colors.append(BULL_GREEN)
             else:
@@ -61,17 +57,16 @@ class MultiChartingEngine(ChartingEngine):
         color_df['colors'] = bar_colors
 
         return plotter.Bar(
-            x=MultiChartingEngine.__get_symbols(data),
-            y=MultiChartingEngine.__get_total_pl_per_symbol(data),
+            x=MultiChartingEngine.__get_symbols_from_results(results),
+            y=MultiChartingEngine.__get_total_pl_per_symbol_from_results(results),
             marker_color=color_df['colors'])
 
     @staticmethod
-    def __overview_avg_effectiveness_gauge(data):
-        indicator_value = MultiChartingEngine.__get_avg_effectiveness(data)
-        if indicator_value > 50.0:
-            bar_color = 'green'
-        else:
-            bar_color = 'red'
+    def __overview_avg_effectiveness_gauge_subplot(results: List[dict]) -> Indicator:
+        """Builds an overview average effectiveness gauge subplot."""
+        indicator_value = MultiChartingEngine.__calculate_avg_effectiveness_from_results(results)
+
+        bar_color = MultiChartingEngine.__get_gauge_bar_color_by_value(indicator_value, 50.0)
 
         return plotter.Indicator(
             domain={'x': [0, 1], 'y': [0, 1]},
@@ -86,15 +81,13 @@ class MultiChartingEngine(ChartingEngine):
                        {'range': [50, 100], 'color': PLOTLY_DARK_BACKGROUND}]})
 
     @staticmethod
-    def __overview_avg_profit_loss_gauge(data, initial_balance):
-        indicator_value = MultiChartingEngine.__get_avg_pl(data)
+    def __overview_avg_profit_loss_gauge(results: List[dict], initial_balance: float) -> Indicator:
+        """Builds an overview average profit/loss gauge subplot."""
+        indicator_value = MultiChartingEngine.__calculate_avg_pl_from_results(results)
         upper_bound = initial_balance
         lower_bound = -initial_balance
 
-        if indicator_value > 0:
-            bar_color = 'green'
-        else:
-            bar_color = 'red'
+        bar_color = MultiChartingEngine.__get_gauge_bar_color_by_value(indicator_value, 0.0)
 
         return plotter.Indicator(
             domain={'x': [0, 1], 'y': [0, 1]},
@@ -109,44 +102,48 @@ class MultiChartingEngine(ChartingEngine):
                        {'range': [0, upper_bound], 'color': PLOTLY_DARK_BACKGROUND}]})
 
     @staticmethod
-    def __overview_trades_made_bar(data):
+    def __build_overview_trades_made_bar_subplot(results: List[dict]) -> Bar:
+        """Builds an overview trades made bar chart subplot."""
         return plotter.Bar(
-            x=MultiChartingEngine.__get_symbols(data),
-            y=MultiChartingEngine.__get_trades_per_symbol(data),
+            x=MultiChartingEngine.__get_symbols_from_results(results),
+            y=MultiChartingEngine.__get_trades_made_per_symbol_from_results(results),
             marker=dict(color=OFF_BLUE))
 
     @staticmethod
-    def __get_symbols(data) -> list:
-        return MultiChartingEngine.__get_list_by_name(SYMBOL_KEY, data)
+    def __get_symbols_from_results(results: List[dict]) -> list:
+        """Gets a list of symbols from the results list."""
+        return MultiChartingEngine.__extract_values_from_results_by_key(SYMBOL_KEY, results)
 
     @staticmethod
-    def __get_total_pl_per_symbol(data) -> list:
-        return MultiChartingEngine.__get_list_by_name(TOTAL_PROFIT_LOSS_KEY, data)
+    def __get_total_pl_per_symbol_from_results(results: List[dict]) -> list:
+        """Gets a list of total profit/loss from the results list."""
+        return MultiChartingEngine.__extract_values_from_results_by_key(TOTAL_PROFIT_LOSS_KEY, results)
 
     @staticmethod
-    def __get_trades_per_symbol(data) -> list:
-        return MultiChartingEngine.__get_list_by_name(TRADES_MADE_KEY, data)
+    def __get_trades_made_per_symbol_from_results(results: List[dict]) -> list:
+        """Gets a list of trades made from the results list."""
+        return MultiChartingEngine.__extract_values_from_results_by_key(TRADES_MADE_KEY, results)
 
     @staticmethod
-    def __get_avg_effectiveness(data) -> float:
-        effectiveness_per_symbol = MultiChartingEngine.__get_list_by_name(EFFECTIVENESS_KEY, data)
+    def __calculate_avg_effectiveness_from_results(results: List[dict]) -> float:
+        """Calculate average effectiveness from the results list."""
+        effectiveness_per_symbol = MultiChartingEngine.__extract_values_from_results_by_key(EFFECTIVENESS_KEY, results)
         return round(float(statistics.mean(effectiveness_per_symbol)), 2)
 
     @staticmethod
-    def __get_avg_pl(data) -> float:
-        pl_per_symbol = MultiChartingEngine.__get_list_by_name(TOTAL_PROFIT_LOSS_KEY, data)
+    def __calculate_avg_pl_from_results(results: List[dict]) -> float:
+        """Calculates the average profit/loss from the results list."""
+        pl_per_symbol = MultiChartingEngine.__extract_values_from_results_by_key(TOTAL_PROFIT_LOSS_KEY, results)
         return round(float(statistics.mean(pl_per_symbol)), 2)
 
     @staticmethod
-    def __get_list_by_name(name, data) -> list:
-        return [stock[name] for stock in data]
+    def __extract_values_from_results_by_key(key: str, results: List[dict]) -> list:
+        """Builds a list of values from each result based on a given key."""
+        return [stock[key] for stock in results]
 
     @staticmethod
-    def __list_out_of_100(value: float) -> list:
-        if 0.0 >= value or value >= 100.0:
-            raise ValueError(f'Value: {value} is out of range 0 - 100!')
-        # place that number in the list x amount of times
-        # result = [int(value) for _ in range(int(value))]
-        # result += [0 for _ in range(100 - int(value))]
-        result = [int(value), 100 - int(value)]
-        return result
+    def __get_gauge_bar_color_by_value(value: float, threshold: float) -> str:
+        """Get gauge bar color based on a value and a threshold."""
+        if value > threshold:
+            return 'green'
+        return 'red'

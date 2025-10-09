@@ -112,32 +112,32 @@ class MultiChartingEngine(ChartingEngine):
     @staticmethod
     def __get_symbols_from_results(results: List[dict]) -> list:
         """Gets a list of symbols from the results list."""
-        return MultiChartingEngine.__build_list_by_key(SYMBOL_KEY, results)
+        return MultiChartingEngine.__extract_values_from_results_by_key(SYMBOL_KEY, results)
 
     @staticmethod
     def __get_total_pl_per_symbol_from_results(results: List[dict]) -> list:
         """Gets a list of total profit/loss from the results list."""
-        return MultiChartingEngine.__build_list_by_key(TOTAL_PROFIT_LOSS_KEY, results)
+        return MultiChartingEngine.__extract_values_from_results_by_key(TOTAL_PROFIT_LOSS_KEY, results)
 
     @staticmethod
     def __get_trades_made_per_symbol_from_results(results: List[dict]) -> list:
         """Gets a list of trades made from the results list."""
-        return MultiChartingEngine.__build_list_by_key(TRADES_MADE_KEY, results)
+        return MultiChartingEngine.__extract_values_from_results_by_key(TRADES_MADE_KEY, results)
 
     @staticmethod
     def __calculate_avg_effectiveness_from_results(results: List[dict]) -> float:
         """Calculate average effectiveness from the results list."""
-        effectiveness_per_symbol = MultiChartingEngine.__build_list_by_key(EFFECTIVENESS_KEY, results)
+        effectiveness_per_symbol = MultiChartingEngine.__extract_values_from_results_by_key(EFFECTIVENESS_KEY, results)
         return round(float(statistics.mean(effectiveness_per_symbol)), 2)
 
     @staticmethod
     def __calculate_avg_pl_from_results(results: List[dict]) -> float:
         """Calculates the average profit/loss from the results list."""
-        pl_per_symbol = MultiChartingEngine.__build_list_by_key(TOTAL_PROFIT_LOSS_KEY, results)
+        pl_per_symbol = MultiChartingEngine.__extract_values_from_results_by_key(TOTAL_PROFIT_LOSS_KEY, results)
         return round(float(statistics.mean(pl_per_symbol)), 2)
 
     @staticmethod
-    def __build_list_by_key(key: str, results: List[dict]) -> list:
+    def __extract_values_from_results_by_key(key: str, results: List[dict]) -> list:
         """Builds a list of values from each result based on a given key."""
         return [stock[key] for stock in results]
 

@@ -564,7 +564,8 @@ class Simulator:
                                                  positions_profit_loss_bar_chart_filepath,
                                                  positions_profit_loss_histogram_chart_filepath)
 
-    def __create_multi_charts(self, results, results_depth: int, save_option: int) -> MultiSimulationChartPathBundle:
+    def __create_multi_charts(self, results: List[dict], results_depth: int,
+                              save_option: int) -> MultiSimulationChartPathBundle:
         """Creates multi-sim charts by saving them to files and returns their filepaths."""
         overview_chart_filepath = ''
         buy_rules_chart_filepath = ''
@@ -575,7 +576,7 @@ class Simulator:
         if results_depth == self.CHARTS_AND_DATA:
             with ProcessPoolExecutor() as executor:
                 self.gui_status_log.info('Building overview chart...')
-                future1 = executor.submit(MultiChartingEngine.build_overview_chart, results,
+                future1 = executor.submit(MultiChartingEngine.build_multi_overview_chart, results,
                                           self.__account.get_initial_balance(), save_option)
 
                 self.gui_status_log.info('Building buy rules bar chart...')

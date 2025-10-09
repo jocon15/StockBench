@@ -15,7 +15,7 @@ class FolderChartingEngine(ChartingEngine):
         strategy_names, trades_made_data = (
             FolderChartingEngine.__extract_values_from_results_by_key(results, TRADES_MADE_KEY))
 
-        return FolderChartingEngine.__build_generic_bar_chart(strategy_names, trades_made_data,
+        return FolderChartingEngine.__build_bar_chart(strategy_names, trades_made_data,
                                                               'Trades Made per Strategy', OFF_BLUE,
                                                               'temp_folder_trades_made')
 
@@ -25,7 +25,7 @@ class FolderChartingEngine(ChartingEngine):
         strategy_names, effectiveness_data = (
             FolderChartingEngine.__extract_values_from_results_by_key(results, EFFECTIVENESS_KEY))
 
-        return FolderChartingEngine.__build_generic_bar_chart(strategy_names, effectiveness_data,
+        return FolderChartingEngine.__build_bar_chart(strategy_names, effectiveness_data,
                                                               'Effectiveness % per Strategy', OFF_BLUE,
                                                               'temp_folder_effectiveness')
 
@@ -35,8 +35,8 @@ class FolderChartingEngine(ChartingEngine):
         strategy_names, total_pl_data = (
             FolderChartingEngine.__extract_values_from_results_by_key(results, TOTAL_PROFIT_LOSS_KEY))
 
-        return FolderChartingEngine.__build_generic_bar_chart(strategy_names, total_pl_data, 'Total P/L per Strategy',
-                                                              OFF_BLUE, 'temp_folder_total_pl')
+        return FolderChartingEngine.__build_bar_chart(strategy_names, total_pl_data, 'Total P/L per Strategy',
+                                                      OFF_BLUE, 'temp_folder_total_pl')
 
     @staticmethod
     def build_average_pl_bar_chart(results: List[dict]) -> str:
@@ -44,7 +44,7 @@ class FolderChartingEngine(ChartingEngine):
         strategy_names, average_pl_data = (
             FolderChartingEngine.__extract_values_from_results_by_key(results, AVERAGE_PROFIT_LOSS_KEY))
 
-        return FolderChartingEngine.__build_generic_bar_chart(strategy_names, average_pl_data,
+        return FolderChartingEngine.__build_bar_chart(strategy_names, average_pl_data,
                                                               'Average P/L per Strategy', OFF_BLUE,
                                                               'temp_folder_average_pl')
 
@@ -54,7 +54,7 @@ class FolderChartingEngine(ChartingEngine):
         strategy_names, median_pl_data = (
             FolderChartingEngine.__extract_values_from_results_by_key(results, MEDIAN_PROFIT_LOSS_KEY))
 
-        return FolderChartingEngine.__build_generic_bar_chart(strategy_names, median_pl_data,
+        return FolderChartingEngine.__build_bar_chart(strategy_names, median_pl_data,
                                                               'Median P/L per Strategy', OFF_BLUE,
                                                               'temp_folder_median_pl')
 
@@ -64,7 +64,7 @@ class FolderChartingEngine(ChartingEngine):
         strategy_names, stddev_pl_data = (
             FolderChartingEngine.__extract_values_from_results_by_key(results, STANDARD_PROFIT_LOSS_DEVIATION_KEY))
 
-        return FolderChartingEngine.__build_generic_bar_chart(strategy_names, stddev_pl_data,
+        return FolderChartingEngine.__build_bar_chart(strategy_names, stddev_pl_data,
                                                               'Standard Deviation (P) P/L per Strategy', OFF_BLUE,
                                                               'temp_folder_stddev_pl')
 
@@ -92,9 +92,9 @@ class FolderChartingEngine(ChartingEngine):
         return strategy_names, data_values
 
     @staticmethod
-    def __build_generic_bar_chart(x_values: list, y_values: list, title: str, marker_color: str,
-                                  temp_filename: str) -> str:
-        """Builds a generic bar chart figure."""
+    def __build_bar_chart(x_values: list, y_values: list, title: str, marker_color: str,
+                          temp_filename: str) -> str:
+        """Builds a generic bar chart."""
         fig = plotter.Figure(plotter.Bar(x=x_values, y=y_values, marker=dict(color=marker_color), name='Count'))
 
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, title=title, title_x=0.5)

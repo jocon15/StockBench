@@ -263,7 +263,7 @@ class ChartingEngine:
             zeroline=True,  # Enable the zero line
             zerolinewidth=1,  # Adjust line width
             zerolinecolor='#283442'),  # Customize color
-            template='plotly_dark', xaxis_rangeslider_visible=False, title=title)
+            template='plotly_dark', xaxis_rangeslider_visible=False, title=title, title_x=0.5)
 
         return ChartingEngine.format_chart(fig)
 

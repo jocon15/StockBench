@@ -210,11 +210,11 @@ class Trigger:
     def __parse_rule_key_0_number_groupings(rule_key: str, rule_key_number_groups: list, indicator_symbol: str,
                                             data_manager: DataManager, current_day_index: int) -> float:
         """Parses a rule key with 0 number groupings for an indicator value."""
+        # rule key does not define an indicator length (use default)
         if SLOPE_SYMBOL in rule_key:
             raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} does not contain '
                                          f'enough number groupings!')
-        column_title = f'{indicator_symbol}{int(rule_key_number_groups[0])}'
-        return float(data_manager.get_data_point(column_title, current_day_index))
+        return float(data_manager.get_data_point(indicator_symbol, current_day_index))
 
     @staticmethod
     def __parse_rule_key_1_number_grouping(rule_key: str, rule_key_number_groups: list, indicator_symbol: str,

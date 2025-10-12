@@ -184,14 +184,14 @@ class Algorithm:
                     for inner_key in rule_value.keys():
                         inner_value = rule_value[inner_key]
                         if trigger.indicator_symbol in inner_key:
-                            additional_days = max(additional_days, trigger.additional_days_from_rule_key(inner_key,
-                                                                                                         inner_value))
+                            additional_days = max(additional_days, trigger.calculate_additional_days_from_rule_key(inner_key,
+                                                                                                                   inner_value))
                         elif trigger.indicator_symbol in inner_value:
-                            additional_days = max(additional_days, trigger.additional_days_from_rule_value(inner_value))
+                            additional_days = max(additional_days, trigger.calculate_additional_days_from_rule_value(inner_value))
                 elif trigger.indicator_symbol in rule_key:
-                    additional_days = max(additional_days, trigger.additional_days_from_rule_key(rule_key, rule_value))
+                    additional_days = max(additional_days, trigger.calculate_additional_days_from_rule_key(rule_key, rule_value))
                 elif trigger.indicator_symbol in rule_value:
-                    additional_days = max(additional_days, trigger.additional_days_from_rule_value(rule_value))
+                    additional_days = max(additional_days, trigger.calculate_additional_days_from_rule_value(rule_value))
         return additional_days
 
     def __add_to_data_per_side(self, triggers: list, side: str, data_manager: DataManager):
@@ -203,13 +203,13 @@ class Algorithm:
                     for inner_key in rule_value.keys():
                         inner_value = rule_value[inner_key]
                         if trigger.indicator_symbol in inner_key:
-                            trigger.add_to_data_from_rule_key(inner_key, inner_value, side, data_manager)
+                            trigger.add_indicator_data_from_rule_key(inner_key, inner_value, side, data_manager)
                         elif trigger.indicator_symbol in inner_value:
-                            trigger.add_to_data_from_rule_value(inner_value, side, data_manager)
+                            trigger.add_indicator_data_from_rule_value(inner_value, side, data_manager)
                 elif trigger.indicator_symbol in rule_key:
-                    trigger.add_to_data_from_rule_key(rule_key, rule_value, side, data_manager)
+                    trigger.add_indicator_data_from_rule_key(rule_key, rule_value, side, data_manager)
                 elif trigger.indicator_symbol in rule_value:
-                    trigger.add_to_data_from_rule_value(rule_value, side, data_manager)
+                    trigger.add_indicator_data_from_rule_value(rule_value, side, data_manager)
 
     def __handle_triggers_by_side(self, data_manager: DataManager, current_day_index: int, position: Position, key: str,
                                   side: str) -> bool:
@@ -328,8 +328,8 @@ class Algorithm:
                 # pull out comparison operator (comparison operator always comes before indicator symbol in rule value)
                 injected_rule_value = rule_value.split(trigger.indicator_symbol)[0]
                 # inject the indicator value into the right side of the comparison
-                injected_rule_value += str(trigger.get_value_when_referenced(rule_value, data_manager,
-                                                                             current_day_index))
+                injected_rule_value += str(trigger.get_indicator_value_when_referenced(rule_value, data_manager,
+                                                                                       current_day_index))
                 return injected_rule_value
 
         # not all rules will require an injection which is ok, just return the rule_value

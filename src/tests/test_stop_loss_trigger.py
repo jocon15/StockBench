@@ -14,7 +14,7 @@ def test_additional_days_from_rule_key(test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.additional_days_from_rule_key('', None) == 0
+    assert test_object.calculate_additional_days_from_rule_key('', None) == 0
 
 
 def test_additional_days_from_rule_value(test_object):
@@ -23,7 +23,7 @@ def test_additional_days_from_rule_value(test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.additional_days_from_rule_value('') == 0
+    assert test_object.calculate_additional_days_from_rule_value('') == 0
 
 
 def test_add_to_data_from_rule_key(test_object):
@@ -33,7 +33,7 @@ def test_add_to_data_from_rule_key(test_object):
 
     # ============= Assert ===============
     try:
-        test_object.add_to_data_from_rule_key('', '', '', None)  # noqa
+        test_object.add_indicator_data_from_rule_key('', '', '', None)  # noqa
         assert True
     except Exception as e:
         print(e)
@@ -47,7 +47,7 @@ def test_add_to_data_from_rule_value(test_object):
 
     # ============= Assert ===============
     try:
-        test_object.add_to_data_from_rule_value('', '', None)  # noqa
+        test_object.add_indicator_data_from_rule_value('', '', None)  # noqa
         assert True
     except Exception as e:
         print(e)
@@ -61,7 +61,7 @@ def test_get_value_when_referenced(test_object):
 
     # ============= Assert ===============
     try:
-        test_object.get_value_when_referenced('', None, 25)  # noqa
+        test_object.get_indicator_value_when_referenced('', None, 25)  # noqa
         assert False
     except NotImplementedError:
         assert True

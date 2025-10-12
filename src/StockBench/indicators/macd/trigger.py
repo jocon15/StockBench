@@ -16,13 +16,13 @@ class MACDTrigger(Trigger):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
+    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
         return self.LARGE_EMA_LENGTH
 
-    def additional_days_from_rule_value(self, rule_value: any) -> int:
+    def calculate_additional_days_from_rule_value(self, rule_value: any) -> int:
         return self.LARGE_EMA_LENGTH
 
-    def add_to_data_from_rule_key(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
+    def add_indicator_data_from_rule_key(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
         # if we already have MACD values in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():
             if self.indicator_symbol == col_name:
@@ -32,11 +32,11 @@ class MACDTrigger(Trigger):
 
         data_manager.add_column(self.indicator_symbol, self.calculate_macd(price_data))
 
-    def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
+    def add_indicator_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
         # logic for rule value is the same as the logic for rule key
-        return self.add_to_data_from_rule_key(rule_value, None, side, data_manager)
+        return self.add_indicator_data_from_rule_key(rule_value, None, side, data_manager)
 
-    def get_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index: int) -> float:
+    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index: int) -> float:
         # parse rule key will work even when passed a rule value
         return Trigger._parse_rule_key_no_indicator_length(rule_value, self.indicator_symbol, data_manager,
                                                            current_day_index)

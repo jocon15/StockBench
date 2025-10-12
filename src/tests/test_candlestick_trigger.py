@@ -13,7 +13,7 @@ def test_additional_days_from_rule_key_normal(test_object):
     # ============= Arrange ==============
 
     # ============= Act ==================
-    actual = test_object.additional_days_from_rule_key('color', {'0': 'green', '1': 'red'})
+    actual = test_object.calculate_additional_days_from_rule_key('color', {'0': 'green', '1': 'red'})
 
     # ============= Assert ===============
     assert type(actual) is int
@@ -27,7 +27,7 @@ def test_additional_days_from_rule_key_no_values(test_object):
 
     # ============= Assert ===============
     try:
-        test_object.additional_days_from_rule_key('color', {})
+        test_object.calculate_additional_days_from_rule_key('color', {})
         assert False
     except StrategyIndicatorError:
         assert True
@@ -39,7 +39,7 @@ def test_additional_days_from_rule_value(test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.additional_days_from_rule_value({'0': 'green', '1': 'red'}) == 0
+    assert test_object.calculate_additional_days_from_rule_value({'0': 'green', '1': 'red'}) == 0
 
 
 def test_add_to_data_from_rule_key(test_object):
@@ -49,7 +49,7 @@ def test_add_to_data_from_rule_key(test_object):
 
     # ============= Assert ===============
     try:
-        test_object.add_to_data_from_rule_key('', '', '', None)  # noqa
+        test_object.add_indicator_data_from_rule_key('', '', '', None)  # noqa
         assert True
     except Exception as e:
         print(e)
@@ -63,7 +63,7 @@ def test_add_to_data_from_rule_value(test_object):
 
     # ============= Assert ===============
     try:
-        test_object.add_to_data_from_rule_value('', '', None)  # noqa
+        test_object.add_indicator_data_from_rule_value('', '', None)  # noqa
         assert True
     except Exception as e:
         print(e)
@@ -77,7 +77,7 @@ def test_get_value_when_referenced(test_object):
 
     # ============= Assert ===============
     try:
-        test_object.get_value_when_referenced({'0': 'green', '1': 'red'}, None, 1)  # noqa
+        test_object.get_indicator_value_when_referenced({'0': 'green', '1': 'red'}, None, 1)  # noqa
         assert False
     except NotImplementedError:
         assert True

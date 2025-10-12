@@ -11,17 +11,17 @@ def test_object():
 
 
 def test_additional_days_from_rule_key(test_object):
-    assert test_object.additional_days_from_rule_key('RSI', None) == 14
-    assert test_object.additional_days_from_rule_key('RSI50', None) == 50
-    assert test_object.additional_days_from_rule_key('RSI20$slope10', None) == 20
-    assert test_object.additional_days_from_rule_key('RSI20$slope30', None) == 30
+    assert test_object.calculate_additional_days_from_rule_key('RSI', None) == 14
+    assert test_object.calculate_additional_days_from_rule_key('RSI50', None) == 50
+    assert test_object.calculate_additional_days_from_rule_key('RSI20$slope10', None) == 20
+    assert test_object.calculate_additional_days_from_rule_key('RSI20$slope30', None) == 30
 
 
 def test_additional_days_from_rule_value(test_object):
-    assert test_object.additional_days_from_rule_value('RSI') == 14
-    assert test_object.additional_days_from_rule_value('RSI50') == 50
-    assert test_object.additional_days_from_rule_value('RSI20$slope10') == 20
-    assert test_object.additional_days_from_rule_value('RSI20$slope30') == 30
+    assert test_object.calculate_additional_days_from_rule_value('RSI') == 14
+    assert test_object.calculate_additional_days_from_rule_value('RSI50') == 50
+    assert test_object.calculate_additional_days_from_rule_value('RSI20$slope10') == 20
+    assert test_object.calculate_additional_days_from_rule_value('RSI20$slope30') == 30
 
 
 @patch('logging.getLogger')
@@ -42,7 +42,7 @@ def test_add_to_data_from_rule_key(data_mocker, logger_mocker, test_object):
     data_mocker.get_data_length.return_value = 200
 
     # test normal case
-    test_object.add_to_data_from_rule_key('RSI', '>30', 'buy', data_mocker)
+    test_object.add_indicator_data_from_rule_key('RSI', '>30', 'buy', data_mocker)
     # assertions are done in side effect function
 
 
@@ -64,7 +64,7 @@ def test_add_to_data_from_rule_value(data_mocker, logger_mocker, test_object):
     data_mocker.get_data_length.return_value = 200
 
     # test normal case
-    test_object.add_to_data_from_rule_value('RSI', '>30', data_mocker)
+    test_object.add_indicator_data_from_rule_value('RSI', '>30', data_mocker)
     # assertions are done in side effect function
 
 
@@ -691,7 +691,7 @@ def test_get_value_when_referenced(data_mocker, test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.get_value_when_referenced('>=MACD', data_mocker, 25) == 234.5
+    assert test_object.get_indicator_value_when_referenced('>=MACD', data_mocker, 25) == 234.5
 
 
 @patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')

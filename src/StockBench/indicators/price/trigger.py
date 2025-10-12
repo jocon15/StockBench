@@ -14,21 +14,21 @@ class PriceTrigger(Trigger):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
+    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
         return 0
 
-    def additional_days_from_rule_value(self, rule_value: any) -> int:
+    def calculate_additional_days_from_rule_value(self, rule_value: any) -> int:
         return 0
 
-    def add_to_data_from_rule_key(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
+    def add_indicator_data_from_rule_key(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
         # price is in the data by default, no need to add it
         return
 
-    def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
+    def add_indicator_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
         # price is in the data by default, no need to add it
         return
 
-    def get_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index: int) -> float:
+    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index: int) -> float:
         # parse rule key will work even when passed a rule value
         return Trigger._parse_rule_key_no_indicator_length(rule_value, self.indicator_symbol, data_manager,
                                                            current_day_index, data_manager.CLOSE)

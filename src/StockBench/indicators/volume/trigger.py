@@ -10,21 +10,21 @@ class VolumeTrigger(Trigger):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
-    def additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
+    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
         return 0
 
-    def additional_days_from_rule_value(self, rule_value: any) -> int:
+    def calculate_additional_days_from_rule_value(self, rule_value: any) -> int:
         return 0
 
-    def add_to_data_from_rule_key(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
+    def add_indicator_data_from_rule_key(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
         # volume does not require any additional data to be added to the data
         return
 
-    def add_to_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
+    def add_indicator_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
         # volume does not require any additional data to be added to the data
         return
 
-    def get_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index: int) -> float:
+    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index: int) -> float:
         raise NotImplementedError('Volume cannot be referenced in a rule value')
 
     def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,

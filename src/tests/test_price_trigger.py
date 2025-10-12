@@ -15,7 +15,7 @@ def test_additional_days_from_rule_key(test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.additional_days_from_rule_key('>123.2', None) == 0
+    assert test_object.calculate_additional_days_from_rule_key('>123.2', None) == 0
 
 
 def test_additional_days_from_rule_value(test_object):
@@ -24,7 +24,7 @@ def test_additional_days_from_rule_value(test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.additional_days_from_rule_value('>123.2') == 0
+    assert test_object.calculate_additional_days_from_rule_value('>123.2') == 0
 
 
 def test_add_to_data_from_rule_key(test_object):
@@ -34,7 +34,7 @@ def test_add_to_data_from_rule_key(test_object):
 
     # ============= Assert ===============
     try:
-        test_object.add_to_data_from_rule_key('', None, '', '')
+        test_object.add_indicator_data_from_rule_key('', None, '', '')
         assert True
     except Exception as e:
         print(f'Unexpected exception {e}')
@@ -48,7 +48,7 @@ def test_add_to_data_from_rule_value(test_object):
 
     # ============= Assert ===============
     try:
-        test_object.add_to_data_from_rule_value('', '', None)  # noqa
+        test_object.add_indicator_data_from_rule_value('', '', None)  # noqa
         assert True
     except Exception as e:
         print(f'Unexpected exception {e}')
@@ -63,7 +63,7 @@ def test_get_value_when_referenced(data_mocker, test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.get_value_when_referenced('>=price', data_mocker, 25) == 234.5
+    assert test_object.get_indicator_value_when_referenced('>=price', data_mocker, 25) == 234.5
 
 
 @patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')

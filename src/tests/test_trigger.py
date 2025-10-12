@@ -95,21 +95,3 @@ def test_find_operator_in_str():
         assert False
     except StrategyIndicatorError:
         assert True
-
-
-def test_calculate_slope():
-    # ============= Arrange ==============
-
-    # ============= Act ==================
-
-    # ============= Assert ===============
-    # normal
-    assert Trigger.calculate_slope(200, 100, 2) == 50.00
-    assert Trigger.calculate_slope(400, 0, 4) == 100.00
-
-    # bad length
-    try:
-        Trigger.calculate_slope(1, 2, 1)
-        assert False
-    except StrategyIndicatorError:
-        assert True

@@ -16,12 +16,12 @@ def test_additional_days_from_rule_key(test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.additional_days_from_rule_key('SMA20', None) == 20
-    assert type(test_object.additional_days_from_rule_key('SMA20', None)) is int
-    assert test_object.additional_days_from_rule_key('SMA20$slope10', None) == 20
-    assert test_object.additional_days_from_rule_key('SMA20$slope30', None) == 30
+    assert test_object.calculate_additional_days_from_rule_key('SMA20', None) == 20
+    assert type(test_object.calculate_additional_days_from_rule_key('SMA20', None)) is int
+    assert test_object.calculate_additional_days_from_rule_key('SMA20$slope10', None) == 20
+    assert test_object.calculate_additional_days_from_rule_key('SMA20$slope30', None) == 30
     try:
-        test_object.additional_days_from_rule_key('SMA', None)
+        test_object.calculate_additional_days_from_rule_key('SMA', None)
         assert False
     except StrategyIndicatorError:
         assert True
@@ -33,12 +33,12 @@ def test_additional_days_from_rule_value(test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.additional_days_from_rule_value('SMA20') == 20
-    assert type(test_object.additional_days_from_rule_value('SMA20')) is int
-    assert test_object.additional_days_from_rule_value('SMA20$slope10') == 20
-    assert test_object.additional_days_from_rule_value('SMA20$slope30') == 30
+    assert test_object.calculate_additional_days_from_rule_value('SMA20') == 20
+    assert type(test_object.calculate_additional_days_from_rule_value('SMA20')) is int
+    assert test_object.calculate_additional_days_from_rule_value('SMA20$slope10') == 20
+    assert test_object.calculate_additional_days_from_rule_value('SMA20$slope30') == 30
     try:
-        test_object.additional_days_from_rule_value('SMA')
+        test_object.calculate_additional_days_from_rule_value('SMA')
         assert False
     except StrategyIndicatorError:
         assert True
@@ -62,12 +62,12 @@ def test_add_to_data_from_rule_key(data_mocker, logger_mocker, test_object):
 
     # ============= Act ==================
     # test normal case
-    test_object.add_to_data_from_rule_key('SMA20', '>30', 'buy', data_mocker)
+    test_object.add_indicator_data_from_rule_key('SMA20', '>30', 'buy', data_mocker)
     # assertions are done in side effect function
 
     # test console output if no indicator length is provided
     try:
-        test_object.add_to_data_from_rule_key('SMA', '>30', 'buy', data_mocker)
+        test_object.add_indicator_data_from_rule_key('SMA', '>30', 'buy', data_mocker)
         assert False
     except StrategyIndicatorError:
         assert True
@@ -94,12 +94,12 @@ def test_add_to_data_from_rule_value(data_mocker, logger_mocker, test_object):
 
     # ============= Act ==================
     # test normal case
-    test_object.add_to_data_from_rule_value('>SMA20', 'buy', data_mocker)
+    test_object.add_indicator_data_from_rule_value('>SMA20', 'buy', data_mocker)
     # assertions are done in side effect function
 
     # test console output if no indicator length is provided
     try:
-        test_object.add_to_data_from_rule_value('<SMA', 'sell', data_mocker)
+        test_object.add_indicator_data_from_rule_value('<SMA', 'sell', data_mocker)
         assert False
     except StrategyIndicatorError:
         assert True
@@ -327,7 +327,7 @@ def test_get_value_when_referenced(data_mocker, test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.get_value_when_referenced('>=SMA20', data_mocker, 25) == 234.5
+    assert test_object.get_indicator_value_when_referenced('>=SMA20', data_mocker, 25) == 234.5
 
 
 @patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')

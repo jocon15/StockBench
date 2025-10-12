@@ -1,4 +1,5 @@
 import logging
+
 from StockBench.indicator.trigger import Trigger
 from StockBench.indicator.exceptions import StrategyIndicatorError
 from StockBench.simulation_data.data_manager import DataManager
@@ -9,8 +10,7 @@ log = logging.getLogger()
 
 
 class MACDTrigger(Trigger):
-    LARGE_EMA_LENGTH = 26
-
+    LARGE_EMA_LENGTH = 261
     SMALL_EMA_LENGTH = 12
 
     def __init__(self, indicator_symbol):
@@ -36,7 +36,8 @@ class MACDTrigger(Trigger):
         # logic for rule value is the same as the logic for rule key
         return self.add_indicator_data_from_rule_key(rule_value, None, side, data_manager)
 
-    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index: int) -> float:
+    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager,
+                                            current_day_index: int) -> float:
         # parse rule key will work even when passed a rule value
         return Trigger._parse_rule_key_no_indicator_length(rule_value, self.indicator_symbol, data_manager,
                                                            current_day_index)
@@ -53,7 +54,7 @@ class MACDTrigger(Trigger):
         return self.basic_trigger_check(indicator_value, rule_value)
 
     def calculate_macd(self, price_data: list) -> list:
-        """Calculate MACD values for a list of price values."""
+        """Calculates MACD values for a list of price values."""
         large_ema_length_values = EMATrigger.calculate_ema(self.LARGE_EMA_LENGTH, price_data)
 
         small_ema_length_values = EMATrigger.calculate_ema(self.SMALL_EMA_LENGTH, price_data)

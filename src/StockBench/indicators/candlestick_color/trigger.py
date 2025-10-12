@@ -1,4 +1,5 @@
 import logging
+
 from StockBench.indicator.trigger import Trigger
 from StockBench.indicator.exceptions import StrategyIndicatorError
 from StockBench.simulation_data.data_manager import DataManager
@@ -12,7 +13,7 @@ class CandlestickColorTrigger(Trigger):
         super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
 
     def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
-        # Candlestick is a unique one
+        # Candlestick is a unique indicator
         #   color: {
         #       "0", "red",
         #       "1", "green"
@@ -44,7 +45,8 @@ class CandlestickColorTrigger(Trigger):
         # candle colors are included in the data by default
         return
 
-    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index: int) -> float:
+    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager,
+                                            current_day_index: int) -> float:
         raise NotImplementedError('Candlestick color cannot be referenced in a rule value!')
 
     def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,
@@ -66,5 +68,4 @@ class CandlestickColorTrigger(Trigger):
 
         log.debug('All candle stick algorithm checked')
 
-        # catch all case if nothing was hit (which is ok!)
         return False

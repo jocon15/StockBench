@@ -1,5 +1,5 @@
 from StockBench.gui.results.base.base.simple_vertical_chart_tab import SimpleVerticalChartTab
-from StockBench.constants import POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY
+from StockBench.constants import POSITIONS_PROFIT_LOSS_PERCENT_HISTOGRAM_CHART_FILEPATH_KEY
 
 
 class PositionsHistogramTabVertical(SimpleVerticalChartTab):
@@ -7,7 +7,7 @@ class PositionsHistogramTabVertical(SimpleVerticalChartTab):
 
     Note: Cannot inherit from ResultsTab because
     """
-    CHART_KEY = POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY
+    CHART_KEY = POSITIONS_PROFIT_LOSS_PERCENT_HISTOGRAM_CHART_FILEPATH_KEY
 
     def __init__(self):
         super().__init__()

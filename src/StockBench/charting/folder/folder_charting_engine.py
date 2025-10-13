@@ -16,8 +16,8 @@ class FolderChartingEngine(ChartingEngine):
             FolderChartingEngine.__extract_values_from_results_by_key(results, TRADES_MADE_KEY))
 
         return FolderChartingEngine.__build_bar_chart(strategy_names, trades_made_data,
-                                                              'Trades Made per Strategy', OFF_BLUE,
-                                                              'temp_folder_trades_made')
+                                                      'Trades Made per Strategy', OFF_BLUE,
+                                                      'temp_folder_trades_made')
 
     @staticmethod
     def build_effectiveness_bar_chart(results: List[dict]) -> str:
@@ -26,8 +26,8 @@ class FolderChartingEngine(ChartingEngine):
             FolderChartingEngine.__extract_values_from_results_by_key(results, EFFECTIVENESS_KEY))
 
         return FolderChartingEngine.__build_bar_chart(strategy_names, effectiveness_data,
-                                                              'Effectiveness % per Strategy', OFF_BLUE,
-                                                              'temp_folder_effectiveness')
+                                                      'Effectiveness % per Strategy', OFF_BLUE,
+                                                      'temp_folder_effectiveness')
 
     @staticmethod
     def build_total_pl_bar_chart(results: List[dict]) -> str:
@@ -45,8 +45,8 @@ class FolderChartingEngine(ChartingEngine):
             FolderChartingEngine.__extract_values_from_results_by_key(results, AVERAGE_PROFIT_LOSS_KEY))
 
         return FolderChartingEngine.__build_bar_chart(strategy_names, average_pl_data,
-                                                              'Average P/L per Strategy', OFF_BLUE,
-                                                              'temp_folder_average_pl')
+                                                      'Average P/L per Strategy', OFF_BLUE,
+                                                      'temp_folder_average_pl')
 
     @staticmethod
     def build_median_pl_bar_chart(results: List[dict]) -> str:
@@ -55,8 +55,8 @@ class FolderChartingEngine(ChartingEngine):
             FolderChartingEngine.__extract_values_from_results_by_key(results, MEDIAN_PROFIT_LOSS_KEY))
 
         return FolderChartingEngine.__build_bar_chart(strategy_names, median_pl_data,
-                                                              'Median P/L per Strategy', OFF_BLUE,
-                                                              'temp_folder_median_pl')
+                                                      'Median P/L per Strategy', OFF_BLUE,
+                                                      'temp_folder_median_pl')
 
     @staticmethod
     def build_stddev_pl_bar_chart(results: List[dict]) -> str:
@@ -65,8 +65,8 @@ class FolderChartingEngine(ChartingEngine):
             FolderChartingEngine.__extract_values_from_results_by_key(results, STANDARD_PROFIT_LOSS_DEVIATION_KEY))
 
         return FolderChartingEngine.__build_bar_chart(strategy_names, stddev_pl_data,
-                                                              'Standard Deviation (P) P/L per Strategy', OFF_BLUE,
-                                                              'temp_folder_stddev_pl')
+                                                      'Standard Deviation (P) P/L per Strategy', OFF_BLUE,
+                                                      'temp_folder_stddev_pl')
 
     @staticmethod
     def build_positions_plpc_histogram_chart(results: List[dict]) -> str:
@@ -77,11 +77,26 @@ class FolderChartingEngine(ChartingEngine):
             strategy_names.append(result[STRATEGY_KEY])
             positions_data.append([position.lifetime_profit_loss_percent() for position in result[POSITIONS_KEY]])
 
-        formatted_fig = ChartingEngine._build_multi_dataset_histogram(
+        formatted_fig = ChartingEngine._build_multiple_strategy_result_dataset_histogram(
             strategy_names, positions_data, 'Position Profit/Loss % Distribution per Strategy')
 
         return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,
                                                 'temp_positions_histogram_chart', f'')
+
+    @staticmethod
+    def build_positions_plpc_box_chart(results: List[dict]) -> str:
+        """Build a box and whisker chart for position plpc."""
+        strategy_names = []
+        positions_data = []
+        for result in results:
+            strategy_names.append(result[STRATEGY_KEY])
+            positions_data.append([position.lifetime_profit_loss_percent() for position in result[POSITIONS_KEY]])
+
+        formatted_fig = ChartingEngine._build_multiple_strategy_result_dataset_box_plot(
+            strategy_names, positions_data, 'Position Profit/Loss % Distribution per Strategy')
+
+        return ChartingEngine.handle_save_chart(formatted_fig, ChartingEngine.TEMP_SAVE,
+                                                'temp_positions_box_chart', f'')
 
     @staticmethod
     def __extract_values_from_results_by_key(results: List[dict], key: str) -> Tuple[List[str], List[float]]:

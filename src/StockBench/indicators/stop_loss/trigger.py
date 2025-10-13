@@ -60,7 +60,7 @@ class StopLossTrigger(Trigger):
 
     @staticmethod
     def __check_plpc_loss(value: str, plpc_value: float) -> bool:
-        """Checks stop loss trigger for profit/loss percent trigger event."""
+        """Checks stop loss trigger for loss percent trigger event."""
         nums = Trigger.find_all_nums_in_str(value)
         trigger_value = float(nums[0])
         if abs(plpc_value) >= trigger_value:
@@ -70,7 +70,7 @@ class StopLossTrigger(Trigger):
 
     @staticmethod
     def __check_pl_loss(value: str, pl_value: float) -> bool:
-        """Checks stop loss trigger for profit/loss trigger event."""
+        """Checks stop loss trigger for loss trigger event."""
         trigger_value = float(value)
         if abs(pl_value) >= trigger_value:
             log.info('Stop loss algorithm hit!')

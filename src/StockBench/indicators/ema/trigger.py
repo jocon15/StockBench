@@ -27,7 +27,7 @@ class EMATrigger(Trigger):
         nums = self.find_all_nums_in_str(rule_key)
         if len(nums) > 0:
             indicator_length = int(nums[0])
-            self.__add_ema(indicator_length, data_manager)
+            self.__add_ema_to_simulation_data(indicator_length, data_manager)
         else:
             raise StrategyIndicatorError(f'{self.indicator_symbol} key: {rule_key} must have an indicator length!')
 
@@ -52,7 +52,7 @@ class EMATrigger(Trigger):
 
         return self.basic_trigger_check(indicator_value, rule_value)
 
-    def __add_ema(self, length: int, data_manager: DataManager):
+    def __add_ema_to_simulation_data(self, length: int, data_manager: DataManager):
         """Adds EMA indicator data to the simulation data."""
         column_title = f'{self.indicator_symbol}{length}'
 

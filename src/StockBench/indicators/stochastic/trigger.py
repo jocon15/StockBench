@@ -73,7 +73,6 @@ class StochasticTrigger(Trigger):
         high_data = data_manager.get_column_data(data_manager.HIGH)
         low_data = data_manager.get_column_data(data_manager.LOW)
         close_data = data_manager.get_column_data(data_manager.CLOSE)
-
         stochastic_values = StochasticTrigger.calculate_stochastic_oscillator(length, high_data, low_data, close_data)
 
         data_manager.add_column(self.indicator_symbol, stochastic_values)

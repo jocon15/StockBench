@@ -1,4 +1,5 @@
 import logging
+
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
 from StockBench.simulation_data.data_manager import DataManager
@@ -29,9 +30,9 @@ class StochasticTrigger(Trigger):
         rule_key_number_groups = self.find_all_nums_in_str(rule_key)
         if len(rule_key_number_groups) > 0:
             num = int(rule_key_number_groups[0])
-            self.__add_stochastic_column(num, data_manager)
+            self.__add_stochastic_to_simulation_data(num, data_manager)
         else:
-            self.__add_stochastic_column(DEFAULT_STOCHASTIC_LENGTH, data_manager)
+            self.__add_stochastic_to_simulation_data(DEFAULT_STOCHASTIC_LENGTH, data_manager)
         # ======== value based (stochastic limit)=========
         rule_key_number_groups = self.find_all_nums_in_str(rule_value)
         if len(rule_key_number_groups) > 0:
@@ -43,11 +44,12 @@ class StochasticTrigger(Trigger):
         rule_key_number_groups = self.find_all_nums_in_str(rule_value)
         if len(rule_key_number_groups) > 0:
             num = int(rule_key_number_groups[0])
-            self.__add_stochastic_column(num, data_manager)
+            self.__add_stochastic_to_simulation_data(num, data_manager)
         else:
-            self.__add_stochastic_column(DEFAULT_STOCHASTIC_LENGTH, data_manager)
+            self.__add_stochastic_to_simulation_data(DEFAULT_STOCHASTIC_LENGTH, data_manager)
 
-    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index: int) -> float:
+    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager,
+                                            current_day_index: int) -> float:
         # parse rule key will work even when passed a rule value
         return Trigger._parse_rule_key(rule_value, self.indicator_symbol, data_manager, current_day_index)
 
@@ -61,9 +63,9 @@ class StochasticTrigger(Trigger):
 
         return self.basic_trigger_check(indicator_value, rule_value)
 
-    def __add_stochastic_column(self, length: int, data_manager: DataManager):
-        """Calculate the stochastic values and add them to the df."""
-        # if we already have values in the df, we don't need to add them again
+    def __add_stochastic_to_simulation_data(self, length: int, data_manager: DataManager):
+        """Adds the stochastic values to the simulation data."""
+        # skip if there are stochastic values in the simulation data
         for col_name in data_manager.get_column_names():
             if self.indicator_symbol in col_name:
                 return
@@ -72,13 +74,13 @@ class StochasticTrigger(Trigger):
         low_data = data_manager.get_column_data(data_manager.LOW)
         close_data = data_manager.get_column_data(data_manager.CLOSE)
 
-        stochastic_values = StochasticTrigger.stochastic_oscillator(length, high_data, low_data, close_data)
+        stochastic_values = StochasticTrigger.calculate_stochastic_oscillator(length, high_data, low_data, close_data)
 
         data_manager.add_column(self.indicator_symbol, stochastic_values)
 
     @staticmethod
-    def stochastic_oscillator(length: int, high_data: list, low_data: list, close_data: list) -> list:
-        """Calculate stochastic oscillator values for a list of price values."""
+    def calculate_stochastic_oscillator(length: int, high_data: list, low_data: list, close_data: list) -> list:
+        """Calculates stochastic oscillator values for a list of price values."""
         past_length_days_high = []
         past_length_days_low = []
         past_length_days_close = []

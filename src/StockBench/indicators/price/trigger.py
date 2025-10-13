@@ -28,7 +28,8 @@ class PriceTrigger(Trigger):
         # price is in the data by default, no need to add it
         return
 
-    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index: int) -> float:
+    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager,
+                                            current_day_index: int) -> float:
         # parse rule key will work even when passed a rule value
         return Trigger._parse_rule_key_no_indicator_length(rule_value, self.indicator_symbol, data_manager,
                                                            current_day_index, data_manager.CLOSE)

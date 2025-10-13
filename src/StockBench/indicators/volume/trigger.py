@@ -1,4 +1,5 @@
 import logging
+
 from StockBench.indicator.trigger import Trigger
 from StockBench.simulation_data.data_manager import DataManager
 from StockBench.position.position import Position
@@ -24,7 +25,8 @@ class VolumeTrigger(Trigger):
         # volume does not require any additional data to be added to the data
         return
 
-    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index: int) -> float:
+    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager,
+                                            current_day_index: int) -> float:
         raise NotImplementedError('Volume cannot be referenced in a rule value')
 
     def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,

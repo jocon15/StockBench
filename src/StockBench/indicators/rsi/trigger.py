@@ -1,5 +1,6 @@
 import logging
 import statistics
+
 from StockBench.constants import *
 from StockBench.indicator.trigger import Trigger
 from StockBench.simulation_data.data_manager import DataManager
@@ -29,9 +30,9 @@ class RSITrigger(Trigger):
         nums = self.find_all_nums_in_str(rule_key)
         if len(nums) > 0:
             num = int(nums[0])
-            self.__add_rsi_column(num, data_manager)
+            self.__add_rsi_to_simulation_data(num, data_manager)
         else:
-            self.__add_rsi_column(DEFAULT_RSI_LENGTH, data_manager)
+            self.__add_rsi_to_simulation_data(DEFAULT_RSI_LENGTH, data_manager)
         # ======== value based (rsi limit)=========
         # (adds the RSI limit values to the data for charting)
         nums = self.find_all_nums_in_str(rule_value)
@@ -44,11 +45,12 @@ class RSITrigger(Trigger):
         rule_value_number_groups = self.find_all_nums_in_str(rule_value)
         if len(rule_value_number_groups) > 0:
             num = int(rule_value_number_groups[0])
-            self.__add_rsi_column(num, data_manager)
+            self.__add_rsi_to_simulation_data(num, data_manager)
         else:
-            self.__add_rsi_column(DEFAULT_RSI_LENGTH, data_manager)
+            self.__add_rsi_to_simulation_data(DEFAULT_RSI_LENGTH, data_manager)
 
-    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index: int) -> float:
+    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager,
+                                            current_day_index: int) -> float:
         # parse rule key will work even when passed a rule value
         return Trigger._parse_rule_key(rule_value, self.indicator_symbol, data_manager, current_day_index)
 
@@ -62,8 +64,8 @@ class RSITrigger(Trigger):
 
         return self.basic_trigger_check(indicator_value, rule_value)
 
-    def __add_rsi_column(self, length: int, data_manager: DataManager):
-        """Calculate the RSI values and add them to the df."""
+    def __add_rsi_to_simulation_data(self, length: int, data_manager: DataManager):
+        """Adds RSI indicator data to the simulation data."""
         # if we already have RSI upper values in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():
             if self.indicator_symbol in col_name:
@@ -77,7 +79,7 @@ class RSITrigger(Trigger):
 
     @staticmethod
     def calculate_rsi(length: int, price_data: list) -> list:
-        """Calculate the RSI values for a list of price values."""
+        """Calculates the RSI values for a list of price values."""
         first_day_value = 0
         gain = []
         loss = []

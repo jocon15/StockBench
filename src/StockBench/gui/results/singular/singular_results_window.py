@@ -1,11 +1,13 @@
 from StockBench.constants import BUY_SIDE, SELL_SIDE
-from StockBench.gui.results.base.positions_plpc_box_plot_tab import PositionsBoxPlotTabVertical
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.singular.tabs.singular_overview_tab import SingularOverviewTab
+from StockBench.gui.results.singular.tabs.singular_positions_duration_tab import SingularPositionsDurationTabVertical
+from StockBench.gui.results.singular.tabs.singular_positions_pl_tab import SingularPositionsProfitLossTabVertical
+from StockBench.gui.results.singular.tabs.singular_positions_plpc_box_plot_tab import \
+    SingularPositionsBoxPlotTabVertical
+from StockBench.gui.results.singular.tabs.singular_positions_plpc_histogram_tab import \
+    SingularPositionsHistogramTabVertical
 from StockBench.gui.results.singular.tabs.singular_rules_tab import SingularRulesTab
-from StockBench.gui.results.base.positions_plpc_histogram_tab import PositionsHistogramTabVertical
-from StockBench.gui.results.base.positions_pl_tab import PositionsProfitLossTabVertical
-from StockBench.gui.results.base.positions_duration_tab import PositionsDurationTabVertical
 from StockBench.gui.results.singular.tabs.singular_account_value_tab import SingularAccountValueTabVertical
 
 
@@ -22,16 +24,16 @@ class SingularResultsWindow(SimulationResultsWindow):
         # progress bar
         self.layout.addWidget(self.progress_bar)
         # simulation results frame (gets added to layout via tab widget
-        self.overview_tab = SingularOverviewTab(self.progress_observer)
+        self.overview_tab = SingularOverviewTab(self.progress_observer, show_volume)
         # buy and sell rules analysis tabs (gets added to layout via tab widget)
         self.buy_rules_tab = SingularRulesTab(BUY_SIDE)
         self.sell_rules_tab = SingularRulesTab(SELL_SIDE)
         # positions analysis tab (gets added to layout via tab widget)
         self.account_value_bar_tab = SingularAccountValueTabVertical()
-        self.positions_duration_bar_tab = PositionsDurationTabVertical()
-        self.positions_pl_bar_tab = PositionsProfitLossTabVertical()
-        self.positions_plpc_histogram_tab = PositionsHistogramTabVertical()
-        self.positions_plpc_box_plot_tab = PositionsBoxPlotTabVertical()
+        self.positions_duration_bar_tab = SingularPositionsDurationTabVertical()
+        self.positions_pl_bar_tab = SingularPositionsProfitLossTabVertical()
+        self.positions_plpc_histogram_tab = SingularPositionsHistogramTabVertical()
+        self.positions_plpc_box_plot_tab = SingularPositionsBoxPlotTabVertical()
         # tab widget
         self.tab_widget.addTab(self.overview_tab, 'Overview')
         self.tab_widget.addTab(self.buy_rules_tab, 'Buy Rules')
@@ -48,8 +50,7 @@ class SingularResultsWindow(SimulationResultsWindow):
 
     def _run_simulation(self, save_option) -> dict:
         """Implementation of running the simulation for a single symbol simulation."""
-        return self.simulator.run(self.symbol, results_depth=self.results_depth, save_option=save_option,
-                                  show_volume=self.show_volume, progress_observer=self.progress_observer)
+        return self.simulator.run(self.symbol, self.progress_observer)
 
     def _render_data(self, simulation_results: dict):
         """Render the updated data in the window's shared components."""

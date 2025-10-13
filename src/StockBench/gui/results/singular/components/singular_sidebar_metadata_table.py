@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QLabel
 from StockBench.gui.results.base.sidebar_results_table import SidebarResultsTable
+from StockBench.constants import *
 
 
 class SingularMetadataSidebarTable(SidebarResultsTable):
@@ -37,7 +38,7 @@ class SingularMetadataSidebarTable(SidebarResultsTable):
 
     def render_data(self, simulation_results: dict):
         if simulation_results.keys():
-            self.strategy_data_label.setText(f'{simulation_results["strategy"]}')
-            self.symbol_data_label.setText(f'{simulation_results["symbol"]}')
-            self.trade_able_days_data_label.setText(f'{simulation_results["trade_able_days"]} days')
-            self.elapsed_time_data_label.setText(f'{simulation_results["elapsed_time"]:,.2f} seconds')
+            self.strategy_data_label.setText(f'{simulation_results[STRATEGY_KEY]}')
+            self.symbol_data_label.setText(f'{simulation_results[SYMBOL_KEY]}')
+            self.trade_able_days_data_label.setText(f'{simulation_results[TRADE_ABLE_DAYS_KEY]} days')
+            self.elapsed_time_data_label.setText(f'{simulation_results[ELAPSED_TIME_KEY]:,.2f} seconds')

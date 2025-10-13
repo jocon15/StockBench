@@ -41,12 +41,13 @@ class SingularChartingEngine(ChartingEngine):
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, 'temp_overview_chart', f'figure_{symbol}')
 
     @staticmethod
-    def build_account_value_line_chart(df: DataFrame, symbol: str, save_option: int = ChartingEngine.TEMP_SAVE) -> str:
+    def build_account_value_line_chart(account_value_values: list, symbol: str,
+                                       save_option: int = ChartingEngine.TEMP_SAVE) -> str:
         """Builds a line chart for account value."""
-        fig = plotter.Figure(plotter.Scatter(y=df['Account Value'], marker=dict(color=OFF_BLUE), fill='tozeroy',
+        fig = plotter.Figure(plotter.Scatter(y=account_value_values, marker=dict(color=OFF_BLUE), fill='tozeroy',
                                              name='Account Value'))
 
-        fig.add_hline(y=df['Account Value'][0], line_width=1, line_dash="dash", line_color='white')
+        fig.add_hline(y=account_value_values[0], line_width=1, line_dash="dash", line_color='white')
         fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, xaxis_title='Simulation Day',
                           yaxis_title='Account Value ($)', title='Account Value', title_x=0.5)
 

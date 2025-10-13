@@ -1,12 +1,15 @@
 from StockBench.charting.charting_engine import ChartingEngine
 from StockBench.charting.singular.singular_charting_engine import SingularChartingEngine
 from StockBench.gui.results.base.base.simple_vertical_chart_tab import SimpleVerticalChartTab
-from StockBench.constants import SYMBOL_KEY, NORMALIZED_SIMULATION_DATA
-from StockBench.simulator import Simulator
+from StockBench.constants import POSITIONS_PROFIT_LOSS_PERCENT_HISTOGRAM_CHART_FILEPATH_KEY, POSITIONS_KEY, SYMBOL_KEY
 
 
-class SingularAccountValueTabVertical(SimpleVerticalChartTab):
-    """Account value over time chart tab."""
+class SingularPositionsHistogramTabVertical(SimpleVerticalChartTab):
+    """Tab for singular position histogram chart.
+
+    Note: Cannot inherit from ResultsTab because
+    """
+    CHART_KEY = POSITIONS_PROFIT_LOSS_PERCENT_HISTOGRAM_CHART_FILEPATH_KEY
 
     def __init__(self):
         super().__init__()
@@ -16,8 +19,8 @@ class SingularAccountValueTabVertical(SimpleVerticalChartTab):
         self.setLayout(self.layout)
 
     def render_chart(self, simulation_results: dict):
-        chart_filepath = SingularChartingEngine.build_account_value_line_chart(
-            simulation_results[NORMALIZED_SIMULATION_DATA][Simulator.ACCOUNT_VALUE_COLUMN_NAME].tolist(),
+        chart_filepath = SingularChartingEngine.build_single_strategy_result_dataset_positions_plpc_histogram_chart(
+            simulation_results[POSITIONS_KEY],
             simulation_results[SYMBOL_KEY], ChartingEngine.TEMP_SAVE)
 
         self.html_viewer.render_data(chart_filepath)

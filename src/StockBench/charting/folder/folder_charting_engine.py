@@ -75,7 +75,7 @@ class FolderChartingEngine(ChartingEngine):
         positions_data = []
         for result in results:
             strategy_names.append(result[STRATEGY_KEY])
-            positions_data.append([position.lifetime_profit_loss() for position in result[POSITIONS_KEY]])
+            positions_data.append([position.lifetime_profit_loss_percent() for position in result[POSITIONS_KEY]])
 
         formatted_fig = ChartingEngine._build_multi_dataset_histogram(
             strategy_names, positions_data, 'Position Profit/Loss % Distribution per Strategy')

@@ -145,7 +145,7 @@ class ChartingEngine:
         # formatting a single data set inside a list in order to use the multi data set histogram builder
         # (it will just build 1 histogram)
         strategy_names = [strategy_name]
-        positions_data = [[position.lifetime_profit_loss() for position in positions]]
+        positions_data = [[position.lifetime_profit_loss_percent() for position in positions]]
 
         formatted_fig = ChartingEngine._build_multi_dataset_histogram(strategy_names, positions_data,
                                                                       'Position Profit/Loss % Distribution')
@@ -257,7 +257,7 @@ class ChartingEngine:
     @staticmethod
     def _build_multi_dataset_histogram(strategy_names: list, positions_data: list, title: str) -> str:
         """Build a multi-dataset histogram chart."""
-        fig = create_distplot(positions_data, strategy_names)
+        fig = create_distplot(positions_data, strategy_names, bin_size=0.1)
 
         fig.update_layout(xaxis=dict(
             zeroline=True,  # Enable the zero line

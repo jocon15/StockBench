@@ -10,7 +10,7 @@ log = logging.getLogger()
 
 
 class MACDTrigger(Trigger):
-    LARGE_EMA_LENGTH = 261
+    LARGE_EMA_LENGTH = 26
     SMALL_EMA_LENGTH = 12
 
     def __init__(self, indicator_symbol):

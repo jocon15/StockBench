@@ -356,7 +356,8 @@ class Simulator:
             ACCOUNT_VALUE_BAR_CHART_FILEPATH: chart_paths_bundle.account_value_bar_chart_filepath,
             POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: chart_paths_bundle.positions_duration_bar_chart_filepath,
             POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_bar_chart_filepath,
-            POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_histogram_chart_filepath  # noqa
+            POSITIONS_PROFIT_LOSS_PERCENT_HISTOGRAM_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_histogram_chart_filepath,  # noqa
+            POSITIONS_PROFIT_LOSS_PERCENT_BOX_PLOT_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_box_chart_filepath  # noqa
         }
 
     def __multi_pre_process(self, symbols: List[str], progress_observer: ProgressObserver) -> float:
@@ -414,7 +415,8 @@ class Simulator:
             SELL_RULES_CHART_FILEPATH_KEY: chart_paths_bundle.sell_rules_chart_filepath,
             POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: chart_paths_bundle.positions_duration_bar_chart_filepath,
             POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_bar_chart_filepath,
-            POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_histogram_chart_filepath  # noqa
+            POSITIONS_PROFIT_LOSS_PERCENT_HISTOGRAM_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_histogram_chart_filepath, # noqa
+            POSITIONS_PROFIT_LOSS_PERCENT_BOX_PLOT_CHART_FILEPATH_KEY: chart_paths_bundle.positions_profit_loss_box_chart_filepath # noqa
         }
 
     def __reset_singular_attributes(self):
@@ -516,6 +518,7 @@ class Simulator:
         positions_duration_bar_chart_filepath = ''
         positions_profit_loss_bar_chart_filepath = ''
         positions_profit_loss_histogram_chart_filepath = ''
+        positions_profit_loss_box_chart_filepath = ''
 
         if not self.__running_multiple:
             if results_depth == self.CHARTS_AND_DATA:
@@ -550,9 +553,15 @@ class Simulator:
                     SingularChartingEngine.build_positions_profit_loss_bar_chart(
                         self.__single_simulation_position_archive, symbol, save_option))
 
-                self.gui_status_log.info('Building positions profit loss histogram chart...')
+                self.gui_status_log.info('Building positions profit loss percent histogram chart...')
                 positions_profit_loss_histogram_chart_filepath = (
-                    ChartingEngine.build_positions_profit_loss_percent_histogram_chart(
+                    ChartingEngine.build_single_strategy_result_dataset_positions_plpc_histogram_chart(
+                        self.__single_simulation_position_archive, self.__algorithm.strategy_filename, symbol,
+                        save_option))
+
+                self.gui_status_log.info('Building positions profit loss percent box chart...')
+                positions_profit_loss_box_chart_filepath = (
+                    ChartingEngine.build_single_strategy_result_dataset_positions_plpc_box_plot(
                         self.__single_simulation_position_archive, self.__algorithm.strategy_filename, symbol,
                         save_option))
 
@@ -562,7 +571,8 @@ class Simulator:
                                                  account_value_bar_chart_filepath,
                                                  positions_duration_bar_chart_filepath,
                                                  positions_profit_loss_bar_chart_filepath,
-                                                 positions_profit_loss_histogram_chart_filepath)
+                                                 positions_profit_loss_histogram_chart_filepath,
+                                                 positions_profit_loss_box_chart_filepath)
 
     def __create_multi_charts(self, results: List[dict], results_depth: int,
                               save_option: int) -> MultiSimulationChartPathBundle:
@@ -595,10 +605,16 @@ class Simulator:
                 future5 = executor.submit(ChartingEngine.build_positions_profit_loss_bar_chart,
                                           self.__single_simulation_position_archive, None, save_option)
 
-                self.gui_status_log.info('Building positions profit loss histogram chart...')
-                future6 = executor.submit(ChartingEngine.build_positions_profit_loss_percent_histogram_chart,
-                                          self.__single_simulation_position_archive, self.__algorithm.strategy_filename,
-                                          None, save_option)
+                self.gui_status_log.info('Building positions profit loss percent histogram chart...')
+                future6 = executor.submit(
+                    ChartingEngine.build_single_strategy_result_dataset_positions_plpc_histogram_chart,
+                    self.__single_simulation_position_archive, self.__algorithm.strategy_filename,
+                    None, save_option)
+                self.gui_status_log.info('Building positions profit loss percent box chart...')
+                future7 = executor.submit(
+                    ChartingEngine.build_single_strategy_result_dataset_positions_plpc_box_plot,
+                    self.__single_simulation_position_archive, self.__algorithm.strategy_filename,
+                    None, save_option)
 
                 overview_chart_filepath = future1.result()
                 buy_rules_chart_filepath = future2.result()
@@ -606,13 +622,15 @@ class Simulator:
                 positions_duration_bar_chart_filepath = future4.result()
                 positions_profit_loss_bar_chart_filepath = future5.result()
                 positions_profit_loss_histogram_chart_filepath = future6.result()
+                positions_profit_loss_box_chart_filepath = future7.result()
 
         return MultiSimulationChartPathBundle(overview_chart_filepath,
                                               buy_rules_chart_filepath,
                                               sell_rules_chart_filepath,
                                               positions_duration_bar_chart_filepath,
                                               positions_profit_loss_bar_chart_filepath,
-                                              positions_profit_loss_histogram_chart_filepath)
+                                              positions_profit_loss_histogram_chart_filepath,
+                                              positions_profit_loss_box_chart_filepath)
 
     def __calculate_progress_bar_increment(self, progress_observer: ProgressObserver,
                                            sim_window_start_day: int) -> float:

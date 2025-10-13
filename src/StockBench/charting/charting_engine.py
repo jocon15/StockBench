@@ -139,22 +139,47 @@ class ChartingEngine:
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
 
     @staticmethod
-    def build_positions_profit_loss_percent_histogram_chart(positions: list, strategy_name: str, symbol: Optional[str],
-                                                            save_option=TEMP_SAVE) -> str:
-        """Builds a histogram chart for positions profit/loss percent."""
+    def build_single_strategy_result_dataset_positions_plpc_histogram_chart(positions: List[Position],
+                                                                            strategy_name: str,
+                                                                            symbol: Optional[str],
+                                                                            save_option=TEMP_SAVE) -> str:
+        """Builds a histogram chart for positions profit/loss percent from a single strategy result dataset."""
         # formatting a single data set inside a list in order to use the multi data set histogram builder
         # (it will just build 1 histogram)
         strategy_names = [strategy_name]
         positions_data = [[position.lifetime_profit_loss_percent() for position in positions]]
 
-        formatted_fig = ChartingEngine._build_multi_dataset_histogram(strategy_names, positions_data,
-                                                                      'Position Profit/Loss % Distribution')
+        formatted_fig = ChartingEngine._build_multiple_strategy_result_dataset_histogram(strategy_names, positions_data,
+                                                                                         'Position Profit/Loss % '
+                                                                                         'Distribution')
 
         temp_filename = 'temp_positions_profit_loss_histogram_chart'
         if symbol:
             unique_prefix = f'{symbol}_positions_profit_loss_histogram_chart'
         else:
             unique_prefix = 'multi_positions_profit_loss_histogram_chart'
+
+        return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
+
+    @staticmethod
+    def build_single_strategy_result_dataset_positions_plpc_box_plot(positions: List[Position], strategy_name: str,
+                                                                     symbol: Optional[str],
+                                                                     save_option=TEMP_SAVE) -> str:
+        """Builds a box and whisker chart for positions profit/loss percent."""
+        # formatting a single data set inside a list in order to use the multi data set histogram builder
+        # (it will just build 1 histogram)
+        strategy_names = [strategy_name]
+        positions_data = [[position.lifetime_profit_loss_percent() for position in positions]]
+
+        formatted_fig = ChartingEngine._build_multiple_strategy_result_dataset_box_plot(strategy_names, positions_data,
+                                                                                        'Position Profit/Loss % '
+                                                                                        'Distribution')
+
+        temp_filename = 'temp_positions_profit_loss_box_chart'
+        if symbol:
+            unique_prefix = f'{symbol}_positions_profit_loss_box_chart'
+        else:
+            unique_prefix = 'multi_positions_profit_loss_box_chart'
 
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
 
@@ -255,9 +280,27 @@ class ChartingEngine:
                 plotter.Scatter(y=median_values, marker=dict(color=STDDEV_COLOR), name='Median', mode='lines')]
 
     @staticmethod
-    def _build_multi_dataset_histogram(strategy_names: list, positions_data: list, title: str) -> str:
-        """Build a multi-dataset histogram chart."""
+    def _build_multiple_strategy_result_dataset_histogram(strategy_names: list, positions_data: list,
+                                                          title: str) -> str:
+        """Build a histogram chart with multiple strategy datasets."""
         fig = create_distplot(positions_data, strategy_names, bin_size=0.1)
+
+        fig.update_layout(xaxis=dict(
+            zeroline=True,  # Enable the zero line
+            zerolinewidth=1,  # Adjust line width
+            zerolinecolor='#283442'),  # Customize color
+            template='plotly_dark', xaxis_rangeslider_visible=False, title=title, title_x=0.5)
+
+        return ChartingEngine.format_chart(fig)
+
+    @staticmethod
+    def _build_multiple_strategy_result_dataset_box_plot(strategy_names: list, positions_data: list,
+                                                         title: str) -> str:
+        """Build a box and whisker chart with multiple strategy datasets."""
+        fig = plotter.Figure()
+
+        for index, strategy_name in enumerate(strategy_names):
+            fig.add_trace(plotter.Box(x=positions_data[index], name=strategy_name))
 
         fig.update_layout(xaxis=dict(
             zeroline=True,  # Enable the zero line

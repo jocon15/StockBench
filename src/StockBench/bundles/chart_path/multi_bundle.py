@@ -10,3 +10,4 @@ class MultiSimulationChartPathBundle:
     positions_duration_bar_chart_filepath: str
     positions_profit_loss_bar_chart_filepath: str
     positions_profit_loss_histogram_chart_filepath: str
+    positions_profit_loss_box_chart_filepath: str

@@ -117,7 +117,7 @@ class FolderOverviewSidebar(OverviewSideBar):
         export_dict.pop(SELL_RULES_CHART_FILEPATH_KEY)
         export_dict.pop(POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY)
         export_dict.pop(POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY)
-        export_dict.pop(POSITIONS_PROFIT_LOSS_HISTOGRAM_CHART_FILEPATH_KEY)
+        export_dict.pop(POSITIONS_PROFIT_LOSS_PERCENT_HISTOGRAM_CHART_FILEPATH_KEY)
 
         return export_dict
 

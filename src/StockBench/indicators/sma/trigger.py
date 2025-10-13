@@ -27,7 +27,7 @@ class SMATrigger(Trigger):
         rule_key_number_groups = self.find_all_nums_in_str(rule_key)
         if len(rule_key_number_groups) > 0:
             indicator_length = int(rule_key_number_groups[0])
-            self.__add_sma(indicator_length, data_manager)
+            self.__add_sma_to_simulation_data(indicator_length, data_manager)
         else:
             raise StrategyIndicatorError(f'{self.indicator_symbol} rule key: {rule_key} must have an indicator length!')
 
@@ -35,7 +35,8 @@ class SMATrigger(Trigger):
         # logic for rule value is the same as the logic for rule key
         return self.add_indicator_data_from_rule_key(rule_value, None, side, data_manager)
 
-    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager, current_day_index) -> float:
+    def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager,
+                                            current_day_index) -> float:
         # parse rule key will work even when passed a rule value
         return Trigger._parse_rule_key_no_default_indicator_length(rule_value, self.indicator_symbol, data_manager,
                                                                    current_day_index)
@@ -51,8 +52,8 @@ class SMATrigger(Trigger):
 
         return self.basic_trigger_check(indicator_value, rule_value)
 
-    def __add_sma(self, length: int, data_manager: DataManager):
-        """Calculate the SMA values and add them to the df."""
+    def __add_sma_to_simulation_data(self, length: int, data_manager: DataManager):
+        """Adds SMA indicator values to the simulation data."""
         column_title = f'{self.indicator_symbol}{length}'
 
         # if SMA values ar already in the df, we don't need to add them again
@@ -61,7 +62,6 @@ class SMATrigger(Trigger):
                 return
 
         price_data = data_manager.get_column_data(data_manager.CLOSE)
-
         sma_values = SMATrigger.calculate_sma(length, price_data)
 
         data_manager.add_column(column_title, sma_values)

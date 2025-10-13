@@ -31,7 +31,6 @@ class StopProfitTrigger(Trigger):
 
     def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,
                       current_day_index: int) -> bool:
-        """Evaluate if a trigger should be fired."""
         log.debug('Checking stop profit algorithm...')
 
         current_price = data_manager.get_data_point(data_manager.CLOSE, current_day_index)

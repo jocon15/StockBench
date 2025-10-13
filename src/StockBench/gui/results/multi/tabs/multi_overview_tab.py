@@ -1,3 +1,6 @@
+from StockBench.charting.charting_engine import ChartingEngine
+from StockBench.charting.multi.multi_charting_engine import MultiChartingEngine
+from StockBench.constants import INITIAL_ACCOUNT_VALUE_KEY, MULTI_RESULTS_KEY
 from StockBench.gui.results.base.overview_tab import OverviewTabVertical
 from StockBench.gui.results.multi.components.multi_sidebar import MultiOverviewSideBar
 
@@ -13,7 +16,6 @@ class MultiOverviewTab(OverviewTabVertical):
         self.overview_side_bar.setMaximumWidth(300)
         self.layout.addWidget(self.html_viewer)
 
-        # apply the layout
         self.setLayout(self.layout)
 
     def render_data(self, simulation_results):
@@ -21,7 +23,12 @@ class MultiOverviewTab(OverviewTabVertical):
         self.overview_side_bar.render_data(simulation_results)
 
     def render_chart(self, simulation_results: dict):
-        self.html_viewer.render_data(simulation_results[self.CHART_KEY])
+        chart_filepath = MultiChartingEngine.build_multi_overview_chart(
+            simulation_results[MULTI_RESULTS_KEY],
+            simulation_results[INITIAL_ACCOUNT_VALUE_KEY],
+            ChartingEngine.TEMP_SAVE)
+
+        self.html_viewer.render_data(chart_filepath)
 
     def update_error_message(self, message):
         # pass the error down

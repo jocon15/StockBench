@@ -1,11 +1,11 @@
 from StockBench.constants import BUY_SIDE, SELL_SIDE
-from StockBench.gui.results.base.positions_plpc_box_plot_tab import PositionsBoxPlotTabVertical
+from StockBench.gui.results.multi.tabs.multi_positions_plpc_box_plot_tab import MultiPositionsBoxPlotTabVertical
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.multi.tabs.multi_rules_tab import MultiRulesTab
 from StockBench.gui.results.multi.tabs.multi_overview_tab import MultiOverviewTab
-from StockBench.gui.results.base.positions_pl_tab import PositionsProfitLossTabVertical
-from StockBench.gui.results.base.positions_plpc_histogram_tab import PositionsHistogramTabVertical
-from StockBench.gui.results.base.positions_duration_tab import PositionsDurationTabVertical
+from StockBench.gui.results.multi.tabs.multi_positions_pl_tab import MultiPositionsProfitLossTabVertical
+from StockBench.gui.results.multi.tabs.multi_positions_plpc_histogram_tab import MultiPositionsHistogramTabVertical
+from StockBench.gui.results.multi.tabs.multi_positions_duration_tab import MultiPositionsDurationTabVertical
 
 
 class MultiResultsWindow(SimulationResultsWindow):
@@ -26,10 +26,10 @@ class MultiResultsWindow(SimulationResultsWindow):
         self.buy_rules_tab = MultiRulesTab(BUY_SIDE)
         self.sell_rules_tab = MultiRulesTab(SELL_SIDE)
         # positions analysis tab (gets added to layout via tab widget)
-        self.positions_duration_bar_tab = PositionsDurationTabVertical()
-        self.positions_pl_bar_tab = PositionsProfitLossTabVertical()
-        self.positions_plpc_histogram_tab = PositionsHistogramTabVertical()
-        self.positions_plpc_box_plot_tab = PositionsBoxPlotTabVertical()
+        self.positions_duration_bar_tab = MultiPositionsDurationTabVertical()
+        self.positions_pl_bar_tab = MultiPositionsProfitLossTabVertical()
+        self.positions_plpc_histogram_tab = MultiPositionsHistogramTabVertical()
+        self.positions_plpc_box_plot_tab = MultiPositionsBoxPlotTabVertical()
         # tab widget
         self.tab_widget.addTab(self.overview_tab, 'Overview')
         self.tab_widget.addTab(self.buy_rules_tab, 'Buy Rules')
@@ -45,8 +45,7 @@ class MultiResultsWindow(SimulationResultsWindow):
 
     def _run_simulation(self, save_option) -> dict:
         """Implementation of running the simulation for multi-symbol simulation."""
-        return self.simulator.run_multiple(self.symbols, results_depth=self.results_depth, save_option=save_option,
-                                           progress_observer=self.progress_observer)
+        return self.simulator.run_multiple(self.symbols, self.progress_observer)
 
     def _render_data(self, simulation_results: dict):
         """Render the updated data in the window's shared_components."""

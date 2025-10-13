@@ -1,7 +1,9 @@
-from PyQt6.QtWidgets import QLabel
 from time import perf_counter
+from PyQt6.QtWidgets import QLabel
+
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.folder.tabs.folder_overview_tab import FolderOverViewTab
+from StockBench.gui.results.folder.tabs.folder_positions_box_plot_tab import FolderPositionsBoxPlotTabVertical
 from StockBench.gui.results.folder.tabs.folder_trades_made_tab import FolderTradesMadeTabVertical
 from StockBench.gui.results.folder.tabs.folder_effectiveness_tab import FolderEffectivenessTabVertical
 from StockBench.gui.results.folder.tabs.folder_total_pl_tab import FolderTotalProfitLossTabVertical
@@ -40,6 +42,7 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.median_pl_tab = FolderMedianProfitLossTabVertical()
         self.stddev_pl_tab = FolderStandardDeviationProfitLossTabVertical()
         self.positions_plpc_histogram_tab = FolderPositionsHistogramTabVertical()
+        self.positions_plpc_box_plot_tab = FolderPositionsBoxPlotTabVertical()
 
         # tab widget
         self.tab_widget.addTab(self.overview_tab, 'Overview')
@@ -50,6 +53,7 @@ class FolderResultsWindow(SimulationResultsWindow):
         self.tab_widget.addTab(self.median_pl_tab, 'Median P/L')
         self.tab_widget.addTab(self.stddev_pl_tab, 'Stddev P/L')
         self.tab_widget.addTab(self.positions_plpc_histogram_tab, 'Positions P/L % (histogram)')
+        self.tab_widget.addTab(self.positions_plpc_box_plot_tab, 'Positions P/L % (box plot)')
         self.layout.addWidget(self.tab_widget)
 
         # error message
@@ -113,6 +117,7 @@ class FolderResultsWindow(SimulationResultsWindow):
             self.median_pl_tab.render_chart(simulation_results)
             self.stddev_pl_tab.render_chart(simulation_results)
             self.positions_plpc_histogram_tab.render_chart(simulation_results)
+            self.positions_plpc_box_plot_tab.render_chart(simulation_results)
         else:
             # the simulation failed - render the chart unavailable html
             self.overview_tab.html_viewer.render_chart_unavailable()
@@ -123,6 +128,7 @@ class FolderResultsWindow(SimulationResultsWindow):
             self.median_pl_tab.html_viewer.render_chart_unavailable()
             self.stddev_pl_tab.html_viewer.render_chart_unavailable()
             self.positions_plpc_histogram_tab.html_viewer.render_chart_unavailable()
+            self.positions_plpc_box_plot_tab.html_viewer.render_chart_unavailable()
 
     @staticmethod
     def _get_strategy_name(filepath: str):

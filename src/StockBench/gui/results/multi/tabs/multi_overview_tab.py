@@ -18,8 +18,8 @@ class MultiOverviewTab(OverviewTabVertical):
         self.setLayout(self.layout)
 
     def render_data(self, simulation_results_bundle: SimulationResultsBundle):
-        self.render_chart(simulation_results_bundle.simulation_results)
-        self.overview_side_bar.render_data(simulation_results_bundle.chart_filepaths)
+        self.render_chart(simulation_results_bundle.chart_filepaths)
+        self.overview_side_bar.render_data(simulation_results_bundle.simulation_results)
 
     def render_chart(self, chart_filepaths: dict):
         self.html_viewer.render_data(chart_filepaths[OVERVIEW_CHART_FILEPATH])

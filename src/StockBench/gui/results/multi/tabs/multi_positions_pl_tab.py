@@ -1,11 +1,9 @@
-from StockBench.charting.charting_engine import ChartingEngine
 from StockBench.gui.results.base.base.simple_vertical_chart_tab import SimpleVerticalChartTab
-from StockBench.constants import POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY, POSITIONS_KEY
+from StockBench.gui.results.multi.constants.constants import POSITIONS_PL_BAR_CHART_FILEPATH
 
 
 class MultiPositionsProfitLossTabVertical(SimpleVerticalChartTab):
     """Generic positions analysis tab."""
-    CHART_KEY = POSITIONS_PROFIT_LOSS_BAR_CHART_FILEPATH_KEY
 
     def __init__(self):
         super().__init__()
@@ -15,8 +13,4 @@ class MultiPositionsProfitLossTabVertical(SimpleVerticalChartTab):
         self.setLayout(self.layout)
 
     def render_chart(self, chart_filepaths):
-        chart_filepath = ChartingEngine.build_positions_profit_loss_bar_chart(chart_filepaths[POSITIONS_KEY],
-                                                                              None,
-                                                                              ChartingEngine.TEMP_SAVE)
-
-        self.html_viewer.render_data(chart_filepath)
+        self.html_viewer.render_data(chart_filepaths[POSITIONS_PL_BAR_CHART_FILEPATH])

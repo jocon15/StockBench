@@ -1,6 +1,5 @@
-from StockBench.charting.charting_engine import ChartingEngine
 from StockBench.gui.results.base.base.simple_vertical_chart_tab import SimpleVerticalChartTab
-from StockBench.constants import POSITIONS_PROFIT_LOSS_PERCENT_HISTOGRAM_CHART_FILEPATH_KEY, POSITIONS_KEY, STRATEGY_KEY
+from StockBench.gui.results.multi.constants.constants import POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH
 
 
 class MultiPositionsHistogramTabVertical(SimpleVerticalChartTab):
@@ -8,7 +7,6 @@ class MultiPositionsHistogramTabVertical(SimpleVerticalChartTab):
 
     Note: Cannot inherit from ResultsTab because
     """
-    CHART_KEY = POSITIONS_PROFIT_LOSS_PERCENT_HISTOGRAM_CHART_FILEPATH_KEY
 
     def __init__(self):
         super().__init__()
@@ -18,10 +16,4 @@ class MultiPositionsHistogramTabVertical(SimpleVerticalChartTab):
         self.setLayout(self.layout)
 
     def render_chart(self, chart_filepaths: dict):
-        chart_filepath = ChartingEngine.build_single_strategy_result_dataset_positions_plpc_histogram_chart(
-            chart_filepaths[POSITIONS_KEY],
-            chart_filepaths[STRATEGY_KEY],
-            None,
-            ChartingEngine.TEMP_SAVE)
-
-        self.html_viewer.render_data(chart_filepath)
+        self.html_viewer.render_data(chart_filepaths[POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH])

@@ -1,8 +1,7 @@
-from StockBench.charting.charting_engine import ChartingEngine
-from StockBench.charting.multi.multi_charting_engine import MultiChartingEngine
-from StockBench.constants import INITIAL_ACCOUNT_VALUE_KEY, MULTI_RESULTS_KEY
+from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.results.base.overview_tab import OverviewTabVertical
 from StockBench.gui.results.multi.components.multi_sidebar import MultiOverviewSideBar
+from StockBench.gui.results.multi.constants.constants import OVERVIEW_CHART_FILEPATH
 
 
 class MultiOverviewTab(OverviewTabVertical):
@@ -18,17 +17,12 @@ class MultiOverviewTab(OverviewTabVertical):
 
         self.setLayout(self.layout)
 
-    def render_data(self, simulation_results_bundle):
-        self.render_chart(simulation_results_bundle)
-        self.overview_side_bar.render_data(simulation_results_bundle)
+    def render_data(self, simulation_results_bundle: SimulationResultsBundle):
+        self.render_chart(simulation_results_bundle.simulation_results)
+        self.overview_side_bar.render_data(simulation_results_bundle.chart_filepaths)
 
     def render_chart(self, chart_filepaths: dict):
-        chart_filepath = MultiChartingEngine.build_multi_overview_chart(
-            chart_filepaths[MULTI_RESULTS_KEY],
-            chart_filepaths[INITIAL_ACCOUNT_VALUE_KEY],
-            ChartingEngine.TEMP_SAVE)
-
-        self.html_viewer.render_data(chart_filepath)
+        self.html_viewer.render_data(chart_filepaths[OVERVIEW_CHART_FILEPATH])
 
     def update_error_message(self, message):
         # pass the error down

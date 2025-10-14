@@ -2,7 +2,6 @@ from StockBench.charting.charting_engine import ChartingEngine
 from StockBench.charting.singular.singular_charting_engine import SingularChartingEngine
 from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
-from StockBench.gui.results.singular.constants.constants import *
 from StockBench.gui.results.singular.tabs.singular_overview_tab import SingularOverviewTab
 from StockBench.gui.results.singular.tabs.singular_positions_duration_tab import SingularPositionsDurationTabVertical
 from StockBench.gui.results.singular.tabs.singular_positions_pl_tab import SingularPositionsProfitLossTabVertical
@@ -13,6 +12,7 @@ from StockBench.gui.results.singular.tabs.singular_positions_plpc_histogram_tab 
 from StockBench.gui.results.singular.tabs.singular_rules_tab import SingularRulesTab
 from StockBench.gui.results.singular.tabs.singular_account_value_tab import SingularAccountValueTabVertical
 from StockBench.simulator import Simulator
+from StockBench.gui.results.singular.constants.constants import *
 from StockBench.constants import *
 
 

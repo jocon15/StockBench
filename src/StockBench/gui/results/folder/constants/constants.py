@@ -1,0 +1,10 @@
+
+# folder results constants
+TRADES_MADE_BAR_CHART_FILEPATH_KEY = 'trades_made_bar_chart_filepath'
+EFFECTIVENESS_BAR_CHART_FILEPATH_KEY = 'effectiveness_bar_chart_filepath'
+TOTAL_PL_BAR_CHART_FILEPATH_KEY = 'total_pl_bar_chart_filepath'
+AVERAGE_PL_BAR_CHART_FILEPATH_KEY = 'average_pl_bar_chart_filepath'
+MEDIAN_PL_BAR_CHART_FILEPATH_KEY = 'median_pl_bar_chart_filepath'
+STDDEV_PL_BAR_CHART_FILEPATH_KEY = 'stddev_pl_bar_chart_filepath'
+POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY = 'positions_plpc_histogram_chart_filepath'
+POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY = 'positions_plpc_box_plot_chart_filepath'

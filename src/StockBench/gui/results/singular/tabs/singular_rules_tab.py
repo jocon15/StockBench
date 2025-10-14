@@ -1,6 +1,6 @@
-from StockBench.charting.charting_engine import ChartingEngine
-from StockBench.constants import POSITIONS_KEY, SYMBOL_KEY
+from StockBench.constants import BUY_SIDE
 from StockBench.gui.results.base.rules_tab import RulesTab
+from StockBench.gui.results.singular.constants.constants import BUY_RULES_BAR_CHART, SELL_RULES_BAR_CHART
 
 
 class SingularRulesTab(RulesTab):
@@ -12,11 +12,10 @@ class SingularRulesTab(RulesTab):
 
         self.setLayout(self.layout)
 
-    def render_chart(self, simulation_results: dict):
-        chart_filepath = ChartingEngine.build_rules_bar_chart(
-            simulation_results[POSITIONS_KEY],
-            self.side,
-            simulation_results[SYMBOL_KEY],
-            ChartingEngine.TEMP_SAVE)
+    def render_chart(self, chart_filepaths: dict):
+        if self.side == BUY_SIDE:
+            chart_filepath = chart_filepaths[BUY_RULES_BAR_CHART]
+        else:
+            chart_filepath = chart_filepaths[SELL_RULES_BAR_CHART]
 
         self.html_viewer.render_data(chart_filepath)

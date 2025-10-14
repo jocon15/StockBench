@@ -1,8 +1,5 @@
-from StockBench.charting.charting_engine import ChartingEngine
-from StockBench.charting.singular.singular_charting_engine import SingularChartingEngine
 from StockBench.gui.results.base.base.simple_vertical_chart_tab import SimpleVerticalChartTab
-from StockBench.constants import SYMBOL_KEY, NORMALIZED_SIMULATION_DATA
-from StockBench.simulator import Simulator
+from StockBench.gui.results.singular.constants.constants import ACCOUNT_VALUE_LINE_CHART_FILEPATH
 
 
 class SingularAccountValueTabVertical(SimpleVerticalChartTab):
@@ -15,9 +12,5 @@ class SingularAccountValueTabVertical(SimpleVerticalChartTab):
 
         self.setLayout(self.layout)
 
-    def render_chart(self, simulation_results: dict):
-        chart_filepath = SingularChartingEngine.build_account_value_line_chart(
-            simulation_results[NORMALIZED_SIMULATION_DATA][Simulator.ACCOUNT_VALUE_COLUMN_NAME].tolist(),
-            simulation_results[SYMBOL_KEY], ChartingEngine.TEMP_SAVE)
-
-        self.html_viewer.render_data(chart_filepath)
+    def render_chart(self, chart_filepaths: dict):
+        self.html_viewer.render_data(chart_filepaths[ACCOUNT_VALUE_LINE_CHART_FILEPATH])

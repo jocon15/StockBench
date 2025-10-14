@@ -75,7 +75,8 @@ class SingularResultsWindow(SimulationResultsWindow):
                         simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], ChartingEngine.TEMP_SAVE),
                 POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY:
                     SingularChartingEngine.build_single_strategy_result_dataset_positions_plpc_box_plot(
-                        simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], ChartingEngine.TEMP_SAVE)
+                        simulation_results[POSITIONS_KEY], simulation_results[STRATEGY_KEY],
+                        simulation_results[SYMBOL_KEY], save_option)
             }
         else:
             # filepaths are set to empty strings which will cause the html viewers to render chart unavailable

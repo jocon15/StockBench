@@ -69,10 +69,11 @@ class SingularResultsWindow(SimulationResultsWindow):
                 POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_duration_bar_chart(
                     simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], ChartingEngine.TEMP_SAVE),
                 POSITIONS_PL_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_profit_loss_bar_chart(
-                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], ChartingEngine.TEMP_SAVE),
+                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
                 POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
                     SingularChartingEngine.build_single_strategy_result_dataset_positions_plpc_histogram_chart(
-                        simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], ChartingEngine.TEMP_SAVE),
+                        simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY],
+                        simulation_results[STRATEGY_KEY], save_option),
                 POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY:
                     SingularChartingEngine.build_single_strategy_result_dataset_positions_plpc_box_plot(
                         simulation_results[POSITIONS_KEY], simulation_results[STRATEGY_KEY],

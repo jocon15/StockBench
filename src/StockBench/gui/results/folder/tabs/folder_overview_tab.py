@@ -1,3 +1,4 @@
+from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.results.base.overview_tab import OverviewTabVertical
 from StockBench.gui.results.folder.components.folder_sidebar import FolderOverviewSidebar
 from StockBench.gui.results.folder.components.folder_results_table import FolderResultsTable
@@ -13,12 +14,11 @@ class FolderOverViewTab(OverviewTabVertical):
         self.results_table = FolderResultsTable(strategies)
         self.layout.addWidget(self.results_table)
 
-        # apply the layout
         self.setLayout(self.layout)
 
-    def render_data(self, simulation_results_bundle):
-        self.overview_side_bar.render_data(simulation_results_bundle)
-        self.results_table.render_data(simulation_results_bundle)
+    def render_data(self, simulation_results_bundle: SimulationResultsBundle):
+        self.overview_side_bar.render_data(simulation_results_bundle.simulation_results)
+        self.results_table.render_data(simulation_results_bundle.simulation_results)
 
     def render_chart(self, chart_filepaths: dict):
         # Since folder overview tab has a table instead of a chart, this method is unused. It is an abstract method

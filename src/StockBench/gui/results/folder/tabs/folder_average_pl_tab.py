@@ -1,5 +1,5 @@
-from StockBench.charting.folder.folder_charting_engine import FolderChartingEngine
 from StockBench.gui.results.base.base.simple_vertical_chart_tab import SimpleVerticalChartTab
+from StockBench.gui.results.folder.constants.constants import AVERAGE_PL_BAR_CHART_FILEPATH_KEY
 
 
 class FolderAverageProfitLossTabVertical(SimpleVerticalChartTab):
@@ -7,18 +7,12 @@ class FolderAverageProfitLossTabVertical(SimpleVerticalChartTab):
 
     Note: Cannot inherit from ResultsTab because
     """
+
     def __init__(self):
         super().__init__()
-        # add layouts to widget
         self.layout.addWidget(self.html_viewer)
 
-        # apply the layout
         self.setLayout(self.layout)
 
     def render_chart(self, chart_filepaths: dict):
-        # normalize the results
-        results = chart_filepaths['results']
-        # build the chart
-        chart_filepath = FolderChartingEngine.build_average_pl_bar_chart(results)
-        # render the chart
-        self.html_viewer.render_data(chart_filepath)
+        self.html_viewer.render_data(chart_filepaths[AVERAGE_PL_BAR_CHART_FILEPATH_KEY])

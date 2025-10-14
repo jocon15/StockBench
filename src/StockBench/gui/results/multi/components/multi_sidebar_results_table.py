@@ -1,4 +1,5 @@
 from StockBench.gui.results.base.sidebar_results_table import SidebarResultsTable
+from StockBench.constants import *
 
 
 class MultiResultsSidebarTable(SidebarResultsTable):
@@ -46,11 +47,10 @@ class MultiResultsSidebarTable(SidebarResultsTable):
 
     def render_data(self, simulation_results: dict):
         if simulation_results.keys():
-
-            self.trades_made_data_label.setText(f'{simulation_results["trades_made"]}')
-            self.average_trade_duration_data_label.setText(f'{simulation_results["average_trade_duration"]:.1f} days')
-            self.effectiveness_data_label.setText(f'{simulation_results["effectiveness"]:,.2f} %')
-            self.total_pl_data_label.setText(f'$ {simulation_results["total_profit_loss"]:,.2f}')
-            self.average_pl_data_label.setText(f'$ {simulation_results["average_profit_loss"]:,.2f}')
-            self.median_pl_data_label.setText(f'$ {simulation_results["median_profit_loss"]:,.2f}')
-            self.stddev_pl_data_label.setText(f'$ {simulation_results["standard_profit_loss_deviation"]:,.2f}')
+            self.trades_made_data_label.setText(f'{simulation_results[TRADES_MADE_KEY]}')
+            self.average_trade_duration_data_label.setText(f'{simulation_results[AVERAGE_TRADE_DURATION_KEY]:.1f} days')
+            self.effectiveness_data_label.setText(f'{simulation_results[EFFECTIVENESS_KEY]:,.2f} %')
+            self.total_pl_data_label.setText(f'$ {simulation_results[TOTAL_PROFIT_LOSS_KEY]:,.2f}')
+            self.average_pl_data_label.setText(f'$ {simulation_results[AVERAGE_PROFIT_LOSS_KEY]:,.2f}')
+            self.median_pl_data_label.setText(f'$ {simulation_results[MEDIAN_PROFIT_LOSS_KEY]:,.2f}')
+            self.stddev_pl_data_label.setText(f'$ {simulation_results[STANDARD_PROFIT_LOSS_DEVIATION_KEY]:,.2f}')

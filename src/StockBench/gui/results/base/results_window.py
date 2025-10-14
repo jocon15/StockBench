@@ -9,6 +9,8 @@ from StockBench.charting.charting_engine import ChartingEngine
 from PyQt6.QtWidgets import QWidget, QProgressBar, QTabWidget, QVBoxLayout
 from PyQt6.QtCore import QTimer, QThreadPool
 from PyQt6 import QtGui
+
+from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.worker.worker import Worker
 from StockBench.observers.progress_observer import ProgressObserver
@@ -99,7 +101,7 @@ class SimulationResultsWindow(QWidget):
             # update the progress bar
             self.progress_bar.setValue(int(self.progress_observer.get_progress()))
 
-    def __run_simulation(self) -> dict:
+    def __run_simulation(self) -> SimulationResultsBundle:
         """Run the simulation."""
         # set up the simulator's configuration options
         if self.logging:
@@ -118,7 +120,7 @@ class SimulationResultsWindow(QWidget):
 
         # run the simulation and catch any errors - keep the app from crashing even if the sim fails
         try:
-            return self._run_simulation(save_option)
+            return self._run_simulation(save_option, self.results_depth)
         except requests.exceptions.ConnectionError:
             message = 'Failed to connect to broker!'
         except MalformedStrategyError as e:
@@ -143,14 +145,14 @@ class SimulationResultsWindow(QWidget):
         # log all errors and display error message in console box
         log.error(message)
         self.overview_tab.update_error_message(message)
-        return {}
+        return SimulationResultsBundle({}, {})
 
     @abstractmethod
-    def _run_simulation(self, save_option) -> dict:
+    def _run_simulation(self, save_option: int, results_depth: int) -> SimulationResultsBundle:
         raise NotImplementedError('You must define an implementation for _run_simulation()!')
 
     @abstractmethod
-    def _render_data(self, simulation_results: dict):
+    def _render_data(self, simulation_results_bundle: SimulationResultsBundle):
         raise NotImplementedError('You must define an implementation for _render_data()!')
 
     def __update_data(self):

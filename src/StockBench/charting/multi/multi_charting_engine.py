@@ -15,7 +15,7 @@ class MultiChartingEngine(ChartingEngine):
     """Charting tools for multiple simulation analysis."""
 
     @staticmethod
-    def build_multi_overview_chart(df: List[dict], initial_balance: float,
+    def build_multi_overview_chart(results: List[dict], initial_balance: float,
                                    save_option: int = ChartingEngine.TEMP_SAVE) -> str:
         """Builds the multi overview chart consisting of OHLC, volume, and other indicators."""
         rows = 2
@@ -32,12 +32,12 @@ class MultiChartingEngine(ChartingEngine):
                             specs=chart_list,
                             subplot_titles=chart_titles)
 
-        fig.add_trace(MultiChartingEngine.__build_overview_profit_loss_bar_subplot(df), row=1, col=1)
-        fig.add_trace(MultiChartingEngine.__overview_avg_effectiveness_gauge_subplot(df), row=1, col=2)
-        fig.add_trace(MultiChartingEngine.__build_overview_trades_made_bar_subplot(df), row=2, col=1)
-        fig.add_trace(MultiChartingEngine.__overview_avg_profit_loss_gauge(df, initial_balance), row=2, col=2)
+        fig.add_trace(MultiChartingEngine.__build_overview_profit_loss_bar_subplot(results), row=1, col=1)
+        fig.add_trace(MultiChartingEngine.__overview_avg_effectiveness_gauge_subplot(results), row=1, col=2)
+        fig.add_trace(MultiChartingEngine.__build_overview_trades_made_bar_subplot(results), row=2, col=1)
+        fig.add_trace(MultiChartingEngine.__overview_avg_profit_loss_gauge(results, initial_balance), row=2, col=2)
 
-        fig.update_layout(template='plotly_dark', title=f'Simulation Results for {len(df)} Symbols',
+        fig.update_layout(template='plotly_dark', title=f'Simulation Results for {len(results)} Symbols',
                           xaxis_rangeslider_visible=False, showlegend=False)
 
         formatted_fig = ChartingEngine.format_chart(fig)

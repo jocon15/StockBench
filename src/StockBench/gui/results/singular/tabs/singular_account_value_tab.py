@@ -1,18 +1,16 @@
 from StockBench.gui.results.base.base.simple_vertical_chart_tab import SimpleVerticalChartTab
-from StockBench.constants import ACCOUNT_VALUE_BAR_CHART_FILEPATH
+from StockBench.gui.results.singular.constants.constants import ACCOUNT_VALUE_LINE_CHART_FILEPATH_KEY
 
 
 class SingularAccountValueTabVertical(SimpleVerticalChartTab):
     """Account value over time chart tab."""
-    CHART_KEY = ACCOUNT_VALUE_BAR_CHART_FILEPATH
 
     def __init__(self):
         super().__init__()
 
         self.layout.addWidget(self.html_viewer)
 
-        # apply the layout
         self.setLayout(self.layout)
 
-    def render_chart(self, simulation_results):
-        self.html_viewer.render_data(simulation_results[self.CHART_KEY])
+    def render_chart(self, chart_filepaths: dict):
+        self.html_viewer.render_data(chart_filepaths[ACCOUNT_VALUE_LINE_CHART_FILEPATH_KEY])

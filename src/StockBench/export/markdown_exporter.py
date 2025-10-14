@@ -31,7 +31,7 @@ class MarkdownExporter:
                        f"$ {simulation_results[AVERAGE_PROFIT_LOSS_KEY]}",
                        f"$ {simulation_results[MEDIAN_PROFIT_LOSS_KEY]}",
                        f"$ {simulation_results[STANDARD_PROFIT_LOSS_DEVIATION_KEY]}",
-                       f"$ {simulation_results[ACCOUNT_VALUE_KEY]}"]
+                       f"$ {simulation_results[FINAL_ACCOUNT_VALUE_KEY]}"]
 
         markdown_table = df.to_markdown(index=False)
 

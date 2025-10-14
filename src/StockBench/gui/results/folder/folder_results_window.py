@@ -1,7 +1,10 @@
 from time import perf_counter
 from PyQt6.QtWidgets import QLabel
 
+from StockBench.charting.folder.folder_charting_engine import FolderChartingEngine
+from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
+
 from StockBench.gui.results.folder.tabs.folder_overview_tab import FolderOverViewTab
 from StockBench.gui.results.folder.tabs.folder_positions_box_plot_tab import FolderPositionsBoxPlotTabVertical
 from StockBench.gui.results.folder.tabs.folder_trades_made_tab import FolderTradesMadeTabVertical
@@ -11,8 +14,9 @@ from StockBench.gui.results.folder.tabs.folder_average_pl_tab import FolderAvera
 from StockBench.gui.results.folder.tabs.folder_median_pl_tab import FolderMedianProfitLossTabVertical
 from StockBench.gui.results.folder.tabs.folder_stddev_pl_tab import FolderStandardDeviationProfitLossTabVertical
 from StockBench.gui.results.folder.tabs.folder_positions_histogram_tab import FolderPositionsHistogramTabVertical
-from StockBench.constants import *
 from StockBench.observers.progress_observer import ProgressObserver
+from StockBench.constants import *
+from StockBench.gui.results.folder.constants.constants import *
 
 
 class FolderResultsWindow(SimulationResultsWindow):
@@ -86,7 +90,7 @@ class FolderResultsWindow(SimulationResultsWindow):
             self.progress_bar.setValue(100)
             self.timer.stop()
 
-    def _run_simulation(self, save_option) -> dict:
+    def _run_simulation(self, save_option: int, results_depth: int) -> SimulationResultsBundle:
         results = []
 
         start_time = perf_counter()
@@ -97,27 +101,38 @@ class FolderResultsWindow(SimulationResultsWindow):
             # override the dummy strategy in the simulator with the correct one
             self.simulator.load_strategy(strategy)
 
-            results.append(self.simulator.run_multiple(self.symbols,
-                                                       results_depth=self.simulator.DATA_ONLY,
-                                                       save_option=save_option,
-                                                       progress_observer=self.progress_observers[i]))
+            results.append(self.simulator.run_multiple(self.symbols, self.progress_observers[i]))
+
+        # results depth is not an option for folder, no need for dummy dict
+        chart_filepaths = {
+            TRADES_MADE_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_trades_made_bar_chart(results),
+            EFFECTIVENESS_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_effectiveness_bar_chart(results),
+            TOTAL_PL_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_total_pl_bar_chart(results),
+            AVERAGE_PL_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_average_pl_bar_chart(results),
+            MEDIAN_PL_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_median_pl_bar_chart(results),
+            STDDEV_PL_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_stddev_pl_bar_chart(results),
+            POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
+                FolderChartingEngine.build_positions_plpc_histogram_chart(results),
+            POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY: FolderChartingEngine.build_positions_plpc_box_chart(results)
+        }
 
         elapsed_time = round(perf_counter() - start_time, 2)
 
-        return {"results": results, ELAPSED_TIME_KEY: elapsed_time}
+        return SimulationResultsBundle(simulation_results={'results': results, ELAPSED_TIME_KEY: elapsed_time},
+                                       chart_filepaths=chart_filepaths)
 
-    def _render_data(self, simulation_results: dict):
+    def _render_data(self, simulation_results_bundle: SimulationResultsBundle):
         # only run if all symbols had enough data
-        if 'results' in simulation_results.keys():
-            self.overview_tab.render_data(simulation_results)
-            self.trades_made_tab.render_chart(simulation_results)
-            self.effectiveness_tab.render_chart(simulation_results)
-            self.total_pl_tab.render_chart(simulation_results)
-            self.average_pl_tab.render_chart(simulation_results)
-            self.median_pl_tab.render_chart(simulation_results)
-            self.stddev_pl_tab.render_chart(simulation_results)
-            self.positions_plpc_histogram_tab.render_chart(simulation_results)
-            self.positions_plpc_box_plot_tab.render_chart(simulation_results)
+        if 'results' in simulation_results_bundle.simulation_results.keys():
+            self.overview_tab.render_data(simulation_results_bundle)
+            self.trades_made_tab.render_chart(simulation_results_bundle.chart_filepaths)
+            self.effectiveness_tab.render_chart(simulation_results_bundle.chart_filepaths)
+            self.total_pl_tab.render_chart(simulation_results_bundle.chart_filepaths)
+            self.average_pl_tab.render_chart(simulation_results_bundle.chart_filepaths)
+            self.median_pl_tab.render_chart(simulation_results_bundle.chart_filepaths)
+            self.stddev_pl_tab.render_chart(simulation_results_bundle.chart_filepaths)
+            self.positions_plpc_histogram_tab.render_chart(simulation_results_bundle.chart_filepaths)
+            self.positions_plpc_box_plot_tab.render_chart(simulation_results_bundle.chart_filepaths)
         else:
             # the simulation failed - render the chart unavailable html
             self.overview_tab.html_viewer.render_chart_unavailable()

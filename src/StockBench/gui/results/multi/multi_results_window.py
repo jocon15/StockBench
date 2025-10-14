@@ -1,6 +1,6 @@
 from StockBench.charting.charting_engine import ChartingEngine
 from StockBench.charting.multi.multi_charting_engine import MultiChartingEngine
-from StockBench.constants import BUY_SIDE, SELL_SIDE, MULTI_RESULTS_KEY, INITIAL_ACCOUNT_VALUE_KEY, POSITIONS_KEY, \
+from StockBench.constants import BUY_SIDE, SELL_SIDE, INDIVIDUAL_RESULTS_KEY, INITIAL_ACCOUNT_VALUE_KEY, POSITIONS_KEY, \
     STRATEGY_KEY
 from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.results.multi.tabs.multi_positions_plpc_box_plot_tab import MultiPositionsBoxPlotTabVertical
@@ -56,7 +56,7 @@ class MultiResultsWindow(SimulationResultsWindow):
         if results_depth == Simulator.CHARTS_AND_DATA:
             chart_filepaths = {
                 OVERVIEW_CHART_FILEPATH: MultiChartingEngine.build_multi_overview_chart(
-                    simulation_results[MULTI_RESULTS_KEY], simulation_results[INITIAL_ACCOUNT_VALUE_KEY],
+                    simulation_results[INDIVIDUAL_RESULTS_KEY], simulation_results[INITIAL_ACCOUNT_VALUE_KEY],
                     ChartingEngine.TEMP_SAVE),
                 BUY_RULES_BAR_CHART: ChartingEngine.build_rules_bar_chart(
                     simulation_results[POSITIONS_KEY], BUY_SIDE, None, ChartingEngine.TEMP_SAVE),

@@ -377,7 +377,7 @@ class Simulator:
             SIMULATION_END_TIMESTAMP_KEY: self.__algorithm.strategy[END_KEY],
             INITIAL_ACCOUNT_VALUE_KEY: self.__account.get_initial_balance(),
             POSITIONS_KEY: self.__multiple_simulation_position_archive,
-            MULTI_RESULTS_KEY: results,
+            INDIVIDUAL_RESULTS_KEY: results,
             TRADE_ABLE_DAYS_KEY: results[0][TRADE_ABLE_DAYS_KEY],
             ELAPSED_TIME_KEY: elapsed_time,
             TRADES_MADE_KEY: analyzer.total_trades(),

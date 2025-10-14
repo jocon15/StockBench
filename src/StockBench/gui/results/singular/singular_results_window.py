@@ -56,18 +56,16 @@ class SingularResultsWindow(SimulationResultsWindow):
             chart_filepaths = {
                 OVERVIEW_CHART_FILEPATH_KEY: SingularChartingEngine.build_singular_overview_chart(
                     simulation_results[NORMALIZED_SIMULATION_DATA], simulation_results[SYMBOL_KEY],
-                    simulation_results[AVAILABLE_INDICATORS], self.show_volume, ChartingEngine.TEMP_SAVE),
+                    simulation_results[AVAILABLE_INDICATORS], self.show_volume, save_option),
                 ACCOUNT_VALUE_LINE_CHART_FILEPATH_KEY: SingularChartingEngine.build_account_value_line_chart(
                     simulation_results[NORMALIZED_SIMULATION_DATA][Simulator.ACCOUNT_VALUE_COLUMN_NAME].tolist(),
-                    simulation_results[SYMBOL_KEY], ChartingEngine.TEMP_SAVE),
+                    simulation_results[SYMBOL_KEY], save_option),
                 BUY_RULES_BAR_CHART_KEY: ChartingEngine.build_rules_bar_chart(
-                    simulation_results[POSITIONS_KEY], BUY_SIDE, simulation_results[SYMBOL_KEY],
-                    ChartingEngine.TEMP_SAVE),
+                    simulation_results[POSITIONS_KEY], BUY_SIDE, simulation_results[SYMBOL_KEY], save_option),
                 SELL_RULES_BAR_CHART_KEY: ChartingEngine.build_rules_bar_chart(
-                    simulation_results[POSITIONS_KEY], SELL_SIDE, simulation_results[SYMBOL_KEY],
-                    ChartingEngine.TEMP_SAVE),
+                    simulation_results[POSITIONS_KEY], SELL_SIDE, simulation_results[SYMBOL_KEY], save_option),
                 POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_duration_bar_chart(
-                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], ChartingEngine.TEMP_SAVE),
+                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
                 POSITIONS_PL_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_profit_loss_bar_chart(
                     simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
                 POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:

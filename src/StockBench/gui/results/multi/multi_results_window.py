@@ -20,7 +20,7 @@ class MultiResultsWindow(SimulationResultsWindow):
     def __init__(self, symbols, strategy, initial_balance, logging_on, reporting_on, unique_chart_saving_on,
                  results_depth, identifier: int = 1):
         super().__init__(strategy, initial_balance, logging_on, reporting_on, unique_chart_saving_on,
-                         results_depth=results_depth, identifier=identifier)
+                         results_depth, identifier)
         self.symbols = symbols
 
         self.layout.addWidget(self.progress_bar)

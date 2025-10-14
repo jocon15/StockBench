@@ -15,5 +15,5 @@ class SimpleVerticalChartTab(QFrame):
         self.html_viewer = HTMLViewer()
 
     @abstractmethod
-    def render_chart(self, simulation_results: dict):
+    def render_chart(self, chart_filepaths: dict):
         raise NotImplementedError('You must implement this method in a child class!')

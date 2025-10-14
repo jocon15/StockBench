@@ -14,8 +14,8 @@ class MultiPositionsProfitLossTabVertical(SimpleVerticalChartTab):
 
         self.setLayout(self.layout)
 
-    def render_chart(self, simulation_results):
-        chart_filepath = ChartingEngine.build_positions_profit_loss_bar_chart(simulation_results[POSITIONS_KEY],
+    def render_chart(self, chart_filepaths):
+        chart_filepath = ChartingEngine.build_positions_profit_loss_bar_chart(chart_filepaths[POSITIONS_KEY],
                                                                               None,
                                                                               ChartingEngine.TEMP_SAVE)
 

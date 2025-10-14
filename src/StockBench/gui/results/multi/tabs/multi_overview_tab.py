@@ -18,14 +18,14 @@ class MultiOverviewTab(OverviewTabVertical):
 
         self.setLayout(self.layout)
 
-    def render_data(self, simulation_results):
-        self.render_chart(simulation_results)
-        self.overview_side_bar.render_data(simulation_results)
+    def render_data(self, simulation_results_bundle):
+        self.render_chart(simulation_results_bundle)
+        self.overview_side_bar.render_data(simulation_results_bundle)
 
-    def render_chart(self, simulation_results: dict):
+    def render_chart(self, chart_filepaths: dict):
         chart_filepath = MultiChartingEngine.build_multi_overview_chart(
-            simulation_results[MULTI_RESULTS_KEY],
-            simulation_results[INITIAL_ACCOUNT_VALUE_KEY],
+            chart_filepaths[MULTI_RESULTS_KEY],
+            chart_filepaths[INITIAL_ACCOUNT_VALUE_KEY],
             ChartingEngine.TEMP_SAVE)
 
         self.html_viewer.render_data(chart_filepath)

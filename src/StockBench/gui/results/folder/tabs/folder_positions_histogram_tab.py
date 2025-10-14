@@ -15,9 +15,9 @@ class FolderPositionsHistogramTabVertical(SimpleVerticalChartTab):
         # apply the layout
         self.setLayout(self.layout)
 
-    def render_chart(self, simulation_results: dict):
+    def render_chart(self, chart_filepaths: dict):
         # normalize the results
-        results = simulation_results['results']
+        results = chart_filepaths['results']
         # build the chart
         chart_filepath = FolderChartingEngine.build_positions_plpc_histogram_chart(results)
         # render the chart

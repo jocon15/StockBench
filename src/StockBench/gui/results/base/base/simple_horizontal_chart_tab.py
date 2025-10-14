@@ -1,5 +1,7 @@
 from abc import abstractmethod
 from PyQt6.QtWidgets import QFrame, QHBoxLayout
+
+from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.results.base.html_viewer import HTMLViewer
 
 
@@ -15,5 +17,5 @@ class SimpleHorizontalChartTab(QFrame):
         self.html_viewer = HTMLViewer()
 
     @abstractmethod
-    def render_chart(self, simulation_results: dict):
+    def render_chart(self, chart_filepaths: dict):
         raise NotImplementedError('You must define an implementation for render_data()!')

@@ -17,10 +17,10 @@ class MultiPositionsHistogramTabVertical(SimpleVerticalChartTab):
 
         self.setLayout(self.layout)
 
-    def render_chart(self, simulation_results: dict):
+    def render_chart(self, chart_filepaths: dict):
         chart_filepath = ChartingEngine.build_single_strategy_result_dataset_positions_plpc_histogram_chart(
-            simulation_results[POSITIONS_KEY],
-            simulation_results[STRATEGY_KEY],
+            chart_filepaths[POSITIONS_KEY],
+            chart_filepaths[STRATEGY_KEY],
             None,
             ChartingEngine.TEMP_SAVE)
 

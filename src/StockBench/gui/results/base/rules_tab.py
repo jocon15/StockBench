@@ -1,3 +1,5 @@
+from abc import abstractmethod
+
 from PyQt6.QtWidgets import QFrame, QHBoxLayout
 
 from StockBench.charting.charting_engine import ChartingEngine
@@ -17,3 +19,7 @@ class RulesTab(QFrame):
         self.layout = QHBoxLayout()
 
         self.html_viewer = HTMLViewer()
+
+    @abstractmethod
+    def render_chart(self, chart_filepaths: dict):
+        raise NotImplementedError('You must define an implementation for render_data()!')

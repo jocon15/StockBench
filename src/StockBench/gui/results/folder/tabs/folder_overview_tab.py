@@ -16,11 +16,11 @@ class FolderOverViewTab(OverviewTabVertical):
         # apply the layout
         self.setLayout(self.layout)
 
-    def render_data(self, simulation_results):
-        self.overview_side_bar.render_data(simulation_results)
-        self.results_table.render_data(simulation_results)
+    def render_data(self, simulation_results_bundle):
+        self.overview_side_bar.render_data(simulation_results_bundle)
+        self.results_table.render_data(simulation_results_bundle)
 
-    def render_chart(self, simulation_results: dict):
+    def render_chart(self, chart_filepaths: dict):
         # Since folder overview tab has a table instead of a chart, this method is unused. It is an abstract method
         # in the super class, so it must be implemented. Hence, the exception
         raise NotImplementedError("Not implemented")

@@ -47,16 +47,16 @@ class MultiResultsWindow(SimulationResultsWindow):
         """Implementation of running the simulation for multi-symbol simulation."""
         return self.simulator.run_multiple(self.symbols, self.progress_observer)
 
-    def _render_data(self, simulation_results: dict):
+    def _render_data(self, simulation_results_bundle: dict):
         """Render the updated data in the window's shared_components."""
-        if simulation_results.keys():
-            self.overview_tab.render_data(simulation_results)
-            self.buy_rules_tab.render_chart(simulation_results)
-            self.sell_rules_tab.render_chart(simulation_results)
-            self.positions_duration_bar_tab.render_chart(simulation_results)
-            self.positions_pl_bar_tab.render_chart(simulation_results)
-            self.positions_plpc_histogram_tab.render_chart(simulation_results)
-            self.positions_plpc_box_plot_tab.render_chart(simulation_results)
+        if simulation_results_bundle.keys():
+            self.overview_tab.render_data(simulation_results_bundle)
+            self.buy_rules_tab.render_chart(simulation_results_bundle)
+            self.sell_rules_tab.render_chart(simulation_results_bundle)
+            self.positions_duration_bar_tab.render_chart(simulation_results_bundle)
+            self.positions_pl_bar_tab.render_chart(simulation_results_bundle)
+            self.positions_plpc_histogram_tab.render_chart(simulation_results_bundle)
+            self.positions_plpc_box_plot_tab.render_chart(simulation_results_bundle)
         else:
             # the simulation failed - render the chart unavailable html
             self.overview_tab.html_viewer.render_chart_unavailable()

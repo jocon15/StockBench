@@ -106,18 +106,18 @@ class FolderResultsWindow(SimulationResultsWindow):
 
         return {"results": results, ELAPSED_TIME_KEY: elapsed_time}
 
-    def _render_data(self, simulation_results: dict):
+    def _render_data(self, simulation_results_bundle: dict):
         # only run if all symbols had enough data
-        if 'results' in simulation_results.keys():
-            self.overview_tab.render_data(simulation_results)
-            self.trades_made_tab.render_chart(simulation_results)
-            self.effectiveness_tab.render_chart(simulation_results)
-            self.total_pl_tab.render_chart(simulation_results)
-            self.average_pl_tab.render_chart(simulation_results)
-            self.median_pl_tab.render_chart(simulation_results)
-            self.stddev_pl_tab.render_chart(simulation_results)
-            self.positions_plpc_histogram_tab.render_chart(simulation_results)
-            self.positions_plpc_box_plot_tab.render_chart(simulation_results)
+        if 'results' in simulation_results_bundle.keys():
+            self.overview_tab.render_data(simulation_results_bundle)
+            self.trades_made_tab.render_chart(simulation_results_bundle)
+            self.effectiveness_tab.render_chart(simulation_results_bundle)
+            self.total_pl_tab.render_chart(simulation_results_bundle)
+            self.average_pl_tab.render_chart(simulation_results_bundle)
+            self.median_pl_tab.render_chart(simulation_results_bundle)
+            self.stddev_pl_tab.render_chart(simulation_results_bundle)
+            self.positions_plpc_histogram_tab.render_chart(simulation_results_bundle)
+            self.positions_plpc_box_plot_tab.render_chart(simulation_results_bundle)
         else:
             # the simulation failed - render the chart unavailable html
             self.overview_tab.html_viewer.render_chart_unavailable()

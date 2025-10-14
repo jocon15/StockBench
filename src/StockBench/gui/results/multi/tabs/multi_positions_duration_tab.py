@@ -1,5 +1,5 @@
 from StockBench.gui.results.base.base.simple_vertical_chart_tab import SimpleVerticalChartTab
-from StockBench.gui.results.multi.constants.constants import POSITIONS_DURATION_BAR_CHART_FILEPATH
+from StockBench.gui.results.multi.constants.constants import POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY
 
 
 class MultiPositionsDurationTabVertical(SimpleVerticalChartTab):
@@ -13,4 +13,4 @@ class MultiPositionsDurationTabVertical(SimpleVerticalChartTab):
         self.setLayout(self.layout)
 
     def render_chart(self, chart_filepaths: dict):
-        self.html_viewer.render_data(chart_filepaths[POSITIONS_DURATION_BAR_CHART_FILEPATH])
+        self.html_viewer.render_data(chart_filepaths[POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY])

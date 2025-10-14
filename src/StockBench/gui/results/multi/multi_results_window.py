@@ -50,22 +50,22 @@ class MultiResultsWindow(SimulationResultsWindow):
 
         if results_depth == Simulator.CHARTS_AND_DATA:
             chart_filepaths = {
-                OVERVIEW_CHART_FILEPATH: MultiChartingEngine.build_multi_overview_chart(
+                OVERVIEW_CHART_FILEPATH_KEY: MultiChartingEngine.build_multi_overview_chart(
                     simulation_results[INDIVIDUAL_RESULTS_KEY], simulation_results[INITIAL_ACCOUNT_VALUE_KEY],
                     ChartingEngine.TEMP_SAVE),
-                BUY_RULES_BAR_CHART: ChartingEngine.build_rules_bar_chart(
+                BUY_RULES_BAR_CHART_KEY: ChartingEngine.build_rules_bar_chart(
                     simulation_results[POSITIONS_KEY], BUY_SIDE, None, ChartingEngine.TEMP_SAVE),
-                SELL_RULES_BAR_CHART: ChartingEngine.build_rules_bar_chart(
+                SELL_RULES_BAR_CHART_KEY: ChartingEngine.build_rules_bar_chart(
                     simulation_results[POSITIONS_KEY], SELL_SIDE, None, ChartingEngine.TEMP_SAVE),
-                POSITIONS_DURATION_BAR_CHART_FILEPATH: ChartingEngine.build_positions_duration_bar_chart(
+                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_duration_bar_chart(
                     simulation_results[POSITIONS_KEY], None, ChartingEngine.TEMP_SAVE),
-                POSITIONS_PL_BAR_CHART_FILEPATH: ChartingEngine.build_positions_profit_loss_bar_chart(
+                POSITIONS_PL_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_profit_loss_bar_chart(
                     simulation_results[POSITIONS_KEY], None, ChartingEngine.TEMP_SAVE),
-                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH:
+                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
                     ChartingEngine.build_single_strategy_result_dataset_positions_plpc_histogram_chart(
                         simulation_results[POSITIONS_KEY], simulation_results[STRATEGY_KEY], None,
                         ChartingEngine.TEMP_SAVE),
-                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH:
+                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY:
                     ChartingEngine.build_single_strategy_result_dataset_positions_plpc_box_plot(
                         simulation_results[POSITIONS_KEY], simulation_results[STRATEGY_KEY], None,
                         ChartingEngine.TEMP_SAVE)
@@ -73,13 +73,13 @@ class MultiResultsWindow(SimulationResultsWindow):
         else:
             # filepaths are set to empty strings which will cause the html viewers to render chart unavailable
             chart_filepaths = {
-                OVERVIEW_CHART_FILEPATH: '',
-                BUY_RULES_BAR_CHART: '',
-                SELL_RULES_BAR_CHART: '',
-                POSITIONS_DURATION_BAR_CHART_FILEPATH: '',
-                POSITIONS_PL_BAR_CHART_FILEPATH: '',
-                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH: '',
-                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH: ''
+                OVERVIEW_CHART_FILEPATH_KEY: '',
+                BUY_RULES_BAR_CHART_KEY: '',
+                SELL_RULES_BAR_CHART_KEY: '',
+                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: '',
+                POSITIONS_PL_BAR_CHART_FILEPATH_KEY: '',
+                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY: '',
+                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY: ''
             }
 
         return SimulationResultsBundle(simulation_results=simulation_results, chart_filepaths=chart_filepaths)

@@ -54,40 +54,40 @@ class SingularResultsWindow(SimulationResultsWindow):
 
         if results_depth == Simulator.CHARTS_AND_DATA:
             chart_filepaths = {
-                OVERVIEW_CHART_FILEPATH: SingularChartingEngine.build_singular_overview_chart(
+                OVERVIEW_CHART_FILEPATH_KEY: SingularChartingEngine.build_singular_overview_chart(
                     simulation_results[NORMALIZED_SIMULATION_DATA], simulation_results[SYMBOL_KEY],
                     simulation_results[AVAILABLE_INDICATORS], self.show_volume, ChartingEngine.TEMP_SAVE),
-                ACCOUNT_VALUE_LINE_CHART_FILEPATH: SingularChartingEngine.build_account_value_line_chart(
+                ACCOUNT_VALUE_LINE_CHART_FILEPATH_KEY: SingularChartingEngine.build_account_value_line_chart(
                     simulation_results[NORMALIZED_SIMULATION_DATA][Simulator.ACCOUNT_VALUE_COLUMN_NAME].tolist(),
                     simulation_results[SYMBOL_KEY], ChartingEngine.TEMP_SAVE),
-                BUY_RULES_BAR_CHART: ChartingEngine.build_rules_bar_chart(
+                BUY_RULES_BAR_CHART_KEY: ChartingEngine.build_rules_bar_chart(
                     simulation_results[POSITIONS_KEY], BUY_SIDE, simulation_results[SYMBOL_KEY],
                     ChartingEngine.TEMP_SAVE),
-                SELL_RULES_BAR_CHART: ChartingEngine.build_rules_bar_chart(
+                SELL_RULES_BAR_CHART_KEY: ChartingEngine.build_rules_bar_chart(
                     simulation_results[POSITIONS_KEY], SELL_SIDE, simulation_results[SYMBOL_KEY],
                     ChartingEngine.TEMP_SAVE),
-                POSITIONS_DURATION_BAR_CHART_FILEPATH: ChartingEngine.build_positions_duration_bar_chart(
+                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_duration_bar_chart(
                     simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], ChartingEngine.TEMP_SAVE),
-                POSITIONS_PL_BAR_CHART_FILEPATH: ChartingEngine.build_positions_profit_loss_bar_chart(
+                POSITIONS_PL_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_profit_loss_bar_chart(
                     simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], ChartingEngine.TEMP_SAVE),
-                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH:
+                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
                     SingularChartingEngine.build_single_strategy_result_dataset_positions_plpc_histogram_chart(
                         simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], ChartingEngine.TEMP_SAVE),
-                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH:
+                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY:
                     SingularChartingEngine.build_single_strategy_result_dataset_positions_plpc_box_plot(
                         simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], ChartingEngine.TEMP_SAVE)
             }
         else:
             # filepaths are set to empty strings which will cause the html viewers to render chart unavailable
             chart_filepaths = {
-                OVERVIEW_CHART_FILEPATH: '',
-                ACCOUNT_VALUE_LINE_CHART_FILEPATH: '',
-                BUY_RULES_BAR_CHART: '',
-                SELL_RULES_BAR_CHART: '',
-                POSITIONS_DURATION_BAR_CHART_FILEPATH: '',
-                POSITIONS_PL_BAR_CHART_FILEPATH: '',
-                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH: '',
-                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH: ''
+                OVERVIEW_CHART_FILEPATH_KEY: '',
+                ACCOUNT_VALUE_LINE_CHART_FILEPATH_KEY: '',
+                BUY_RULES_BAR_CHART_KEY: '',
+                SELL_RULES_BAR_CHART_KEY: '',
+                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: '',
+                POSITIONS_PL_BAR_CHART_FILEPATH_KEY: '',
+                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY: '',
+                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY: ''
             }
 
         return SimulationResultsBundle(simulation_results=simulation_results, chart_filepaths=chart_filepaths)

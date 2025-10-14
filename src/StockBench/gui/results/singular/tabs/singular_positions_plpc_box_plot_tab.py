@@ -1,5 +1,5 @@
 from StockBench.gui.results.base.base.simple_vertical_chart_tab import SimpleVerticalChartTab
-from StockBench.gui.results.singular.constants.constants import POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH
+from StockBench.gui.results.singular.constants.constants import POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY
 
 
 class SingularPositionsBoxPlotTabVertical(SimpleVerticalChartTab):
@@ -16,4 +16,4 @@ class SingularPositionsBoxPlotTabVertical(SimpleVerticalChartTab):
         self.setLayout(self.layout)
 
     def render_chart(self, chart_filepaths: dict):
-        self.html_viewer.render_data(chart_filepaths[POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH])
+        self.html_viewer.render_data(chart_filepaths[POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY])

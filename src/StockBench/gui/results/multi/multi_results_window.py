@@ -23,20 +23,16 @@ class MultiResultsWindow(SimulationResultsWindow):
                          identifier=identifier)
         self.symbols = symbols
 
-        # add shared_components to the layout
-        # progress bar
         self.layout.addWidget(self.progress_bar)
-        # simulation results frame (gets added to layout via tab widget)
+
         self.overview_tab = MultiOverviewTab(self.progress_observer)
-        # buy and sell rules analysis tabs (gets added to layout via tab widget)
         self.buy_rules_tab = MultiRulesTab(BUY_SIDE)
         self.sell_rules_tab = MultiRulesTab(SELL_SIDE)
-        # positions analysis tab (gets added to layout via tab widget)
         self.positions_duration_bar_tab = MultiPositionsDurationTabVertical()
         self.positions_pl_bar_tab = MultiPositionsProfitLossTabVertical()
         self.positions_plpc_histogram_tab = MultiPositionsHistogramTabVertical()
         self.positions_plpc_box_plot_tab = MultiPositionsBoxPlotTabVertical()
-        # tab widget
+
         self.tab_widget.addTab(self.overview_tab, 'Overview')
         self.tab_widget.addTab(self.buy_rules_tab, 'Buy Rules')
         self.tab_widget.addTab(self.sell_rules_tab, 'Sell Rules')
@@ -46,7 +42,6 @@ class MultiResultsWindow(SimulationResultsWindow):
         self.tab_widget.addTab(self.positions_plpc_box_plot_tab, 'Positions P/L % (box plot)')
         self.layout.addWidget(self.tab_widget)
 
-        # apply the layout to the window
         self.setLayout(self.layout)
 
     def _run_simulation(self, save_option: int, results_depth: int) -> SimulationResultsBundle:

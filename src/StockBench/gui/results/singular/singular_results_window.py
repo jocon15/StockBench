@@ -11,7 +11,7 @@ from StockBench.gui.results.singular.tabs.singular_positions_plpc_histogram_tab 
     SingularPositionsHistogramTabVertical
 from StockBench.gui.results.singular.tabs.singular_rules_tab import SingularRulesTab
 from StockBench.gui.results.singular.tabs.singular_account_value_tab import SingularAccountValueTabVertical
-from StockBench.simulator import Simulator
+from StockBench.controllers.simulator import Simulator
 from StockBench.gui.results.singular.constants.constants import *
 from StockBench.constants import *
 

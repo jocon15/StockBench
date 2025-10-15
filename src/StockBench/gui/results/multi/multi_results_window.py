@@ -11,7 +11,7 @@ from StockBench.gui.results.multi.tabs.multi_positions_pl_tab import MultiPositi
 from StockBench.gui.results.multi.tabs.multi_positions_plpc_histogram_tab import MultiPositionsHistogramTabVertical
 from StockBench.gui.results.multi.tabs.multi_positions_duration_tab import MultiPositionsDurationTabVertical
 from StockBench.gui.results.multi.constants.constants import *
-from StockBench.simulator import Simulator
+from StockBench.controllers.simulator import Simulator
 
 
 class MultiResultsWindow(SimulationResultsWindow):

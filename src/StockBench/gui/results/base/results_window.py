@@ -14,7 +14,7 @@ from StockBench.gui.models.simulation_results_bundle import SimulationResultsBun
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.worker.worker import Worker
 from StockBench.observers.progress_observer import ProgressObserver
-from StockBench.simulator import Simulator
+from StockBench.controllers.simulator import Simulator
 from StockBench.indicator.exceptions import StrategyIndicatorError
 from StockBench.charting.exceptions import ChartingError
 from StockBench.algorithm.exceptions import MalformedStrategyError

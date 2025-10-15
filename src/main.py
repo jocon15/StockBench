@@ -8,8 +8,8 @@ from PyQt6 import QtGui, QtWidgets
 from PyQt6.QtWidgets import QApplication
 
 from StockBench.gui.application import ConfigMainWindow
-from StockBench.caching.file_cache import load_cache_file
-from StockBench.factories.configuration import ApplicationConfigurationFactory
+from StockBench.controllers.caching.file_cache import load_cache_file
+from StockBench.controllers.factories.configuration import ApplicationConfigurationFactory
 
 
 def main():

@@ -1,6 +1,6 @@
 import pytest
 from StockBench.position.position import Position
-from StockBench.analysis.positions_analyzer import PositionsAnalyzer
+from StockBench.controllers.analysis.positions_analyzer import PositionsAnalyzer
 
 
 @pytest.fixture

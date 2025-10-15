@@ -1,9 +1,9 @@
 import pytest
 from unittest.mock import patch
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
-from StockBench.simulation_data.data_manager import DataManager
+from StockBench.controllers.simulation_data.data_manager import DataManager
 from StockBench.indicators.stochastic.trigger import StochasticTrigger
-from StockBench.indicator.exceptions import StrategyIndicatorError
+from StockBench.controllers.indicator import StrategyIndicatorError
 
 
 @pytest.fixture

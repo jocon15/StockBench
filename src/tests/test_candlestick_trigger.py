@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
 from StockBench.indicators.candlestick_color.trigger import CandlestickColorTrigger
-from StockBench.indicator.exceptions import StrategyIndicatorError
+from StockBench.controllers.indicator import StrategyIndicatorError
 
 
 @pytest.fixture

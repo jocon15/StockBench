@@ -1,5 +1,5 @@
-from StockBench.charting.charting_engine import ChartingEngine
-from StockBench.charting.multi.multi_charting_engine import MultiChartingEngine
+from StockBench.controllers.charting import ChartingEngine
+from StockBench.controllers.charting.multi import MultiChartingEngine
 from StockBench.constants import (BUY_SIDE, SELL_SIDE, INDIVIDUAL_RESULTS_KEY, INITIAL_ACCOUNT_VALUE_KEY,
                                   POSITIONS_KEY, STRATEGY_KEY)
 from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle

@@ -1,9 +1,8 @@
-from StockBench.export.markdown_exporter import MarkdownExporter
+from StockBench.controllers.export import MarkdownExporter
 from StockBench.gui.results.base.overview_sidebar import OverviewSideBar
 from StockBench.gui.results.singular.components.singular_sidebar_metadata_table import SingularMetadataSidebarTable
 from StockBench.gui.results.singular.components.singular_sidebar_results_table import SingularResultsSidebarTable
 from StockBench.constants import *
-from StockBench.gui.results.singular.constants.constants import SIMULATION_RESULTS_KEY
 
 
 class SingularOverviewSideBar(OverviewSideBar):

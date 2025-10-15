@@ -13,7 +13,7 @@ from StockBench.gui.palette.palette import Palette
 from StockBench.gui.studio.strategy_studio import StrategyStudioWindow
 from StockBench.constants import *
 from StockBench.controllers.simulator import Simulator
-from StockBench.caching.file_cache import CACHE_FILE_FILEPATH
+from StockBench.controllers.caching.file_cache import CACHE_FILE_FILEPATH
 
 
 class MessageBoxCaptureException(Exception):

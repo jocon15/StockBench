@@ -2,10 +2,7 @@ from abc import abstractmethod
 
 from PyQt6.QtWidgets import QFrame, QHBoxLayout
 
-from StockBench.charting.charting_engine import ChartingEngine
-from StockBench.charting.singular.singular_charting_engine import SingularChartingEngine
 from StockBench.gui.results.base.html_viewer import HTMLViewer
-from StockBench.constants import *
 
 
 class RulesTab(QFrame):

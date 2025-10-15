@@ -4,8 +4,8 @@ from abc import abstractmethod
 
 import requests.exceptions
 
-from StockBench.broker.broker_client import InvalidSymbolError, InsufficientDataError, MissingCredentialError
-from StockBench.charting.charting_engine import ChartingEngine
+from StockBench.controllers.broker.broker_client import InvalidSymbolError, InsufficientDataError, MissingCredentialError
+from StockBench.controllers.charting import ChartingEngine
 from PyQt6.QtWidgets import QWidget, QProgressBar, QTabWidget, QVBoxLayout
 from PyQt6.QtCore import QTimer, QThreadPool
 from PyQt6 import QtGui
@@ -15,9 +15,9 @@ from StockBench.gui.palette.palette import Palette
 from StockBench.gui.worker.worker import Worker
 from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.controllers.simulator import Simulator
-from StockBench.indicator.exceptions import StrategyIndicatorError
-from StockBench.charting.exceptions import ChartingError
-from StockBench.algorithm.exceptions import MalformedStrategyError
+from StockBench.controllers.indicator import StrategyIndicatorError
+from StockBench.controllers.charting.exceptions import ChartingError
+from StockBench.controllers.algorithm import MalformedStrategyError
 
 log = logging.getLogger()
 

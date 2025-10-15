@@ -4,7 +4,7 @@ import json
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton
 from PyQt6.QtWidgets import QFileDialog
 from StockBench.gui.palette.palette import Palette
-from StockBench.caching.file_cache import CACHE_FILE_FILEPATH
+from StockBench.controllers.caching.file_cache import CACHE_FILE_FILEPATH
 
 
 class StrategySelection(QWidget):

@@ -1,7 +1,7 @@
 from time import perf_counter
 from PyQt6.QtWidgets import QLabel
 
-from StockBench.charting.folder.folder_charting_engine import FolderChartingEngine
+from StockBench.controllers.charting.folder import FolderChartingEngine
 from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 

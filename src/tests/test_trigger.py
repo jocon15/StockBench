@@ -1,5 +1,5 @@
-from StockBench.indicator.trigger import Trigger
-from StockBench.indicator.exceptions import StrategyIndicatorError
+from StockBench.controllers.indicator import Trigger
+from StockBench.controllers.indicator import StrategyIndicatorError
 from StockBench.indicators.sma.trigger import SMATrigger
 
 

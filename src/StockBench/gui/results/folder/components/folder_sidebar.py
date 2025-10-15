@@ -1,12 +1,12 @@
 from PyQt6.QtWidgets import QListWidgetItem
 from PyQt6.QtGui import QColor
 
-from StockBench.export.markdown_exporter import MarkdownExporter
+from StockBench.controllers.export import MarkdownExporter
 from StockBench.gui.results.multi.components.multi_sidebar_metadata_table import MultiMetadataSidebarTable
 from StockBench.gui.results.base.overview_sidebar import OverviewSideBar
 from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.gui.results.folder.components.folder_selector import FolderSelector
-from StockBench.export.folder_results_exporter import FolderResultsExporter
+from StockBench.controllers.export import FolderResultsExporter
 from StockBench.constants import *
 
 

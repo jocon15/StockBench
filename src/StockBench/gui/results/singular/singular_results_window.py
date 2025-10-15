@@ -1,5 +1,5 @@
-from StockBench.charting.charting_engine import ChartingEngine
-from StockBench.charting.singular.singular_charting_engine import SingularChartingEngine
+from StockBench.controllers.charting import ChartingEngine
+from StockBench.controllers.charting.singular import SingularChartingEngine
 from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.singular.tabs.singular_overview_tab import SingularOverviewTab

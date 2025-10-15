@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from StockBench.indicators.stop_profit.trigger import StopProfitTrigger
+from StockBench.controllers.indicators.stop_profit.trigger import StopProfitTrigger
 
 
 @pytest.fixture

@@ -3,7 +3,7 @@ import time
 import requests
 from unittest.mock import patch, Mock
 from requests.models import Response
-from StockBench.broker.broker_client import BrokerClient, InvalidSymbolError, MissingCredentialError
+from StockBench.controllers.broker.broker_client import BrokerClient, InvalidSymbolError, MissingCredentialError
 from tests.example_data.ExampleBarsData import EXAMPLE_UN_KEYED_MSFT
 from tests.example_data.ExampleAPIData import ORDER_DATA, BAD_ORDER_DATA, CLOSE_DATA
 

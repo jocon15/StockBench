@@ -8,17 +8,17 @@ from time import perf_counter
 from datetime import datetime
 from typing import Optional, List, Tuple
 from StockBench.constants import *
-from StockBench.broker.broker_client import BrokerClient
-from StockBench.export.window_data_exporter import WindowDataExporter
-from StockBench.factories.configuration import ClientConfigurationFactory
-from StockBench.filesystem.fs_controller import FSController
+from StockBench.controllers.broker.broker_client import BrokerClient
+from StockBench.controllers.export.window_data_exporter import WindowDataExporter
+from StockBench.controllers.factories.configuration import ClientConfigurationFactory
+from StockBench.controllers.filesystem.fs_controller import FSController
 from StockBench.observers.progress_observer import ProgressObserver
 from StockBench.position.position import Position
 from StockBench.account.user_account import UserAccount
-from StockBench.analysis.positions_analyzer import PositionsAnalyzer
-from StockBench.algorithm.algorithm import Algorithm
-from StockBench.function_tools.timestamp import datetime_timestamp
-from StockBench.simulation_data.data_manager import DataManager
+from StockBench.controllers.analysis.positions_analyzer import PositionsAnalyzer
+from StockBench.controllers.algorithm.algorithm import Algorithm
+from StockBench.controllers.function_tools.timestamp import datetime_timestamp
+from StockBench.controllers.simulation_data.data_manager import DataManager
 from StockBench.indicators.indicator_manager import IndicatorManager
 from StockBench.logging_handlers.handlers import ProgressMessageHandler
 

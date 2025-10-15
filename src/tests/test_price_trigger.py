@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
 from StockBench.indicators.price.price import PriceTrigger
-from StockBench.controllers.indicator import StrategyIndicatorError
+from StockBench.controllers.simulator.indicator import StrategyIndicatorError
 
 
 @pytest.fixture

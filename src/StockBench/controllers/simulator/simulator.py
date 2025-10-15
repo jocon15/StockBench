@@ -8,19 +8,19 @@ from time import perf_counter
 from datetime import datetime
 from typing import Optional, List, Tuple
 from StockBench.constants import *
-from StockBench.controllers.broker.broker_client import BrokerClient
+from StockBench.controllers.simulator.broker.broker_client import BrokerClient
 from StockBench.controllers.export.window_data_exporter import WindowDataExporter
 from StockBench.controllers.factories.configuration import ClientConfigurationFactory
 from StockBench.controllers.filesystem.fs_controller import FSController
-from StockBench.observers.progress_observer import ProgressObserver
-from StockBench.position.position import Position
-from StockBench.account.user_account import UserAccount
-from StockBench.controllers.analysis.positions_analyzer import PositionsAnalyzer
-from StockBench.controllers.algorithm.algorithm import Algorithm
+from StockBench.models.observers.progress_observer import ProgressObserver
+from StockBench.models.position.position import Position
+from StockBench.controllers.simulator.account.user_account import UserAccount
+from StockBench.controllers.simulator.analysis.positions_analyzer import PositionsAnalyzer
+from StockBench.controllers.simulator.algorithm.algorithm import Algorithm
 from StockBench.controllers.function_tools.timestamp import datetime_timestamp
-from StockBench.controllers.simulation_data.data_manager import DataManager
+from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.indicators.indicator_manager import IndicatorManager
-from StockBench.logging_handlers.handlers import ProgressMessageHandler
+from StockBench.models.logging_handlers.handlers import ProgressMessageHandler
 
 # generic logger used for debugging the application
 log = logging.getLogger()

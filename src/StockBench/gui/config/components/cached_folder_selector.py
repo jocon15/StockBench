@@ -2,7 +2,7 @@ import os
 import json
 from StockBench.gui.palette.palette import Palette
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton, QFileDialog
-from StockBench.controllers.caching.file_cache import CACHE_FILE_FILEPATH
+from StockBench.caching.file_cache import CACHE_FILE_FILEPATH
 
 
 class CachedFolderSelector(QWidget):

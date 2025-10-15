@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import patch
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
 from StockBench.indicators.sma.trigger import SMATrigger
-from StockBench.controllers.indicator import StrategyIndicatorError
+from StockBench.controllers.simulator.indicator import StrategyIndicatorError
 
 
 @pytest.fixture

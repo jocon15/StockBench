@@ -12,7 +12,7 @@ from plotly.figure_factory import create_distplot
 from StockBench.controllers.charting.display_constants import *
 from StockBench.controllers.function_tools.timestamp import datetime_timestamp
 from StockBench.constants import *
-from StockBench.position.position import Position
+from StockBench.models.position.position import Position
 
 
 class ChartingEngine:

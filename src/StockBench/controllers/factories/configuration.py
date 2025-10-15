@@ -1,6 +1,6 @@
 import os
 
-from StockBench.controllers.broker.configuration import BrokerConfiguration
+from StockBench.controllers.simulator.broker.configuration import BrokerConfiguration
 from StockBench.gui.configuration import AppConfiguration
 
 

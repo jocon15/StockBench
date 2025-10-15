@@ -1,14 +1,14 @@
 import logging
-from StockBench.indicators.candlestick_color.candlestick_color import CandlestickColorIndicator
-from StockBench.indicators.ema.ema import EMAIndicator
-from StockBench.indicators.macd.macd import MACDIndicator
-from StockBench.indicators.price.price import PriceIndicator
-from StockBench.indicators.rsi.rsi import RSIIndicator
-from StockBench.indicators.sma.sma import SMAIndicator
-from StockBench.indicators.stochastic.stochastic import StochasticIndicator
-from StockBench.indicators.stop_loss.stop_loss import StopLossIndicator
-from StockBench.indicators.stop_profit.stop_profit import StopProfitIndicator
-from StockBench.indicators.volume.volume import VolumeIndicator
+from StockBench.controllers.simulator.indicators.candlestick_color.candlestick_color import CandlestickColorIndicator
+from StockBench.controllers.simulator.indicators.ema.ema import EMAIndicator
+from StockBench.controllers.simulator.indicators.macd.macd import MACDIndicator
+from StockBench.controllers.simulator.indicators.price.price import PriceIndicator
+from StockBench.controllers.simulator.indicators.rsi.rsi import RSIIndicator
+from StockBench.controllers.simulator.indicators.sma.sma import SMAIndicator
+from StockBench.controllers.simulator.indicators.stochastic.stochastic import StochasticIndicator
+from StockBench.controllers.simulator.indicators.stop_loss.stop_loss import StopLossIndicator
+from StockBench.controllers.simulator.indicators.stop_profit.stop_profit import StopProfitIndicator
+from StockBench.controllers.simulator.indicators.volume.volume import VolumeIndicator
 
 log = logging.getLogger()
 

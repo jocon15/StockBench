@@ -1,6 +1,6 @@
 from StockBench.controllers.simulator.indicator import Trigger
 from StockBench.controllers.simulator.indicator import StrategyIndicatorError
-from StockBench.indicators.sma.trigger import SMATrigger
+from StockBench.controllers.simulator.indicators.sma.trigger import SMATrigger
 
 
 def test_get_side():

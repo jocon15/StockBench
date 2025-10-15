@@ -7,7 +7,7 @@ import plotly.graph_objects as plotter
 
 from StockBench.controllers.simulator.indicator import IndicatorInterface
 from StockBench.controllers.simulator.indicator import Subplot
-from StockBench.indicators.volume.subplot import VolumeSubplot
+from StockBench.controllers.simulator.indicators.volume.subplot import VolumeSubplot
 from StockBench.controllers.charting.charting_engine import ChartingEngine
 from StockBench.controllers.charting.exceptions import ChartingError
 from StockBench.controllers.charting.display_constants import OFF_BLUE

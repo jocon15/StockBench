@@ -4,7 +4,7 @@ from StockBench.controllers.simulator.indicator import Trigger
 from StockBench.controllers.simulator.indicator import StrategyIndicatorError
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.models.position.position import Position
-from StockBench.indicators.ema.ema import EMATrigger
+from StockBench.controllers.simulator.indicators.ema.ema import EMATrigger
 
 log = logging.getLogger()
 

@@ -9,7 +9,6 @@ from StockBench.gui.models.simulation_results_bundle import SimulationResultsBun
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.worker.worker import Worker
 from StockBench.models.observers.progress_observer import ProgressObserver
-from StockBench.controllers.simulator.simulator import Simulator
 from StockBench.models.simulation_result.simulation_result import SimulationResult
 
 log = logging.getLogger()
@@ -31,14 +30,15 @@ class SimulationResultsWindow(QWidget):
     a dict of results which are fed to the _render_data() function, which uses that information to render the results to
     the window.
     """
+    CHARTS_AND_DATA = 0
+    DATA_ONLY = 1
 
-    def __init__(self, strategy, initial_balance, logging_on=False, reporting_on=False, unique_chart_saving_on=False,
-                 show_volume=False, results_depth=Simulator.CHARTS_AND_DATA, identifier: int = 1):
+    def __init__(self, strategy, initial_balance, logging_on, reporting_on, unique_chart_saving_on, show_volume,
+                 results_depth, identifier):
         super().__init__()
         self.id = identifier
         self.strategy = strategy
         self.initial_balance = initial_balance
-        self.simulator = Simulator(initial_balance, identifier)  # instantiate the class reference
         self.progress_observer = ProgressObserver()  # instantiate the class reference
         self.worker = Worker  # gets instantiated later
         self.logging = logging_on

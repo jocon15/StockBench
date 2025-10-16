@@ -1,10 +1,11 @@
 import traceback
-from typing import Callable
+from typing import Callable, List
 
 import requests
 
 from StockBench.controllers.charting.charting_engine import ChartingEngine
 from StockBench.controllers.charting.exceptions import ChartingError
+from StockBench.controllers.charting.multi.multi_charting_engine import MultiChartingEngine
 from StockBench.controllers.charting.singular.singular_charting_engine import SingularChartingEngine
 from StockBench.controllers.simulator.algorithm.exceptions import MalformedStrategyError
 from StockBench.controllers.simulator.broker.broker_client import MissingCredentialError, InvalidSymbolError, \
@@ -23,7 +24,7 @@ class StockBenchController:
     def singular_simulation(strategy: dict, symbol: str, initial_balance: float, logging_on: bool, reporting_on: bool,
                             unique_chart_saving: int, results_depth: int, show_volume: bool,
                             progress_observer: ProgressObserver) -> SimulationResult:
-        """Controller for running singular simulations and building charts."""
+        """Controller for running singular-symbol simulations and building charts."""
         simulator = Simulator(initial_balance)
 
         simulator.load_strategy(strategy)
@@ -34,9 +35,9 @@ class StockBenchController:
             simulator.enable_reporting()
 
         if unique_chart_saving:
-            chart_saving = ChartingEngine.UNIQUE_SAVE
+            save_option = ChartingEngine.UNIQUE_SAVE
         else:
-            chart_saving = ChartingEngine.TEMP_SAVE
+            save_option = ChartingEngine.TEMP_SAVE
 
         # FIXME: you could do error wrapping this way or use a decorator
         result = StockBenchController.__run_simulation_with_error_catching(
@@ -47,26 +48,26 @@ class StockBenchController:
             chart_filepaths = {
                 OVERVIEW_CHART_FILEPATH_KEY: SingularChartingEngine.build_singular_overview_chart(
                     simulation_results[NORMALIZED_SIMULATION_DATA], simulation_results[SYMBOL_KEY],
-                    simulation_results[AVAILABLE_INDICATORS], show_volume, chart_saving),
+                    simulation_results[AVAILABLE_INDICATORS], show_volume, save_option),
                 ACCOUNT_VALUE_LINE_CHART_FILEPATH_KEY: SingularChartingEngine.build_account_value_line_chart(
                     simulation_results[NORMALIZED_SIMULATION_DATA][Simulator.ACCOUNT_VALUE_COLUMN_NAME].tolist(),
-                    simulation_results[SYMBOL_KEY], chart_saving),
+                    simulation_results[SYMBOL_KEY], save_option),
                 BUY_RULES_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_rules_bar_chart(
-                    simulation_results[POSITIONS_KEY], BUY_SIDE, simulation_results[SYMBOL_KEY], chart_saving),
+                    simulation_results[POSITIONS_KEY], BUY_SIDE, simulation_results[SYMBOL_KEY], save_option),
                 SELL_RULES_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_rules_bar_chart(
-                    simulation_results[POSITIONS_KEY], SELL_SIDE, simulation_results[SYMBOL_KEY], chart_saving),
+                    simulation_results[POSITIONS_KEY], SELL_SIDE, simulation_results[SYMBOL_KEY], save_option),
                 POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_duration_bar_chart(
-                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], chart_saving),
+                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
                 POSITIONS_PL_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_profit_loss_bar_chart(
-                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], chart_saving),
+                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
                 POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
                     SingularChartingEngine.build_single_strategy_result_dataset_positions_plpc_histogram_chart(
                         simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY],
-                        simulation_results[STRATEGY_KEY], chart_saving),
+                        simulation_results[STRATEGY_KEY], save_option),
                 POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY:
                     SingularChartingEngine.build_single_strategy_result_dataset_positions_plpc_box_plot(
                         simulation_results[POSITIONS_KEY], simulation_results[STRATEGY_KEY],
-                        simulation_results[SYMBOL_KEY], chart_saving)
+                        simulation_results[SYMBOL_KEY], save_option)
             }
         else:
             # filepaths are set to empty strings which will cause the html viewers to render chart unavailable
@@ -88,8 +89,65 @@ class StockBenchController:
             chart_filepaths=chart_filepaths)
 
     @staticmethod
-    def multi_simulation():
-        pass
+    def multi_simulation(strategy: dict, symbols: List[str], initial_balance: float, logging_on: bool,
+                         reporting_on: bool, unique_chart_saving: int, results_depth: int,
+                         progress_observer: ProgressObserver):
+        """Controller for running multi-symbol simulations and building charts."""
+        simulator = Simulator(initial_balance)
+
+        simulator.load_strategy(strategy)
+
+        if logging_on:
+            simulator.enable_logging()
+        if reporting_on:
+            simulator.enable_reporting()
+
+        if unique_chart_saving:
+            save_option = ChartingEngine.UNIQUE_SAVE
+        else:
+            save_option = ChartingEngine.TEMP_SAVE
+
+        result = StockBenchController.__run_simulation_with_error_catching(
+            simulator.run_multiple, symbols, progress_observer)
+        simulation_results = result[2]
+
+        if results_depth == Simulator.CHARTS_AND_DATA:
+            chart_filepaths = {
+                OVERVIEW_CHART_FILEPATH_KEY: MultiChartingEngine.build_multi_overview_chart(
+                    simulation_results[INDIVIDUAL_RESULTS_KEY], simulation_results[INITIAL_ACCOUNT_VALUE_KEY],
+                    save_option),
+                BUY_RULES_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_rules_bar_chart(
+                    simulation_results[POSITIONS_KEY], BUY_SIDE, None, save_option),
+                SELL_RULES_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_rules_bar_chart(
+                    simulation_results[POSITIONS_KEY], SELL_SIDE, None, save_option),
+                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_duration_bar_chart(
+                    simulation_results[POSITIONS_KEY], None, save_option),
+                POSITIONS_PL_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_profit_loss_bar_chart(
+                    simulation_results[POSITIONS_KEY], None, save_option),
+                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
+                    ChartingEngine.build_single_strategy_result_dataset_positions_plpc_histogram_chart(
+                        simulation_results[POSITIONS_KEY], simulation_results[STRATEGY_KEY], None, save_option),
+                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY:
+                    ChartingEngine.build_single_strategy_result_dataset_positions_plpc_box_plot(
+                        simulation_results[POSITIONS_KEY], simulation_results[STRATEGY_KEY], None, save_option)
+            }
+        else:
+            # filepaths are set to empty strings which will cause the html viewers to render chart unavailable
+            chart_filepaths = {
+                OVERVIEW_CHART_FILEPATH_KEY: '',
+                BUY_RULES_BAR_CHART_FILEPATH_KEY: '',
+                SELL_RULES_BAR_CHART_FILEPATH_KEY: '',
+                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: '',
+                POSITIONS_PL_BAR_CHART_FILEPATH_KEY: '',
+                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY: '',
+                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY: ''
+            }
+
+        return SimulationResult(
+            status_code=result[0],
+            message=result[1],
+            simulation_results=result[2],
+            chart_filepaths=chart_filepaths)
 
     @staticmethod
     def folder_simulation():

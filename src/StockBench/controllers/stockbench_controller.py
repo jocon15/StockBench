@@ -3,6 +3,7 @@ from typing import Callable
 
 import requests
 
+from StockBench.controllers.charting.charting_engine import ChartingEngine
 from StockBench.controllers.charting.exceptions import ChartingError
 from StockBench.controllers.charting.singular.singular_charting_engine import SingularChartingEngine
 from StockBench.controllers.simulator.algorithm.exceptions import MalformedStrategyError
@@ -10,7 +11,8 @@ from StockBench.controllers.simulator.broker.broker_client import MissingCredent
     InsufficientDataError
 from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
 from StockBench.controllers.simulator.simulator import Simulator
-from StockBench.models.constants.simulation_results_constants import NORMALIZED_SIMULATION_DATA
+from StockBench.models.constants.general_constants import BUY_SIDE, SELL_SIDE
+from StockBench.models.constants.simulation_results_constants import *
 from StockBench.models.observers.progress_observer import ProgressObserver
 from StockBench.models.simulation_result.simulation_result import SimulationResult
 from StockBench.models.constants.chart_filepath_key_constants import *
@@ -18,11 +20,22 @@ from StockBench.models.constants.chart_filepath_key_constants import *
 
 class StockBenchController:
     @staticmethod
-    def singular_simulation(symbol: str, initial_balance: float, save_option: int, results_depth: int,
+    def singular_simulation(strategy: dict, symbol: str, initial_balance: float, logging_on: bool, reporting_on: bool,
+                            unique_chart_saving: int, results_depth: int, show_volume: bool,
                             progress_observer: ProgressObserver) -> SimulationResult:
         simulator = Simulator(initial_balance)
 
-        # FIXME: add simulation setup, logging, reporting, saving via additional parameters
+        simulator.load_strategy(strategy)
+
+        if logging_on:
+            simulator.enable_logging()
+        if reporting_on:
+            simulator.enable_reporting()
+
+        if unique_chart_saving:
+            chart_saving = ChartingEngine.UNIQUE_SAVE
+        else:
+            chart_saving = ChartingEngine.TEMP_SAVE
 
         simulation_results = StockBenchController.__run_simulation_with_error_catching(
             simulator.run, symbol, progress_observer)
@@ -32,26 +45,26 @@ class StockBenchController:
             chart_filepaths = {
                 OVERVIEW_CHART_FILEPATH_KEY: SingularChartingEngine.build_singular_overview_chart(
                     simulation_results[NORMALIZED_SIMULATION_DATA], simulation_results[SYMBOL_KEY],
-                    simulation_results[AVAILABLE_INDICATORS], self.show_volume, save_option),
+                    simulation_results[AVAILABLE_INDICATORS], show_volume, chart_saving),
                 ACCOUNT_VALUE_LINE_CHART_FILEPATH_KEY: SingularChartingEngine.build_account_value_line_chart(
                     simulation_results[NORMALIZED_SIMULATION_DATA][Simulator.ACCOUNT_VALUE_COLUMN_NAME].tolist(),
-                    simulation_results[SYMBOL_KEY], save_option),
+                    simulation_results[SYMBOL_KEY], chart_saving),
                 BUY_RULES_BAR_CHART_KEY: ChartingEngine.build_rules_bar_chart(
-                    simulation_results[POSITIONS_KEY], BUY_SIDE, simulation_results[SYMBOL_KEY], save_option),
+                    simulation_results[POSITIONS_KEY], BUY_SIDE, simulation_results[SYMBOL_KEY], chart_saving),
                 SELL_RULES_BAR_CHART_KEY: ChartingEngine.build_rules_bar_chart(
-                    simulation_results[POSITIONS_KEY], SELL_SIDE, simulation_results[SYMBOL_KEY], save_option),
+                    simulation_results[POSITIONS_KEY], SELL_SIDE, simulation_results[SYMBOL_KEY], chart_saving),
                 POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_duration_bar_chart(
-                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
+                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], chart_saving),
                 POSITIONS_PL_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_profit_loss_bar_chart(
-                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
+                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], chart_saving),
                 POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
                     SingularChartingEngine.build_single_strategy_result_dataset_positions_plpc_histogram_chart(
                         simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY],
-                        simulation_results[STRATEGY_KEY], save_option),
+                        simulation_results[STRATEGY_KEY], chart_saving),
                 POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY:
                     SingularChartingEngine.build_single_strategy_result_dataset_positions_plpc_box_plot(
                         simulation_results[POSITIONS_KEY], simulation_results[STRATEGY_KEY],
-                        simulation_results[SYMBOL_KEY], save_option)
+                        simulation_results[SYMBOL_KEY], chart_saving)
             }
         else:
             # filepaths are set to empty strings which will cause the html viewers to render chart unavailable
@@ -70,9 +83,7 @@ class StockBenchController:
             status_code=simulation_results[0],
             message=simulation_results[1],
             simulation_results=simulation_results[2],
-            chart_filepaths=chart_filepaths
-        )
-
+            chart_filepaths=chart_filepaths)
 
     @staticmethod
     def multi_simulation():

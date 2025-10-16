@@ -1,6 +1,6 @@
 import logging
 
-from StockBench.constants import *
+from StockBench.models.constants.general_constants import *
 from StockBench.controllers.simulator.indicator import Trigger
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.models.position.position import Position

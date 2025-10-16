@@ -1,5 +1,5 @@
 from StockBench.gui.results.base.sidebar_results_table import SidebarResultsTable
-from StockBench.constants import *
+from StockBench.models.constants.general_constants import *
 
 
 class MultiResultsSidebarTable(SidebarResultsTable):

@@ -1,4 +1,4 @@
-from StockBench.constants import BUY_SIDE
+from StockBench.models.constants.general_constants import BUY_SIDE
 from StockBench.gui.results.base.rules_tab import RulesTab
 from StockBench.gui.results.singular.constants.constants import BUY_RULES_BAR_CHART_KEY, SELL_RULES_BAR_CHART_KEY
 

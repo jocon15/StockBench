@@ -44,6 +44,7 @@ class SimulationResultsWindow(QWidget):
         super().__init__()
         self.id = identifier
         self.strategy = strategy
+        self.initial_balance = initial_balance
         self.simulator = Simulator(initial_balance, identifier)  # instantiate the class reference
         self.progress_observer = ProgressObserver()  # instantiate the class reference
         self.worker = Worker  # gets instantiated later
@@ -103,6 +104,8 @@ class SimulationResultsWindow(QWidget):
 
     def __run_simulation(self) -> SimulationResultsBundle:
         """Run the simulation."""
+
+        # FIXME: move all of this to the controller
         # set up the simulator's configuration options
         if self.logging:
             self.simulator.enable_logging()

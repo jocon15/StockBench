@@ -7,7 +7,7 @@ from StockBench.gui.results.base.overview_sidebar import OverviewSideBar
 from StockBench.models.observers.progress_observer import ProgressObserver
 from StockBench.gui.results.folder.components.folder_selector import FolderSelector
 from StockBench.controllers.export import FolderResultsExporter
-from StockBench.constants import *
+from StockBench.models.constants.general_constants import *
 
 
 class FolderOverviewSidebar(OverviewSideBar):

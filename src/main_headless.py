@@ -1,5 +1,5 @@
 import time
-from StockBench.constants import *
+from StockBench.models.constants.general_constants import *
 from StockBench.controllers.simulator import Simulator
 
 strategy = {

@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QWidget, QVBoxLayout
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QColor
 from StockBench.gui.palette.palette import Palette
-from StockBench.constants import *
+from StockBench.models.constants.general_constants import *
 
 
 class FolderResultsTable(QWidget):

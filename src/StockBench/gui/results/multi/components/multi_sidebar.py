@@ -2,7 +2,7 @@ from StockBench.controllers.export import MarkdownExporter
 from StockBench.gui.results.base.overview_sidebar import OverviewSideBar
 from StockBench.gui.results.multi.components.multi_sidebar_metadata_table import MultiMetadataSidebarTable
 from StockBench.gui.results.multi.components.multi_sidebar_results_table import MultiResultsSidebarTable
-from StockBench.constants import *
+from StockBench.models.constants.general_constants import *
 
 
 class MultiOverviewSideBar(OverviewSideBar):

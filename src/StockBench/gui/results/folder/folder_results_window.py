@@ -15,7 +15,7 @@ from StockBench.gui.results.folder.tabs.folder_median_pl_tab import FolderMedian
 from StockBench.gui.results.folder.tabs.folder_stddev_pl_tab import FolderStandardDeviationProfitLossTabVertical
 from StockBench.gui.results.folder.tabs.folder_positions_histogram_tab import FolderPositionsHistogramTabVertical
 from StockBench.models.observers.progress_observer import ProgressObserver
-from StockBench.constants import *
+from StockBench.models.constants.general_constants import *
 from StockBench.gui.results.folder.constants.constants import *
 
 

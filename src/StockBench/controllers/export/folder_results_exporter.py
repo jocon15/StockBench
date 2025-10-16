@@ -1,7 +1,7 @@
 from xlsxwriter.worksheet import Worksheet
 from StockBench.controllers.export.base.excel_exporter import ExcelExporter
 from StockBench.controllers.function_tools.timestamp import datetime_timestamp
-from StockBench.constants import *
+from StockBench.models.constants.general_constants import *
 
 
 class FolderResultsExporter(ExcelExporter):

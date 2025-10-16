@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pandas import DataFrame
 
-from StockBench.constants import *
+from StockBench.models.constants.general_constants import *
 
 
 class MarkdownExporter:

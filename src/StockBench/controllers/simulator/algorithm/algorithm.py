@@ -4,7 +4,7 @@ import logging
 from typing import ValuesView, Tuple, List
 
 from StockBench.controllers.simulator.indicator import Trigger
-from StockBench.constants import BUY_SIDE, SELL_SIDE, START_KEY, END_KEY, AND_KEY
+from StockBench.models.constants.general_constants import BUY_SIDE, SELL_SIDE, START_KEY, END_KEY, AND_KEY
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.models.position.position import Position
 from StockBench.controllers.simulator.algorithm.exceptions import MalformedStrategyError

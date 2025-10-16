@@ -1,7 +1,7 @@
 from StockBench.controllers.charting import ChartingEngine
 from StockBench.controllers.charting.multi import MultiChartingEngine
-from StockBench.constants import (BUY_SIDE, SELL_SIDE, INDIVIDUAL_RESULTS_KEY, INITIAL_ACCOUNT_VALUE_KEY,
-                                  POSITIONS_KEY, STRATEGY_KEY)
+from StockBench.models.constants.general_constants import (BUY_SIDE, SELL_SIDE, INDIVIDUAL_RESULTS_KEY, INITIAL_ACCOUNT_VALUE_KEY,
+                                                           POSITIONS_KEY, STRATEGY_KEY)
 from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.results.multi.tabs.multi_positions_plpc_box_plot_tab import MultiPositionsBoxPlotTabVertical
 from StockBench.gui.results.base.results_window import SimulationResultsWindow

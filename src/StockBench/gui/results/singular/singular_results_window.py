@@ -20,7 +20,7 @@ class SingularResultsWindow(SimulationResultsWindow):
     def __init__(self, symbol, strategy, initial_balance, logging_on, reporting_on, unique_chart_saving_on, show_volume,
                  results_depth):
         super().__init__(strategy, initial_balance, logging_on, reporting_on, unique_chart_saving_on, show_volume,
-                         results_depth)
+                         results_depth, identifier=1)
         self.symbol = symbol
 
         self.layout.addWidget(self.progress_bar)

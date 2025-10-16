@@ -102,7 +102,8 @@ class MultiConfigTab(ConfigTab):
             self.simulation_logging,
             self.simulation_reporting,
             self.simulation_unique_chart_saving,
-            self.results_depth)
+            self.results_depth,
+            identifier=1)
 
         # all error checks have passed, can now clear the error message box
         self.error_message_box.setText('')

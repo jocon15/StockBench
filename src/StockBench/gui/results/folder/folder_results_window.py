@@ -23,8 +23,8 @@ class FolderResultsWindow(SimulationResultsWindow):
     def __init__(self, strategies, symbols, initial_balance, logging_on, reporting_on, unique_chart_saving_on,
                  results_depth):
         # pass 1st strategy as a dummy strategy because we will load the strategy dynamically in _run_simulation
-        super().__init__(strategies[0], initial_balance, logging_on, reporting_on, unique_chart_saving_on,
-                         results_depth)
+        super().__init__(strategies[0], initial_balance, logging_on, reporting_on, unique_chart_saving_on, None,
+                         results_depth, identifier=1)
         self.strategies = strategies
         self.symbols = symbols
         self.logging = logging_on

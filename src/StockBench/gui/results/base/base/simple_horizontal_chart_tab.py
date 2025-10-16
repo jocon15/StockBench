@@ -1,7 +1,6 @@
 from abc import abstractmethod
 from PyQt6.QtWidgets import QFrame, QHBoxLayout
 
-from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.results.base.html_viewer import HTMLViewer
 
 

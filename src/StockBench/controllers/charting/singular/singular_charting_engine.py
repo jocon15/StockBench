@@ -5,8 +5,8 @@ from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 import plotly.graph_objects as plotter
 
-from StockBench.controllers.simulator.indicator import IndicatorInterface
-from StockBench.controllers.simulator.indicator import Subplot
+from StockBench.controllers.simulator.indicator.indicator import IndicatorInterface
+from StockBench.controllers.simulator.indicator.subplot import Subplot
 from StockBench.controllers.simulator.indicators.volume.subplot import VolumeSubplot
 from StockBench.controllers.charting.charting_engine import ChartingEngine
 from StockBench.controllers.charting.exceptions import ChartingError

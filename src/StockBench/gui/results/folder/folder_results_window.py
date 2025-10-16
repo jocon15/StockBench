@@ -1,7 +1,7 @@
 from time import perf_counter
 from PyQt6.QtWidgets import QLabel
 
-from StockBench.controllers.charting.folder import FolderChartingEngine
+from StockBench.controllers.charting.folder.folder_charting_engine import FolderChartingEngine
 from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 
@@ -15,8 +15,8 @@ from StockBench.gui.results.folder.tabs.folder_median_pl_tab import FolderMedian
 from StockBench.gui.results.folder.tabs.folder_stddev_pl_tab import FolderStandardDeviationProfitLossTabVertical
 from StockBench.gui.results.folder.tabs.folder_positions_histogram_tab import FolderPositionsHistogramTabVertical
 from StockBench.models.observers.progress_observer import ProgressObserver
-from StockBench.models.constants.general_constants import *
-from StockBench.gui.results.folder.constants.constants import *
+from StockBench.models.constants.simulation_results_constants import *
+from StockBench.models.constants.chart_filepath_key_constants import *
 
 
 class FolderResultsWindow(SimulationResultsWindow):

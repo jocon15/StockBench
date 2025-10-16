@@ -3,7 +3,7 @@ import plotly.graph_objects as plotter
 
 from StockBench.controllers.charting.charting_engine import ChartingEngine
 from StockBench.controllers.charting.display_constants import OFF_BLUE
-from StockBench.models.constants.general_constants import *
+from StockBench.models.constants.simulation_results_constants import *
 
 
 class FolderChartingEngine(ChartingEngine):

@@ -3,8 +3,8 @@ from plotly.graph_objects import Ohlc, Scatter
 from pandas import DataFrame
 from typing import List
 
-from StockBench.controllers.simulator.indicator import Subplot
-from StockBench.controllers.charting import BUY_COLOR, SELL_COLOR, BUY_SELL_DOTS_WIDTH
+from StockBench.controllers.simulator.indicator.subplot import Subplot
+from StockBench.controllers.charting.display_constants import BUY_COLOR, SELL_COLOR, BUY_SELL_DOTS_WIDTH
 
 
 class OHLCSubplot(Subplot):

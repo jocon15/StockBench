@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import patch
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
 from StockBench.controllers.simulator.indicators.rsi.trigger import RSITrigger
-from StockBench.controllers.simulator.indicator import StrategyIndicatorError
+from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
 
 
 @pytest.fixture

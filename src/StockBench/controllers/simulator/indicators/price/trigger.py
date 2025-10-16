@@ -1,7 +1,7 @@
 import logging
 
 from StockBench.models.position.position import Position
-from StockBench.controllers.simulator.indicator import Trigger
+from StockBench.controllers.simulator.indicator.trigger import Trigger
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 
 log = logging.getLogger()

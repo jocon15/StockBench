@@ -7,11 +7,13 @@ from tqdm import tqdm
 from time import perf_counter
 from datetime import datetime
 from typing import Optional, List, Tuple
+
 from StockBench.models.constants.general_constants import *
 from StockBench.controllers.simulator.broker.broker_client import BrokerClient
 from StockBench.controllers.export.window_data_exporter import WindowDataExporter
 from StockBench.controllers.factories.configuration import ClientConfigurationFactory
 from StockBench.controllers.filesystem.fs_controller import FSController
+from StockBench.models.constants.simulation_results_constants import *
 from StockBench.models.observers.progress_observer import ProgressObserver
 from StockBench.models.position.position import Position
 from StockBench.controllers.simulator.account.user_account import UserAccount

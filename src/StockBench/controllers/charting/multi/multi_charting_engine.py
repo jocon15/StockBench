@@ -8,7 +8,7 @@ from plotly.subplots import make_subplots
 
 from StockBench.controllers.charting.display_constants import *
 from StockBench.controllers.charting.charting_engine import ChartingEngine
-from StockBench.models.constants.general_constants import *
+from StockBench.models.constants.simulation_results_constants import *
 
 
 class MultiChartingEngine(ChartingEngine):

@@ -1,7 +1,8 @@
-from StockBench.controllers.charting import ChartingEngine
-from StockBench.controllers.charting.multi import MultiChartingEngine
-from StockBench.models.constants.general_constants import (BUY_SIDE, SELL_SIDE, INDIVIDUAL_RESULTS_KEY, INITIAL_ACCOUNT_VALUE_KEY,
-                                                           POSITIONS_KEY, STRATEGY_KEY)
+from StockBench.controllers.charting.charting_engine import ChartingEngine
+from StockBench.controllers.charting.multi.multi_charting_engine import MultiChartingEngine
+from StockBench.models.constants.general_constants import BUY_SIDE, SELL_SIDE
+from StockBench.models.constants.simulation_results_constants import (INDIVIDUAL_RESULTS_KEY, INITIAL_ACCOUNT_VALUE_KEY,
+                                                                      POSITIONS_KEY, STRATEGY_KEY)
 from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.results.multi.tabs.multi_positions_plpc_box_plot_tab import MultiPositionsBoxPlotTabVertical
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
@@ -10,8 +11,8 @@ from StockBench.gui.results.multi.tabs.multi_overview_tab import MultiOverviewTa
 from StockBench.gui.results.multi.tabs.multi_positions_pl_tab import MultiPositionsProfitLossTabVertical
 from StockBench.gui.results.multi.tabs.multi_positions_plpc_histogram_tab import MultiPositionsHistogramTabVertical
 from StockBench.gui.results.multi.tabs.multi_positions_duration_tab import MultiPositionsDurationTabVertical
-from StockBench.gui.results.multi.constants.constants import *
-from StockBench.controllers.simulator import Simulator
+from StockBench.models.constants.chart_filepath_key_constants import *
+from StockBench.controllers.simulator.simulator import Simulator
 
 
 class MultiResultsWindow(SimulationResultsWindow):
@@ -53,9 +54,9 @@ class MultiResultsWindow(SimulationResultsWindow):
                 OVERVIEW_CHART_FILEPATH_KEY: MultiChartingEngine.build_multi_overview_chart(
                     simulation_results[INDIVIDUAL_RESULTS_KEY], simulation_results[INITIAL_ACCOUNT_VALUE_KEY],
                     save_option),
-                BUY_RULES_BAR_CHART_KEY: ChartingEngine.build_rules_bar_chart(
+                BUY_RULES_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_rules_bar_chart(
                     simulation_results[POSITIONS_KEY], BUY_SIDE, None, save_option),
-                SELL_RULES_BAR_CHART_KEY: ChartingEngine.build_rules_bar_chart(
+                SELL_RULES_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_rules_bar_chart(
                     simulation_results[POSITIONS_KEY], SELL_SIDE, None, save_option),
                 POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_duration_bar_chart(
                     simulation_results[POSITIONS_KEY], None, save_option),
@@ -72,8 +73,8 @@ class MultiResultsWindow(SimulationResultsWindow):
             # filepaths are set to empty strings which will cause the html viewers to render chart unavailable
             chart_filepaths = {
                 OVERVIEW_CHART_FILEPATH_KEY: '',
-                BUY_RULES_BAR_CHART_KEY: '',
-                SELL_RULES_BAR_CHART_KEY: '',
+                BUY_RULES_BAR_CHART_FILEPATH_KEY: '',
+                SELL_RULES_BAR_CHART_FILEPATH_KEY: '',
                 POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: '',
                 POSITIONS_PL_BAR_CHART_FILEPATH_KEY: '',
                 POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY: '',

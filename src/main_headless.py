@@ -1,6 +1,7 @@
 import time
-from StockBench.models.constants.general_constants import *
-from StockBench.controllers.simulator import Simulator
+
+from StockBench.models.constants.general_constants import SECONDS_5_YEAR
+from StockBench.controllers.simulator.simulator import Simulator
 
 strategy = {
     'start': int(time.time()) - SECONDS_5_YEAR,

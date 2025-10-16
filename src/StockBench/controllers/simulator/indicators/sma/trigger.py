@@ -1,8 +1,8 @@
 import logging
 import statistics
 
-from StockBench.controllers.simulator.indicator import Trigger
-from StockBench.controllers.simulator.indicator import StrategyIndicatorError
+from StockBench.controllers.simulator.indicator.trigger import Trigger
+from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.models.position.position import Position
 

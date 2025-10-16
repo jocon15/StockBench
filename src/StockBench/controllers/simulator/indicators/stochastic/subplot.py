@@ -1,8 +1,8 @@
 import plotly.graph_objects as fplt
 from pandas import DataFrame
 
-from StockBench.controllers.simulator.indicator import Subplot
-from StockBench.controllers.charting import WHITE, HORIZONTAL_TRIGGER_YELLOW
+from StockBench.controllers.simulator.indicator.subplot import Subplot
+from StockBench.controllers.charting.display_constants import WHITE, HORIZONTAL_TRIGGER_YELLOW
 
 
 class StochasticSubplot(Subplot):

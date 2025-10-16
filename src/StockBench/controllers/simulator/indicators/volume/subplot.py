@@ -2,8 +2,8 @@ import numpy as np
 import plotly.graph_objects as fplt
 from pandas import DataFrame
 
-from StockBench.controllers.simulator.indicator import Subplot
-from StockBench.controllers.charting import BEAR_RED, BULL_GREEN
+from StockBench.controllers.simulator.indicator.subplot import Subplot
+from StockBench.controllers.charting.display_constants import BEAR_RED, BULL_GREEN
 
 
 class VolumeSubplot(Subplot):

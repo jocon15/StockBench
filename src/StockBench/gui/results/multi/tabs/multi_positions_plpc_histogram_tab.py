@@ -1,5 +1,5 @@
 from StockBench.gui.results.base.base.simple_vertical_chart_tab import SimpleVerticalChartTab
-from StockBench.gui.results.multi.constants.constants import POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY
+from StockBench.models.constants.chart_filepath_key_constants import POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY
 
 
 class MultiPositionsHistogramTabVertical(SimpleVerticalChartTab):

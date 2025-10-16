@@ -1,7 +1,7 @@
 from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.results.base.overview_tab import OverviewTabVertical
 from StockBench.gui.results.multi.components.multi_sidebar import MultiOverviewSideBar
-from StockBench.gui.results.multi.constants.constants import OVERVIEW_CHART_FILEPATH_KEY
+from StockBench.models.constants.chart_filepath_key_constants import OVERVIEW_CHART_FILEPATH_KEY
 
 
 class MultiOverviewTab(OverviewTabVertical):

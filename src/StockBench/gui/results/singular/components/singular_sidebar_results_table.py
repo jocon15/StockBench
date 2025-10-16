@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QLabel
 
 from StockBench.gui.results.base.sidebar_results_table import SidebarResultsTable
-from StockBench.models.constants.general_constants import *
+from StockBench.models.constants.simulation_results_constants import *
 
 
 class SingularResultsSidebarTable(SidebarResultsTable):

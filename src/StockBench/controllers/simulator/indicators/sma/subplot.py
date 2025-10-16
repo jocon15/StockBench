@@ -2,8 +2,8 @@ import re
 import plotly.graph_objects as fplt
 from pandas import DataFrame
 
-from StockBench.controllers.simulator.indicator import Subplot
-from StockBench.controllers.charting import SMA_COLOR, MOVING_AVERAGE_LINE_WIDTH
+from StockBench.controllers.simulator.indicator.subplot import Subplot
+from StockBench.controllers.charting.display_constants import SMA_COLOR, MOVING_AVERAGE_LINE_WIDTH
 
 
 class SMASubplot(Subplot):

@@ -1,6 +1,6 @@
 from .trigger import VolumeTrigger
 from .subplot import VolumeSubplot
-from StockBench.controllers.simulator.indicator import IndicatorInterface
+from StockBench.controllers.simulator.indicator.indicator import IndicatorInterface
 
 
 class VolumeIndicator(IndicatorInterface):

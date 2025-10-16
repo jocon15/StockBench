@@ -1,5 +1,5 @@
 import plotly.graph_objects as fplt
-from StockBench.controllers.simulator.indicator import Subplot
+from StockBench.controllers.simulator.indicator.subplot import Subplot
 
 
 class MACDSubplot(Subplot):

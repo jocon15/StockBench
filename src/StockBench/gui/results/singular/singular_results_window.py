@@ -10,8 +10,8 @@ from StockBench.gui.results.singular.tabs.singular_positions_plpc_histogram_tab 
     SingularPositionsHistogramTabVertical
 from StockBench.gui.results.singular.tabs.singular_rules_tab import SingularRulesTab
 from StockBench.gui.results.singular.tabs.singular_account_value_tab import SingularAccountValueTabVertical
-from StockBench.gui.results.singular.constants.constants import *
 from StockBench.models.constants.general_constants import *
+from StockBench.models.simulation_result.simulation_result import SimulationResult
 
 
 class SingularResultsWindow(SimulationResultsWindow):
@@ -46,13 +46,17 @@ class SingularResultsWindow(SimulationResultsWindow):
 
         self.setLayout(self.layout)
 
-    def _run_simulation(self, save_option: int, results_depth: int) -> SimulationResultsBundle:
+    def _run_simulation(self) -> SimulationResult:
         """Implementation of running the simulation for a single symbol simulation on a QThread."""
         return StockBenchController.singular_simulation(
+            strategy=self.strategy,
             symbol=self.symbol,
+            logging_on=self.logging,
+            reporting_on=self.reporting,
             initial_balance=self.initial_balance,
-            save_option=save_option,
-            results_depth=results_depth,
+            unique_chart_saving=self.unique_chart_saving,
+            results_depth=self.results_depth,
+            show_volume=self.show_volume,
             progress_observer=self.progress_observer
         )
 

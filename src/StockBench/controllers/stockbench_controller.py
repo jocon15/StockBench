@@ -23,6 +23,7 @@ class StockBenchController:
     def singular_simulation(strategy: dict, symbol: str, initial_balance: float, logging_on: bool, reporting_on: bool,
                             unique_chart_saving: int, results_depth: int, show_volume: bool,
                             progress_observer: ProgressObserver) -> SimulationResult:
+        """Controller for running singular simulations and building charts."""
         simulator = Simulator(initial_balance)
 
         simulator.load_strategy(strategy)

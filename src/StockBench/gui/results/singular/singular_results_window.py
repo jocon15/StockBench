@@ -1,5 +1,4 @@
-from StockBench.controllers.charting import ChartingEngine
-from StockBench.controllers.charting.singular import SingularChartingEngine
+from StockBench.controllers.stockbench_controller import StockBenchController
 from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.singular.tabs.singular_overview_tab import SingularOverviewTab
@@ -11,9 +10,8 @@ from StockBench.gui.results.singular.tabs.singular_positions_plpc_histogram_tab 
     SingularPositionsHistogramTabVertical
 from StockBench.gui.results.singular.tabs.singular_rules_tab import SingularRulesTab
 from StockBench.gui.results.singular.tabs.singular_account_value_tab import SingularAccountValueTabVertical
-from StockBench.controllers.simulator import Simulator
 from StockBench.gui.results.singular.constants.constants import *
-from StockBench.constants import *
+from StockBench.models.constants.general_constants import *
 
 
 class SingularResultsWindow(SimulationResultsWindow):
@@ -50,47 +48,13 @@ class SingularResultsWindow(SimulationResultsWindow):
 
     def _run_simulation(self, save_option: int, results_depth: int) -> SimulationResultsBundle:
         """Implementation of running the simulation for a single symbol simulation on a QThread."""
-        simulation_results = self.simulator.run(self.symbol, self.progress_observer)
-
-        if results_depth == Simulator.CHARTS_AND_DATA:
-            chart_filepaths = {
-                OVERVIEW_CHART_FILEPATH_KEY: SingularChartingEngine.build_singular_overview_chart(
-                    simulation_results[NORMALIZED_SIMULATION_DATA], simulation_results[SYMBOL_KEY],
-                    simulation_results[AVAILABLE_INDICATORS], self.show_volume, save_option),
-                ACCOUNT_VALUE_LINE_CHART_FILEPATH_KEY: SingularChartingEngine.build_account_value_line_chart(
-                    simulation_results[NORMALIZED_SIMULATION_DATA][Simulator.ACCOUNT_VALUE_COLUMN_NAME].tolist(),
-                    simulation_results[SYMBOL_KEY], save_option),
-                BUY_RULES_BAR_CHART_KEY: ChartingEngine.build_rules_bar_chart(
-                    simulation_results[POSITIONS_KEY], BUY_SIDE, simulation_results[SYMBOL_KEY], save_option),
-                SELL_RULES_BAR_CHART_KEY: ChartingEngine.build_rules_bar_chart(
-                    simulation_results[POSITIONS_KEY], SELL_SIDE, simulation_results[SYMBOL_KEY], save_option),
-                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_duration_bar_chart(
-                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
-                POSITIONS_PL_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_profit_loss_bar_chart(
-                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
-                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
-                    SingularChartingEngine.build_single_strategy_result_dataset_positions_plpc_histogram_chart(
-                        simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY],
-                        simulation_results[STRATEGY_KEY], save_option),
-                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY:
-                    SingularChartingEngine.build_single_strategy_result_dataset_positions_plpc_box_plot(
-                        simulation_results[POSITIONS_KEY], simulation_results[STRATEGY_KEY],
-                        simulation_results[SYMBOL_KEY], save_option)
-            }
-        else:
-            # filepaths are set to empty strings which will cause the html viewers to render chart unavailable
-            chart_filepaths = {
-                OVERVIEW_CHART_FILEPATH_KEY: '',
-                ACCOUNT_VALUE_LINE_CHART_FILEPATH_KEY: '',
-                BUY_RULES_BAR_CHART_KEY: '',
-                SELL_RULES_BAR_CHART_KEY: '',
-                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: '',
-                POSITIONS_PL_BAR_CHART_FILEPATH_KEY: '',
-                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY: '',
-                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY: ''
-            }
-
-        return SimulationResultsBundle(simulation_results=simulation_results, chart_filepaths=chart_filepaths)
+        return StockBenchController.singular_simulation(
+            symbol=self.symbol,
+            initial_balance=self.initial_balance,
+            save_option=save_option,
+            results_depth=results_depth,
+            progress_observer=self.progress_observer
+        )
 
     def _render_data(self, simulation_results_bundle: SimulationResultsBundle):
         """Render the updated data in the window's shared components."""

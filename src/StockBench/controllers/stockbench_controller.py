@@ -37,10 +37,11 @@ class StockBenchController:
         else:
             chart_saving = ChartingEngine.TEMP_SAVE
 
-        simulation_results = StockBenchController.__run_simulation_with_error_catching(
+        # FIXME: you could do error wrapping this way or use a decorator
+        result = StockBenchController.__run_simulation_with_error_catching(
             simulator.run, symbol, progress_observer)
+        simulation_results = result[2]
 
-        # FIXME: move constants to 1 file
         if results_depth == Simulator.CHARTS_AND_DATA:
             chart_filepaths = {
                 OVERVIEW_CHART_FILEPATH_KEY: SingularChartingEngine.build_singular_overview_chart(
@@ -80,9 +81,9 @@ class StockBenchController:
             }
 
         return SimulationResult(
-            status_code=simulation_results[0],
-            message=simulation_results[1],
-            simulation_results=simulation_results[2],
+            status_code=result[0],
+            message=result[1],
+            simulation_results=result[2],
             chart_filepaths=chart_filepaths)
 
     @staticmethod
@@ -100,7 +101,7 @@ class StockBenchController:
         message = ''
         results = {}
         try:
-            results = simulation_function(args)
+            results = simulation_function(*args)
         except requests.exceptions.ConnectionError:
             message = 'Failed to connect to broker!'
         except MalformedStrategyError as e:

@@ -90,36 +90,8 @@ class FolderResultsWindow(SimulationResultsWindow):
             self.progress_bar.setValue(100)
             self.timer.stop()
 
-    def _run_simulation(self, save_option: int, results_depth: int) -> SimulationResultsBundle:
-        results = []
+    def _run_simulation(self) -> SimulationResultsBundle:
 
-        start_time = perf_counter()
-        # run all simulations (using matched progress observer)
-        for i, strategy in enumerate(self.strategies):
-            # __run_simulation sets the simulator to use self.strategy
-            # we passed in a dummy strategy to satisfy the constructor (self.strategy gets set to dummy)
-            # override the dummy strategy in the simulator with the correct one
-            self.simulator.load_strategy(strategy)
-
-            results.append(self.simulator.run_multiple(self.symbols, self.progress_observers[i]))
-
-        # results depth is not an option for folder, no need for dummy dict
-        chart_filepaths = {
-            TRADES_MADE_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_trades_made_bar_chart(results),
-            EFFECTIVENESS_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_effectiveness_bar_chart(results),
-            TOTAL_PL_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_total_pl_bar_chart(results),
-            AVERAGE_PL_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_average_pl_bar_chart(results),
-            MEDIAN_PL_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_median_pl_bar_chart(results),
-            STDDEV_PL_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_stddev_pl_bar_chart(results),
-            POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
-                FolderChartingEngine.build_positions_plpc_histogram_chart(results),
-            POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY: FolderChartingEngine.build_positions_plpc_box_chart(results)
-        }
-
-        elapsed_time = round(perf_counter() - start_time, 2)
-
-        return SimulationResultsBundle(simulation_results={'results': results, ELAPSED_TIME_KEY: elapsed_time},
-                                       chart_filepaths=chart_filepaths)
 
     def _render_data(self, simulation_results_bundle: SimulationResultsBundle):
         # only run if all symbols had enough data

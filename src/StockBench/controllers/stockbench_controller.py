@@ -6,7 +6,8 @@ import requests
 from StockBench.controllers.charting.charting_engine import ChartingEngine
 from StockBench.controllers.charting.exceptions import ChartingError
 from StockBench.controllers.charting.multi.multi_charting_engine import MultiChartingEngine
-from StockBench.controllers.charting.singular.singular_charting_engine import SingularChartingEngine
+from StockBench.controllers.proxies.charting_proxy import ChartingProxy
+from StockBench.controllers.proxies.simulation_proxy import SimulationProxy
 from StockBench.controllers.simulator.algorithm.exceptions import MalformedStrategyError
 from StockBench.controllers.simulator.broker.broker_client import MissingCredentialError, InvalidSymbolError, \
     InsufficientDataError
@@ -22,70 +23,37 @@ from StockBench.models.constants.chart_filepath_key_constants import *
 class StockBenchController:
     @staticmethod
     def singular_simulation(strategy: dict, symbol: str, initial_balance: float, logging_on: bool, reporting_on: bool,
-                            unique_chart_saving: int, results_depth: int, show_volume: bool,
+                            unique_chart_saving: bool, results_depth: int, show_volume: bool,
                             progress_observer: ProgressObserver) -> SimulationResult:
         """Controller for running singular-symbol simulations and building charts."""
-        simulator = Simulator(initial_balance)
+        simulation_results = SimulationProxy.run_singular_simulation(strategy, symbol, initial_balance, logging_on,
+                                                                     reporting_on,
+                                                                     progress_observer)
 
-        simulator.load_strategy(strategy)
+        if 'status_code' in simulation_results.keys():
+            # simulation failed
+            return SimulationResult(
+                status_code=400,
+                message=simulation_results['message'],
+                simulation_results={},
+                chart_filepaths=ChartingProxy.SINGULAR_DEFAULT_CHART_FILEPATHS)
 
-        if logging_on:
-            simulator.enable_logging()
-        if reporting_on:
-            simulator.enable_reporting()
+        chart_filepaths = ChartingProxy.build_singular_charts(simulation_results, unique_chart_saving, results_depth,
+                                                              show_volume)
 
-        if unique_chart_saving:
-            save_option = ChartingEngine.UNIQUE_SAVE
-        else:
-            save_option = ChartingEngine.TEMP_SAVE
+        if 'status_code' in chart_filepaths.keys():
+            # charting failed
+            return SimulationResult(
+                status_code=400,
+                message=simulation_results['message'],
+                simulation_results={},
+                chart_filepaths=ChartingProxy.SINGULAR_DEFAULT_CHART_FILEPATHS)
 
-        # FIXME: you could do error wrapping this way or use a decorator
-        result = StockBenchController.__run_simulation_with_error_catching(
-            simulator.run, symbol, progress_observer)
-        simulation_results = result[2]
-
-        if results_depth == Simulator.CHARTS_AND_DATA:
-            chart_filepaths = {
-                OVERVIEW_CHART_FILEPATH_KEY: SingularChartingEngine.build_singular_overview_chart(
-                    simulation_results[NORMALIZED_SIMULATION_DATA], simulation_results[SYMBOL_KEY],
-                    simulation_results[AVAILABLE_INDICATORS], show_volume, save_option),
-                ACCOUNT_VALUE_LINE_CHART_FILEPATH_KEY: SingularChartingEngine.build_account_value_line_chart(
-                    simulation_results[NORMALIZED_SIMULATION_DATA][Simulator.ACCOUNT_VALUE_COLUMN_NAME].tolist(),
-                    simulation_results[SYMBOL_KEY], save_option),
-                BUY_RULES_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_rules_bar_chart(
-                    simulation_results[POSITIONS_KEY], BUY_SIDE, simulation_results[SYMBOL_KEY], save_option),
-                SELL_RULES_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_rules_bar_chart(
-                    simulation_results[POSITIONS_KEY], SELL_SIDE, simulation_results[SYMBOL_KEY], save_option),
-                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_duration_bar_chart(
-                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
-                POSITIONS_PL_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_profit_loss_bar_chart(
-                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
-                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
-                    SingularChartingEngine.build_single_strategy_result_dataset_positions_plpc_histogram_chart(
-                        simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY],
-                        simulation_results[STRATEGY_KEY], save_option),
-                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY:
-                    SingularChartingEngine.build_single_strategy_result_dataset_positions_plpc_box_plot(
-                        simulation_results[POSITIONS_KEY], simulation_results[STRATEGY_KEY],
-                        simulation_results[SYMBOL_KEY], save_option)
-            }
-        else:
-            # filepaths are set to empty strings which will cause the html viewers to render chart unavailable
-            chart_filepaths = {
-                OVERVIEW_CHART_FILEPATH_KEY: '',
-                ACCOUNT_VALUE_LINE_CHART_FILEPATH_KEY: '',
-                BUY_RULES_BAR_CHART_FILEPATH_KEY: '',
-                SELL_RULES_BAR_CHART_FILEPATH_KEY: '',
-                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: '',
-                POSITIONS_PL_BAR_CHART_FILEPATH_KEY: '',
-                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY: '',
-                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY: ''
-            }
-
+        # success
         return SimulationResult(
-            status_code=result[0],
-            message=result[1],
-            simulation_results=result[2],
+            status_code=200,
+            message='',
+            simulation_results=simulation_results,
             chart_filepaths=chart_filepaths)
 
     @staticmethod
@@ -151,7 +119,35 @@ class StockBenchController:
 
     @staticmethod
     def folder_simulation():
-        pass
+        results = []
+
+        start_time = perf_counter()
+        # run all simulations (using matched progress observer)
+        for i, strategy in enumerate(self.strategies):
+            # __run_simulation sets the simulator to use self.strategy
+            # we passed in a dummy strategy to satisfy the constructor (self.strategy gets set to dummy)
+            # override the dummy strategy in the simulator with the correct one
+            self.simulator.load_strategy(strategy)
+
+            results.append(self.simulator.run_multiple(self.symbols, self.progress_observers[i]))
+
+        # results depth is not an option for folder, no need for dummy dict
+        chart_filepaths = {
+            TRADES_MADE_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_trades_made_bar_chart(results),
+            EFFECTIVENESS_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_effectiveness_bar_chart(results),
+            TOTAL_PL_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_total_pl_bar_chart(results),
+            AVERAGE_PL_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_average_pl_bar_chart(results),
+            MEDIAN_PL_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_median_pl_bar_chart(results),
+            STDDEV_PL_BAR_CHART_FILEPATH_KEY: FolderChartingEngine.build_stddev_pl_bar_chart(results),
+            POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
+                FolderChartingEngine.build_positions_plpc_histogram_chart(results),
+            POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY: FolderChartingEngine.build_positions_plpc_box_chart(results)
+        }
+
+        elapsed_time = round(perf_counter() - start_time, 2)
+
+        return SimulationResultsBundle(simulation_results={'results': results, ELAPSED_TIME_KEY: elapsed_time},
+                                       chart_filepaths=chart_filepaths)
 
     @staticmethod
     def __run_simulation_with_error_catching(simulation_function: Callable, *args) -> tuple:

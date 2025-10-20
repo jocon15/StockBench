@@ -1,6 +1,5 @@
 from StockBench.controllers.stockbench_controller import StockBenchController
 from StockBench.models.constants.general_constants import BUY_SIDE, SELL_SIDE
-from StockBench.gui.models.simulation_results_bundle import SimulationResult
 from StockBench.gui.results.multi.tabs.multi_positions_plpc_box_plot_tab import MultiPositionsBoxPlotTabVertical
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.multi.tabs.multi_rules_tab import MultiRulesTab

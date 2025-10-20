@@ -1,4 +1,3 @@
-from StockBench.gui.models.simulation_results_bundle import SimulationResult
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.singular.tabs.singular_overview_tab import SingularOverviewTab
 from StockBench.gui.results.singular.tabs.singular_positions_duration_tab import SingularPositionsDurationTabVertical

@@ -45,7 +45,7 @@ def test_additional_days_from_rule_value(test_object):
 
 
 @patch('logging.getLogger')
-@patch('StockBench.simulation_data.data_manager.DataManager')
+@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_add_to_data_from_rule_key(data_mocker, logger_mocker, test_object):
     # ============= Arrange ==============
     logger_mocker.return_value = logger_mocker
@@ -77,7 +77,7 @@ def test_add_to_data_from_rule_key(data_mocker, logger_mocker, test_object):
 
 
 @patch('logging.getLogger')
-@patch('StockBench.simulation_data.data_manager.DataManager')
+@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_add_to_data_from_rule_value(data_mocker, logger_mocker, test_object):
     # ============= Arrange ==============
     logger_mocker.return_value = logger_mocker
@@ -319,7 +319,7 @@ def logger_side_effect(*args):
         assert False
 
 
-@patch('StockBench.simulation_data.data_manager.DataManager')
+@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_get_value_when_referenced(data_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 234.5
@@ -330,10 +330,10 @@ def test_get_value_when_referenced(data_mocker, test_object):
     assert test_object.get_indicator_value_when_referenced('>=SMA20', data_mocker, 25) == 234.5
 
 
-@patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')
-@patch('StockBench.algorithm.algorithm.Trigger.find_operator_in_str')
-@patch('StockBench.algorithm.algorithm.Trigger.basic_trigger_check')
-@patch('StockBench.simulation_data.data_manager.DataManager')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_single_numeric_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_operator_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.basic_trigger_check')
+@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 10
@@ -353,7 +353,7 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
-@patch('StockBench.simulation_data.data_manager.DataManager')
+@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger_value_error(data_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 90
@@ -370,10 +370,10 @@ def test_check_trigger_value_error(data_mocker, test_object):
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
-@patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')
-@patch('StockBench.algorithm.algorithm.Trigger.find_operator_in_str')
-@patch('StockBench.algorithm.algorithm.Trigger.basic_trigger_check')
-@patch('StockBench.simulation_data.data_manager.DataManager')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_single_numeric_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_operator_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.basic_trigger_check')
+@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker,
                                                  test_object):
     # ============= Arrange ==============
@@ -399,7 +399,7 @@ def data_side_effect(*args):
         return 40.2
 
 
-@patch('StockBench.simulation_data.data_manager.DataManager')
+@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger_2_numbers_present_bad_format(data_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.side_effect = data_side_effect
@@ -416,10 +416,10 @@ def test_check_trigger_2_numbers_present_bad_format(data_mocker, test_object):
         assert True
 
 
-@patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')
-@patch('StockBench.algorithm.algorithm.Trigger.find_operator_in_str')
-@patch('StockBench.algorithm.algorithm.Trigger.basic_trigger_check')
-@patch('StockBench.simulation_data.data_manager.DataManager')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_single_numeric_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_operator_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.basic_trigger_check')
+@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.side_effect = slope_data_side_effect
@@ -447,7 +447,7 @@ def slope_data_side_effect(*args):
         return 100.0
 
 
-@patch('StockBench.simulation_data.data_manager.DataManager')
+@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger_slope_value_error(data_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 90

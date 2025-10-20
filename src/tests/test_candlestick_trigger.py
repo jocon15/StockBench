@@ -84,7 +84,7 @@ def test_get_value_when_referenced(test_object):
         assert True
 
 
-@patch('StockBench.simulation_data.data_manager.DataManager')
+@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger(data_mocker, test_object):
     # ============= Arrange ==============
     current_day_index = 0
@@ -102,7 +102,7 @@ def test_check_trigger(data_mocker, test_object):
                                      current_day_index) is False
 
 
-@patch('StockBench.simulation_data.data_manager.DataManager')
+@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger_no_values(data_mocker, test_object):
     # ============= Arrange ==============
     current_day_index = 0

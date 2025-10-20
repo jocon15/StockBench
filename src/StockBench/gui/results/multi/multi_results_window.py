@@ -42,9 +42,9 @@ class MultiResultsWindow(SimulationResultsWindow):
 
     def _run_simulation(self) -> SimulationResult:
         """Implementation of running the simulation for multi-symbol simulation."""
-        return self._stockbench_controller.multi_simulation(self.strategy, self.symbols, self.initial_balance, self.logging,
-                                                            self.reporting, self.unique_chart_saving, self.results_depth,
-                                                            self.progress_observer)
+        return self._stockbench_controller.multi_simulation(self.strategy, self.symbols, self.initial_balance,
+                                                            self.logging, self.reporting, self.unique_chart_saving,
+                                                            self.results_depth, self.progress_observer)
 
     def _render_data(self, simulation_result: SimulationResult):
         """Render the updated data in the window's shared_components."""

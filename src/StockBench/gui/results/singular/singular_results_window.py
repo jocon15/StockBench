@@ -1,4 +1,4 @@
-from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
+from StockBench.gui.models.simulation_results_bundle import SimulationResult
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.singular.tabs.singular_overview_tab import SingularOverviewTab
 from StockBench.gui.results.singular.tabs.singular_positions_duration_tab import SingularPositionsDurationTabVertical
@@ -47,7 +47,7 @@ class SingularResultsWindow(SimulationResultsWindow):
 
     def _run_simulation(self) -> SimulationResult:
         """Implementation of running the simulation for a single symbol simulation on a QThread."""
-        return self._controller.singular_simulation(
+        return self._stockbench_controller.singular_simulation(
             strategy=self.strategy,
             symbol=self.symbol,
             logging_on=self.logging,
@@ -59,7 +59,7 @@ class SingularResultsWindow(SimulationResultsWindow):
             progress_observer=self.progress_observer
         )
 
-    def _render_data(self, simulation_results_bundle: SimulationResultsBundle):
+    def _render_data(self, simulation_results_bundle: SimulationResult):
         """Render the updated data in the window's shared components."""
         if simulation_results_bundle.simulation_results.keys():
             # the simulation succeeded - render the results

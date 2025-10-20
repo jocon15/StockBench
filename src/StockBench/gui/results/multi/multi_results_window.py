@@ -1,6 +1,6 @@
 from StockBench.controllers.stockbench_controller import StockBenchController
 from StockBench.models.constants.general_constants import BUY_SIDE, SELL_SIDE
-from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
+from StockBench.gui.models.simulation_results_bundle import SimulationResult
 from StockBench.gui.results.multi.tabs.multi_positions_plpc_box_plot_tab import MultiPositionsBoxPlotTabVertical
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.multi.tabs.multi_rules_tab import MultiRulesTab
@@ -43,11 +43,11 @@ class MultiResultsWindow(SimulationResultsWindow):
 
     def _run_simulation(self) -> SimulationResult:
         """Implementation of running the simulation for multi-symbol simulation."""
-        return self._controller.multi_simulation(self.strategy, self.symbols, self.initial_balance, self.logging,
-                                                 self.reporting, self.unique_chart_saving, self.results_depth,
-                                                 self.progress_observer)
+        return self._stockbench_controller.multi_simulation(self.strategy, self.symbols, self.initial_balance, self.logging,
+                                                            self.reporting, self.unique_chart_saving, self.results_depth,
+                                                            self.progress_observer)
 
-    def _render_data(self, simulation_results_bundle: SimulationResultsBundle):
+    def _render_data(self, simulation_results_bundle: SimulationResult):
         """Render the updated data in the window's shared_components."""
         if simulation_results_bundle.simulation_results.keys():
             self.overview_tab.render_data(simulation_results_bundle)

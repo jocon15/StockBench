@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QLabel
 
 from StockBench.controllers.stockbench_controller import StockBenchController
-from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
+from StockBench.gui.models.simulation_results_bundle import SimulationResult
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 
 from StockBench.gui.results.folder.tabs.folder_overview_tab import FolderOverViewTab
@@ -89,11 +89,11 @@ class FolderResultsWindow(SimulationResultsWindow):
             self.timer.stop()
 
     def _run_simulation(self) -> SimulationResult:
-        # FIXME: still need to call controller to deliver simulation results
-        #   self._stockbench_controller.run_folder
-        pass
+        return self._stockbench_controller.folder_simulation(self.strategies, self.symbols, self.initial_balance,
+                                                             self.logging, self.reporting, self.results_depth,
+                                                             self.progress_observers)
 
-    def _render_data(self, simulation_results_bundle: SimulationResultsBundle):
+    def _render_data(self, simulation_results_bundle: SimulationResult):
         # only run if all symbols had enough data
         if 'results' in simulation_results_bundle.simulation_results.keys():
             self.overview_tab.render_data(simulation_results_bundle)

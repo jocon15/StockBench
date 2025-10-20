@@ -1,5 +1,4 @@
 import traceback
-from functools import wraps
 from typing import Callable
 
 import requests

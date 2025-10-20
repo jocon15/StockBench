@@ -70,3 +70,27 @@ class SimulationProxy:
             simulator.enable_reporting()
 
         return simulator.run_multiple(symbols, progress_observer)
+
+    @staticmethod
+    @SimulationProxyFunction
+    def run_folder_simulation(simulator: Simulator, strategies: List[dict], symbols: List[str], initial_balance: float,
+                              logging_on: bool, reporting_on: bool, progress_observers: List[ProgressObserver]) -> dict:
+        """Proxy function for running a multi-symbol simulation with error capturing."""
+        simulator.set_initial_balance(initial_balance)
+
+        if logging_on:
+            simulator.enable_logging()
+        if reporting_on:
+            simulator.enable_reporting()
+
+        results = []
+        # run all simulations (using matched progress observer)
+        for i, strategy in enumerate(strategies):
+            # __run_simulation sets the simulator to use self.strategy
+            # we passed in a dummy strategy to satisfy the constructor (self.strategy gets set to dummy)
+            # override the dummy strategy in the simulator with the correct one
+            simulator.load_strategy(strategy)
+
+            results.append(simulator.run_multiple(symbols, progress_observers[i]))
+
+        return {'results': results}

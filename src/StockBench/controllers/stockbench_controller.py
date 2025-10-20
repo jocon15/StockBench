@@ -23,6 +23,8 @@ from StockBench.models.constants.chart_filepath_key_constants import *
 
 class StockBenchController:
     """"""
+    MESSAGE = 'message'
+
     def __init__(self, simulator: Simulator, charting_engine: SingularChartingEngine):
         self.__simulator = simulator
         self.__singular_charting_engine = charting_engine
@@ -39,7 +41,7 @@ class StockBenchController:
             # simulation failed
             return SimulationResult(
                 status_code=400,
-                message=simulation_results['message'],
+                message=simulation_results[self.MESSAGE],
                 simulation_results={},
                 chart_filepaths=ChartingProxy.SINGULAR_DEFAULT_CHART_FILEPATHS)
 
@@ -50,7 +52,7 @@ class StockBenchController:
             # charting failed
             return SimulationResult(
                 status_code=400,
-                message=simulation_results['message'],
+                message=simulation_results[self.MESSAGE],
                 simulation_results={},
                 chart_filepaths=ChartingProxy.SINGULAR_DEFAULT_CHART_FILEPATHS)
 

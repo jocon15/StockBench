@@ -9,8 +9,8 @@ class StockBenchControllerFactory:
     """Creates a StockBenchController instance."""
 
     @staticmethod
-    def get_controller_instance() -> StockBenchController:
-        simulator = Simulator()
+    def get_controller_instance(simulation_identifier: int = 1) -> StockBenchController:
+        simulator = Simulator(simulation_identifier)
         singular_charting_engine = SingularChartingEngine()
         multi_charting_engine = MultiChartingEngine()
         folder_charting_engine = FolderChartingEngine()

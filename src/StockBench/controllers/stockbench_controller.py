@@ -6,6 +6,7 @@ import requests
 from StockBench.controllers.charting.charting_engine import ChartingEngine
 from StockBench.controllers.charting.exceptions import ChartingError
 from StockBench.controllers.charting.multi.multi_charting_engine import MultiChartingEngine
+from StockBench.controllers.charting.singular.singular_charting_engine import SingularChartingEngine
 from StockBench.controllers.proxies.charting_proxy import ChartingProxy
 from StockBench.controllers.proxies.simulation_proxy import SimulationProxy
 from StockBench.controllers.simulator.algorithm.exceptions import MalformedStrategyError
@@ -21,13 +22,17 @@ from StockBench.models.constants.chart_filepath_key_constants import *
 
 
 class StockBenchController:
-    @staticmethod
-    def singular_simulation(strategy: dict, symbol: str, initial_balance: float, logging_on: bool, reporting_on: bool,
-                            unique_chart_saving: bool, results_depth: int, show_volume: bool,
+    """"""
+    def __init__(self, simulator: Simulator, charting_engine: SingularChartingEngine):
+        self.__simulator = simulator
+        self.__singular_charting_engine = charting_engine
+
+    def singular_simulation(self, strategy: dict, symbol: str, initial_balance: float, logging_on: bool,
+                            reporting_on: bool, unique_chart_saving: bool, results_depth: int, show_volume: bool,
                             progress_observer: ProgressObserver) -> SimulationResult:
         """Controller for running singular-symbol simulations and building charts."""
-        simulation_results = SimulationProxy.run_singular_simulation(strategy, symbol, initial_balance, logging_on,
-                                                                     reporting_on,
+        simulation_results = SimulationProxy.run_singular_simulation(self.__simulator, strategy, symbol,
+                                                                     initial_balance, logging_on, reporting_on,
                                                                      progress_observer)
 
         if 'status_code' in simulation_results.keys():
@@ -56,11 +61,11 @@ class StockBenchController:
             simulation_results=simulation_results,
             chart_filepaths=chart_filepaths)
 
-    @staticmethod
-    def multi_simulation(strategy: dict, symbols: List[str], initial_balance: float, logging_on: bool,
+    def multi_simulation(self, strategy: dict, symbols: List[str], initial_balance: float, logging_on: bool,
                          reporting_on: bool, unique_chart_saving: int, results_depth: int,
                          progress_observer: ProgressObserver):
         """Controller for running multi-symbol simulations and building charts."""
+        # FIXME: this function's body needs to be transitioned to use proxies
         simulator = Simulator(initial_balance)
 
         simulator.load_strategy(strategy)
@@ -117,8 +122,7 @@ class StockBenchController:
             simulation_results=result[2],
             chart_filepaths=chart_filepaths)
 
-    @staticmethod
-    def folder_simulation():
+    def folder_simulation(self):
         results = []
 
         start_time = perf_counter()

@@ -54,12 +54,6 @@ class Simulator:
     DATA_ONLY = 1
 
     def __init__(self, identifier: int = 1):
-        """Constructor
-
-        Args:
-            initial_balance: The initial balance for the account.
-        """
-        # dependencies
         self.id = identifier
         self.__account = None  # gets constructed once the initial balance is set
         self.__broker = BrokerClient(ClientConfigurationFactory.create_broker_config())

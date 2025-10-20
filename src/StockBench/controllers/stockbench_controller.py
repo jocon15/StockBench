@@ -92,8 +92,7 @@ class StockBenchController:
             chart_filepaths=chart_filepaths)
 
     def folder_simulation(self, strategies: List[dict], symbols: List[str], initial_balance: float, logging_on: bool,
-                          reporting_on: bool, results_depth: int,
-                          progress_observers: List[ProgressObserver]) -> SimulationResult:
+                          reporting_on: bool, progress_observers: List[ProgressObserver]) -> SimulationResult:
         """Controller for running folder simulations and building charts."""
         start_time = perf_counter()
         simulation_results = SimulationProxy.run_folder_simulation(self.__simulator, strategies, symbols,
@@ -109,7 +108,7 @@ class StockBenchController:
                 chart_filepaths=ChartingProxy.FOLDER_DEFAULT_CHART_FILEPATHS)
 
         chart_filepaths = ChartingProxy.build_folder_charts(self.__folder_charting_engine,
-                                                            simulation_results[self.RESULTS], results_depth)
+                                                            simulation_results[self.RESULTS])
 
         simulation_results[ELAPSED_TIME_KEY] = round(perf_counter() - start_time, 2)
 

@@ -143,25 +143,21 @@ class ChartingProxy:
 
     @staticmethod
     @ChartingProxyFunction(FOLDER_DEFAULT_CHART_FILEPATHS)
-    def build_folder_charts(folder_charting_engine: FolderChartingEngine, simulation_results: list,
-                            results_depth: int) -> dict:
+    def build_folder_charts(folder_charting_engine: FolderChartingEngine, simulation_results: list) -> dict:
         """Proxy function for charting folder simulation results with error capturing."""
-        if results_depth == Simulator.CHARTS_AND_DATA:
-            return {
-                TRADES_MADE_BAR_CHART_FILEPATH_KEY:
-                    folder_charting_engine.build_trades_made_bar_chart(simulation_results),
-                EFFECTIVENESS_BAR_CHART_FILEPATH_KEY:
-                    folder_charting_engine.build_effectiveness_bar_chart(simulation_results),
-                TOTAL_PL_BAR_CHART_FILEPATH_KEY: folder_charting_engine.build_total_pl_bar_chart(simulation_results),
-                AVERAGE_PL_BAR_CHART_FILEPATH_KEY:
-                    folder_charting_engine.build_average_pl_bar_chart(simulation_results),
-                MEDIAN_PL_BAR_CHART_FILEPATH_KEY: folder_charting_engine.build_median_pl_bar_chart(simulation_results),
-                STDDEV_PL_BAR_CHART_FILEPATH_KEY: folder_charting_engine.build_stddev_pl_bar_chart(simulation_results),
-                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
-                    folder_charting_engine.build_positions_plpc_histogram_chart(simulation_results),
-                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY:
-                    folder_charting_engine.build_positions_plpc_box_chart(simulation_results)
-            }
-        else:
-            # user opted to only see data, no charts
-            return ChartingProxy.FOLDER_DEFAULT_CHART_FILEPATHS
+        # NOTE: results depth is not an option for folder simulations
+        return {
+            TRADES_MADE_BAR_CHART_FILEPATH_KEY:
+                folder_charting_engine.build_trades_made_bar_chart(simulation_results),
+            EFFECTIVENESS_BAR_CHART_FILEPATH_KEY:
+                folder_charting_engine.build_effectiveness_bar_chart(simulation_results),
+            TOTAL_PL_BAR_CHART_FILEPATH_KEY: folder_charting_engine.build_total_pl_bar_chart(simulation_results),
+            AVERAGE_PL_BAR_CHART_FILEPATH_KEY:
+                folder_charting_engine.build_average_pl_bar_chart(simulation_results),
+            MEDIAN_PL_BAR_CHART_FILEPATH_KEY: folder_charting_engine.build_median_pl_bar_chart(simulation_results),
+            STDDEV_PL_BAR_CHART_FILEPATH_KEY: folder_charting_engine.build_stddev_pl_bar_chart(simulation_results),
+            POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
+                folder_charting_engine.build_positions_plpc_histogram_chart(simulation_results),
+            POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY:
+                folder_charting_engine.build_positions_plpc_box_chart(simulation_results)
+        }

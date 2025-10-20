@@ -89,8 +89,7 @@ class FolderResultsWindow(SimulationResultsWindow):
 
     def _run_simulation(self) -> SimulationResult:
         return self._stockbench_controller.folder_simulation(self.strategies, self.symbols, self.initial_balance,
-                                                             self.logging, self.reporting, self.results_depth,
-                                                             self.progress_observers)
+                                                             self.logging, self.reporting, self.progress_observers)
 
     def _render_data(self, simulation_result: SimulationResult):
         # only run if all symbols had enough data

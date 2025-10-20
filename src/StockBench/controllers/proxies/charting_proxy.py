@@ -1,7 +1,6 @@
 import traceback
 from typing import Callable
 
-from StockBench.controllers.charting.charting_engine import ChartingEngine
 from StockBench.controllers.charting.exceptions import ChartingError
 from StockBench.controllers.charting.singular.singular_charting_engine import SingularChartingEngine
 from StockBench.controllers.simulator.simulator import Simulator
@@ -31,7 +30,8 @@ def ChartingProxyFunction(default_chart_filepaths: dict):
 
 
 class ChartingProxy:
-    """"""
+    """Proxy acting as a middle man between the controller and the charting engine. Allows us to wrap the proxy function
+     to handle errors that the charting engines throw."""
     SINGULAR_DEFAULT_CHART_FILEPATHS = {
         OVERVIEW_CHART_FILEPATH_KEY: '',
         ACCOUNT_VALUE_LINE_CHART_FILEPATH_KEY: '',
@@ -45,36 +45,36 @@ class ChartingProxy:
 
     @staticmethod
     @ChartingProxyFunction(SINGULAR_DEFAULT_CHART_FILEPATHS)
-    def build_singular_charts(simulation_results: dict, unique_chart_saving: bool, results_depth: int,
-                              show_volume: bool) -> dict:
-        """"""
+    def build_singular_charts(singular_charting_engine: SingularChartingEngine, simulation_results: dict,
+                              unique_chart_saving: bool, results_depth: int, show_volume: bool) -> dict:
+        """Proxy function for charting singular simulation results with error capturing."""
         if unique_chart_saving:
-            save_option = ChartingEngine.UNIQUE_SAVE
+            save_option = singular_charting_engine.UNIQUE_SAVE
         else:
-            save_option = ChartingEngine.TEMP_SAVE
+            save_option = singular_charting_engine.TEMP_SAVE
 
         if results_depth == 0:
             return {
-                OVERVIEW_CHART_FILEPATH_KEY: SingularChartingEngine.build_singular_overview_chart(
+                OVERVIEW_CHART_FILEPATH_KEY: singular_charting_engine.build_singular_overview_chart(
                     simulation_results[NORMALIZED_SIMULATION_DATA], simulation_results[SYMBOL_KEY],
                     simulation_results[AVAILABLE_INDICATORS], show_volume, save_option),
-                ACCOUNT_VALUE_LINE_CHART_FILEPATH_KEY: SingularChartingEngine.build_account_value_line_chart(
+                ACCOUNT_VALUE_LINE_CHART_FILEPATH_KEY: singular_charting_engine.build_account_value_line_chart(
                     simulation_results[NORMALIZED_SIMULATION_DATA][Simulator.ACCOUNT_VALUE_COLUMN_NAME].tolist(),
                     simulation_results[SYMBOL_KEY], save_option),
-                BUY_RULES_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_rules_bar_chart(
+                BUY_RULES_BAR_CHART_FILEPATH_KEY: singular_charting_engine.build_rules_bar_chart(
                     simulation_results[POSITIONS_KEY], BUY_SIDE, simulation_results[SYMBOL_KEY], save_option),
-                SELL_RULES_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_rules_bar_chart(
+                SELL_RULES_BAR_CHART_FILEPATH_KEY: singular_charting_engine.build_rules_bar_chart(
                     simulation_results[POSITIONS_KEY], SELL_SIDE, simulation_results[SYMBOL_KEY], save_option),
-                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_duration_bar_chart(
+                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: singular_charting_engine.build_positions_duration_bar_chart(
                     simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
-                POSITIONS_PL_BAR_CHART_FILEPATH_KEY: ChartingEngine.build_positions_profit_loss_bar_chart(
+                POSITIONS_PL_BAR_CHART_FILEPATH_KEY: singular_charting_engine.build_positions_profit_loss_bar_chart(
                     simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
                 POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
-                    SingularChartingEngine.build_single_strategy_result_dataset_positions_plpc_histogram_chart(
+                    singular_charting_engine.build_single_strategy_result_dataset_positions_plpc_histogram_chart(
                         simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY],
                         simulation_results[STRATEGY_KEY], save_option),
                 POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY:
-                    SingularChartingEngine.build_single_strategy_result_dataset_positions_plpc_box_plot(
+                    singular_charting_engine.build_single_strategy_result_dataset_positions_plpc_box_plot(
                         simulation_results[POSITIONS_KEY], simulation_results[STRATEGY_KEY],
                         simulation_results[SYMBOL_KEY], save_option)
             }

@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QLabel, QPushButton, QLineEdit
 from PyQt6.QtCore import Qt
 
+from StockBench.controllers.stockbench_controller import StockBenchController
 from StockBench.gui.config.tabs.base.config_tab import ConfigTab, MessageBoxCaptureException, CaptureConfigErrors
 from StockBench.gui.results.singular.singular_results_window import SingularResultsWindow
 from StockBench.gui.palette.palette import Palette
@@ -8,8 +9,8 @@ from StockBench.gui.config.components.strategy_selection import StrategySelectio
 
 
 class SingularConfigTab(ConfigTab):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, stockbench_controller: StockBenchController):
+        super().__init__(stockbench_controller)
 
         self.show_volume = True
 
@@ -121,6 +122,7 @@ class SingularConfigTab(ConfigTab):
             raise MessageBoxCaptureException('Initial account balance must be a positive number!')
 
         self.simulation_result_window = SingularResultsWindow(
+            self._stockbench_controller,
             simulation_symbol,
             strategy,
             simulation_balance,

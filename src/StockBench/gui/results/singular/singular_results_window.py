@@ -1,4 +1,3 @@
-from StockBench.controllers.stockbench_controller import StockBenchController
 from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 from StockBench.gui.results.singular.tabs.singular_overview_tab import SingularOverviewTab
@@ -17,10 +16,10 @@ from StockBench.models.simulation_result.simulation_result import SimulationResu
 class SingularResultsWindow(SimulationResultsWindow):
     """Simulation results window for a simulation on a single symbol."""
 
-    def __init__(self, symbol, strategy, initial_balance, logging_on, reporting_on, unique_chart_saving_on, show_volume,
-                 results_depth):
-        super().__init__(strategy, initial_balance, logging_on, reporting_on, unique_chart_saving_on, show_volume,
-                         results_depth, identifier=1)
+    def __init__(self, stockbench_controller, symbol, strategy, initial_balance, logging_on, reporting_on,
+                 unique_chart_saving_on, show_volume, results_depth):
+        super().__init__(stockbench_controller, strategy, initial_balance, logging_on, reporting_on,
+                         unique_chart_saving_on, show_volume, results_depth, identifier=1)
         self.symbol = symbol
 
         self.layout.addWidget(self.progress_bar)
@@ -48,7 +47,7 @@ class SingularResultsWindow(SimulationResultsWindow):
 
     def _run_simulation(self) -> SimulationResult:
         """Implementation of running the simulation for a single symbol simulation on a QThread."""
-        return StockBenchController.singular_simulation(
+        return self._controller.singular_simulation(
             strategy=self.strategy,
             symbol=self.symbol,
             logging_on=self.logging,

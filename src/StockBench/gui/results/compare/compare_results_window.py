@@ -1,13 +1,15 @@
 from typing import List
 
 from PyQt6.QtWidgets import QWidget, QHBoxLayout
+
+from StockBench.controllers.stockbench_controller import StockBenchController
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.results.multi.multi_results_window import MultiResultsWindow
 
 
 class CompareResultsWindow(QWidget):
-    def __init__(self, simulation_symbols: List[str], strategy1, strategy2, simulation_logging, simulation_reporting,
-                 initial_balance, results_depth):
+    def __init__(self, stockbench_controller: StockBenchController, simulation_symbols: List[str], strategy1,
+                 strategy2, simulation_logging, simulation_reporting, initial_balance, results_depth):
         super().__init__()
         self.setWindowTitle('Simulation Results')
         self.setStyleSheet(Palette.WINDOW_STYLESHEET)
@@ -15,6 +17,7 @@ class CompareResultsWindow(QWidget):
         self.layout = QHBoxLayout()
 
         self.simulation_widget_1 = MultiResultsWindow(
+            stockbench_controller,
             simulation_symbols,
             strategy1,
             initial_balance,
@@ -25,6 +28,7 @@ class CompareResultsWindow(QWidget):
             identifier=1)
 
         self.simulation_widget_2 = MultiResultsWindow(
+            stockbench_controller,
             simulation_symbols,
             strategy2,
             initial_balance,

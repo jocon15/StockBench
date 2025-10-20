@@ -14,10 +14,10 @@ from StockBench.models.simulation_result.simulation_result import SimulationResu
 class MultiResultsWindow(SimulationResultsWindow):
     """Simulation results window for a simulation on multiple symbols."""
 
-    def __init__(self, symbols, strategy, initial_balance, logging_on, reporting_on, unique_chart_saving_on,
-                 results_depth, identifier):
-        super().__init__(strategy, initial_balance, logging_on, reporting_on, unique_chart_saving_on, False,
-                         results_depth, identifier)
+    def __init__(self, stockbench_controller: StockBenchController, symbols, strategy, initial_balance, logging_on,
+                 reporting_on, unique_chart_saving_on, results_depth, identifier):
+        super().__init__(stockbench_controller, strategy, initial_balance, logging_on, reporting_on,
+                         unique_chart_saving_on, False, results_depth, identifier)
         self.symbols = symbols
 
         self.layout.addWidget(self.progress_bar)
@@ -43,9 +43,9 @@ class MultiResultsWindow(SimulationResultsWindow):
 
     def _run_simulation(self) -> SimulationResult:
         """Implementation of running the simulation for multi-symbol simulation."""
-        return StockBenchController.multi_simulation(self.strategy, self.symbols, self.initial_balance, self.logging,
-                                                     self.reporting, self.unique_chart_saving, self.results_depth,
-                                                     self.progress_observer)
+        return self._controller.multi_simulation(self.strategy, self.symbols, self.initial_balance, self.logging,
+                                                 self.reporting, self.unique_chart_saving, self.results_depth,
+                                                 self.progress_observer)
 
     def _render_data(self, simulation_results_bundle: SimulationResultsBundle):
         """Render the updated data in the window's shared_components."""

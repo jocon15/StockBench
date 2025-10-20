@@ -3,6 +3,7 @@ import os
 from PyQt6.QtWidgets import QLabel, QLineEdit
 from PyQt6.QtCore import Qt
 
+from StockBench.controllers.stockbench_controller import StockBenchController
 from StockBench.gui.config.tabs.base.config_tab import ConfigTab, MessageBoxCaptureException, CaptureConfigErrors
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.results.folder.folder_results_window import FolderResultsWindow
@@ -12,8 +13,8 @@ from StockBench.gui.config.components.cached_folder_selector import CachedFolder
 class FolderConfigTab(ConfigTab):
     FOLDER_CACHE_KEY = 'cached_folderpath'
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, stockbench_controller: StockBenchController):
+        super().__init__(stockbench_controller)
         # add shared_components to the layout
         label = QLabel()
         label.setText('Folder:')
@@ -90,6 +91,7 @@ class FolderConfigTab(ConfigTab):
 
         # create a new simulations results window
         self.simulation_result_window = FolderResultsWindow(
+            self._stockbench_controller,
             strategies,
             simulation_symbols,
             simulation_balance,

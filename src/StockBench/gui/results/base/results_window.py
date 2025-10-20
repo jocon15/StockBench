@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import QWidget, QProgressBar, QTabWidget, QVBoxLayout
 from PyQt6.QtCore import QTimer, QThreadPool
 from PyQt6 import QtGui
 
+from StockBench.controllers.stockbench_controller import StockBenchController
 from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.worker.worker import Worker
@@ -33,9 +34,10 @@ class SimulationResultsWindow(QWidget):
     CHARTS_AND_DATA = 0
     DATA_ONLY = 1
 
-    def __init__(self, strategy, initial_balance, logging_on, reporting_on, unique_chart_saving_on, show_volume,
-                 results_depth, identifier):
+    def __init__(self, stockbench_controller: StockBenchController, strategy, initial_balance, logging_on,
+                 reporting_on, unique_chart_saving_on, show_volume, results_depth, identifier):
         super().__init__()
+        self._controller = stockbench_controller
         self.id = identifier
         self.strategy = strategy
         self.initial_balance = initial_balance

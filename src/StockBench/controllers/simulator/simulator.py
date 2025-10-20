@@ -53,7 +53,7 @@ class Simulator:
     CHARTS_AND_DATA = 0
     DATA_ONLY = 1
 
-    def __init__(self, initial_balance: float, identifier: int = 1):
+    def __init__(self, identifier: int = 1):
         """Constructor
 
         Args:
@@ -61,7 +61,7 @@ class Simulator:
         """
         # dependencies
         self.id = identifier
-        self.__account = UserAccount(initial_balance)
+        self.__account = None  # gets constructed once the initial balance is set
         self.__broker = BrokerClient(ClientConfigurationFactory.create_broker_config())
         self.__data_manager = None  # gets constructed once we request the data
         self.__algorithm = None  # gets constructed once we have the strategy
@@ -126,6 +126,10 @@ class Simulator:
     def enable_reporting(self):
         """Enable report building."""
         self.__reporting_on = True
+
+    def set_initial_balance(self, initial_balance: float):
+        """Set initial balance."""
+        self.__account = UserAccount(initial_balance)
 
     def load_strategy(self, strategy: dict):
         """Load a strategy."""

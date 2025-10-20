@@ -9,6 +9,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtCore import QPoint
 
+from StockBench.controllers.stockbench_controller import StockBenchController
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.studio.strategy_studio import StrategyStudioWindow
 from StockBench.controllers.simulator.simulator import Simulator
@@ -46,8 +47,10 @@ class ConfigTab(QWidget):
 
     DEFAULT_CACHE_KEY = 'cached_strategy_filepath'
 
-    def __init__(self):
+    def __init__(self, stockbench_controller: StockBenchController):
         super().__init__()
+        self._stockbench_controller = stockbench_controller
+
         # windows launched from a class need to be attributes or else they will be closed when the function
         # scope that called them is exited
         self.simulation_result_window = None

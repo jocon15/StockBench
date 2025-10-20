@@ -1,7 +1,6 @@
-from time import perf_counter
 from PyQt6.QtWidgets import QLabel
 
-from StockBench.controllers.charting.folder.folder_charting_engine import FolderChartingEngine
+from StockBench.controllers.stockbench_controller import StockBenchController
 from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 
@@ -15,16 +14,15 @@ from StockBench.gui.results.folder.tabs.folder_median_pl_tab import FolderMedian
 from StockBench.gui.results.folder.tabs.folder_stddev_pl_tab import FolderStandardDeviationProfitLossTabVertical
 from StockBench.gui.results.folder.tabs.folder_positions_histogram_tab import FolderPositionsHistogramTabVertical
 from StockBench.models.observers.progress_observer import ProgressObserver
-from StockBench.models.constants.simulation_results_constants import *
-from StockBench.models.constants.chart_filepath_key_constants import *
+from StockBench.models.simulation_result.simulation_result import SimulationResult
 
 
 class FolderResultsWindow(SimulationResultsWindow):
-    def __init__(self, strategies, symbols, initial_balance, logging_on, reporting_on, unique_chart_saving_on,
-                 results_depth):
+    def __init__(self, stockbench_controller: StockBenchController, strategies, symbols, initial_balance, logging_on,
+                 reporting_on, unique_chart_saving_on, results_depth):
         # pass 1st strategy as a dummy strategy because we will load the strategy dynamically in _run_simulation
-        super().__init__(strategies[0], initial_balance, logging_on, reporting_on, unique_chart_saving_on, None,
-                         results_depth, identifier=1)
+        super().__init__(stockbench_controller, strategies[0], initial_balance, logging_on, reporting_on,
+                         unique_chart_saving_on, None, results_depth, identifier=1)
         self.strategies = strategies
         self.symbols = symbols
         self.logging = logging_on
@@ -90,8 +88,10 @@ class FolderResultsWindow(SimulationResultsWindow):
             self.progress_bar.setValue(100)
             self.timer.stop()
 
-    def _run_simulation(self) -> SimulationResultsBundle:
-
+    def _run_simulation(self) -> SimulationResult:
+        # FIXME: still need to call controller to deliver simulation results
+        #   self._stockbench_controller.run_folder
+        pass
 
     def _render_data(self, simulation_results_bundle: SimulationResultsBundle):
         # only run if all symbols had enough data

@@ -108,9 +108,8 @@ class StockBenchController:
                 simulation_results={},
                 chart_filepaths=ChartingProxy.FOLDER_DEFAULT_CHART_FILEPATHS)
 
-        chart_filepaths = ChartingProxy.build_folder_charts(self.__folder_charting_engine, strategies, symbols,
-                                                            initial_balance, logging_on, reporting_on,
-                                                            progress_observers)
+        chart_filepaths = ChartingProxy.build_folder_charts(self.__folder_charting_engine,
+                                                            simulation_results[self.RESULTS], results_depth)
 
         simulation_results[ELAPSED_TIME_KEY] = round(perf_counter() - start_time, 2)
 

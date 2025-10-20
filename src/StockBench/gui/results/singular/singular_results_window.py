@@ -18,7 +18,7 @@ class SingularResultsWindow(SimulationResultsWindow):
     def __init__(self, stockbench_controller, symbol, strategy, initial_balance, logging_on, reporting_on,
                  unique_chart_saving_on, show_volume, results_depth):
         super().__init__(stockbench_controller, strategy, initial_balance, logging_on, reporting_on,
-                         unique_chart_saving_on, show_volume, results_depth, identifier=1)
+                         unique_chart_saving_on, show_volume, results_depth)
         self.symbol = symbol
 
         self.layout.addWidget(self.progress_bar)

@@ -35,10 +35,9 @@ class SimulationResultsWindow(QWidget):
     DATA_ONLY = 1
 
     def __init__(self, stockbench_controller: StockBenchController, strategy, initial_balance, logging_on,
-                 reporting_on, unique_chart_saving_on, show_volume, results_depth, identifier):
+                 reporting_on, unique_chart_saving_on, show_volume, results_depth):
         super().__init__()
         self._stockbench_controller = stockbench_controller
-        self.id = identifier
         self.strategy = strategy
         self.initial_balance = initial_balance
         self.progress_observer = ProgressObserver()  # instantiate the class reference

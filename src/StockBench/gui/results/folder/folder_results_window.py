@@ -21,7 +21,7 @@ class FolderResultsWindow(SimulationResultsWindow):
                  reporting_on, unique_chart_saving_on, results_depth):
         # pass 1st strategy as a dummy strategy because we will load the strategy dynamically in _run_simulation
         super().__init__(stockbench_controller, strategies[0], initial_balance, logging_on, reporting_on,
-                         unique_chart_saving_on, None, results_depth, identifier=1)
+                         unique_chart_saving_on, None, results_depth)
         self.strategies = strategies
         self.symbols = symbols
         self.logging = logging_on

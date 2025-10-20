@@ -14,9 +14,9 @@ class MultiResultsWindow(SimulationResultsWindow):
     """Simulation results window for a simulation on multiple symbols."""
 
     def __init__(self, stockbench_controller: StockBenchController, symbols, strategy, initial_balance, logging_on,
-                 reporting_on, unique_chart_saving_on, results_depth, identifier):
+                 reporting_on, unique_chart_saving_on, results_depth):
         super().__init__(stockbench_controller, strategy, initial_balance, logging_on, reporting_on,
-                         unique_chart_saving_on, False, results_depth, identifier)
+                         unique_chart_saving_on, False, results_depth)
         self.symbols = symbols
 
         self.layout.addWidget(self.progress_bar)

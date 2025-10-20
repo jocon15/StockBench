@@ -1,4 +1,4 @@
-from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
+from StockBench.gui.models.simulation_results_bundle import SimulationResult
 from StockBench.gui.results.base.overview_tab import OverviewTabVertical
 from StockBench.gui.results.singular.components.singular_sidebar import SingularOverviewSideBar
 from StockBench.models.constants.chart_filepath_key_constants import OVERVIEW_CHART_FILEPATH_KEY
@@ -17,7 +17,7 @@ class SingularOverviewTab(OverviewTabVertical):
 
         self.setLayout(self.layout)
 
-    def render_data(self, simulation_results_bundle: SimulationResultsBundle):
+    def render_data(self, simulation_results_bundle: SimulationResult):
         self.render_chart(simulation_results_bundle.chart_filepaths)
         self.results_table.render_data(simulation_results_bundle.simulation_results)
 

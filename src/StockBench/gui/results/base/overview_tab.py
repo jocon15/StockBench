@@ -1,4 +1,4 @@
-from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
+from StockBench.gui.models.simulation_results_bundle import SimulationResult
 from StockBench.gui.results.base.base.simple_horizontal_chart_tab import SimpleHorizontalChartTab
 from abc import abstractmethod
 
@@ -10,7 +10,7 @@ class OverviewTabVertical(SimpleHorizontalChartTab):
         super().__init__()
 
     @abstractmethod
-    def render_data(self, simulation_results_bundle: SimulationResultsBundle):
+    def render_data(self, simulation_results_bundle: SimulationResult):
         raise NotImplementedError('You must define an implementation for render_data()!')
 
     @abstractmethod

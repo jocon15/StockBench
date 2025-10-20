@@ -93,18 +93,18 @@ class FolderResultsWindow(SimulationResultsWindow):
                                                              self.logging, self.reporting, self.results_depth,
                                                              self.progress_observers)
 
-    def _render_data(self, simulation_results_bundle: SimulationResult):
+    def _render_data(self, simulation_result: SimulationResult):
         # only run if all symbols had enough data
-        if 'results' in simulation_results_bundle.simulation_results.keys():
-            self.overview_tab.render_data(simulation_results_bundle)
-            self.trades_made_tab.render_chart(simulation_results_bundle.chart_filepaths)
-            self.effectiveness_tab.render_chart(simulation_results_bundle.chart_filepaths)
-            self.total_pl_tab.render_chart(simulation_results_bundle.chart_filepaths)
-            self.average_pl_tab.render_chart(simulation_results_bundle.chart_filepaths)
-            self.median_pl_tab.render_chart(simulation_results_bundle.chart_filepaths)
-            self.stddev_pl_tab.render_chart(simulation_results_bundle.chart_filepaths)
-            self.positions_plpc_histogram_tab.render_chart(simulation_results_bundle.chart_filepaths)
-            self.positions_plpc_box_plot_tab.render_chart(simulation_results_bundle.chart_filepaths)
+        if 'results' in simulation_result.simulation_results.keys():
+            self.overview_tab.render_data(simulation_result)
+            self.trades_made_tab.render_chart(simulation_result.chart_filepaths)
+            self.effectiveness_tab.render_chart(simulation_result.chart_filepaths)
+            self.total_pl_tab.render_chart(simulation_result.chart_filepaths)
+            self.average_pl_tab.render_chart(simulation_result.chart_filepaths)
+            self.median_pl_tab.render_chart(simulation_result.chart_filepaths)
+            self.stddev_pl_tab.render_chart(simulation_result.chart_filepaths)
+            self.positions_plpc_histogram_tab.render_chart(simulation_result.chart_filepaths)
+            self.positions_plpc_box_plot_tab.render_chart(simulation_result.chart_filepaths)
         else:
             # the simulation failed - render the chart unavailable html
             self.overview_tab.html_viewer.render_chart_unavailable()

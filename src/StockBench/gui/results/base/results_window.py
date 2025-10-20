@@ -113,7 +113,7 @@ class SimulationResultsWindow(QWidget):
         raise NotImplementedError('You must define an implementation for _run_simulation()!')
 
     @abstractmethod
-    def _render_data(self, simulation_results_bundle: SimulationResult):
+    def _render_data(self, simulation_result: SimulationResult):
         raise NotImplementedError('You must define an implementation for _render_data()!')
 
     def __update_data(self):

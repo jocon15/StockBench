@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class SimulationResultsBundle:
+class SimulationResult:
     """Represents a bundle of simulation results returned by the simulation QThread for combining numerical simulation
     results and chart filepaths.
     """

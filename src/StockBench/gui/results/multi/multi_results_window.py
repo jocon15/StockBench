@@ -47,16 +47,16 @@ class MultiResultsWindow(SimulationResultsWindow):
                                                             self.reporting, self.unique_chart_saving, self.results_depth,
                                                             self.progress_observer)
 
-    def _render_data(self, simulation_results_bundle: SimulationResult):
+    def _render_data(self, simulation_result: SimulationResult):
         """Render the updated data in the window's shared_components."""
-        if simulation_results_bundle.simulation_results.keys():
-            self.overview_tab.render_data(simulation_results_bundle)
-            self.buy_rules_tab.render_chart(simulation_results_bundle.chart_filepaths)
-            self.sell_rules_tab.render_chart(simulation_results_bundle.chart_filepaths)
-            self.positions_duration_bar_tab.render_chart(simulation_results_bundle.chart_filepaths)
-            self.positions_pl_bar_tab.render_chart(simulation_results_bundle.chart_filepaths)
-            self.positions_plpc_histogram_tab.render_chart(simulation_results_bundle.chart_filepaths)
-            self.positions_plpc_box_plot_tab.render_chart(simulation_results_bundle.chart_filepaths)
+        if simulation_result.simulation_results.keys():
+            self.overview_tab.render_data(simulation_result)
+            self.buy_rules_tab.render_chart(simulation_result.chart_filepaths)
+            self.sell_rules_tab.render_chart(simulation_result.chart_filepaths)
+            self.positions_duration_bar_tab.render_chart(simulation_result.chart_filepaths)
+            self.positions_pl_bar_tab.render_chart(simulation_result.chart_filepaths)
+            self.positions_plpc_histogram_tab.render_chart(simulation_result.chart_filepaths)
+            self.positions_plpc_box_plot_tab.render_chart(simulation_result.chart_filepaths)
         else:
             # the simulation failed - render the chart unavailable html
             self.overview_tab.html_viewer.render_chart_unavailable()

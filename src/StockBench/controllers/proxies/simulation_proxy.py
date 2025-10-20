@@ -1,5 +1,5 @@
 import traceback
-from typing import Callable
+from typing import Callable, List
 
 import requests
 
@@ -40,11 +40,12 @@ def SimulationProxyFunction(simulation_fxn: Callable):
 class SimulationProxy:
     """Proxy acting as a middle man between the controller and the simulator. Allows us to wrap the proxy function to
     handle errors that the simulator throws."""
+
     @staticmethod
     @SimulationProxyFunction
     def run_singular_simulation(simulator: Simulator, strategy: dict, symbol: str, initial_balance: float,
                                 logging_on: bool, reporting_on: bool, progress_observer: ProgressObserver) -> dict:
-        """Proxy function for running a singular simulation with error capturing."""
+        """Proxy function for running a singular symbol simulation with error capturing."""
         simulator.set_initial_balance(initial_balance)
         simulator.load_strategy(strategy)
 
@@ -54,3 +55,18 @@ class SimulationProxy:
             simulator.enable_reporting()
 
         return simulator.run(symbol, progress_observer)
+
+    @staticmethod
+    @SimulationProxyFunction
+    def run_multi_simulation(simulator: Simulator, strategy: dict, symbols: List[str], initial_balance: float,
+                             logging_on: bool, reporting_on: bool, progress_observer: ProgressObserver) -> dict:
+        """Proxy function for running a multi-symbol simulation with error capturing."""
+        simulator.set_initial_balance(initial_balance)
+        simulator.load_strategy(strategy)
+
+        if logging_on:
+            simulator.enable_logging()
+        if reporting_on:
+            simulator.enable_reporting()
+
+        return simulator.run_multiple(symbols, progress_observer)

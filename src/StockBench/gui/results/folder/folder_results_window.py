@@ -1,7 +1,6 @@
 from PyQt6.QtWidgets import QLabel
 
 from StockBench.controllers.stockbench_controller import StockBenchController
-from StockBench.gui.models.simulation_results_bundle import SimulationResult
 from StockBench.gui.results.base.results_window import SimulationResultsWindow
 
 from StockBench.gui.results.folder.tabs.folder_overview_tab import FolderOverViewTab

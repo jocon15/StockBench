@@ -126,33 +126,3 @@ class StockBenchController:
 
         return SimulationResultsBundle(simulation_results={'results': results, ELAPSED_TIME_KEY: elapsed_time},
                                        chart_filepaths=chart_filepaths)
-
-    @staticmethod
-    def __run_simulation_with_error_catching(simulation_function: Callable, *args) -> tuple:
-        # run the simulation and catch any errors - keep the app from crashing even if the sim fails
-        status_code = 200
-        message = ''
-        results = {}
-        try:
-            results = simulation_function(*args)
-        except requests.exceptions.ConnectionError:
-            message = 'Failed to connect to broker!'
-        except MalformedStrategyError as e:
-            message = f'Malformed strategy error: {e}'
-        except StrategyIndicatorError as e:
-            message = f'Strategy error: {e}'
-        except ChartingError as e:
-            message = f'Charting error: {e}'
-        except MissingCredentialError as e:
-            message = f'Missing credential error: {e}'
-        except InvalidSymbolError as e:
-            message = f'Invalid symbol error: {e}'
-        except InsufficientDataError as e:
-            message = f'Insufficient data error {e}'
-        except Exception as e:
-            message = f'Unexpected error: {type(e)} {e} {traceback.print_exc()}'
-
-        if message:
-            status_code = 400
-
-        return status_code, message, results

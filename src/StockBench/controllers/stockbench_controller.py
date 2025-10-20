@@ -47,7 +47,7 @@ class StockBenchController:
             # charting failed
             return SimulationResult(
                 status_code=400,
-                message=simulation_results[self.MESSAGE],
+                message=chart_filepaths[self.MESSAGE],
                 simulation_results={},
                 chart_filepaths=ChartingProxy.SINGULAR_DEFAULT_CHART_FILEPATHS)
 
@@ -80,7 +80,7 @@ class StockBenchController:
             # charting failed
             return SimulationResult(
                 status_code=400,
-                message=simulation_results[self.MESSAGE],
+                message=chart_filepaths[self.MESSAGE],
                 simulation_results={},
                 chart_filepaths=ChartingProxy.MULTI_DEFAULT_CHART_FILEPATHS)
 
@@ -98,7 +98,7 @@ class StockBenchController:
         start_time = perf_counter()
         simulation_results = SimulationProxy.run_folder_simulation(self.__simulator, strategies, symbols,
                                                                    initial_balance, logging_on, reporting_on,
-                                                                   results_depth, progress_observers)
+                                                                   progress_observers)
 
         if 'status_code' in simulation_results.keys():
             # simulation failed
@@ -118,7 +118,7 @@ class StockBenchController:
             # charting failed
             return SimulationResult(
                 status_code=400,
-                message=simulation_results[self.MESSAGE],
+                message=chart_filepaths[self.MESSAGE],
                 simulation_results={},
                 chart_filepaths=ChartingProxy.FOLDER_DEFAULT_CHART_FILEPATHS)
 

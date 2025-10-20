@@ -53,10 +53,10 @@ class Simulator:
     CHARTS_AND_DATA = 0
     DATA_ONLY = 1
 
-    def __init__(self, identifier: int = 1):
+    def __init__(self, broker_client: BrokerClient, identifier: int = 1):
+        self.__broker = broker_client
         self.id = identifier
         self.__account = None  # gets constructed once the initial balance is set
-        self.__broker = BrokerClient(ClientConfigurationFactory.create_broker_config())
         self.__data_manager = None  # gets constructed once we request the data
         self.__algorithm = None  # gets constructed once we have the strategy
         self.__available_indicators = IndicatorManager.load_indicators()

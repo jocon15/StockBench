@@ -21,6 +21,10 @@ def mock_progress_observer():
     return MagicMock()
 
 
+STATUS_CODE = 'status_code'
+MESSAGE = 'message'
+
+
 # ================================= run_singular_simulation ============================================================
 
 
@@ -34,8 +38,8 @@ def test_run_singular_simulation_broker_error(mock_simulator, mock_progress_obse
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Failed to connect to broker!'
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Failed to connect to broker!'
 
 
 def test_run_singular_simulation_malformed_strategy_error(mock_simulator, mock_progress_observer):
@@ -48,8 +52,8 @@ def test_run_singular_simulation_malformed_strategy_error(mock_simulator, mock_p
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Malformed strategy error: '
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Malformed strategy error: '
 
 
 def test_run_singular_simulation_strategy_indicator_error(mock_simulator, mock_progress_observer):
@@ -62,8 +66,8 @@ def test_run_singular_simulation_strategy_indicator_error(mock_simulator, mock_p
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Strategy error: '
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Strategy error: '
 
 
 def test_run_singular_simulation_missing_credential_error(mock_simulator, mock_progress_observer):
@@ -76,8 +80,8 @@ def test_run_singular_simulation_missing_credential_error(mock_simulator, mock_p
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Missing credential error: '
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Missing credential error: '
 
 
 def test_run_singular_simulation_invalid_symbol_error(mock_simulator, mock_progress_observer):
@@ -90,8 +94,8 @@ def test_run_singular_simulation_invalid_symbol_error(mock_simulator, mock_progr
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Missing credential error: '
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Missing credential error: '
 
 
 def test_run_singular_simulation_insufficient_data_error(mock_simulator, mock_progress_observer):
@@ -104,8 +108,8 @@ def test_run_singular_simulation_insufficient_data_error(mock_simulator, mock_pr
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Insufficient data error: '
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Insufficient data error: '
 
 
 def test_run_singular_simulation_unexpected_error(mock_simulator, mock_progress_observer):
@@ -118,8 +122,8 @@ def test_run_singular_simulation_unexpected_error(mock_simulator, mock_progress_
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert 'Unexpected error: ' in result['message']
+    assert result[STATUS_CODE] == 400
+    assert 'Unexpected error: ' in result[MESSAGE]
 
 
 def test_run_singular_simulation_normal_with_logging(mock_simulator, mock_progress_observer):
@@ -137,7 +141,7 @@ def test_run_singular_simulation_normal_with_logging(mock_simulator, mock_progre
     mock_simulator.load_strategy.assert_called_once_with({})
 
     assert type(result) is dict
-    assert 'status_code' not in result.keys()
+    assert STATUS_CODE not in result.keys()
     assert result['symbol'] == 'AAPL'
 
 
@@ -156,7 +160,7 @@ def test_run_singular_simulation_normal_with_reporting(mock_simulator, mock_prog
     mock_simulator.load_strategy.assert_called_once_with({})
 
     assert type(result) is dict
-    assert 'status_code' not in result.keys()
+    assert STATUS_CODE not in result.keys()
     assert result['symbol'] == 'AAPL'
 
 
@@ -172,8 +176,8 @@ def test_run_multi_simulation_broker_error(mock_simulator, mock_progress_observe
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Failed to connect to broker!'
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Failed to connect to broker!'
 
 
 def test_run_multi_simulation_malformed_strategy_error(mock_simulator, mock_progress_observer):
@@ -186,8 +190,8 @@ def test_run_multi_simulation_malformed_strategy_error(mock_simulator, mock_prog
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Malformed strategy error: '
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Malformed strategy error: '
 
 
 def test_run_multi_simulation_strategy_indicator_error(mock_simulator, mock_progress_observer):
@@ -200,8 +204,8 @@ def test_run_multi_simulation_strategy_indicator_error(mock_simulator, mock_prog
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Strategy error: '
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Strategy error: '
 
 
 def test_run_multi_simulation_missing_credential_error(mock_simulator, mock_progress_observer):
@@ -214,8 +218,8 @@ def test_run_multi_simulation_missing_credential_error(mock_simulator, mock_prog
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Missing credential error: '
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Missing credential error: '
 
 
 def test_run_multi_simulation_invalid_symbol_error(mock_simulator, mock_progress_observer):
@@ -228,8 +232,8 @@ def test_run_multi_simulation_invalid_symbol_error(mock_simulator, mock_progress
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Missing credential error: '
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Missing credential error: '
 
 
 def test_run_multi_simulation_insufficient_data_error(mock_simulator, mock_progress_observer):
@@ -242,8 +246,8 @@ def test_run_multi_simulation_insufficient_data_error(mock_simulator, mock_progr
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Insufficient data error: '
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Insufficient data error: '
 
 
 def test_run_multi_simulation_unexpected_error(mock_simulator, mock_progress_observer):
@@ -256,8 +260,8 @@ def test_run_multi_simulation_unexpected_error(mock_simulator, mock_progress_obs
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert 'Unexpected error: ' in result['message']
+    assert result[STATUS_CODE] == 400
+    assert 'Unexpected error: ' in result[MESSAGE]
 
 
 def test_run_multi_simulation_normal_with_logging(mock_simulator, mock_progress_observer):
@@ -275,7 +279,7 @@ def test_run_multi_simulation_normal_with_logging(mock_simulator, mock_progress_
     mock_simulator.load_strategy.assert_called_once_with({})
 
     assert type(result) is dict
-    assert 'status_code' not in result.keys()
+    assert STATUS_CODE not in result.keys()
     assert result['symbol'] == 'AAPL'
 
 
@@ -294,7 +298,7 @@ def test_run_multi_simulation_normal_with_reporting(mock_simulator, mock_progres
     mock_simulator.load_strategy.assert_called_once_with({})
 
     assert type(result) is dict
-    assert 'status_code' not in result.keys()
+    assert STATUS_CODE not in result.keys()
     assert result['symbol'] == 'AAPL'
 
 
@@ -311,8 +315,8 @@ def test_run_folder_simulation_broker_error(mock_simulator, mock_progress_observ
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Failed to connect to broker!'
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Failed to connect to broker!'
 
 
 def test_run_folder_simulation_malformed_strategy_error(mock_simulator, mock_progress_observer):
@@ -325,8 +329,8 @@ def test_run_folder_simulation_malformed_strategy_error(mock_simulator, mock_pro
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Malformed strategy error: '
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Malformed strategy error: '
 
 
 def test_run_folder_simulation_strategy_indicator_error(mock_simulator, mock_progress_observer):
@@ -339,8 +343,8 @@ def test_run_folder_simulation_strategy_indicator_error(mock_simulator, mock_pro
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Strategy error: '
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Strategy error: '
 
 
 def test_run_folder_simulation_missing_credential_error(mock_simulator, mock_progress_observer):
@@ -353,8 +357,8 @@ def test_run_folder_simulation_missing_credential_error(mock_simulator, mock_pro
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Missing credential error: '
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Missing credential error: '
 
 
 def test_run_folder_simulation_invalid_symbol_error(mock_simulator, mock_progress_observer):
@@ -367,8 +371,8 @@ def test_run_folder_simulation_invalid_symbol_error(mock_simulator, mock_progres
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Missing credential error: '
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Missing credential error: '
 
 
 def test_run_folder_simulation_insufficient_data_error(mock_simulator, mock_progress_observer):
@@ -381,8 +385,8 @@ def test_run_folder_simulation_insufficient_data_error(mock_simulator, mock_prog
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert result['message'] == 'Insufficient data error: '
+    assert result[STATUS_CODE] == 400
+    assert result[MESSAGE] == 'Insufficient data error: '
 
 
 def test_run_folder_simulation_unexpected_error(mock_simulator, mock_progress_observer):
@@ -395,8 +399,8 @@ def test_run_folder_simulation_unexpected_error(mock_simulator, mock_progress_ob
 
     # ============= Assert ===============
     assert type(result) is dict
-    assert result['status_code'] == 400
-    assert 'Unexpected error: ' in result['message']
+    assert result[STATUS_CODE] == 400
+    assert 'Unexpected error: ' in result[MESSAGE]
 
 
 def test_run_folder_simulation_normal_with_logging(mock_simulator, mock_progress_observer):
@@ -414,7 +418,7 @@ def test_run_folder_simulation_normal_with_logging(mock_simulator, mock_progress
     assert mock_simulator.load_strategy.call_count == 2
 
     assert type(result) is dict
-    assert 'status_code' not in result.keys()
+    assert STATUS_CODE not in result.keys()
     assert type(result['results']) is list
     assert result['results'][0]['symbol'] == 'AAPL'
 
@@ -434,6 +438,6 @@ def test_run_folder_simulation_normal_with_reporting(mock_simulator, mock_progre
     assert mock_simulator.load_strategy.call_count == 2
 
     assert type(result) is dict
-    assert 'status_code' not in result.keys()
+    assert STATUS_CODE not in result.keys()
     assert type(result['results']) is list
     assert result['results'][0]['symbol'] == 'AAPL'

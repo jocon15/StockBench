@@ -28,9 +28,9 @@ def SimulationProxyFunction(simulation_fxn: Callable):
         except InvalidSymbolError as e:
             message = f'Invalid symbol error: {e}'
         except InsufficientDataError as e:
-            message = f'Insufficient data error {e}'
+            message = f'Insufficient data error: {e}'
         except Exception as e:
-            message = f'Unexpected error: {type(e)} {e} {traceback.print_exc()}'
+            message = f'Unexpected error: {type(e)} {e} {traceback.format_exc()}'
 
         return {'status_code': 400, 'message': message}
 

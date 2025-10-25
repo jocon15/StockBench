@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 import requests
 
-from StockBench.controllers.proxies.simulation_proxy import SimulationProxy
+from StockBench.controllers.proxies.simulator_proxy import SimulatorProxy
 from StockBench.controllers.simulator.algorithm.exceptions import MalformedStrategyError
 from StockBench.controllers.simulator.broker.broker_client import MissingCredentialError, InsufficientDataError
 from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
@@ -32,9 +32,11 @@ def test_run_singular_simulation_broker_error(mock_simulator, mock_progress_obse
     # ============= Arrange ==============
     mock_simulator.run.side_effect = requests.exceptions.ConnectionError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_singular_simulation(mock_simulator, {}, '', 0.0, False, False,
-                                                     mock_progress_observer)
+    result = test_object.run_singular_simulation({}, '', 0.0, False, False,
+                                                 mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -46,9 +48,11 @@ def test_run_singular_simulation_malformed_strategy_error(mock_simulator, mock_p
     # ============= Arrange ==============
     mock_simulator.run.side_effect = MalformedStrategyError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_singular_simulation(mock_simulator, {}, '', 0.0, False, False,
-                                                     mock_progress_observer)
+    result = test_object.run_singular_simulation({}, '', 0.0, False, False,
+                                                 mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -60,9 +64,11 @@ def test_run_singular_simulation_strategy_indicator_error(mock_simulator, mock_p
     # ============= Arrange ==============
     mock_simulator.run.side_effect = StrategyIndicatorError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_singular_simulation(mock_simulator, {}, '', 0.0, False, False,
-                                                     mock_progress_observer)
+    result = test_object.run_singular_simulation({}, '', 0.0, False, False,
+                                                 mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -74,9 +80,11 @@ def test_run_singular_simulation_missing_credential_error(mock_simulator, mock_p
     # ============= Arrange ==============
     mock_simulator.run.side_effect = MissingCredentialError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_singular_simulation(mock_simulator, {}, '', 0.0, False, False,
-                                                     mock_progress_observer)
+    result = test_object.run_singular_simulation({}, '', 0.0, False, False,
+                                                 mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -88,9 +96,11 @@ def test_run_singular_simulation_invalid_symbol_error(mock_simulator, mock_progr
     # ============= Arrange ==============
     mock_simulator.run.side_effect = MissingCredentialError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_singular_simulation(mock_simulator, {}, '', 0.0, False, False,
-                                                     mock_progress_observer)
+    result = test_object.run_singular_simulation({}, '', 0.0, False, False,
+                                                 mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -102,9 +112,11 @@ def test_run_singular_simulation_insufficient_data_error(mock_simulator, mock_pr
     # ============= Arrange ==============
     mock_simulator.run.side_effect = InsufficientDataError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_singular_simulation(mock_simulator, {}, '', 0.0, False, False,
-                                                     mock_progress_observer)
+    result = test_object.run_singular_simulation({}, '', 0.0, False, False,
+                                                 mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -116,9 +128,11 @@ def test_run_singular_simulation_unexpected_error(mock_simulator, mock_progress_
     # ============= Arrange ==============
     mock_simulator.run.side_effect = ValueError  # a random error not explicitly caught by the decorator
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_singular_simulation(mock_simulator, {}, '', 0.0, False, False,
-                                                     mock_progress_observer)
+    result = test_object.run_singular_simulation({}, '', 0.0, False, False,
+                                                 mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -130,9 +144,11 @@ def test_run_singular_simulation_normal_with_logging(mock_simulator, mock_progre
     # ============= Arrange ==============
     mock_simulator.run.return_value = {'symbol': 'AAPL', 'avg_pl': 200.1, 'med_pl': 40.1}
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_singular_simulation(mock_simulator, {}, '', 0.0, True, False,
-                                                     mock_progress_observer)
+    result = test_object.run_singular_simulation({}, '', 0.0, True, False,
+                                                 mock_progress_observer)
 
     # ============= Assert ===============
     mock_simulator.enable_logging.assert_called_once()
@@ -149,9 +165,11 @@ def test_run_singular_simulation_normal_with_reporting(mock_simulator, mock_prog
     # ============= Arrange ==============
     mock_simulator.run.return_value = {'symbol': 'AAPL', 'avg_pl': 200.1, 'med_pl': 40.1}
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_singular_simulation(mock_simulator, {}, '', 0.0, False, True,
-                                                     mock_progress_observer)
+    result = test_object.run_singular_simulation({}, '', 0.0, False, True,
+                                                 mock_progress_observer)
 
     # ============= Assert ===============
     mock_simulator.enable_logging.assert_not_called()
@@ -170,9 +188,11 @@ def test_run_multi_simulation_broker_error(mock_simulator, mock_progress_observe
     # ============= Arrange ==============
     mock_simulator.run_multiple.side_effect = requests.exceptions.ConnectionError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_multi_simulation(mock_simulator, {}, [''], 0.0, False, False,
-                                                  mock_progress_observer)
+    result = test_object.run_multi_simulation({}, [''], 0.0, False, False,
+                                              mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -184,9 +204,11 @@ def test_run_multi_simulation_malformed_strategy_error(mock_simulator, mock_prog
     # ============= Arrange ==============
     mock_simulator.run_multiple.side_effect = MalformedStrategyError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_multi_simulation(mock_simulator, {}, [''], 0.0, False, False,
-                                                  mock_progress_observer)
+    result = test_object.run_multi_simulation({}, [''], 0.0, False, False,
+                                              mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -198,9 +220,11 @@ def test_run_multi_simulation_strategy_indicator_error(mock_simulator, mock_prog
     # ============= Arrange ==============
     mock_simulator.run_multiple.side_effect = StrategyIndicatorError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_multi_simulation(mock_simulator, {}, [''], 0.0, False, False,
-                                                  mock_progress_observer)
+    result = test_object.run_multi_simulation({}, [''], 0.0, False, False,
+                                              mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -212,9 +236,11 @@ def test_run_multi_simulation_missing_credential_error(mock_simulator, mock_prog
     # ============= Arrange ==============
     mock_simulator.run_multiple.side_effect = MissingCredentialError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_multi_simulation(mock_simulator, {}, [''], 0.0, False, False,
-                                                  mock_progress_observer)
+    result = test_object.run_multi_simulation({}, [''], 0.0, False, False,
+                                              mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -226,9 +252,11 @@ def test_run_multi_simulation_invalid_symbol_error(mock_simulator, mock_progress
     # ============= Arrange ==============
     mock_simulator.run_multiple.side_effect = MissingCredentialError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_multi_simulation(mock_simulator, {}, [''], 0.0, False, False,
-                                                  mock_progress_observer)
+    result = test_object.run_multi_simulation({}, [''], 0.0, False, False,
+                                              mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -240,9 +268,11 @@ def test_run_multi_simulation_insufficient_data_error(mock_simulator, mock_progr
     # ============= Arrange ==============
     mock_simulator.run_multiple.side_effect = InsufficientDataError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_multi_simulation(mock_simulator, {}, [''], 0.0, False, False,
-                                                  mock_progress_observer)
+    result = test_object.run_multi_simulation({}, [''], 0.0, False, False,
+                                              mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -254,9 +284,11 @@ def test_run_multi_simulation_unexpected_error(mock_simulator, mock_progress_obs
     # ============= Arrange ==============
     mock_simulator.run_multiple.side_effect = ValueError  # a random error not explicitly caught by the decorator
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_multi_simulation(mock_simulator, {}, [''], 0.0, False, False,
-                                                  mock_progress_observer)
+    result = test_object.run_multi_simulation({}, [''], 0.0, False, False,
+                                              mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -268,9 +300,11 @@ def test_run_multi_simulation_normal_with_logging(mock_simulator, mock_progress_
     # ============= Arrange ==============
     mock_simulator.run_multiple.return_value = {'symbol': 'AAPL', 'avg_pl': 200.1, 'med_pl': 40.1}
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_multi_simulation(mock_simulator, {}, [''], 0.0, True, False,
-                                                  mock_progress_observer)
+    result = test_object.run_multi_simulation({}, [''], 0.0, True, False,
+                                              mock_progress_observer)
 
     # ============= Assert ===============
     mock_simulator.enable_logging.assert_called_once()
@@ -287,9 +321,11 @@ def test_run_multi_simulation_normal_with_reporting(mock_simulator, mock_progres
     # ============= Arrange ==============
     mock_simulator.run_multiple.return_value = {'symbol': 'AAPL', 'avg_pl': 200.1, 'med_pl': 40.1}
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_multi_simulation(mock_simulator, {}, [''], 0.0, False, True,
-                                                  mock_progress_observer)
+    result = test_object.run_multi_simulation({}, [''], 0.0, False, True,
+                                              mock_progress_observer)
 
     # ============= Assert ===============
     mock_simulator.enable_logging.assert_not_called()
@@ -309,9 +345,11 @@ def test_run_folder_simulation_broker_error(mock_simulator, mock_progress_observ
     # ============= Arrange ==============
     mock_simulator.run_multiple.side_effect = requests.exceptions.ConnectionError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_folder_simulation(mock_simulator, [{}, {}], ['', ''], 0.0, False, False,
-                                                   mock_progress_observer)
+    result = test_object.run_folder_simulation([{}, {}], ['', ''], 0.0, False, False,
+                                               mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -323,9 +361,11 @@ def test_run_folder_simulation_malformed_strategy_error(mock_simulator, mock_pro
     # ============= Arrange ==============
     mock_simulator.run_multiple.side_effect = MalformedStrategyError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_folder_simulation(mock_simulator, [{}, {}], ['', ''], 0.0, False, False,
-                                                   mock_progress_observer)
+    result = test_object.run_folder_simulation([{}, {}], ['', ''], 0.0, False, False,
+                                               mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -337,9 +377,11 @@ def test_run_folder_simulation_strategy_indicator_error(mock_simulator, mock_pro
     # ============= Arrange ==============
     mock_simulator.run_multiple.side_effect = StrategyIndicatorError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_folder_simulation(mock_simulator, [{}, {}], ['', ''], 0.0, False, False,
-                                                   mock_progress_observer)
+    result = test_object.run_folder_simulation([{}, {}], ['', ''], 0.0, False, False,
+                                               mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -351,9 +393,11 @@ def test_run_folder_simulation_missing_credential_error(mock_simulator, mock_pro
     # ============= Arrange ==============
     mock_simulator.run_multiple.side_effect = MissingCredentialError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_folder_simulation(mock_simulator, [{}, {}], ['', ''], 0.0, False, False,
-                                                   mock_progress_observer)
+    result = test_object.run_folder_simulation([{}, {}], ['', ''], 0.0, False, False,
+                                               mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -365,9 +409,11 @@ def test_run_folder_simulation_invalid_symbol_error(mock_simulator, mock_progres
     # ============= Arrange ==============
     mock_simulator.run_multiple.side_effect = MissingCredentialError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_folder_simulation(mock_simulator, [{}, {}], ['', ''], 0.0, False, False,
-                                                   mock_progress_observer)
+    result = test_object.run_folder_simulation([{}, {}], ['', ''], 0.0, False, False,
+                                               mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -379,9 +425,11 @@ def test_run_folder_simulation_insufficient_data_error(mock_simulator, mock_prog
     # ============= Arrange ==============
     mock_simulator.run_multiple.side_effect = InsufficientDataError
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_folder_simulation(mock_simulator, [{}, {}], ['', ''], 0.0, False, False,
-                                                   mock_progress_observer)
+    result = test_object.run_folder_simulation([{}, {}], ['', ''], 0.0, False, False,
+                                               mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -393,9 +441,11 @@ def test_run_folder_simulation_unexpected_error(mock_simulator, mock_progress_ob
     # ============= Arrange ==============
     mock_simulator.run_multiple.side_effect = ValueError  # a random error not explicitly caught by the decorator
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_folder_simulation(mock_simulator, [{}, {}], ['', ''], 0.0, False, False,
-                                                   mock_progress_observer)
+    result = test_object.run_folder_simulation([{}, {}], ['', ''], 0.0, False, False,
+                                               mock_progress_observer)
 
     # ============= Assert ===============
     assert type(result) is dict
@@ -407,9 +457,11 @@ def test_run_folder_simulation_normal_with_logging(mock_simulator, mock_progress
     # ============= Arrange ==============
     mock_simulator.run_multiple.return_value = {'symbol': 'AAPL', 'avg_pl': 200.1, 'med_pl': 40.1}
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_folder_simulation(mock_simulator, [{}, {}], ['', ''], 0.0, True, False,
-                                                   [mock_progress_observer, mock_progress_observer])
+    result = test_object.run_folder_simulation([{}, {}], ['', ''], 0.0, True, False,
+                                               [mock_progress_observer, mock_progress_observer])
 
     # ============= Assert ===============
     mock_simulator.enable_logging.assert_called_once()
@@ -427,9 +479,11 @@ def test_run_folder_simulation_normal_with_reporting(mock_simulator, mock_progre
     # ============= Arrange ==============
     mock_simulator.run_multiple.return_value = {'symbol': 'AAPL', 'avg_pl': 200.1, 'med_pl': 40.1}
 
+    test_object = SimulatorProxy(mock_simulator)
+
     # ============= Act ==================
-    result = SimulationProxy.run_folder_simulation(mock_simulator, [{}, {}], ['', ''], 0.0, False, True,
-                                                   [mock_progress_observer, mock_progress_observer])
+    result = test_object.run_folder_simulation([{}, {}], ['', ''], 0.0, False, True,
+                                               [mock_progress_observer, mock_progress_observer])
 
     # ============= Assert ===============
     mock_simulator.enable_logging.assert_not_called()

@@ -1,4 +1,5 @@
 import traceback
+from functools import wraps
 from typing import Callable, List
 
 import requests
@@ -11,9 +12,9 @@ from StockBench.controllers.simulator.simulator import Simulator
 from StockBench.models.observers.progress_observer import ProgressObserver
 
 
-def SimulationProxyFunction(simulation_fxn: Callable):
+def SimulatorProxyFunction(simulation_fxn: Callable):
     """Decorator for a simulation proxy function. Wraps the simulation in a try block and catches any errors."""
-
+    @wraps(simulation_fxn)
     def wrapper(*args, **kwargs):
         try:
             return simulation_fxn(*args, **kwargs)
@@ -37,51 +38,55 @@ def SimulationProxyFunction(simulation_fxn: Callable):
     return wrapper
 
 
-class SimulationProxy:
+class SimulatorProxy:
     """Proxy acting as a middle man between the controller and the simulator. Allows us to wrap the proxy function to
-    handle errors that the simulator throws."""
+    handle errors that the simulator throws.
 
-    @staticmethod
-    @SimulationProxyFunction
-    def run_singular_simulation(simulator: Simulator, strategy: dict, symbol: str, initial_balance: float,
+    NOTE: These functions must remain static unlike charting proxy because we want to use a new simulator instance for
+    each proxy function call. We do not want a shared simulator instance because each result window using the controller
+    (and therefore proxy) will use a different simulator instance that is configured the way the user wants it.
+    """
+    def __init__(self, simulator: Simulator):
+        self.__simulator = simulator
+
+    @SimulatorProxyFunction
+    def run_singular_simulation(self, strategy: dict, symbol: str, initial_balance: float,
                                 logging_on: bool, reporting_on: bool, progress_observer: ProgressObserver) -> dict:
         """Proxy function for running a singular symbol simulation with error capturing."""
-        simulator.set_initial_balance(initial_balance)
-        simulator.load_strategy(strategy)
+        self.__simulator.set_initial_balance(initial_balance)
+        self.__simulator.load_strategy(strategy)
 
         if logging_on:
-            simulator.enable_logging()
+            self.__simulator.enable_logging()
         if reporting_on:
-            simulator.enable_reporting()
+            self.__simulator.enable_reporting()
 
-        return simulator.run(symbol, progress_observer)
+        return self.__simulator.run(symbol, progress_observer)
 
-    @staticmethod
-    @SimulationProxyFunction
-    def run_multi_simulation(simulator: Simulator, strategy: dict, symbols: List[str], initial_balance: float,
+    @SimulatorProxyFunction
+    def run_multi_simulation(self, strategy: dict, symbols: List[str], initial_balance: float,
                              logging_on: bool, reporting_on: bool, progress_observer: ProgressObserver) -> dict:
         """Proxy function for running a multi-symbol simulation with error capturing."""
-        simulator.set_initial_balance(initial_balance)
-        simulator.load_strategy(strategy)
+        self.__simulator.set_initial_balance(initial_balance)
+        self.__simulator.load_strategy(strategy)
 
         if logging_on:
-            simulator.enable_logging()
+            self.__simulator.enable_logging()
         if reporting_on:
-            simulator.enable_reporting()
+            self.__simulator.enable_reporting()
 
-        return simulator.run_multiple(symbols, progress_observer)
+        return self.__simulator.run_multiple(symbols, progress_observer)
 
-    @staticmethod
-    @SimulationProxyFunction
-    def run_folder_simulation(simulator: Simulator, strategies: List[dict], symbols: List[str], initial_balance: float,
+    @SimulatorProxyFunction
+    def run_folder_simulation(self, strategies: List[dict], symbols: List[str], initial_balance: float,
                               logging_on: bool, reporting_on: bool, progress_observers: List[ProgressObserver]) -> dict:
         """Proxy function for running a multi-symbol simulation with error capturing."""
-        simulator.set_initial_balance(initial_balance)
+        self.__simulator.set_initial_balance(initial_balance)
 
         if logging_on:
-            simulator.enable_logging()
+            self.__simulator.enable_logging()
         if reporting_on:
-            simulator.enable_reporting()
+            self.__simulator.enable_reporting()
 
         results = []
         # run all simulations (using matched progress observer)
@@ -89,8 +94,8 @@ class SimulationProxy:
             # __run_simulation sets the simulator to use self.strategy
             # we passed in a dummy strategy to satisfy the constructor (self.strategy gets set to dummy)
             # override the dummy strategy in the simulator with the correct one
-            simulator.load_strategy(strategy)
+            self.__simulator.load_strategy(strategy)
 
-            results.append(simulator.run_multiple(symbols, progress_observers[i]))
+            results.append(self.__simulator.run_multiple(symbols, progress_observers[i]))
 
         return {'results': results}

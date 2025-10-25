@@ -1,7 +1,5 @@
-from StockBench.controllers.charting.folder.folder_charting_engine import FolderChartingEngine
-from StockBench.controllers.charting.multi.multi_charting_engine import MultiChartingEngine
-from StockBench.controllers.charting.singular.singular_charting_engine import SingularChartingEngine
-from StockBench.controllers.simulator.simulator_factory import SimulatorFactory
+from StockBench.controllers.proxies.charting_proxy_factory import ChartingProxyFactory
+from StockBench.controllers.proxies.simulator_proxy_factory import SimulatorProxyFactory
 from StockBench.controllers.stockbench_controller import StockBenchController
 
 
@@ -9,10 +7,8 @@ class StockBenchControllerFactory:
     """Factory for creating StockBenchController instances."""
 
     @staticmethod
-    def get_controller_instance(simulation_identifier: int = 1) -> StockBenchController:
+    def get_controller_instance(simulator_identifier: int = 1) -> StockBenchController:
         """Creates a controller instance."""
-        simulator = SimulatorFactory.get_simulator_instance(simulation_identifier)
-        singular_charting_engine = SingularChartingEngine()
-        multi_charting_engine = MultiChartingEngine()
-        folder_charting_engine = FolderChartingEngine()
-        return StockBenchController(simulator, singular_charting_engine, multi_charting_engine, folder_charting_engine)
+        simulator_proxy = SimulatorProxyFactory.get_simulator_proxy_instance(simulator_identifier)
+        charting_proxy = ChartingProxyFactory.get_charting_proxy_instance()
+        return StockBenchController(simulator_proxy, charting_proxy)

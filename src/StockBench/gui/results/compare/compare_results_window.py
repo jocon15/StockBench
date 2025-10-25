@@ -30,7 +30,7 @@ class CompareResultsWindow(QWidget):
         # NOTE: Since compare requires 2 different simulator instances, we need to create another controller instance
         # using the factory, this time with an identifier of 2 so that the simulators do not use the same logger, and
         # we do not create the issue where log messages are duplicated.
-        secondary_stockbench_controller = StockBenchControllerFactory.get_controller_instance(simulation_identifier=2)
+        secondary_stockbench_controller = StockBenchControllerFactory.get_controller_instance(simulator_identifier=2)
 
         self.simulation_widget_2 = MultiResultsWindow(
             secondary_stockbench_controller,  # uses secondary controller instead

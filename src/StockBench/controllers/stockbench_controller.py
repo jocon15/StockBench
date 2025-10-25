@@ -51,7 +51,6 @@ class StockBenchController:
                 simulation_results={},
                 chart_filepaths=ChartingProxy.SINGULAR_DEFAULT_CHART_FILEPATHS)
 
-        # success
         return SimulationResult(
             status_code=200,
             message='',
@@ -84,7 +83,6 @@ class StockBenchController:
                 simulation_results={},
                 chart_filepaths=ChartingProxy.MULTI_DEFAULT_CHART_FILEPATHS)
 
-        # success
         return SimulationResult(
             status_code=200,
             message='',
@@ -120,7 +118,6 @@ class StockBenchController:
                 simulation_results={},
                 chart_filepaths=ChartingProxy.FOLDER_DEFAULT_CHART_FILEPATHS)
 
-        # success
         return SimulationResult(
             status_code=200,
             message='',

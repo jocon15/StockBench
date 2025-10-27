@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QLabel, QPushButton, QLineEdit
 from PyQt6.QtCore import Qt
 
+from StockBench.controllers.stockbench_controller import StockBenchController
 from StockBench.gui.config.tabs.base.config_tab import ConfigTab, MessageBoxCaptureException, CaptureConfigErrors
 from StockBench.gui.results.multi.multi_results_window import MultiResultsWindow
 from StockBench.gui.palette.palette import Palette
@@ -8,8 +9,8 @@ from StockBench.gui.config.components.strategy_selection import StrategySelectio
 
 
 class MultiConfigTab(ConfigTab):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, stockbench_controller: StockBenchController):
+        super().__init__(stockbench_controller)
         # add shared_components to the layout
         label = QLabel()
         label.setText('Strategy:')
@@ -96,6 +97,7 @@ class MultiConfigTab(ConfigTab):
             raise MessageBoxCaptureException('Initial account balance must be a positive number!')
 
         self.simulation_result_window = MultiResultsWindow(
+            self._stockbench_controller,
             simulation_symbols,
             strategy,
             simulation_balance,

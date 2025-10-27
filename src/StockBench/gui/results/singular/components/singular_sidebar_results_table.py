@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QLabel
 
 from StockBench.gui.results.base.sidebar_results_table import SidebarResultsTable
-from StockBench.constants import *
+from StockBench.models.constants.simulation_results_constants import *
 
 
 class SingularResultsSidebarTable(SidebarResultsTable):
@@ -63,8 +63,8 @@ class SingularResultsSidebarTable(SidebarResultsTable):
             self.trades_made_data_label.setText(f'{simulation_results[TRADES_MADE_KEY]}')
             self.average_trade_duration_data_label.setText(f'{simulation_results[AVERAGE_TRADE_DURATION_KEY]:.1f} days')
             self.effectiveness_data_label.setText(f'{simulation_results[EFFECTIVENESS_KEY]:,.2f} %')
-            self.total_pl_data_label.setText(f'$ {simulation_results[TOTAL_PROFIT_LOSS_KEY]:,.2f}')
-            self.average_pl_data_label.setText(f'$ {simulation_results[AVERAGE_PROFIT_LOSS_KEY]:,.2f}')
-            self.median_pl_data_label.setText(f'$ {simulation_results[MEDIAN_PROFIT_LOSS_KEY]:,.2f}')
-            self.stddev_pl_data_label.setText(f'$ {simulation_results[STANDARD_PROFIT_LOSS_DEVIATION_KEY]:,.2f}')
+            self.total_pl_data_label.setText(f'$ {simulation_results[TOTAL_PL_KEY]:,.2f}')
+            self.average_pl_data_label.setText(f'$ {simulation_results[AVERAGE_PL_KEY]:,.2f}')
+            self.median_pl_data_label.setText(f'$ {simulation_results[MEDIAN_PL_KEY]:,.2f}')
+            self.stddev_pl_data_label.setText(f'$ {simulation_results[STANDARD_PL_DEVIATION_KEY]:,.2f}')
             self.account_value_data_label.setText(f'$ {simulation_results[FINAL_ACCOUNT_VALUE_KEY]:,.2f}')

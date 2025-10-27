@@ -7,6 +7,7 @@ from StockBench.gui.config.tabs.multi_config_tab import MultiConfigTab
 from StockBench.gui.config.tabs.compare_config_tab import CompareConfigTab
 from StockBench.gui.config.tabs.folder_config_tab import FolderConfigTab
 from StockBench.gui.configuration import AppConfiguration
+from StockBench.controllers.controller_factory import StockBenchControllerFactory
 
 
 class ConfigMainWindow(QMainWindow):
@@ -17,6 +18,9 @@ class ConfigMainWindow(QMainWindow):
         super().__init__()
         self.splash = splash
 
+        # get an instance of the controller for the application to use (reference passed to all results windows)
+        self.__stockbench_controller = StockBenchControllerFactory.get_controller_instance()
+
         # main window styling (do it first to prevent window shifting)
         self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
         self.setWindowTitle('Configuration')
@@ -25,10 +29,10 @@ class ConfigMainWindow(QMainWindow):
         self.layout = QVBoxLayout()
 
         self.tab_widget = QTabWidget()
-        self.tab_widget.addTab(SingularConfigTab(), "Single")
-        self.tab_widget.addTab(MultiConfigTab(), "Multi")
-        self.tab_widget.addTab(CompareConfigTab(), "Compare")
-        self.tab_widget.addTab(FolderConfigTab(), "Folder")
+        self.tab_widget.addTab(SingularConfigTab(self.__stockbench_controller), "Single")
+        self.tab_widget.addTab(MultiConfigTab(self.__stockbench_controller), "Multi")
+        self.tab_widget.addTab(CompareConfigTab(self.__stockbench_controller), "Compare")
+        self.tab_widget.addTab(FolderConfigTab(self.__stockbench_controller), "Folder")
         self.tab_widget.setStyleSheet(Palette.TAB_WIDGET_STYLESHEET)
         self.layout.addWidget(self.tab_widget)
 

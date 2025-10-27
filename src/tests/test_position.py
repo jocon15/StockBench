@@ -1,4 +1,4 @@
-from StockBench.position.position import Position
+from StockBench.models.position.position import Position
 
 
 def test_close_position():

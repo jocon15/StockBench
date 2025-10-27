@@ -1,4 +1,4 @@
-from StockBench.account.user_account import UserAccount
+from StockBench.controllers.simulator.account.user_account import UserAccount
 
 
 def test_deposit():

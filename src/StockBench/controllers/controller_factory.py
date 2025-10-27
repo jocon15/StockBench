@@ -1,0 +1,14 @@
+from StockBench.controllers.proxies.charting_proxy_factory import ChartingProxyFactory
+from StockBench.controllers.proxies.simulator_proxy_factory import SimulatorProxyFactory
+from StockBench.controllers.stockbench_controller import StockBenchController
+
+
+class StockBenchControllerFactory:
+    """Factory for creating StockBenchController instances."""
+
+    @staticmethod
+    def get_controller_instance(simulator_identifier: int = 1) -> StockBenchController:
+        """Creates a controller instance."""
+        simulator_proxy = SimulatorProxyFactory.get_simulator_proxy_instance(simulator_identifier)
+        charting_proxy = ChartingProxyFactory.get_charting_proxy_instance()
+        return StockBenchController(simulator_proxy, charting_proxy)

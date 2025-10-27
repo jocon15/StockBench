@@ -1,6 +1,6 @@
-from StockBench.constants import BUY_SIDE
+from StockBench.models.constants.general_constants import BUY_SIDE
 from StockBench.gui.results.base.rules_tab import RulesTab
-from StockBench.gui.results.multi.constants.constants import BUY_RULES_BAR_CHART_KEY, SELL_RULES_BAR_CHART_KEY
+from StockBench.models.constants.chart_filepath_key_constants import BUY_RULES_BAR_CHART_FILEPATH_KEY, SELL_RULES_BAR_CHART_FILEPATH_KEY
 
 
 class MultiRulesTab(RulesTab):
@@ -14,8 +14,8 @@ class MultiRulesTab(RulesTab):
 
     def render_chart(self, chart_filepaths: dict):
         if self.side == BUY_SIDE:
-            chart_filepath = chart_filepaths[BUY_RULES_BAR_CHART_KEY]
+            chart_filepath = chart_filepaths[BUY_RULES_BAR_CHART_FILEPATH_KEY]
         else:
-            chart_filepath = chart_filepaths[SELL_RULES_BAR_CHART_KEY]
+            chart_filepath = chart_filepaths[SELL_RULES_BAR_CHART_FILEPATH_KEY]
 
         self.html_viewer.render_data(chart_filepath)

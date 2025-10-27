@@ -1,8 +1,9 @@
-from StockBench.export.markdown_exporter import MarkdownExporter
+from StockBench.controllers.export.markdown_exporter import MarkdownExporter
 from StockBench.gui.results.base.overview_sidebar import OverviewSideBar
 from StockBench.gui.results.multi.components.multi_sidebar_metadata_table import MultiMetadataSidebarTable
 from StockBench.gui.results.multi.components.multi_sidebar_results_table import MultiResultsSidebarTable
-from StockBench.constants import *
+from StockBench.models.constants.chart_filepath_key_constants import *
+from StockBench.models.constants.simulation_results_constants import *
 
 
 class MultiOverviewSideBar(OverviewSideBar):
@@ -57,8 +58,8 @@ class MultiOverviewSideBar(OverviewSideBar):
         # remove extraneous data from exported results
         export_dict.pop(ELAPSED_TIME_KEY)
         export_dict.pop(OVERVIEW_CHART_FILEPATH_KEY)
-        export_dict.pop(BUY_RULES_CHART_FILEPATH_KEY)
-        export_dict.pop(SELL_RULES_CHART_FILEPATH_KEY)
+        export_dict.pop(BUY_RULES_BAR_CHART_FILEPATH_KEY)
+        export_dict.pop(BUY_RULES_BAR_CHART_FILEPATH_KEY)
         export_dict.pop(POSITIONS_KEY)
         export_dict.pop(POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY)
 

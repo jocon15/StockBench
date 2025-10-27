@@ -1,7 +1,7 @@
 import time
-from StockBench.composites.snp500 import snp500_tickers
-from StockBench.constants import *
-from StockBench.simulator import Simulator
+
+from StockBench.models.constants.general_constants import SECONDS_5_YEAR
+from StockBench.controllers.simulator.simulator import Simulator
 
 strategy = {
     'start': int(time.time()) - SECONDS_5_YEAR,

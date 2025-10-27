@@ -1,0 +1,22 @@
+# shared chart filepaths
+SIMULATION_RESULTS_KEY = 'simulation_results'
+OVERVIEW_CHART_FILEPATH_KEY = 'overview_chart_filepath'
+POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY = 'positions_plpc_histogram_chart_filepath'
+POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY = 'positions_plpc_box_plot_chart_filepath'
+BUY_RULES_BAR_CHART_FILEPATH_KEY = 'buy_rules_bar_chart'
+SELL_RULES_BAR_CHART_FILEPATH_KEY = 'sell_rules_bar_chart'
+POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY = 'positions_duration_bar_chart_filepath'
+POSITIONS_PL_BAR_CHART_FILEPATH_KEY = 'positions_pl_bar_chart_filepath'
+
+# singular-specific filepaths
+ACCOUNT_VALUE_LINE_CHART_FILEPATH_KEY = 'account_value_line_chart_filepath'
+
+# multi-specific filepaths
+
+# folder-specific filepaths
+TRADES_MADE_BAR_CHART_FILEPATH_KEY = 'trades_made_bar_chart_filepath'
+EFFECTIVENESS_BAR_CHART_FILEPATH_KEY = 'effectiveness_bar_chart_filepath'
+TOTAL_PL_BAR_CHART_FILEPATH_KEY = 'total_pl_bar_chart_filepath'
+AVERAGE_PL_BAR_CHART_FILEPATH_KEY = 'average_pl_bar_chart_filepath'
+MEDIAN_PL_BAR_CHART_FILEPATH_KEY = 'median_pl_bar_chart_filepath'
+STDDEV_PL_BAR_CHART_FILEPATH_KEY = 'stddev_pl_bar_chart_filepath'

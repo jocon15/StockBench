@@ -1,7 +1,7 @@
-from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
+from StockBench.gui.models.simulation_results_bundle import SimulationResult
 from StockBench.gui.results.base.overview_tab import OverviewTabVertical
 from StockBench.gui.results.multi.components.multi_sidebar import MultiOverviewSideBar
-from StockBench.gui.results.multi.constants.constants import OVERVIEW_CHART_FILEPATH_KEY
+from StockBench.models.constants.chart_filepath_key_constants import OVERVIEW_CHART_FILEPATH_KEY
 
 
 class MultiOverviewTab(OverviewTabVertical):
@@ -17,7 +17,7 @@ class MultiOverviewTab(OverviewTabVertical):
 
         self.setLayout(self.layout)
 
-    def render_data(self, simulation_results_bundle: SimulationResultsBundle):
+    def render_data(self, simulation_results_bundle: SimulationResult):
         self.render_chart(simulation_results_bundle.chart_filepaths)
         self.overview_side_bar.render_data(simulation_results_bundle.simulation_results)
 

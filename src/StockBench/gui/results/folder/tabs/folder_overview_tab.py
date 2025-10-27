@@ -1,4 +1,4 @@
-from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
+from StockBench.gui.models.simulation_results_bundle import SimulationResult
 from StockBench.gui.results.base.overview_tab import OverviewTabVertical
 from StockBench.gui.results.folder.components.folder_sidebar import FolderOverviewSidebar
 from StockBench.gui.results.folder.components.folder_results_table import FolderResultsTable
@@ -16,7 +16,7 @@ class FolderOverViewTab(OverviewTabVertical):
 
         self.setLayout(self.layout)
 
-    def render_data(self, simulation_results_bundle: SimulationResultsBundle):
+    def render_data(self, simulation_results_bundle: SimulationResult):
         self.overview_side_bar.render_data(simulation_results_bundle.simulation_results)
         self.results_table.render_data(simulation_results_bundle.simulation_results)
 

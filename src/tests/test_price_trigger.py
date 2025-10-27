@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
-from StockBench.indicators.price.price import PriceTrigger
-from StockBench.indicator.exceptions import StrategyIndicatorError
+from StockBench.controllers.simulator.indicators.price.price import PriceTrigger
+from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
 
 
 @pytest.fixture
@@ -55,7 +55,7 @@ def test_add_to_data_from_rule_value(test_object):
         assert False
 
 
-@patch('StockBench.simulation_data.data_manager.DataManager')
+@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_get_value_when_referenced(data_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 234.5
@@ -66,10 +66,10 @@ def test_get_value_when_referenced(data_mocker, test_object):
     assert test_object.get_indicator_value_when_referenced('>=price', data_mocker, 25) == 234.5
 
 
-@patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')
-@patch('StockBench.algorithm.algorithm.Trigger.find_operator_in_str')
-@patch('StockBench.algorithm.algorithm.Trigger.basic_trigger_check')
-@patch('StockBench.simulation_data.data_manager.DataManager')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_single_numeric_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_operator_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.basic_trigger_check')
+@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.side_effect = None
@@ -90,7 +90,7 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
             is True)
 
 
-@patch('StockBench.simulation_data.data_manager.DataManager')
+@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger_value_error(data_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 90

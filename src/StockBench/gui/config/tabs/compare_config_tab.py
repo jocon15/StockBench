@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QLabel, QPushButton, QLineEdit
 from PyQt6.QtCore import Qt
 
+from StockBench.controllers.stockbench_controller import StockBenchController
 from StockBench.gui.config.tabs.base.config_tab import ConfigTab, MessageBoxCaptureException, CaptureConfigErrors
 from StockBench.gui.results.compare.compare_results_window import CompareResultsWindow
 from StockBench.gui.palette.palette import Palette
@@ -12,8 +13,8 @@ class CompareConfigTab(ConfigTab):
 
     STRATEGY_2_CACHE_KEY = 'cached_h2h_strategy_2_filepath'
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, stockbench_controller: StockBenchController):
+        super().__init__(stockbench_controller)
         # add shared_components to the layout
         label = QLabel()
         label.setText('Strategy 1:')
@@ -117,6 +118,7 @@ class CompareConfigTab(ConfigTab):
         # also, h2h will call the begin functions
 
         self.head_to_head_window = CompareResultsWindow(
+            self._stockbench_controller,
             simulation_symbols,
             strategy1,
             strategy2,

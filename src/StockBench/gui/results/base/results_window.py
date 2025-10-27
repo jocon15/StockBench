@@ -1,23 +1,16 @@
 import logging
-import traceback
 from abc import abstractmethod
 
-import requests.exceptions
-
-from StockBench.broker.broker_client import InvalidSymbolError, InsufficientDataError, MissingCredentialError
-from StockBench.charting.charting_engine import ChartingEngine
 from PyQt6.QtWidgets import QWidget, QProgressBar, QTabWidget, QVBoxLayout
 from PyQt6.QtCore import QTimer, QThreadPool
 from PyQt6 import QtGui
 
-from StockBench.gui.models.simulation_results_bundle import SimulationResultsBundle
+from StockBench.controllers.stockbench_controller import StockBenchController
+from StockBench.gui.models.simulation_results_bundle import SimulationResult
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.worker.worker import Worker
-from StockBench.observers.progress_observer import ProgressObserver
-from StockBench.simulator import Simulator
-from StockBench.indicator.exceptions import StrategyIndicatorError
-from StockBench.charting.exceptions import ChartingError
-from StockBench.algorithm.exceptions import MalformedStrategyError
+from StockBench.models.observers.progress_observer import ProgressObserver
+from StockBench.models.simulation_result.simulation_result import SimulationResult
 
 log = logging.getLogger()
 
@@ -38,13 +31,15 @@ class SimulationResultsWindow(QWidget):
     a dict of results which are fed to the _render_data() function, which uses that information to render the results to
     the window.
     """
+    CHARTS_AND_DATA = 0
+    DATA_ONLY = 1
 
-    def __init__(self, strategy, initial_balance, logging_on=False, reporting_on=False, unique_chart_saving_on=False,
-                 show_volume=False, results_depth=Simulator.CHARTS_AND_DATA, identifier: int = 1):
+    def __init__(self, stockbench_controller: StockBenchController, strategy, initial_balance, logging_on,
+                 reporting_on, unique_chart_saving_on, show_volume, results_depth):
         super().__init__()
-        self.id = identifier
+        self._stockbench_controller = stockbench_controller
         self.strategy = strategy
-        self.simulator = Simulator(initial_balance, identifier)  # instantiate the class reference
+        self.initial_balance = initial_balance
         self.progress_observer = ProgressObserver()  # instantiate the class reference
         self.worker = Worker  # gets instantiated later
         self.logging = logging_on
@@ -101,58 +96,23 @@ class SimulationResultsWindow(QWidget):
             # update the progress bar
             self.progress_bar.setValue(int(self.progress_observer.get_progress()))
 
-    def __run_simulation(self) -> SimulationResultsBundle:
+    def __run_simulation(self) -> SimulationResult:
         """Run the simulation."""
-        # set up the simulator's configuration options
-        if self.logging:
-            self.simulator.enable_logging()
-        if self.reporting:
-            self.simulator.enable_reporting()
+        result = self._run_simulation()
 
-        # configure the simulator's configuration options
-        if self.unique_chart_saving:
-            save_option = ChartingEngine.UNIQUE_SAVE
-        else:
-            save_option = ChartingEngine.TEMP_SAVE
+        if not SimulationResult.simulation_successful(result.status_code):
+            # log all errors and display error message in console box
+            log.error(result.message)
+            self.overview_tab.update_error_message(result.message)
 
-        # load the strategy file
-        self.simulator.load_strategy(self.strategy)
-
-        # run the simulation and catch any errors - keep the app from crashing even if the sim fails
-        try:
-            return self._run_simulation(save_option, self.results_depth)
-        except requests.exceptions.ConnectionError:
-            message = 'Failed to connect to broker!'
-        except MalformedStrategyError as e:
-            message = f'Malformed strategy error: {e}'
-        except StrategyIndicatorError as e:
-            message = f'Strategy error: {e}'
-        except ChartingError as e:
-            message = f'Charting error: {e}'
-        except MissingCredentialError as e:
-            message = f'Missing credential error: {e}'
-        except InvalidSymbolError as e:
-            message = f'Invalid symbol error: {e}'
-        except InsufficientDataError as e:
-            message = f'Insufficient data error {e}'
-        except Exception as e:
-            message = f'Unexpected error: {type(e)} {e} {traceback.print_exc()}'
-        # WARNING, trying to interact with UI components here (calling a custom abstract signature) will not work
-        # because the simulation is on a different QThread and will cause crash with no traceback, you must instead take
-        # any simulation failure action in the _render_data implementation because _render_data is the callback called
-        # by the QThread when it is done, success or failure.
-
-        # log all errors and display error message in console box
-        log.error(message)
-        self.overview_tab.update_error_message(message)
-        return SimulationResultsBundle({}, {})
+        return result
 
     @abstractmethod
-    def _run_simulation(self, save_option: int, results_depth: int) -> SimulationResultsBundle:
+    def _run_simulation(self) -> SimulationResult:
         raise NotImplementedError('You must define an implementation for _run_simulation()!')
 
     @abstractmethod
-    def _render_data(self, simulation_results_bundle: SimulationResultsBundle):
+    def _render_data(self, simulation_result: SimulationResult):
         raise NotImplementedError('You must define an implementation for _render_data()!')
 
     def __update_data(self):

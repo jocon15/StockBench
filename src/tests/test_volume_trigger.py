@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from StockBench.indicators.volume.trigger import VolumeTrigger
+from StockBench.controllers.simulator.indicators.volume.trigger import VolumeTrigger
 
 
 @pytest.fixture
@@ -67,10 +67,10 @@ def test_get_value_when_referenced(test_object):
         assert True
 
 
-@patch('StockBench.algorithm.algorithm.Trigger.find_single_numeric_in_str')
-@patch('StockBench.algorithm.algorithm.Trigger.find_operator_in_str')
-@patch('StockBench.algorithm.algorithm.Trigger.basic_trigger_check')
-@patch('StockBench.simulation_data.data_manager.DataManager')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_single_numeric_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_operator_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.basic_trigger_check')
+@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============
     data_mocker.get_data_point.side_effect = None

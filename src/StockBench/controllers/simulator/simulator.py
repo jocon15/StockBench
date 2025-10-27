@@ -331,10 +331,10 @@ class Simulator:
             TRADES_MADE_KEY: analyzer.total_trades(),
             AVERAGE_TRADE_DURATION_KEY: analyzer.average_trade_duration(),
             EFFECTIVENESS_KEY: analyzer.effectiveness(),
-            TOTAL_PROFIT_LOSS_KEY: analyzer.total_profit_loss(),
-            AVERAGE_PROFIT_LOSS_KEY: analyzer.average_profit_loss(),
-            MEDIAN_PROFIT_LOSS_KEY: analyzer.median_profit_loss(),
-            STANDARD_PROFIT_LOSS_DEVIATION_KEY: analyzer.standard_profit_loss_deviation(),
+            TOTAL_PL_KEY: analyzer.total_profit_loss(),
+            AVERAGE_PL_KEY: analyzer.average_profit_loss(),
+            MEDIAN_PL_KEY: analyzer.median_profit_loss(),
+            STANDARD_PL_DEVIATION_KEY: analyzer.standard_profit_loss_deviation(),
             FINAL_ACCOUNT_VALUE_KEY: self.__account.get_balance(),
         }
 
@@ -383,10 +383,10 @@ class Simulator:
             TRADES_MADE_KEY: analyzer.total_trades(),
             AVERAGE_TRADE_DURATION_KEY: analyzer.average_trade_duration(),
             EFFECTIVENESS_KEY: analyzer.effectiveness(),
-            TOTAL_PROFIT_LOSS_KEY: analyzer.total_profit_loss(),
-            AVERAGE_PROFIT_LOSS_KEY: analyzer.average_profit_loss(),
-            MEDIAN_PROFIT_LOSS_KEY: analyzer.median_profit_loss(),
-            STANDARD_PROFIT_LOSS_DEVIATION_KEY: analyzer.standard_profit_loss_deviation(),
+            TOTAL_PL_KEY: analyzer.total_profit_loss(),
+            AVERAGE_PL_KEY: analyzer.average_profit_loss(),
+            MEDIAN_PL_KEY: analyzer.median_profit_loss(),
+            STANDARD_PL_DEVIATION_KEY: analyzer.standard_profit_loss_deviation(),
         }
 
     def __reset_singular_attributes(self):

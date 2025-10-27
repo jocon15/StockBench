@@ -33,7 +33,7 @@ class FolderChartingEngine(ChartingEngine):
     def build_total_pl_bar_chart(results: List[dict]) -> str:
         """Build a bar chart for effectiveness."""
         strategy_names, total_pl_data = (
-            FolderChartingEngine.__extract_values_from_results_by_key(results, TOTAL_PROFIT_LOSS_KEY))
+            FolderChartingEngine.__extract_values_from_results_by_key(results, TOTAL_PL_KEY))
 
         return FolderChartingEngine.__build_bar_chart(strategy_names, total_pl_data, 'Total P/L per Strategy',
                                                       OFF_BLUE, 'temp_folder_total_pl')
@@ -42,7 +42,7 @@ class FolderChartingEngine(ChartingEngine):
     def build_average_pl_bar_chart(results: List[dict]) -> str:
         """Build a bar chart for average pl."""
         strategy_names, average_pl_data = (
-            FolderChartingEngine.__extract_values_from_results_by_key(results, AVERAGE_PROFIT_LOSS_KEY))
+            FolderChartingEngine.__extract_values_from_results_by_key(results, AVERAGE_PL_KEY))
 
         return FolderChartingEngine.__build_bar_chart(strategy_names, average_pl_data,
                                                       'Average P/L per Strategy', OFF_BLUE,
@@ -52,7 +52,7 @@ class FolderChartingEngine(ChartingEngine):
     def build_median_pl_bar_chart(results: List[dict]) -> str:
         """Build a bar chart for average pl."""
         strategy_names, median_pl_data = (
-            FolderChartingEngine.__extract_values_from_results_by_key(results, MEDIAN_PROFIT_LOSS_KEY))
+            FolderChartingEngine.__extract_values_from_results_by_key(results, MEDIAN_PL_KEY))
 
         return FolderChartingEngine.__build_bar_chart(strategy_names, median_pl_data,
                                                       'Median P/L per Strategy', OFF_BLUE,
@@ -62,7 +62,7 @@ class FolderChartingEngine(ChartingEngine):
     def build_stddev_pl_bar_chart(results: List[dict]) -> str:
         """Build a bar chart for average pl."""
         strategy_names, stddev_pl_data = (
-            FolderChartingEngine.__extract_values_from_results_by_key(results, STANDARD_PROFIT_LOSS_DEVIATION_KEY))
+            FolderChartingEngine.__extract_values_from_results_by_key(results, STANDARD_PL_DEVIATION_KEY))
 
         return FolderChartingEngine.__build_bar_chart(strategy_names, stddev_pl_data,
                                                       'Standard Deviation (P) P/L per Strategy', OFF_BLUE,

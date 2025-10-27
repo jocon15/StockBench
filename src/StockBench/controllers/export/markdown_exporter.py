@@ -27,10 +27,10 @@ class MarkdownExporter:
                        simulation_results[TRADES_MADE_KEY],
                        f"{simulation_results[AVERAGE_TRADE_DURATION_KEY]} days",
                        f"{simulation_results[EFFECTIVENESS_KEY]} %",
-                       f"$ {simulation_results[TOTAL_PROFIT_LOSS_KEY]}",
-                       f"$ {simulation_results[AVERAGE_PROFIT_LOSS_KEY]}",
-                       f"$ {simulation_results[MEDIAN_PROFIT_LOSS_KEY]}",
-                       f"$ {simulation_results[STANDARD_PROFIT_LOSS_DEVIATION_KEY]}",
+                       f"$ {simulation_results[TOTAL_PL_KEY]}",
+                       f"$ {simulation_results[AVERAGE_PL_KEY]}",
+                       f"$ {simulation_results[MEDIAN_PL_KEY]}",
+                       f"$ {simulation_results[STANDARD_PL_DEVIATION_KEY]}",
                        f"$ {simulation_results[FINAL_ACCOUNT_VALUE_KEY]}"]
 
         markdown_table = df.to_markdown(index=False)
@@ -75,10 +75,10 @@ class MarkdownExporter:
                        simulation_results[TRADES_MADE_KEY],
                        f"{simulation_results[AVERAGE_TRADE_DURATION_KEY]} days",
                        f"{simulation_results[EFFECTIVENESS_KEY]} %",
-                       f"$ {simulation_results[TOTAL_PROFIT_LOSS_KEY]}",
-                       f"$ {simulation_results[AVERAGE_PROFIT_LOSS_KEY]}",
-                       f"$ {simulation_results[MEDIAN_PROFIT_LOSS_KEY]}",
-                       f"$ {simulation_results[STANDARD_PROFIT_LOSS_DEVIATION_KEY]}"]
+                       f"$ {simulation_results[TOTAL_PL_KEY]}",
+                       f"$ {simulation_results[AVERAGE_PL_KEY]}",
+                       f"$ {simulation_results[MEDIAN_PL_KEY]}",
+                       f"$ {simulation_results[STANDARD_PL_DEVIATION_KEY]}"]
 
         markdown_table = df.to_markdown(index=False)
 
@@ -130,10 +130,10 @@ class MarkdownExporter:
                 strategy_results[TRADES_MADE_KEY],
                 f"{strategy_results[AVERAGE_TRADE_DURATION_KEY]} days",
                 f"{strategy_results[EFFECTIVENESS_KEY]} %",
-                f"$ {strategy_results[TOTAL_PROFIT_LOSS_KEY]}",
-                f"$ {strategy_results[AVERAGE_PROFIT_LOSS_KEY]}",
-                f"$ {strategy_results[MEDIAN_PROFIT_LOSS_KEY]}",
-                f"$ {strategy_results[STANDARD_PROFIT_LOSS_DEVIATION_KEY]}"
+                f"$ {strategy_results[TOTAL_PL_KEY]}",
+                f"$ {strategy_results[AVERAGE_PL_KEY]}",
+                f"$ {strategy_results[MEDIAN_PL_KEY]}",
+                f"$ {strategy_results[STANDARD_PL_DEVIATION_KEY]}"
             ]
 
         markdown_table = df.to_markdown(index=False)

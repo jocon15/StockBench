@@ -38,8 +38,8 @@ class FolderResultsExporter(ExcelExporter):
             self._write_to_cell(worksheet, row, col, result[STRATEGY_KEY])
             self._write_to_cell(worksheet, row, col+1, result[TRADES_MADE_KEY])
             self._write_to_cell(worksheet, row, col+2, result[EFFECTIVENESS_KEY])
-            self._write_to_cell(worksheet, row, col+3, result[TOTAL_PROFIT_LOSS_KEY])
-            self._write_to_cell(worksheet, row, col+4, result[AVERAGE_PROFIT_LOSS_KEY])
-            self._write_to_cell(worksheet, row, col+5, result[MEDIAN_PROFIT_LOSS_KEY])
-            self._write_to_cell(worksheet, row, col+6, result[STANDARD_PROFIT_LOSS_DEVIATION_KEY])
+            self._write_to_cell(worksheet, row, col + 3, result[TOTAL_PL_KEY])
+            self._write_to_cell(worksheet, row, col + 4, result[AVERAGE_PL_KEY])
+            self._write_to_cell(worksheet, row, col + 5, result[MEDIAN_PL_KEY])
+            self._write_to_cell(worksheet, row, col + 6, result[STANDARD_PL_DEVIATION_KEY])
             row += 1

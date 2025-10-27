@@ -117,7 +117,7 @@ class MultiChartingEngine(ChartingEngine):
     @staticmethod
     def __get_total_pl_per_symbol_from_results(results: List[dict]) -> list:
         """Gets a list of total profit/loss from the results list."""
-        return MultiChartingEngine.__extract_values_from_results_by_key(TOTAL_PROFIT_LOSS_KEY, results)
+        return MultiChartingEngine.__extract_values_from_results_by_key(TOTAL_PL_KEY, results)
 
     @staticmethod
     def __get_trades_made_per_symbol_from_results(results: List[dict]) -> list:
@@ -133,7 +133,7 @@ class MultiChartingEngine(ChartingEngine):
     @staticmethod
     def __calculate_avg_pl_from_results(results: List[dict]) -> float:
         """Calculates the average profit/loss from the results list."""
-        pl_per_symbol = MultiChartingEngine.__extract_values_from_results_by_key(TOTAL_PROFIT_LOSS_KEY, results)
+        pl_per_symbol = MultiChartingEngine.__extract_values_from_results_by_key(TOTAL_PL_KEY, results)
         return round(float(statistics.mean(pl_per_symbol)), 2)
 
     @staticmethod

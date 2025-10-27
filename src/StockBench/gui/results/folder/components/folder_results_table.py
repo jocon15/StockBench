@@ -85,7 +85,9 @@ class FolderResultsTable(QWidget):
             conversion_value = value_range / hsv_range
 
             for row_index in range(self.table.rowCount()):
-                dif = float(self.table.item(row_index, column_index).text()) - min_value
+                cell_value_str = self.table.item(row_index, column_index).text()
+                cell_value_float = self.__convert_comma_str_to_float(cell_value_str)
+                dif = cell_value_float - min_value
                 hue_value = int(dif / conversion_value)
                 color = QColor.fromHsv(hue_value, 255, 191, 191)
                 self.table.item(row_index, column_index).setBackground(QBrush(color))

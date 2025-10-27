@@ -97,10 +97,12 @@ class ChartingProxy:
                     simulation_results[POSITIONS_KEY], BUY_SIDE, simulation_results[SYMBOL_KEY], save_option),
                 SELL_RULES_BAR_CHART_FILEPATH_KEY: self.__singular_charting_engine.build_rules_bar_chart(
                     simulation_results[POSITIONS_KEY], SELL_SIDE, simulation_results[SYMBOL_KEY], save_option),
-                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: self.__singular_charting_engine.build_positions_duration_bar_chart(
-                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
-                POSITIONS_PL_BAR_CHART_FILEPATH_KEY: self.__singular_charting_engine.build_positions_profit_loss_bar_chart(
-                    simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
+                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY:
+                    self.__singular_charting_engine.build_positions_duration_bar_chart(
+                        simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
+                POSITIONS_PL_BAR_CHART_FILEPATH_KEY:
+                    self.__singular_charting_engine.build_positions_profit_loss_bar_chart(
+                        simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY], save_option),
                 POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
                     self.__singular_charting_engine.build_single_strategy_result_dataset_positions_plpc_histogram_chart(
                         simulation_results[POSITIONS_KEY], simulation_results[SYMBOL_KEY],
@@ -131,8 +133,9 @@ class ChartingProxy:
                     simulation_results[POSITIONS_KEY], BUY_SIDE, None, save_option),
                 SELL_RULES_BAR_CHART_FILEPATH_KEY: self.__multi_charting_engine.build_rules_bar_chart(
                     simulation_results[POSITIONS_KEY], SELL_SIDE, None, save_option),
-                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: self.__multi_charting_engine.build_positions_duration_bar_chart(
-                    simulation_results[POSITIONS_KEY], None, save_option),
+                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY:
+                    self.__multi_charting_engine.build_positions_duration_bar_chart(simulation_results[POSITIONS_KEY],
+                                                                                    None, save_option),
                 POSITIONS_PL_BAR_CHART_FILEPATH_KEY: self.__multi_charting_engine.build_positions_profit_loss_bar_chart(
                     simulation_results[POSITIONS_KEY], None, save_option),
                 POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
@@ -158,8 +161,10 @@ class ChartingProxy:
             TOTAL_PL_BAR_CHART_FILEPATH_KEY: self.__folder_charting_engine.build_total_pl_bar_chart(simulation_results),
             AVERAGE_PL_BAR_CHART_FILEPATH_KEY:
                 self.__folder_charting_engine.build_average_pl_bar_chart(simulation_results),
-            MEDIAN_PL_BAR_CHART_FILEPATH_KEY: self.__folder_charting_engine.build_median_pl_bar_chart(simulation_results),
-            STDDEV_PL_BAR_CHART_FILEPATH_KEY: self.__folder_charting_engine.build_stddev_pl_bar_chart(simulation_results),
+            MEDIAN_PL_BAR_CHART_FILEPATH_KEY:
+                self.__folder_charting_engine.build_median_pl_bar_chart(simulation_results),
+            STDDEV_PL_BAR_CHART_FILEPATH_KEY:
+                self.__folder_charting_engine.build_stddev_pl_bar_chart(simulation_results),
             POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
                 self.__folder_charting_engine.build_positions_plpc_histogram_chart(simulation_results),
             POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY:

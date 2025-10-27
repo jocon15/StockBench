@@ -126,7 +126,7 @@ class ChartingProxy:
 
         if results_depth == Simulator.CHARTS_AND_DATA:
             return {
-                OVERVIEW_CHART_FILEPATH_KEY: MultiChartingEngine.build_multi_overview_chart(
+                OVERVIEW_CHART_FILEPATH_KEY: self.__multi_charting_engine.build_multi_overview_chart(
                     simulation_results[INDIVIDUAL_RESULTS_KEY], simulation_results[INITIAL_ACCOUNT_VALUE_KEY],
                     save_option),
                 BUY_RULES_BAR_CHART_FILEPATH_KEY: self.__multi_charting_engine.build_rules_bar_chart(

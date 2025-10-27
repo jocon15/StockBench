@@ -19,7 +19,7 @@ def ChartingProxyFunction(default_chart_filepaths: dict):
         @wraps(charting_fxn)
         def wrapper(self, *args, **kwargs):
             try:
-                return charting_fxn(*args, **kwargs)
+                return charting_fxn(self, *args, **kwargs)
             except ChartingError as e:
                 message = f'Charting error: {e}'
             except Exception as e:

@@ -23,7 +23,7 @@ def ChartingProxyFunction(default_chart_filepaths: dict):
             except ChartingError as e:
                 message = f'Charting error: {e}'
             except Exception as e:
-                message = f'Unexpected error: {type(e)} {e} {traceback.print_exc()}'
+                message = f'Unexpected error: {type(e)} {e} {traceback.format_exc()}'
 
             default_chart_filepaths['status_code'] = 400
             default_chart_filepaths['message'] = message

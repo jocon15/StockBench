@@ -77,7 +77,9 @@ class FolderResultsTable(QWidget):
         for column_index in range(1, 7):
             column_values = []
             for row_index in range(self.table.rowCount()):
-                column_values.append(float(self.table.item(row_index, column_index).text()))
+                cell_value_str = self.table.item(row_index, column_index).text()
+                cell_value_float = self.__convert_comma_str_to_float(cell_value_str)
+                column_values.append(cell_value_float)
             min_value = min(column_values)
             value_range = max(column_values) - min_value
             conversion_value = value_range / hsv_range
@@ -92,3 +94,8 @@ class FolderResultsTable(QWidget):
         for column_index in range(1, 7):
             for row_index in range(self.table.rowCount()):
                 self.table.item(row_index, column_index).setBackground(QBrush(QColor(32, 33, 36)))
+
+    @staticmethod
+    def __convert_comma_str_to_float(value: str) -> float:
+        clean_str = value.replace(",", "")
+        return float(clean_str)

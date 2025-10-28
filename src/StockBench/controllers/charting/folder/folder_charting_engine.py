@@ -7,7 +7,15 @@ from StockBench.models.constants.simulation_results_constants import *
 
 
 class FolderChartingEngine(ChartingEngine):
-    """Charting tools for folder simulation analysis."""
+    """Charting tools for folder simulation analysis.
+
+    NOTE: these functions do not log because folder simulations use multiple progress observers. If they were to log,
+    the log message would be repeated for as many strategies that were being simulated, which is bad. Instead, logging
+    is done on a single progress observer by the stockbench controller.
+    """
+
+    def __init__(self, identifier: int):
+        super().__init__(identifier)
 
     @staticmethod
     def build_trades_made_bar_chart(results: List[dict]) -> str:
@@ -31,7 +39,7 @@ class FolderChartingEngine(ChartingEngine):
 
     @staticmethod
     def build_total_pl_bar_chart(results: List[dict]) -> str:
-        """Build a bar chart for effectiveness."""
+        """Builds a bar chart for effectiveness."""
         strategy_names, total_pl_data = (
             FolderChartingEngine.__extract_values_from_results_by_key(results, TOTAL_PL_KEY))
 
@@ -40,7 +48,7 @@ class FolderChartingEngine(ChartingEngine):
 
     @staticmethod
     def build_average_pl_bar_chart(results: List[dict]) -> str:
-        """Build a bar chart for average pl."""
+        """Builds a bar chart for average pl."""
         strategy_names, average_pl_data = (
             FolderChartingEngine.__extract_values_from_results_by_key(results, AVERAGE_PL_KEY))
 
@@ -50,7 +58,7 @@ class FolderChartingEngine(ChartingEngine):
 
     @staticmethod
     def build_median_pl_bar_chart(results: List[dict]) -> str:
-        """Build a bar chart for average pl."""
+        """Builds a bar chart for median pl."""
         strategy_names, median_pl_data = (
             FolderChartingEngine.__extract_values_from_results_by_key(results, MEDIAN_PL_KEY))
 
@@ -60,7 +68,7 @@ class FolderChartingEngine(ChartingEngine):
 
     @staticmethod
     def build_stddev_pl_bar_chart(results: List[dict]) -> str:
-        """Build a bar chart for average pl."""
+        """Build a bar chart for stddev pl."""
         strategy_names, stddev_pl_data = (
             FolderChartingEngine.__extract_values_from_results_by_key(results, STANDARD_PL_DEVIATION_KEY))
 

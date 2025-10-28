@@ -26,10 +26,13 @@ class SingularChartingEngine(ChartingEngine):
     DATE_COLUMN = 'Date'
     CLOSE_COLUMN = 'Close'
 
-    @staticmethod
-    def build_singular_overview_chart(df: DataFrame, symbol: str, available_indicators: List[IndicatorInterface],
+    def __init__(self, identifier: int):
+        super().__init__(identifier)
+
+    def build_singular_overview_chart(self, df: DataFrame, symbol: str, available_indicators: List[IndicatorInterface],
                                       show_volume: bool, save_option: int = ChartingEngine.TEMP_SAVE) -> str:
         """Builds the singular overview chart consisting of OHLC, volume, and other indicators."""
+        self.gui_status_log.info('Building overview chart...')
         subplot_objects, subplot_types = (
             SingularChartingEngine.__build_overview_subplot_objects_and_types(df, available_indicators))
 
@@ -40,10 +43,10 @@ class SingularChartingEngine(ChartingEngine):
 
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, 'temp_overview_chart', f'figure_{symbol}')
 
-    @staticmethod
-    def build_account_value_line_chart(account_value_values: list, symbol: str,
+    def build_account_value_line_chart(self, account_value_values: list, symbol: str,
                                        save_option: int = ChartingEngine.TEMP_SAVE) -> str:
         """Builds a line chart for account value."""
+        self.gui_status_log.info('Building account value line chart...')
         fig = plotter.Figure(plotter.Scatter(y=account_value_values, marker=dict(color=OFF_BLUE), fill='tozeroy',
                                              name='Account Value'))
 

@@ -7,8 +7,8 @@ class StockBenchControllerFactory:
     """Factory for creating StockBenchController instances."""
 
     @staticmethod
-    def get_controller_instance(simulator_identifier: int = 1) -> StockBenchController:
+    def get_controller_instance(identifier: int = 1) -> StockBenchController:
         """Creates a controller instance."""
-        simulator_proxy = SimulatorProxyFactory.get_simulator_proxy_instance(simulator_identifier)
-        charting_proxy = ChartingProxyFactory.get_charting_proxy_instance()
+        simulator_proxy = SimulatorProxyFactory.get_simulator_proxy_instance(identifier)
+        charting_proxy = ChartingProxyFactory.get_charting_proxy_instance(identifier)
         return StockBenchController(simulator_proxy, charting_proxy)

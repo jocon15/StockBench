@@ -88,7 +88,7 @@ class FolderOverviewSidebar(OverviewSideBar):
         """Update the output box with messages from the progress observer."""
         all_observers_complete = True
         for progress_observer in self.progress_observers:
-            if not progress_observer.is_analytics_completed():
+            if not progress_observer.is_charting_completed():
                 all_observers_complete = False
             messages = progress_observer.get_messages()
             for message in messages:

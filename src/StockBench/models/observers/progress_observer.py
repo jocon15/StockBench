@@ -1,4 +1,5 @@
 import threading
+from logging import LogRecord
 from queue import Queue
 
 
@@ -20,6 +21,7 @@ class ProgressObserver:
         self.__max_progress = 100.0
         self.__simulation_completed = False
         self.__analytics_completed = False
+        self.__charting_completed = False
 
     def update_progress(self, advance: float):
         """Update the progress of the task.
@@ -45,9 +47,10 @@ class ProgressObserver:
         with self.__progress_lock:
             return self.__current_progress
 
-    def add_message(self, message):
+    def add_log_record(self, record: LogRecord):
         # reminder that queue is threadsafe by default
-        self.__message_queue.put(message)
+        if not self.set_charting_complete():
+            self.__message_queue.put(record)
 
     def get_messages(self) -> list:
         # reminder that queue is threadsafe by default
@@ -56,14 +59,18 @@ class ProgressObserver:
             for _ in range(self.__message_queue.qsize()):
                 messages.append(self.__message_queue.get())
 
-            # release the queue lock
             self.__message_queue.task_done()
         return messages
 
     def set_analytics_complete(self):
-        """Manually list the analytics as complete"""
+        """Manually list the analytics as complete."""
         with self.__progress_lock:
             self.__analytics_completed = True
+
+    def set_charting_complete(self):
+        """Manually list the charting as complete."""
+        with self.__progress_lock:
+            self.__charting_completed = False
 
     def is_simulation_completed(self) -> bool:
         """See if the simulation is complete."""
@@ -74,3 +81,8 @@ class ProgressObserver:
         """See if the analytics are complete."""
         with self.__progress_lock:
             return self.__analytics_completed
+
+    def is_charting_completed(self) -> bool:
+        """See if the charting is complete."""
+        with self.__progress_lock:
+            return self.__charting_completed

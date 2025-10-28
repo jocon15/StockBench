@@ -14,10 +14,13 @@ from StockBench.models.constants.simulation_results_constants import *
 class MultiChartingEngine(ChartingEngine):
     """Charting tools for multiple simulation analysis."""
 
-    @staticmethod
-    def build_multi_overview_chart(results: List[dict], initial_balance: float,
+    def __init__(self, identifier: int):
+        super().__init__(identifier)
+
+    def build_multi_overview_chart(self, results: List[dict], initial_balance: float,
                                    save_option: int = ChartingEngine.TEMP_SAVE) -> str:
         """Builds the multi overview chart consisting of OHLC, volume, and other indicators."""
+        self.gui_status_log.info('Building overview chart...')
         rows = 2
         cols = 2
 

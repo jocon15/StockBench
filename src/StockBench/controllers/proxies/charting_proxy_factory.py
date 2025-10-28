@@ -6,5 +6,6 @@ from StockBench.controllers.proxies.charting_proxy import ChartingProxy
 
 class ChartingProxyFactory:
     @staticmethod
-    def get_charting_proxy_instance() -> ChartingProxy:
-        return ChartingProxy(SingularChartingEngine(), MultiChartingEngine(), FolderChartingEngine())
+    def get_charting_proxy_instance(identifier: int) -> ChartingProxy:
+        return ChartingProxy(SingularChartingEngine(identifier), MultiChartingEngine(identifier),
+                             FolderChartingEngine(identifier))

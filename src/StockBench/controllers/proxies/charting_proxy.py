@@ -1,4 +1,5 @@
 import traceback
+from concurrent.futures import ProcessPoolExecutor
 from functools import wraps
 from typing import Callable
 
@@ -125,25 +126,41 @@ class ChartingProxy:
             save_option = self.__multi_charting_engine.TEMP_SAVE
 
         if results_depth == Simulator.CHARTS_AND_DATA:
+            with ProcessPoolExecutor() as executor:
+                future1 = executor.submit(self.__multi_charting_engine.build_multi_overview_chart,
+                                          simulation_results[INDIVIDUAL_RESULTS_KEY],
+                                          simulation_results[INITIAL_ACCOUNT_VALUE_KEY], save_option)
+                future2 = executor.submit(self.__multi_charting_engine.build_rules_bar_chart,
+                                          simulation_results[POSITIONS_KEY], BUY_SIDE, None, save_option)
+                future3 = executor.submit(self.__multi_charting_engine.build_rules_bar_chart,
+                                          simulation_results[POSITIONS_KEY], SELL_SIDE, None, save_option)
+                future4 = executor.submit(self.__multi_charting_engine.build_positions_duration_bar_chart,
+                                          simulation_results[POSITIONS_KEY], None, save_option)
+                future5 = executor.submit(self.__multi_charting_engine.build_positions_profit_loss_bar_chart,
+                                          simulation_results[POSITIONS_KEY], None, save_option)
+                future6 = executor.submit(
+                    self.__multi_charting_engine.build_single_strategy_result_dataset_positions_plpc_histogram_chart,
+                    simulation_results[POSITIONS_KEY], simulation_results[STRATEGY_KEY], None, save_option)
+                future7 = executor.submit(
+                    self.__multi_charting_engine.build_single_strategy_result_dataset_positions_plpc_box_plot,
+                    simulation_results[POSITIONS_KEY], simulation_results[STRATEGY_KEY], None, save_option)
+
+                overview_chart_filepath = future1.result()
+                buy_rules_chart_filepath = future2.result()
+                sell_rules_chart_filepath = future3.result()
+                positions_duration_bar_chart_filepath = future4.result()
+                positions_profit_loss_bar_chart_filepath = future5.result()
+                positions_profit_loss_histogram_chart_filepath = future6.result()
+                positions_profit_loss_box_plot_chart_filepath = future7.result()
+
             return {
-                OVERVIEW_CHART_FILEPATH_KEY: self.__multi_charting_engine.build_multi_overview_chart(
-                    simulation_results[INDIVIDUAL_RESULTS_KEY], simulation_results[INITIAL_ACCOUNT_VALUE_KEY],
-                    save_option),
-                BUY_RULES_BAR_CHART_FILEPATH_KEY: self.__multi_charting_engine.build_rules_bar_chart(
-                    simulation_results[POSITIONS_KEY], BUY_SIDE, None, save_option),
-                SELL_RULES_BAR_CHART_FILEPATH_KEY: self.__multi_charting_engine.build_rules_bar_chart(
-                    simulation_results[POSITIONS_KEY], SELL_SIDE, None, save_option),
-                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY:
-                    self.__multi_charting_engine.build_positions_duration_bar_chart(simulation_results[POSITIONS_KEY],
-                                                                                    None, save_option),
-                POSITIONS_PL_BAR_CHART_FILEPATH_KEY: self.__multi_charting_engine.build_positions_profit_loss_bar_chart(
-                    simulation_results[POSITIONS_KEY], None, save_option),
-                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY:
-                    self.__multi_charting_engine.build_single_strategy_result_dataset_positions_plpc_histogram_chart(
-                        simulation_results[POSITIONS_KEY], simulation_results[STRATEGY_KEY], None, save_option),
-                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY:
-                    self.__multi_charting_engine.build_single_strategy_result_dataset_positions_plpc_box_plot(
-                        simulation_results[POSITIONS_KEY], simulation_results[STRATEGY_KEY], None, save_option)
+                OVERVIEW_CHART_FILEPATH_KEY: overview_chart_filepath,
+                BUY_RULES_BAR_CHART_FILEPATH_KEY: buy_rules_chart_filepath,
+                SELL_RULES_BAR_CHART_FILEPATH_KEY: sell_rules_chart_filepath,
+                POSITIONS_DURATION_BAR_CHART_FILEPATH_KEY: positions_duration_bar_chart_filepath,
+                POSITIONS_PL_BAR_CHART_FILEPATH_KEY: positions_profit_loss_bar_chart_filepath,
+                POSITIONS_PLPC_HISTOGRAM_CHART_FILEPATH_KEY: positions_profit_loss_histogram_chart_filepath,
+                POSITIONS_PLPC_BOX_PLOT_CHART_FILEPATH_KEY: positions_profit_loss_box_plot_chart_filepath
             }
         else:
             # user opted to only see data, no charts

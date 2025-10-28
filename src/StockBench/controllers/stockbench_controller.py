@@ -12,6 +12,7 @@ from StockBench.models.simulation_result.simulation_result import SimulationResu
 
 class StockBenchController:
     """Controller for interacting with the StockBench Simulation suite."""
+    STATUS_CODE = 'status_code'
     RESULTS = 'results'
     MESSAGE = 'message'
 
@@ -30,7 +31,7 @@ class StockBenchController:
                                                                             logging_on, reporting_on,
                                                                             progress_observer)
 
-        if 'status_code' in simulation_results.keys():
+        if self.STATUS_CODE in simulation_results.keys():
             # simulation failed
             return SimulationResult(
                 status_code=400,
@@ -44,7 +45,7 @@ class StockBenchController:
         if progress_observer:
             progress_observer.set_charting_complete()
 
-        if 'status_code' in chart_filepaths.keys():
+        if self.STATUS_CODE in chart_filepaths.keys():
             # charting failed
             return SimulationResult(
                 status_code=400,
@@ -68,7 +69,7 @@ class StockBenchController:
         simulation_results = self.__simulator_proxy.run_multi_simulation(strategy, symbols, initial_balance, logging_on,
                                                                          reporting_on, progress_observer)
 
-        if 'status_code' in simulation_results.keys():
+        if self.STATUS_CODE in simulation_results.keys():
             # simulation failed
             return SimulationResult(
                 status_code=400,
@@ -82,7 +83,7 @@ class StockBenchController:
         if progress_observer:
             progress_observer.set_charting_complete()
 
-        if 'status_code' in chart_filepaths.keys():
+        if self.STATUS_CODE in chart_filepaths.keys():
             # charting failed
             return SimulationResult(
                 status_code=400,
@@ -107,7 +108,7 @@ class StockBenchController:
                                                                           logging_on, reporting_on,
                                                                           progress_observers)
 
-        if 'status_code' in simulation_results.keys():
+        if self.STATUS_CODE in simulation_results.keys():
             # simulation failed
             return SimulationResult(
                 status_code=400,
@@ -129,7 +130,7 @@ class StockBenchController:
 
         simulation_results[ELAPSED_TIME_KEY] = round(perf_counter() - start_time, 2)
 
-        if 'status_code' in chart_filepaths.keys():
+        if self.STATUS_CODE in chart_filepaths.keys():
             # charting failed
             return SimulationResult(
                 status_code=400,

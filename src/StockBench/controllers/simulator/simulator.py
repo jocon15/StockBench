@@ -1,4 +1,3 @@
-import os
 import sys
 import math
 import logging
@@ -18,7 +17,6 @@ from StockBench.models.position.position import Position
 from StockBench.controllers.simulator.account.user_account import UserAccount
 from StockBench.controllers.simulator.analysis.positions_analyzer import PositionsAnalyzer
 from StockBench.controllers.simulator.algorithm.algorithm import Algorithm
-from StockBench.controllers.function_tools.timestamp import datetime_timestamp
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.controllers.simulator.indicators.indicator_manager import IndicatorManager
 from StockBench.models.logging_handlers.handlers import ProgressMessageHandler
@@ -44,9 +42,6 @@ class Simulator:
     |   OHLC   |
     ------------ - End of the simulation (user defined)
     """
-    LOGS_FOLDER = 'logs'
-    DEV_FOLDER = 'dev'
-
     ACCOUNT_VALUE_COLUMN_NAME = 'Account Value'
 
     CHARTS_AND_DATA = 0
@@ -75,46 +70,6 @@ class Simulator:
         self.__reporting_on = False
         self.__running_multiple = False
         self.__running_as_exe = getattr(sys, 'frozen', False)
-
-    def enable_logging(self) -> None:
-        """Enable user logging_handlers."""
-        log.setLevel(logging.INFO)
-        user_logging_filepath = os.path.join(self.LOGS_FOLDER, f'RunLog_{datetime_timestamp()}')
-
-        # make the directories if they don't already exist
-        os.makedirs(os.path.dirname(user_logging_filepath), exist_ok=True)
-
-        user_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
-        user_handler = logging.FileHandler(user_logging_filepath)
-        user_handler.setFormatter(user_logging_formatter)
-        log.addHandler(user_handler)
-
-    def enable_developer_logging(self, level: int = 2) -> None:
-        """Enable developer logging handlers."""
-        if level == 1:
-            log.setLevel(logging.DEBUG)
-            developer_logging_formatter = logging.Formatter('%(funcName)s:%(lineno)d|%(levelname)s|%(message)s')
-        elif level == 3:
-            log.setLevel(logging.WARNING)
-            developer_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
-        elif level == 4:
-            log.setLevel(logging.ERROR)
-            developer_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
-        elif level == 5:
-            log.setLevel(logging.CRITICAL)
-            developer_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
-        else:
-            log.setLevel(logging.INFO)
-            developer_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
-
-        developer_logging_filepath = os.path.join(self.DEV_FOLDER, f'DevLog_{datetime_timestamp()}')
-
-        # make the directories if they don't already exist
-        os.makedirs(os.path.dirname(developer_logging_filepath), exist_ok=True)
-
-        developer_handler = logging.FileHandler(developer_logging_filepath)
-        developer_handler.setFormatter(developer_logging_formatter)
-        log.addHandler(developer_handler)
 
     def enable_reporting(self):
         """Enable report building."""

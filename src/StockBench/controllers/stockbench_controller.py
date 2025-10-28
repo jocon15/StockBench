@@ -1,6 +1,8 @@
+import logging
 from time import perf_counter
 from typing import List
 
+from StockBench.controllers.logging import LoggingController
 from StockBench.controllers.proxies.charting_proxy import ChartingProxy
 from StockBench.controllers.proxies.simulator_proxy import SimulatorProxy
 from StockBench.models.constants.simulation_results_constants import *
@@ -10,6 +12,7 @@ from StockBench.models.simulation_result.simulation_result import SimulationResu
 
 class StockBenchController:
     """Controller for interacting with the StockBench Simulation suite."""
+    STATUS_CODE = 'status_code'
     RESULTS = 'results'
     MESSAGE = 'message'
 
@@ -21,11 +24,14 @@ class StockBenchController:
                             reporting_on: bool, unique_chart_saving: bool, results_depth: int, show_volume: bool,
                             progress_observer: ProgressObserver) -> SimulationResult:
         """Controller for running singular-symbol simulations and building charts."""
+        if logging_on:
+            LoggingController.enable_log_saving()
+
         simulation_results = self.__simulator_proxy.run_singular_simulation(strategy, symbol, initial_balance,
                                                                             logging_on, reporting_on,
                                                                             progress_observer)
 
-        if 'status_code' in simulation_results.keys():
+        if self.STATUS_CODE in simulation_results.keys():
             # simulation failed
             return SimulationResult(
                 status_code=400,
@@ -36,7 +42,10 @@ class StockBenchController:
         chart_filepaths = self.__charting_proxy.build_singular_charts(simulation_results, unique_chart_saving,
                                                                       results_depth, show_volume)
 
-        if 'status_code' in chart_filepaths.keys():
+        if progress_observer:
+            progress_observer.set_charting_complete()
+
+        if self.STATUS_CODE in chart_filepaths.keys():
             # charting failed
             return SimulationResult(
                 status_code=400,
@@ -54,10 +63,13 @@ class StockBenchController:
                          reporting_on: bool, unique_chart_saving: bool, results_depth: int,
                          progress_observer: ProgressObserver) -> SimulationResult:
         """Controller for running multi-symbol simulations and building charts."""
+        if logging_on:
+            LoggingController.enable_log_saving()
+
         simulation_results = self.__simulator_proxy.run_multi_simulation(strategy, symbols, initial_balance, logging_on,
                                                                          reporting_on, progress_observer)
 
-        if 'status_code' in simulation_results.keys():
+        if self.STATUS_CODE in simulation_results.keys():
             # simulation failed
             return SimulationResult(
                 status_code=400,
@@ -68,7 +80,10 @@ class StockBenchController:
         chart_filepaths = self.__charting_proxy.build_multi_charts(simulation_results, unique_chart_saving,
                                                                    results_depth)
 
-        if 'status_code' in chart_filepaths.keys():
+        if progress_observer:
+            progress_observer.set_charting_complete()
+
+        if self.STATUS_CODE in chart_filepaths.keys():
             # charting failed
             return SimulationResult(
                 status_code=400,
@@ -85,12 +100,15 @@ class StockBenchController:
     def folder_simulation(self, strategies: List[dict], symbols: List[str], initial_balance: float, logging_on: bool,
                           reporting_on: bool, progress_observers: List[ProgressObserver]) -> SimulationResult:
         """Controller for running folder simulations and building charts."""
+        if logging_on:
+            LoggingController.enable_log_saving()
+
         start_time = perf_counter()
         simulation_results = self.__simulator_proxy.run_folder_simulation(strategies, symbols, initial_balance,
                                                                           logging_on, reporting_on,
                                                                           progress_observers)
 
-        if 'status_code' in simulation_results.keys():
+        if self.STATUS_CODE in simulation_results.keys():
             # simulation failed
             return SimulationResult(
                 status_code=400,
@@ -98,11 +116,21 @@ class StockBenchController:
                 simulation_results={},
                 chart_filepaths=ChartingProxy.FOLDER_DEFAULT_CHART_FILEPATHS)
 
+        record = logging.LogRecord('', logging.INFO, __file__, 0, 'Building charts...', (), None, '', None)
+        progress_observers[-1].add_log_record(record)
+
         chart_filepaths = self.__charting_proxy.build_folder_charts(simulation_results[self.RESULTS])
+
+        record = logging.LogRecord('', logging.INFO, __file__, 0, 'Charting complete \u2705', (), None, '', None)
+        progress_observers[-1].add_log_record(record)
+
+        # mark all progress observers except the first one complete - using the first to record charting logs
+        for progress_observer in progress_observers:
+            progress_observer.set_charting_complete()
 
         simulation_results[ELAPSED_TIME_KEY] = round(perf_counter() - start_time, 2)
 
-        if 'status_code' in chart_filepaths.keys():
+        if self.STATUS_CODE in chart_filepaths.keys():
             # charting failed
             return SimulationResult(
                 status_code=400,

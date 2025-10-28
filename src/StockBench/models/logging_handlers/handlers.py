@@ -13,6 +13,6 @@ class ProgressMessageHandler(Handler):
         self.progress_observer = progress_observer
         logging.Handler.__init__(self=self)
 
-    def emit(self, record) -> None:
+    def emit(self, record: logging.LogRecord) -> None:
         """Add the log message to the progress observer."""
-        self.progress_observer.add_message(record)
+        self.progress_observer.add_log_record(record)

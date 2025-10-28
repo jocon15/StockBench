@@ -1,8 +1,10 @@
 import os
+import logging
 import statistics
+from typing import Optional, List, Union
+
 import numpy as np
 import pandas as pd
-from typing import Optional, List, Union
 import plotly.offline as offline
 import plotly.graph_objects as plotter
 from plotly.graph_objs import Bar, Scatter, Figure
@@ -26,9 +28,15 @@ class ChartingEngine:
     PLOTLY_CHART_MARGIN_LEFT = 60
     PLOTLY_CHART_MARGIN_RIGHT = 100
 
-    @staticmethod
-    def build_rules_bar_chart(positions: list, side: str, symbol: Optional[str], save_option: int = TEMP_SAVE) -> str:
+    def __init__(self, identifier: int):
+        self.id = identifier
+        # logger dedicated to logging messages to the gui status box (must be here to avoid log duplication)
+        self.gui_status_log = logging.getLogger(f'gui_status_box_logging_{self.id}')
+
+    def build_rules_bar_chart(self, positions: list, side: str, symbol: Optional[str],
+                              save_option: int = TEMP_SAVE) -> str:
         """Builds a subplot chart for rule analysis of a given side."""
+        self.gui_status_log.info(f'Building {side} rule bar chart...')
         rows = 2
         cols = 1
 
@@ -65,9 +73,10 @@ class ChartingEngine:
 
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
 
-    @staticmethod
-    def build_positions_duration_bar_chart(positions: list, symbol: Optional[str], save_option: int = TEMP_SAVE) -> str:
+    def build_positions_duration_bar_chart(self, positions: list, symbol: Optional[str],
+                                           save_option: int = TEMP_SAVE) -> str:
         """Builds a bar chart for position duration analysis."""
+        self.gui_status_log.info('Building positions duration bar chart...')
         rows = 1
         cols = 1
 
@@ -101,10 +110,10 @@ class ChartingEngine:
 
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
 
-    @staticmethod
-    def build_positions_profit_loss_bar_chart(positions: list, symbol: Optional[str],
+    def build_positions_profit_loss_bar_chart(self, positions: list, symbol: Optional[str],
                                               save_option: int = TEMP_SAVE) -> str:
         """Builds a bar chart for profit/loss analysis of positions."""
+        self.gui_status_log.info('Building positions PL bar bar chart...')
         rows = 1
         cols = 1
 
@@ -138,12 +147,12 @@ class ChartingEngine:
 
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
 
-    @staticmethod
-    def build_single_strategy_result_dataset_positions_plpc_histogram_chart(positions: List[Position],
+    def build_single_strategy_result_dataset_positions_plpc_histogram_chart(self, positions: List[Position],
                                                                             strategy_name: str,
                                                                             symbol: Optional[str],
                                                                             save_option=TEMP_SAVE) -> str:
         """Builds a histogram chart for positions profit/loss percent from a single strategy result dataset."""
+        self.gui_status_log.info('Building positions PLPC histogram chart...')
         # formatting a single data set inside a list in order to use the multi data set histogram builder
         # (it will just build 1 histogram)
         strategy_names = [strategy_name]
@@ -161,11 +170,12 @@ class ChartingEngine:
 
         return ChartingEngine.handle_save_chart(formatted_fig, save_option, temp_filename, unique_prefix)
 
-    @staticmethod
-    def build_single_strategy_result_dataset_positions_plpc_box_plot(positions: List[Position], strategy_name: str,
+    def build_single_strategy_result_dataset_positions_plpc_box_plot(self, positions: List[Position],
+                                                                     strategy_name: str,
                                                                      symbol: Optional[str],
                                                                      save_option=TEMP_SAVE) -> str:
         """Builds a box and whisker chart for positions profit/loss percent."""
+        self.gui_status_log.info('Building positions PLPC box and whisker chart...')
         # formatting a single data set inside a list in order to use the multi data set histogram builder
         # (it will just build 1 histogram)
         strategy_names = [strategy_name]

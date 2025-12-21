@@ -288,7 +288,7 @@ class Simulator:
             TOTAL_PL_KEY: analyzer.total_pl(),
             AVERAGE_PL_KEY: analyzer.average_pl(),
             MEDIAN_PL_KEY: analyzer.median_pl(),
-            STANDARD_PL_DEVIATION_KEY: analyzer.standard_pl(),
+            STANDARD_PL_DEVIATION_KEY: analyzer.standard_deviation_pl(),
             FINAL_ACCOUNT_VALUE_KEY: self.__account.get_balance(),
         }
 
@@ -340,7 +340,7 @@ class Simulator:
             TOTAL_PL_KEY: analyzer.total_pl(),
             AVERAGE_PL_KEY: analyzer.average_pl(),
             MEDIAN_PL_KEY: analyzer.median_pl(),
-            STANDARD_PL_DEVIATION_KEY: analyzer.standard_pl(),
+            STANDARD_PL_DEVIATION_KEY: analyzer.standard_deviation_pl(),
         }
 
     def __reset_singular_attributes(self):
@@ -495,7 +495,7 @@ class Simulator:
         log.info(f'Total P/L     : $ {analyzer.total_pl()}')
         log.info(f'Average P/L   : $ {analyzer.average_pl()}')
         log.info(f'Median P/L    : $ {analyzer.median_pl()}')
-        log.info(f'Stddev P/L    : $ {analyzer.standard_pl()}')
+        log.info(f'Stddev P/L    : $ {analyzer.standard_deviation_pl()}')
         log.info(f'Account Value : $ {balance}')
         log.info('================================')
 
@@ -508,7 +508,7 @@ class Simulator:
         print(f'Total P/L     : $ {analyzer.total_pl()}')
         print(f'Average P/L   : $ {analyzer.average_pl()}')
         print(f'Median P/L    : $ {analyzer.median_pl()}')
-        print(f'Stddev P/L    : $ {analyzer.standard_pl()}')
+        print(f'Stddev P/L    : $ {analyzer.standard_deviation_pl()}')
         print(f'Account Value : $ {balance}')
         print('================================')
 

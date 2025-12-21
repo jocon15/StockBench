@@ -279,7 +279,7 @@ class Simulator:
             INITIAL_ACCOUNT_VALUE_KEY: self.__account.get_initial_balance(),
             POSITIONS_KEY: self.__single_simulation_position_archive,
             NORMALIZED_SIMULATION_DATA: chopped_temp_df,
-            AVAILABLE_INDICATORS: self.__available_indicators.values(),
+            AVAILABLE_INDICATORS: list(self.__available_indicators.values()),
             TRADE_ABLE_DAYS_KEY: trade_able_days,
             ELAPSED_TIME_KEY: elapsed_time,
             TRADES_MADE_KEY: analyzer.total_trades(),

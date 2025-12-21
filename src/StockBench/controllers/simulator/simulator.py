@@ -287,8 +287,11 @@ class Simulator:
             EFFECTIVENESS_KEY: analyzer.effectiveness(),
             TOTAL_PL_KEY: analyzer.total_pl(),
             AVERAGE_PL_KEY: analyzer.average_pl(),
+            AVERAGE_PLPC_KEY: analyzer.average_plpc(),
             MEDIAN_PL_KEY: analyzer.median_pl(),
-            STANDARD_PL_DEVIATION_KEY: analyzer.standard_deviation_pl(),
+            MEDIAN_PLPC_KEY: analyzer.median_plpc(),
+            STANDARD_DEVIATION_PL_KEY: analyzer.standard_deviation_pl(),
+            STANDARD_DEVIATION_PLPC_KEY: analyzer.standard_deviation_plpc(),
             FINAL_ACCOUNT_VALUE_KEY: self.__account.get_balance(),
         }
 
@@ -339,8 +342,11 @@ class Simulator:
             EFFECTIVENESS_KEY: analyzer.effectiveness(),
             TOTAL_PL_KEY: analyzer.total_pl(),
             AVERAGE_PL_KEY: analyzer.average_pl(),
+            AVERAGE_PLPC_KEY: analyzer.average_plpc(),
             MEDIAN_PL_KEY: analyzer.median_pl(),
-            STANDARD_PL_DEVIATION_KEY: analyzer.standard_deviation_pl(),
+            MEDIAN_PLPC_KEY: analyzer.median_plpc(),
+            STANDARD_DEVIATION_PL_KEY: analyzer.standard_deviation_pl(),
+            STANDARD_DEVIATION_PLPC_KEY: analyzer.standard_deviation_plpc(),
         }
 
     def __reset_singular_attributes(self):

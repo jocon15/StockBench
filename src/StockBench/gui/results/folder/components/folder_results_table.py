@@ -45,7 +45,7 @@ class FolderResultsTable(QWidget):
             total_pl_cell = QTableWidgetItem(f'{result[TOTAL_PL_KEY]:,.2f}')
             avg_pl_cell = QTableWidgetItem(f'{result[AVERAGE_PL_KEY]:,.2f}')
             median_pl_cell = QTableWidgetItem(f'{result[MEDIAN_PL_KEY]:,.2f}')
-            stddev_pl_cell = QTableWidgetItem(f'{result[STANDARD_PL_DEVIATION_KEY]:,.2f}')
+            stddev_pl_cell = QTableWidgetItem(f'{result[STANDARD_DEVIATION_PL_KEY]:,.2f}')
 
             strategy_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
             trades_made_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))

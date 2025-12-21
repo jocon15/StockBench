@@ -70,7 +70,7 @@ class FolderChartingEngine(ChartingEngine):
     def build_stddev_pl_bar_chart(results: List[dict]) -> str:
         """Build a bar chart for stddev pl."""
         strategy_names, stddev_pl_data = (
-            FolderChartingEngine.__extract_values_from_results_by_key(results, STANDARD_PL_DEVIATION_KEY))
+            FolderChartingEngine.__extract_values_from_results_by_key(results, STANDARD_DEVIATION_PL_KEY))
 
         return FolderChartingEngine.__build_bar_chart(strategy_names, stddev_pl_data,
                                                       'Standard Deviation (P) P/L per Strategy', OFF_BLUE,

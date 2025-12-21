@@ -41,5 +41,5 @@ class FolderResultsExporter(ExcelExporter):
             self._write_to_cell(worksheet, row, col + 3, result[TOTAL_PL_KEY])
             self._write_to_cell(worksheet, row, col + 4, result[AVERAGE_PL_KEY])
             self._write_to_cell(worksheet, row, col + 5, result[MEDIAN_PL_KEY])
-            self._write_to_cell(worksheet, row, col + 6, result[STANDARD_PL_DEVIATION_KEY])
+            self._write_to_cell(worksheet, row, col + 6, result[STANDARD_DEVIATION_PL_KEY])
             row += 1

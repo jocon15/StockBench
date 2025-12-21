@@ -285,10 +285,13 @@ class Simulator:
             TRADES_MADE_KEY: analyzer.total_trades(),
             AVERAGE_TRADE_DURATION_KEY: analyzer.average_trade_duration(),
             EFFECTIVENESS_KEY: analyzer.effectiveness(),
-            TOTAL_PL_KEY: analyzer.total_profit_loss(),
-            AVERAGE_PL_KEY: analyzer.average_profit_loss(),
-            MEDIAN_PL_KEY: analyzer.median_profit_loss(),
-            STANDARD_PL_DEVIATION_KEY: analyzer.standard_profit_loss_deviation(),
+            TOTAL_PL_KEY: analyzer.total_pl(),
+            AVERAGE_PL_KEY: analyzer.average_pl(),
+            AVERAGE_PLPC_KEY: analyzer.average_plpc(),
+            MEDIAN_PL_KEY: analyzer.median_pl(),
+            MEDIAN_PLPC_KEY: analyzer.median_plpc(),
+            STANDARD_DEVIATION_PL_KEY: analyzer.standard_deviation_pl(),
+            STANDARD_DEVIATION_PLPC_KEY: analyzer.standard_deviation_plpc(),
             FINAL_ACCOUNT_VALUE_KEY: self.__account.get_balance(),
         }
 
@@ -337,10 +340,13 @@ class Simulator:
             TRADES_MADE_KEY: analyzer.total_trades(),
             AVERAGE_TRADE_DURATION_KEY: analyzer.average_trade_duration(),
             EFFECTIVENESS_KEY: analyzer.effectiveness(),
-            TOTAL_PL_KEY: analyzer.total_profit_loss(),
-            AVERAGE_PL_KEY: analyzer.average_profit_loss(),
-            MEDIAN_PL_KEY: analyzer.median_profit_loss(),
-            STANDARD_PL_DEVIATION_KEY: analyzer.standard_profit_loss_deviation(),
+            TOTAL_PL_KEY: analyzer.total_pl(),
+            AVERAGE_PL_KEY: analyzer.average_pl(),
+            AVERAGE_PLPC_KEY: analyzer.average_plpc(),
+            MEDIAN_PL_KEY: analyzer.median_pl(),
+            MEDIAN_PLPC_KEY: analyzer.median_plpc(),
+            STANDARD_DEVIATION_PL_KEY: analyzer.standard_deviation_pl(),
+            STANDARD_DEVIATION_PLPC_KEY: analyzer.standard_deviation_plpc(),
         }
 
     def __reset_singular_attributes(self):
@@ -492,10 +498,10 @@ class Simulator:
         log.info(f'Elapsed Time  : {elapsed_time} seconds')
         log.info(f'Trades Made   : {analyzer.total_trades()}')
         log.info(f'Effectiveness : {analyzer.effectiveness()} %')
-        log.info(f'Total P/L     : $ {analyzer.total_profit_loss()}')
-        log.info(f'Average P/L   : $ {analyzer.average_profit_loss()}')
-        log.info(f'Median P/L    : $ {analyzer.median_profit_loss()}')
-        log.info(f'Stddev P/L    : $ {analyzer.standard_profit_loss_deviation()}')
+        log.info(f'Total P/L     : $ {analyzer.total_pl()}')
+        log.info(f'Average P/L   : $ {analyzer.average_pl()}')
+        log.info(f'Median P/L    : $ {analyzer.median_pl()}')
+        log.info(f'Stddev P/L    : $ {analyzer.standard_deviation_pl()}')
         log.info(f'Account Value : $ {balance}')
         log.info('================================')
 
@@ -505,10 +511,10 @@ class Simulator:
         print(f'Elapsed Time  : {elapsed_time} seconds')
         print(f'Trades Made   : {analyzer.total_trades()}')
         print(f'Effectiveness : {analyzer.effectiveness()} %')
-        print(f'Total P/L     : $ {analyzer.total_profit_loss()}')
-        print(f'Average P/L   : $ {analyzer.average_profit_loss()}')
-        print(f'Median P/L    : $ {analyzer.median_profit_loss()}')
-        print(f'Stddev P/L    : $ {analyzer.standard_profit_loss_deviation()}')
+        print(f'Total P/L     : $ {analyzer.total_pl()}')
+        print(f'Average P/L   : $ {analyzer.average_pl()}')
+        print(f'Median P/L    : $ {analyzer.median_pl()}')
+        print(f'Stddev P/L    : $ {analyzer.standard_deviation_pl()}')
         print(f'Account Value : $ {balance}')
         print('================================')
 

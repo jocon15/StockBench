@@ -66,5 +66,5 @@ class SingularResultsSidebarTable(SidebarResultsTable):
             self.total_pl_data_label.setText(f'$ {simulation_results[TOTAL_PL_KEY]:,.2f}')
             self.average_pl_data_label.setText(f'$ {simulation_results[AVERAGE_PL_KEY]:,.2f}')
             self.median_pl_data_label.setText(f'$ {simulation_results[MEDIAN_PL_KEY]:,.2f}')
-            self.stddev_pl_data_label.setText(f'$ {simulation_results[STANDARD_PL_DEVIATION_KEY]:,.2f}')
+            self.stddev_pl_data_label.setText(f'$ {simulation_results[STANDARD_DEVIATION_PL_KEY]:,.2f}')
             self.account_value_data_label.setText(f'$ {simulation_results[FINAL_ACCOUNT_VALUE_KEY]:,.2f}')

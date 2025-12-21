@@ -52,79 +52,149 @@ def test_effectiveness_empty():
     assert int(test_object.effectiveness()) == 0
 
 
-def test_total_profit_loss(test_positions):
+def test_total_pl(test_positions):
     # ============= Arrange ==============
     test_object = PositionsAnalyzer(test_positions)
 
     # ============= Act ==================
-    actual = test_object.total_profit_loss()
+    actual = test_object.total_pl()
 
     # ============= Assert ===============
     assert type(actual) is float
     assert actual == 750.0
 
 
-def test_average_profit_loss_normal(test_positions):
+def test_average_pl_normal(test_positions):
     # ============= Arrange ==============
     test_object = PositionsAnalyzer(test_positions)
 
     # ============= Act ==================
-    actual = test_object.average_profit_loss()
+    actual = test_object.average_pl()
 
     # ============= Assert ===============
     assert type(actual) is float
     assert actual == 250.0
 
 
-def test_average_profit_loss_empty():
+def test_average_pl_empty():
     # ============= Arrange ==============
     test_object = PositionsAnalyzer([])
 
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.average_profit_loss() == 0.0
+    assert test_object.average_pl() == 0.0
 
 
-def test_median_profit_loss_normal(test_positions):
+def test_average_plpc_normal(test_positions):
     # ============= Arrange ==============
     test_object = PositionsAnalyzer(test_positions)
 
     # ============= Act ==================
-    actual = test_object.median_profit_loss()
+    actual = test_object.average_plpc()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert actual == 100.0
+
+
+def test_average_plpc_empty():
+    # ============= Arrange ==============
+    test_object = PositionsAnalyzer([])
+
+    # ============= Act ==================
+    actual = test_object.average_plpc()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert actual == 0.0
+
+
+def test_median_pl_normal(test_positions):
+    # ============= Arrange ==============
+    test_object = PositionsAnalyzer(test_positions)
+
+    # ============= Act ==================
+    actual = test_object.median_pl()
 
     # ============= Assert ===============
     assert type(actual) is float
     assert actual == 1000.0
 
 
-def test_median_profit_loss_empty():
+def test_median_pl_empty():
     # ============= Arrange ==============
     test_object = PositionsAnalyzer([])
 
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.median_profit_loss() == 0.0
+    assert test_object.median_pl() == 0.0
 
-
-def test_standard_profit_loss_deviation_normal(test_positions):
+def test_median_plpc_normal(test_positions):
     # ============= Arrange ==============
     test_object = PositionsAnalyzer(test_positions)
 
     # ============= Act ==================
-    actual = test_object.standard_profit_loss_deviation()
+    actual = test_object.median_plpc()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert actual == 100.0
+
+
+def test_median_plpc_empty():
+    # ============= Arrange ==============
+    test_object = PositionsAnalyzer([])
+
+    # ============= Act ==================
+    actual = test_object.median_plpc()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert actual == 0.0
+
+
+def test_standard_pl_deviation_normal(test_positions):
+    # ============= Arrange ==============
+    test_object = PositionsAnalyzer(test_positions)
+
+    # ============= Act ==================
+    actual = test_object.standard_deviation_pl()
 
     # ============= Assert ===============
     assert type(actual) is float
     assert int(actual) == 1241
 
 
-def test_standard_profit_loss_deviation_empty():
+def test_standard_deviation_pl_empty():
     # ============= Arrange ==============
     test_object = PositionsAnalyzer([])
 
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.standard_profit_loss_deviation() == 0.0
+    assert test_object.standard_deviation_pl() == 0.0
+
+def test_standard_deviation_plpc_normal(test_positions):
+    # ============= Arrange ==============
+    test_object = PositionsAnalyzer(test_positions)
+
+    # ============= Act ==================
+    actual = test_object.standard_deviation_plpc()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert actual == 122.474
+
+
+def test_standard_deviation_plpc_empty():
+    # ============= Arrange ==============
+    test_object = PositionsAnalyzer([])
+
+    # ============= Act ==================
+    actual = test_object.standard_deviation_plpc()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert actual == 0.0

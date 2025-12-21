@@ -113,7 +113,7 @@ def test_standard_profit_loss_deviation_normal(test_positions):
     test_object = PositionsAnalyzer(test_positions)
 
     # ============= Act ==================
-    actual = test_object.standard_pl()
+    actual = test_object.standard_deviation_pl()
 
     # ============= Assert ===============
     assert type(actual) is float
@@ -127,4 +127,4 @@ def test_standard_profit_loss_deviation_empty():
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.standard_pl() == 0.0
+    assert test_object.standard_deviation_pl() == 0.0

@@ -21,19 +21,11 @@ class PositionsAnalyzer:
         self.__standard_profit_loss_deviation_cache = None
 
     def total_trades(self) -> int:
-        """Calculates the number of trades made during the simulation.
-
-        return:
-            int: The number of trades made.
-        """
+        """Calculates the number of trades made during the simulation."""
         return len(self.__positions)
 
     def effectiveness(self) -> float:
-        """Calculates the effectiveness of the simulation.
-
-        return:
-            float: The effectiveness percentage.
-        """
+        """Calculates effectiveness of the simulation."""
         # check for cached effectiveness value
         if not self.__effectiveness_cache:
             profitable_trade_count = 0
@@ -51,11 +43,7 @@ class PositionsAnalyzer:
         return self.__effectiveness_cache
 
     def total_profit_loss(self) -> float:
-        """Calculates the total profit/loss of the simulation.
-
-        return:
-            float: The total profit/loss.
-        """
+        """Calculates the total profit/loss of the simulation."""
         # check for cached sum value
         if not self.__sum_cache:
             # update the cached value
@@ -63,11 +51,7 @@ class PositionsAnalyzer:
         return self.__sum_cache
 
     def average_trade_duration(self) -> float:
-        """Calculates the average trade duration of the simulation.
-
-        return:
-            float: The average duration.
-        """
+        """Calculates the average trade duration of the simulation."""
         # check for cached avg duration value
         if not self.__average_trade_duration_cache:
             # update the cached value
@@ -80,11 +64,7 @@ class PositionsAnalyzer:
         return self.__average_trade_duration_cache
 
     def average_profit_loss(self) -> float:
-        """Calculates the average profit/loss of the simulation.
-
-        return:
-            float: The average profit/loss.
-        """
+        """Calculates the average profit/loss of the simulation."""
         # check for cached avg pl value
         if not self.__average_profit_loss_cache:
             # update the cached value
@@ -96,11 +76,7 @@ class PositionsAnalyzer:
         return self.__average_profit_loss_cache
 
     def median_profit_loss(self) -> float:
-        """Calculates the average profit/loss of the simulation.
-
-        return:
-            float: The average profit/loss.
-        """
+        """Calculates the average profit/loss of the simulation."""
         # check for cached median pl value
         if not self.__median_profit_loss_cache:
             # update the cached value
@@ -112,11 +88,7 @@ class PositionsAnalyzer:
         return self.__median_profit_loss_cache
 
     def standard_profit_loss_deviation(self) -> float:
-        """Calculates the standard deviation profit/loss of the simulation.
-
-        return:
-            float: The standard profit/loss deviation (population).
-        """
+        """Calculates the standard deviation (population) profit/loss of the simulation."""
         if not self.__standard_profit_loss_deviation_cache:
             # update the cached value
             if self.total_trades() > 0:

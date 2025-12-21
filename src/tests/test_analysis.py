@@ -86,6 +86,30 @@ def test_average_pl_empty():
     assert test_object.average_pl() == 0.0
 
 
+def test_average_plpc_normal(test_positions):
+    # ============= Arrange ==============
+    test_object = PositionsAnalyzer(test_positions)
+
+    # ============= Act ==================
+    actual = test_object.average_plpc()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert actual == 100.0
+
+
+def test_average_plpc_empty():
+    # ============= Arrange ==============
+    test_object = PositionsAnalyzer([])
+
+    # ============= Act ==================
+    actual = test_object.average_plpc()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert actual == 0.0
+
+
 def test_median_pl_normal(test_positions):
     # ============= Arrange ==============
     test_object = PositionsAnalyzer(test_positions)
@@ -106,6 +130,29 @@ def test_median_pl_empty():
 
     # ============= Assert ===============
     assert test_object.median_pl() == 0.0
+
+def test_median_plpc_normal(test_positions):
+    # ============= Arrange ==============
+    test_object = PositionsAnalyzer(test_positions)
+
+    # ============= Act ==================
+    actual = test_object.median_plpc()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert actual == 100.0
+
+
+def test_median_plpc_empty():
+    # ============= Arrange ==============
+    test_object = PositionsAnalyzer([])
+
+    # ============= Act ==================
+    actual = test_object.median_plpc()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert actual == 0.0
 
 
 def test_standard_pl_deviation_normal(test_positions):
@@ -128,3 +175,26 @@ def test_standard_deviation_pl_empty():
 
     # ============= Assert ===============
     assert test_object.standard_deviation_pl() == 0.0
+
+def test_standard_deviation_plpc_normal(test_positions):
+    # ============= Arrange ==============
+    test_object = PositionsAnalyzer(test_positions)
+
+    # ============= Act ==================
+    actual = test_object.standard_deviation_plpc()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert actual == 122.474
+
+
+def test_standard_deviation_plpc_empty():
+    # ============= Arrange ==============
+    test_object = PositionsAnalyzer([])
+
+    # ============= Act ==================
+    actual = test_object.standard_deviation_plpc()
+
+    # ============= Assert ===============
+    assert type(actual) is float
+    assert actual == 0.0

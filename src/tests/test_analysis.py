@@ -52,7 +52,7 @@ def test_effectiveness_empty():
     assert int(test_object.effectiveness()) == 0
 
 
-def test_total_profit_loss(test_positions):
+def test_total_pl(test_positions):
     # ============= Arrange ==============
     test_object = PositionsAnalyzer(test_positions)
 
@@ -64,7 +64,7 @@ def test_total_profit_loss(test_positions):
     assert actual == 750.0
 
 
-def test_average_profit_loss_normal(test_positions):
+def test_average_pl_normal(test_positions):
     # ============= Arrange ==============
     test_object = PositionsAnalyzer(test_positions)
 
@@ -76,7 +76,7 @@ def test_average_profit_loss_normal(test_positions):
     assert actual == 250.0
 
 
-def test_average_profit_loss_empty():
+def test_average_pl_empty():
     # ============= Arrange ==============
     test_object = PositionsAnalyzer([])
 
@@ -86,7 +86,7 @@ def test_average_profit_loss_empty():
     assert test_object.average_pl() == 0.0
 
 
-def test_median_profit_loss_normal(test_positions):
+def test_median_pl_normal(test_positions):
     # ============= Arrange ==============
     test_object = PositionsAnalyzer(test_positions)
 
@@ -98,7 +98,7 @@ def test_median_profit_loss_normal(test_positions):
     assert actual == 1000.0
 
 
-def test_median_profit_loss_empty():
+def test_median_pl_empty():
     # ============= Arrange ==============
     test_object = PositionsAnalyzer([])
 
@@ -108,7 +108,7 @@ def test_median_profit_loss_empty():
     assert test_object.median_pl() == 0.0
 
 
-def test_standard_profit_loss_deviation_normal(test_positions):
+def test_standard_pl_deviation_normal(test_positions):
     # ============= Arrange ==============
     test_object = PositionsAnalyzer(test_positions)
 
@@ -120,7 +120,7 @@ def test_standard_profit_loss_deviation_normal(test_positions):
     assert int(actual) == 1241
 
 
-def test_standard_profit_loss_deviation_empty():
+def test_standard_deviation_pl_empty():
     # ============= Arrange ==============
     test_object = PositionsAnalyzer([])
 

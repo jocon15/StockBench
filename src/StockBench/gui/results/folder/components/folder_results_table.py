@@ -1,3 +1,5 @@
+from typing import Union
+
 from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QVBoxLayout, QPushButton, QAbstractItemView, \
     QHeaderView, QFrame
 from PyQt6.QtCore import Qt
@@ -11,7 +13,9 @@ class FolderResultsTable(QFrame):
                      'Median PL ($)', 'Stddev (P) PL ($)', 'Average PLPC (%)',
                      'Median PLPC (%)', 'Stddev (P) PLPC (%)']
 
-    CELL_TEXT_COLOR = QColor(255, 255, 255)
+    WHITE_BRUSH = QColor(255, 255, 255)
+    GREEN_BRUSH = QBrush(QColor(4, 186, 95))
+    RED_BRUSH = QBrush(QColor(209, 82, 84))
 
     TABLE_HEADER_FONT_SIZE = 16
 
@@ -80,10 +84,11 @@ class FolderResultsTable(QFrame):
 
             self.table.setRowHeight(row, self.TABLE_VALUE_ROW_HEIGHT)
             for col, cell_widget in enumerate(cell_widgets):
-                # FIXME: eventually color pl values and such as green/red?
-                cell_widget.setForeground(QBrush(self.CELL_TEXT_COLOR))
+                cell_widget.setForeground(QBrush(self.WHITE_BRUSH))
                 cell_widget.setFont(font)
                 self.table.setItem(row, col, cell_widget)
+
+        self.__apply_green_red_values()
 
     def on_toggle_table_heatmap(self):
         # check if data exists in the table
@@ -112,12 +117,15 @@ class FolderResultsTable(QFrame):
                 dif = cell_value_float - min_value
                 hue_value = int(dif / conversion_value)
                 color = QColor.fromHsv(hue_value, 255, 191, 191)
+                self.table.item(row_index, column_index).setForeground(QBrush(self.WHITE_BRUSH))
                 self.table.item(row_index, column_index).setBackground(QBrush(color))
 
     def _remove_table_heatmap(self):
         for column_index in range(1, len(self.TABLE_HEADERS)):
             for row_index in range(self.table.rowCount()):
                 self.table.item(row_index, column_index).setBackground(QBrush(QColor(32, 33, 36)))
+
+        self.__apply_green_red_values()
 
     def __setup_table_headers(self):
         background_color = QColor(33, 39, 51)
@@ -129,6 +137,21 @@ class FolderResultsTable(QFrame):
             item.setFont(header_font)
             item.setBackground(background_color)
             self.table.setHorizontalHeaderItem(i, item)
+
+    def __apply_green_red_values(self):
+        if self.table.item(1, 1) is not None:
+            # starts at total PL (index: 3)
+            for column_index in range(3, len(self.TABLE_HEADERS)):
+                for row_index in range(self.table.rowCount()):
+                    value = self.table.item(row_index, column_index).text()
+                    self.table.item(row_index, column_index).setForeground(
+                        self.__select_red_green_brush(value)
+                    )
+
+    def __select_red_green_brush(self, value: Union[str, int, float]) -> QBrush:
+        if float(value) >= 0:
+            return self.GREEN_BRUSH
+        return self.RED_BRUSH
 
     @staticmethod
     def __convert_comma_str_to_float(value: str) -> float:

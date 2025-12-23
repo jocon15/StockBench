@@ -8,53 +8,44 @@ class SingularResultsSidebarTable(SidebarResultsTable):
     """Table of overview results data."""
     def __init__(self):
         super().__init__()
-        # trades made label and data label
         row = 1
         self.layout.addWidget(self.trades_made_label, row, 1)
         self.layout.addWidget(self.trades_made_data_label, row, 2)
 
-        # average trade duration label and data label
         row += 1
         self.layout.addWidget(self.average_trade_duration_label, row, 1)
         self.layout.addWidget(self.average_trade_duration_data_label, row, 2)
 
-        # effectiveness label and data label
         row += 1
         self.layout.addWidget(self.effectiveness_label, row, 1)
         self.layout.addWidget(self.effectiveness_data_label, row, 2)
 
-        # total P/L label and data label
         row += 1
         self.layout.addWidget(self.total_pl_label, row, 1)
         self.layout.addWidget(self.total_pl_data_label, row, 2)
 
-        # average P/L label and data label
         row += 1
         self.layout.addWidget(self.average_pl_label, row, 1)
         self.layout.addWidget(self.average_pl_data_label, row, 2)
 
-        # median label and data label
         row += 1
         self.layout.addWidget(self.median_pl_label, row, 1)
         self.layout.addWidget(self.median_pl_data_label, row, 2)
 
-        # stddev label and data label
         row += 1
         self.layout.addWidget(self.stddev_pl_label, row, 1)
         self.layout.addWidget(self.stddev_pl_data_label, row, 2)
 
-        # account value header
         row += 1
         label = QLabel()
         label.setText('Account Value')
         label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
         self.layout.addWidget(label, row, 1)
-        # account value data label
+
         self.account_value_data_label = QLabel()
         self.account_value_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
         self.layout.addWidget(self.account_value_data_label, row, 2)
 
-        # apply the layout to the frame
         self.setLayout(self.layout)
 
     def render_data(self, simulation_results: dict):

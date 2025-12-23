@@ -21,6 +21,9 @@ class SingularResultsSidebarTable(SidebarResultsTable):
         self.layout.addWidget(self.effectiveness_data_label, row, 2)
 
         row += 1
+        self.layout.addWidget(self.spacer, row, 1)
+
+        row += 1
         self.layout.addWidget(self.total_pl_label, row, 1)
         self.layout.addWidget(self.total_pl_data_label, row, 2)
 
@@ -37,6 +40,9 @@ class SingularResultsSidebarTable(SidebarResultsTable):
         self.layout.addWidget(self.stddev_pl_data_label, row, 2)
 
         row += 1
+        self.layout.addWidget(self.spacer, row, 1)
+
+        row += 1
         self.layout.addWidget(self.average_plpc_label, row, 1)
         self.layout.addWidget(self.average_plpc_data_label, row, 2)
 
@@ -47,6 +53,9 @@ class SingularResultsSidebarTable(SidebarResultsTable):
         row += 1
         self.layout.addWidget(self.stddev_plpc_label, row, 1)
         self.layout.addWidget(self.stddev_plpc_data_label, row, 2)
+
+        row += 1
+        self.layout.addWidget(self.spacer, row, 1)
 
         row += 1
         label = QLabel()
@@ -70,7 +79,7 @@ class SingularResultsSidebarTable(SidebarResultsTable):
             self.average_pl_data_label.setText(f'$ {simulation_results[AVERAGE_PL_KEY]:,.2f}')
             self.median_pl_data_label.setText(f'$ {simulation_results[MEDIAN_PL_KEY]:,.2f}')
             self.stddev_pl_data_label.setText(f'$ {simulation_results[STANDARD_DEVIATION_PL_KEY]:,.2f}')
-            self.average_plpc_data_label.setText(f'{simulation_results[AVERAGE_PLPC_KEY]:,.2f}%')
-            self.median_plpc_data_label.setText(f'{simulation_results[MEDIAN_PLPC_KEY]:,.2f}%')
-            self.stddev_plpc_data_label.setText(f'{simulation_results[STANDARD_DEVIATION_PLPC_KEY]:,.2f}%')
+            self.average_plpc_data_label.setText(f'{simulation_results[AVERAGE_PLPC_KEY]:,.2f} %')
+            self.median_plpc_data_label.setText(f'{simulation_results[MEDIAN_PLPC_KEY]:,.2f} %')
+            self.stddev_plpc_data_label.setText(f'{simulation_results[STANDARD_DEVIATION_PLPC_KEY]:,.2f} %')
             self.account_value_data_label.setText(f'$ {simulation_results[FINAL_ACCOUNT_VALUE_KEY]:,.2f}')

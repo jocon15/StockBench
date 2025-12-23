@@ -6,14 +6,17 @@ from PyQt6.QtWidgets import QLabel, QGridLayout
 
 class SidebarResultsTable(QFrame):
     """Superclass for a results table frame."""
-    TABLE_STYLESHEET = """max-height:200px; background-color: #303136; border-radius:8px;"""
+    TABLE_STYLESHEET = """background-color: #303136; border-radius:8px;"""
 
     RESULT_VALUE_STYLESHEET = """color: #fff;"""
 
     def __init__(self):
         super().__init__()
-        # define the layout
         self.layout = QGridLayout()
+
+        self.spacer = QFrame()
+        self.spacer.setFrameShape(QFrame.Shape.HLine)  # Set the shape to a horizontal line
+        self.spacer.setFrameShadow(QFrame.Shadow.Sunken)  # Give it a 3D sunken effect
 
         # ========================= Shared Metadata ================================
         self.strategy_label = QLabel()

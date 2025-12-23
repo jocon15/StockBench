@@ -1,22 +1,38 @@
-from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QWidget, QVBoxLayout, QPushButton
+from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QVBoxLayout, QPushButton, QAbstractItemView, \
+    QHeaderView, QFrame
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QBrush, QColor
+from PyQt6.QtGui import QBrush, QColor, QFont
 from StockBench.gui.palette.palette import Palette
 from StockBench.models.constants.simulation_results_constants import *
 
 
-class FolderResultsTable(QWidget):
+class FolderResultsTable(QFrame):
     TABLE_HEADERS = ['Strategy', 'Trades Made', 'Effectiveness (%)', 'Total PL ($)', 'Average PL ($)',
                      'Median PL ($)', 'Stddev (P) PL ($)', 'Average PLPC (%)',
                      'Median PLPC (%)', 'Stddev (P) PLPC (%)']
 
     CELL_TEXT_COLOR = QColor(255, 255, 255)
 
-    TABLE_COLUMN_COUNT = 10
+    TABLE_HEADER_FONT_SIZE = 16
+
+    TABLE_VALUE_ROW_HEIGHT = 50
+    TABLE_VALUE_FONT_SIZE = 13
+
+    FRAME_STYLESHEET = """
+        #folderResultsTable {
+            border: 1px solid grey; 
+            border-radius: 25px; 
+            padding: 5px;
+        }
+        """
 
     def __init__(self, strategies):
         super().__init__()
         self.layout = QVBoxLayout()
+
+        self.setMinimumWidth(800)
+        self.setObjectName("folderResultsTable")  # apply styles based on id (must inherit from QFrame)
+        self.setStyleSheet(self.FRAME_STYLESHEET)
 
         self.toggle_heatmap_btn = QPushButton()
         self.toggle_heatmap_btn.setFixedSize(400, 30)
@@ -28,50 +44,46 @@ class FolderResultsTable(QWidget):
 
         self.table = QTableWidget()
         self.table.setRowCount(len(strategies))
-        self.table.setColumnCount(self.TABLE_COLUMN_COUNT)
-        self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
-        self.table.setHorizontalHeaderLabels(self.TABLE_HEADERS)
-        self.table.verticalHeader().setVisible(False)
-        self.layout.addWidget(self.table)
+        self.table.setColumnCount(len(self.TABLE_HEADERS))
+        self.__setup_table_headers()
+        self.table.verticalHeader().hide()
+        self.table.setFrameStyle(0)
+        self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        # add table to widget with stretch factor of 1, prevents table from shrinking when other widgets (error message)
+        # added to layout, other widgets have default factor of 0, causing the layout to favor stretching of the table
+        self.layout.addWidget(self.table, 1)
 
         self.setLayout(self.layout)
 
     def render_data(self, simulation_results: dict):
         results = simulation_results['results']
 
+        font = QFont()
+        font.setPointSize(self.TABLE_VALUE_FONT_SIZE)
+
         for row, result in enumerate(results):
-            strategy_cell = QTableWidgetItem(f'{result[STRATEGY_KEY]}')
-            trades_made_cell = QTableWidgetItem(f'{result[TRADES_MADE_KEY]}')
-            effectiveness_cell = QTableWidgetItem(f'{result[EFFECTIVENESS_KEY]:,.2f}')
-            total_pl_cell = QTableWidgetItem(f'{result[TOTAL_PL_KEY]:,.2f}')
-            avg_pl_cell = QTableWidgetItem(f'{result[AVERAGE_PL_KEY]:,.2f}')
-            median_pl_cell = QTableWidgetItem(f'{result[MEDIAN_PL_KEY]:,.2f}')
-            stddev_pl_cell = QTableWidgetItem(f'{result[STANDARD_DEVIATION_PL_KEY]:,.2f}')
-            avg_plpc_cell = QTableWidgetItem(f'{result[AVERAGE_PLPC_KEY]:,.2f}')
-            median_plpc_cell = QTableWidgetItem(f'{result[MEDIAN_PLPC_KEY]:,.2f}')
-            stddev_plpc_cell = QTableWidgetItem(f'{result[STANDARD_DEVIATION_PLPC_KEY]:,.2f}')
+            cell_widgets = [
+                QTableWidgetItem(f'{result[STRATEGY_KEY]}'),
+                QTableWidgetItem(f'{result[TRADES_MADE_KEY]}'),
+                QTableWidgetItem(f'{result[EFFECTIVENESS_KEY]:,.2f}'),
+                QTableWidgetItem(f'{result[TOTAL_PL_KEY]:,.2f}'),
+                QTableWidgetItem(f'{result[AVERAGE_PL_KEY]:,.2f}'),
+                QTableWidgetItem(f'{result[MEDIAN_PL_KEY]:,.2f}'),
+                QTableWidgetItem(f'{result[STANDARD_DEVIATION_PL_KEY]:,.2f}'),
+                QTableWidgetItem(f'{result[AVERAGE_PLPC_KEY]:,.2f}'),
+                QTableWidgetItem(f'{result[MEDIAN_PLPC_KEY]:,.2f}'),
+                QTableWidgetItem(f'{result[STANDARD_DEVIATION_PLPC_KEY]:,.2f}')
+            ]
 
-            strategy_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
-            trades_made_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
-            effectiveness_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
-            total_pl_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
-            avg_pl_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
-            median_pl_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
-            stddev_pl_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
-            avg_plpc_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
-            median_plpc_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
-            stddev_plpc_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
-
-            self.table.setItem(row, 0, strategy_cell)
-            self.table.setItem(row, 1, trades_made_cell)
-            self.table.setItem(row, 2, effectiveness_cell)
-            self.table.setItem(row, 3, total_pl_cell)
-            self.table.setItem(row, 4, avg_pl_cell)
-            self.table.setItem(row, 5, median_pl_cell)
-            self.table.setItem(row, 6, stddev_pl_cell)
-            self.table.setItem(row, 7, avg_plpc_cell)
-            self.table.setItem(row, 8, median_plpc_cell)
-            self.table.setItem(row, 9, stddev_plpc_cell)
+            self.table.setRowHeight(row, self.TABLE_VALUE_ROW_HEIGHT)
+            for col, cell_widget in enumerate(cell_widgets):
+                # FIXME: eventually color pl values and such as green/red?
+                cell_widget.setForeground(QBrush(self.CELL_TEXT_COLOR))
+                cell_widget.setFont(font)
+                self.table.setItem(row, col, cell_widget)
 
     def on_toggle_table_heatmap(self):
         # check if data exists in the table
@@ -84,7 +96,7 @@ class FolderResultsTable(QWidget):
     def _apply_table_heatmap(self):
         hsv_range = 100
 
-        for column_index in range(1, self.TABLE_COLUMN_COUNT):
+        for column_index in range(1, len(self.TABLE_HEADERS)):
             column_values = []
             for row_index in range(self.table.rowCount()):
                 cell_value_str = self.table.item(row_index, column_index).text()
@@ -103,9 +115,20 @@ class FolderResultsTable(QWidget):
                 self.table.item(row_index, column_index).setBackground(QBrush(color))
 
     def _remove_table_heatmap(self):
-        for column_index in range(1, self.TABLE_COLUMN_COUNT):
+        for column_index in range(1, len(self.TABLE_HEADERS)):
             for row_index in range(self.table.rowCount()):
                 self.table.item(row_index, column_index).setBackground(QBrush(QColor(32, 33, 36)))
+
+    def __setup_table_headers(self):
+        background_color = QColor(33, 39, 51)
+        header_font = QFont()
+        header_font.setPointSize(self.TABLE_HEADER_FONT_SIZE)
+
+        for i, header in enumerate(self.TABLE_HEADERS):
+            item = QTableWidgetItem(header)
+            item.setFont(header_font)
+            item.setBackground(background_color)
+            self.table.setHorizontalHeaderItem(i, item)
 
     @staticmethod
     def __convert_comma_str_to_float(value: str) -> float:

@@ -6,16 +6,18 @@ from StockBench.models.constants.simulation_results_constants import *
 
 
 class FolderResultsTable(QWidget):
-    TABLE_HEADERS = ['Strategy', 'Trades Made', 'Effectiveness (%)', 'Total P/L ($)', 'Average P/L ($)',
-                     'Median P/L ($)', 'Stddev (P) P/L ($)']
+    TABLE_HEADERS = ['Strategy', 'Trades Made', 'Effectiveness (%)', 'Total PL ($)', 'Average PL ($)',
+                     'Median PL ($)', 'Stddev (P) PL ($)', 'Average PLPC (%)',
+                     'Median PLPC (%)', 'Stddev (P) PLPC (%)']
 
     CELL_TEXT_COLOR = QColor(255, 255, 255)
+
+    TABLE_COLUMN_COUNT = 10
 
     def __init__(self, strategies):
         super().__init__()
         self.layout = QVBoxLayout()
 
-        # table controls
         self.toggle_heatmap_btn = QPushButton()
         self.toggle_heatmap_btn.setFixedSize(400, 30)
         self.toggle_heatmap_btn.setText('Toggle Table Column Heatmap')
@@ -24,10 +26,9 @@ class FolderResultsTable(QWidget):
         self.toggle_heatmap_btn.setStyleSheet(Palette.SECONDARY_BTN)  # default off
         self.layout.addWidget(self.toggle_heatmap_btn, alignment=Qt.AlignmentFlag.AlignLeft)
 
-        # table
         self.table = QTableWidget()
         self.table.setRowCount(len(strategies))
-        self.table.setColumnCount(7)
+        self.table.setColumnCount(self.TABLE_COLUMN_COUNT)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table.setHorizontalHeaderLabels(self.TABLE_HEADERS)
         self.table.verticalHeader().setVisible(False)
@@ -46,6 +47,9 @@ class FolderResultsTable(QWidget):
             avg_pl_cell = QTableWidgetItem(f'{result[AVERAGE_PL_KEY]:,.2f}')
             median_pl_cell = QTableWidgetItem(f'{result[MEDIAN_PL_KEY]:,.2f}')
             stddev_pl_cell = QTableWidgetItem(f'{result[STANDARD_DEVIATION_PL_KEY]:,.2f}')
+            avg_plpc_cell = QTableWidgetItem(f'{result[AVERAGE_PLPC_KEY]:,.2f}')
+            median_plpc_cell = QTableWidgetItem(f'{result[MEDIAN_PLPC_KEY]:,.2f}')
+            stddev_plpc_cell = QTableWidgetItem(f'{result[STANDARD_DEVIATION_PLPC_KEY]:,.2f}')
 
             strategy_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
             trades_made_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
@@ -54,6 +58,9 @@ class FolderResultsTable(QWidget):
             avg_pl_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
             median_pl_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
             stddev_pl_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
+            avg_plpc_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
+            median_plpc_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
+            stddev_plpc_cell.setForeground(QBrush(self.CELL_TEXT_COLOR))
 
             self.table.setItem(row, 0, strategy_cell)
             self.table.setItem(row, 1, trades_made_cell)
@@ -62,6 +69,9 @@ class FolderResultsTable(QWidget):
             self.table.setItem(row, 4, avg_pl_cell)
             self.table.setItem(row, 5, median_pl_cell)
             self.table.setItem(row, 6, stddev_pl_cell)
+            self.table.setItem(row, 7, avg_plpc_cell)
+            self.table.setItem(row, 8, median_plpc_cell)
+            self.table.setItem(row, 9, stddev_plpc_cell)
 
     def on_toggle_table_heatmap(self):
         # check if data exists in the table
@@ -74,7 +84,7 @@ class FolderResultsTable(QWidget):
     def _apply_table_heatmap(self):
         hsv_range = 100
 
-        for column_index in range(1, 7):
+        for column_index in range(1, self.TABLE_COLUMN_COUNT):
             column_values = []
             for row_index in range(self.table.rowCount()):
                 cell_value_str = self.table.item(row_index, column_index).text()
@@ -93,7 +103,7 @@ class FolderResultsTable(QWidget):
                 self.table.item(row_index, column_index).setBackground(QBrush(color))
 
     def _remove_table_heatmap(self):
-        for column_index in range(1, 7):
+        for column_index in range(1, self.TABLE_COLUMN_COUNT):
             for row_index in range(self.table.rowCount()):
                 self.table.item(row_index, column_index).setBackground(QBrush(QColor(32, 33, 36)))
 

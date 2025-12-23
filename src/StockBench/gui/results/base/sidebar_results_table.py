@@ -16,7 +16,6 @@ class SidebarResultsTable(QFrame):
         self.layout = QGridLayout()
 
         # ========================= Shared Metadata ================================
-        # strategy label
         self.strategy_label = QLabel()
         self.strategy_label.setText('Strategy')
         self.strategy_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -32,7 +31,6 @@ class SidebarResultsTable(QFrame):
         self.trade_able_days_data_label = QLabel()
         self.trade_able_days_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
-        # elapsed time label
         self.elapsed_time_label = QLabel()
         self.elapsed_time_label.setText('Elapsed Time')
         self.elapsed_time_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -41,7 +39,6 @@ class SidebarResultsTable(QFrame):
         self.elapsed_time_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
         # ========================= Shared Results ================================
-        # trades made label
         self.trades_made_label = QLabel()
         self.trades_made_label.setText('Trades Made')
         self.trades_made_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -49,7 +46,6 @@ class SidebarResultsTable(QFrame):
         self.trades_made_data_label = QLabel()
         self.trades_made_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
-        # average trade duration label
         self.average_trade_duration_label = QLabel()
         self.average_trade_duration_label.setText('Average Trade Duration')
         self.average_trade_duration_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -57,7 +53,6 @@ class SidebarResultsTable(QFrame):
         self.average_trade_duration_data_label = QLabel()
         self.average_trade_duration_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
-        # effectiveness label
         self.effectiveness_label = QLabel()
         self.effectiveness_label.setText('Effectiveness')
         self.effectiveness_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -65,7 +60,6 @@ class SidebarResultsTable(QFrame):
         self.effectiveness_data_label = QLabel()
         self.effectiveness_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
-        # total P/L label
         self.total_pl_label = QLabel()
         self.total_pl_label.setText('Total P/L')
         self.total_pl_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -73,7 +67,6 @@ class SidebarResultsTable(QFrame):
         self.total_pl_data_label = QLabel()
         self.total_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
-        # average P/L label
         self.average_pl_label = QLabel()
         self.average_pl_label.setText('Average P/L')
         self.average_pl_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -81,7 +74,6 @@ class SidebarResultsTable(QFrame):
         self.average_pl_data_label = QLabel()
         self.average_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
-        # median P/L label
         self.median_pl_label = QLabel()
         self.median_pl_label.setText('Median P/L')
         self.median_pl_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -89,14 +81,33 @@ class SidebarResultsTable(QFrame):
         self.median_pl_data_label = QLabel()
         self.median_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
-        # stddev P/L label
         self.stddev_pl_label = QLabel()
         self.stddev_pl_label.setText('Stddev P/L')
         self.stddev_pl_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # stddev data label
         self.stddev_pl_data_label = QLabel()
         self.stddev_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
-        # =================================================================
+
+        self.average_plpc_label = QLabel()
+        self.average_plpc_label.setText('Average PLPC')
+        self.average_plpc_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
+        # average P/L data label
+        self.average_plpc_data_label = QLabel()
+        self.average_plpc_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+
+        self.median_plpc_label = QLabel()
+        self.median_plpc_label.setText('Median PLPC')
+        self.median_plpc_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
+        # median data label
+        self.median_plpc_data_label = QLabel()
+        self.median_plpc_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
+
+        self.stddev_plpc_label = QLabel()
+        self.stddev_plpc_label.setText('Stddev PLPC')
+        self.stddev_plpc_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
+        # stddev data label
+        self.stddev_plpc_data_label = QLabel()
+        self.stddev_plpc_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
         self.setStyleSheet(self.TABLE_STYLESHEET)
 

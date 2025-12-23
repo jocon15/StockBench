@@ -61,28 +61,28 @@ class SidebarResultsTable(QFrame):
         self.effectiveness_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
         self.total_pl_label = QLabel()
-        self.total_pl_label.setText('Total P/L')
+        self.total_pl_label.setText('Total PL')
         self.total_pl_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # total P/L data label
         self.total_pl_data_label = QLabel()
         self.total_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
         self.average_pl_label = QLabel()
-        self.average_pl_label.setText('Average P/L')
+        self.average_pl_label.setText('Average PL')
         self.average_pl_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # average P/L data label
         self.average_pl_data_label = QLabel()
         self.average_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
         self.median_pl_label = QLabel()
-        self.median_pl_label.setText('Median P/L')
+        self.median_pl_label.setText('Median PL')
         self.median_pl_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # median data label
         self.median_pl_data_label = QLabel()
         self.median_pl_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
 
         self.stddev_pl_label = QLabel()
-        self.stddev_pl_label.setText('Stddev P/L')
+        self.stddev_pl_label.setText('Stddev PL')
         self.stddev_pl_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         # stddev data label
         self.stddev_pl_data_label = QLabel()

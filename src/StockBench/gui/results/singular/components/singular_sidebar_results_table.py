@@ -37,6 +37,18 @@ class SingularResultsSidebarTable(SidebarResultsTable):
         self.layout.addWidget(self.stddev_pl_data_label, row, 2)
 
         row += 1
+        self.layout.addWidget(self.average_plpc_label, row, 1)
+        self.layout.addWidget(self.average_plpc_data_label, row, 2)
+
+        row += 1
+        self.layout.addWidget(self.median_plpc_label, row, 1)
+        self.layout.addWidget(self.median_plpc_data_label, row, 2)
+
+        row += 1
+        self.layout.addWidget(self.stddev_plpc_label, row, 1)
+        self.layout.addWidget(self.stddev_plpc_data_label, row, 2)
+
+        row += 1
         label = QLabel()
         label.setText('Account Value')
         label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)

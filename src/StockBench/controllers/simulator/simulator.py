@@ -2,7 +2,6 @@ import sys
 import math
 import logging
 
-from tqdm import tqdm
 from time import perf_counter
 from datetime import datetime
 from typing import Optional, List, Tuple
@@ -132,13 +131,6 @@ class Simulator:
 
         progress_bar_increment = self.__multi_pre_process(symbols, progress_observer)
 
-        tqdm_increment = 0
-        pbar = None
-        if not self.__running_as_exe:
-            # tqdm only works if running as python file
-            tqdm_increment = round(100.0 / len(symbols), 2)
-            pbar = tqdm(total=100)
-
         results = []
         for symbol in symbols:
             result = self.run(symbol=symbol)
@@ -149,9 +141,6 @@ class Simulator:
 
             if progress_observer:
                 progress_observer.update_progress(progress_bar_increment)
-
-            if not self.__running_as_exe:
-                pbar.update(tqdm_increment)
 
         log.info('Multi-simulation complete')
         self.gui_status_log.info('Multiple symbol simulation complete')

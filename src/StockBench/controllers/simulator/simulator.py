@@ -243,9 +243,6 @@ class Simulator:
 
         self.__log_results(elapsed_time, analyzer, self.__account.get_balance())
 
-        if not self.__running_multiple:
-            self.__print_singular_results(elapsed_time, analyzer, self.__account.get_balance())
-
         if self.__reporting_on:
             exporter = WindowDataExporter()
             exporter.export(chopped_temp_df, symbol)
@@ -253,13 +250,13 @@ class Simulator:
         log.info('Simulation complete!')
 
         if not self.__running_multiple:
-            self.gui_status_log.info(f'Analytics for {symbol} complete \u2705')
+            self.gui_status_log.info(f'Analytics for {symbol} complete')
             if progress_observer:
                 # inform the progress observer that the analytics is complete
                 self.gui_status_log.info(f'Analytics complete \u2705')
                 progress_observer.set_analytics_complete()
         else:
-            pass
+            self.gui_status_log.info(f'Analytics for {symbol} complete')
 
         return {
             STRATEGY_KEY: self.__algorithm.strategy_filename,
@@ -494,19 +491,6 @@ class Simulator:
         log.info(f'Stddev P/L    : $ {analyzer.standard_deviation_pl()}')
         log.info(f'Account Value : $ {balance}')
         log.info('================================')
-
-    @staticmethod
-    def __print_singular_results(elapsed_time: float, analyzer: PositionsAnalyzer, balance: float) -> None:
-        print('====== Simulation Results ======')
-        print(f'Elapsed Time  : {elapsed_time} seconds')
-        print(f'Trades Made   : {analyzer.total_trades()}')
-        print(f'Effectiveness : {analyzer.effectiveness()} %')
-        print(f'Total P/L     : $ {analyzer.total_pl()}')
-        print(f'Average P/L   : $ {analyzer.average_pl()}')
-        print(f'Median P/L    : $ {analyzer.median_pl()}')
-        print(f'Stddev P/L    : $ {analyzer.standard_deviation_pl()}')
-        print(f'Account Value : $ {balance}')
-        print('================================')
 
     @staticmethod
     def __unix_to_string(timestamp: int, date_format: str = '%m-%d-%Y') -> str:

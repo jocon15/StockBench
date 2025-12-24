@@ -77,7 +77,7 @@ class FolderOverviewSidebar(OverviewSideBar):
             self._show_message_box('Export Notification', f'File has been saved to {filepath}')
 
     def on_export_md_btn_clicked(self):
-        """Export simulation results to markdown."""
+        """Export simulation results to Markdown."""
         if self.simulation_results_to_export:
             filepath = MarkdownExporter.export_folder_simulation_to_md(self.simulation_results_to_export)
 

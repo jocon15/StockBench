@@ -53,7 +53,7 @@ class OverviewSideBar(QWidget):
 
         # output box (terminal)
         self.output_box = QListWidget()
-        self.output_box.setMaximumHeight(600)
+        self.output_box.setMinimumHeight(300)
         self.output_box.setWordWrap(True)
         self.output_box.setAutoScroll(True)
         self.output_box.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)

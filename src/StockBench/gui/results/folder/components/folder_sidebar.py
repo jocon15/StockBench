@@ -1,6 +1,3 @@
-from PyQt6.QtWidgets import QListWidgetItem
-from PyQt6.QtGui import QColor
-
 from StockBench.controllers.export.markdown_exporter import MarkdownExporter
 from StockBench.gui.results.folder.components.folder_sidebar_metadata_table import FolderMetadataSidebarTable
 from StockBench.gui.results.base.overview_sidebar import OverviewSideBar
@@ -41,7 +38,6 @@ class FolderOverviewSidebar(OverviewSideBar):
 
         self.layout.addWidget(self.output_box)
 
-        # apply the layout
         self.setLayout(self.layout)
 
     def on_export_json_btn_clicked(self):
@@ -87,23 +83,23 @@ class FolderOverviewSidebar(OverviewSideBar):
     def _update_output_box(self):
         """Update the output box with messages from the progress observer."""
         all_observers_complete = True
+        stored_queues = []
         for progress_observer in self.progress_observers:
+            messages_to_add = progress_observer.get_messages()
+            stored_queues.append(messages_to_add)
+
             if not progress_observer.is_charting_completed():
-                all_observers_complete = False
-            messages = progress_observer.get_messages()
-            for message in messages:
-                list_item = QListWidgetItem(str(message.msg))
-                if message.levelname == 'WARNING':
-                    list_item.setForeground(QColor('yellow'))
-                else:
-                    list_item.setForeground(QColor('grey'))
-                self.output_box.addItem(list_item)
-            # scroll the output box to the bottom
-            self.output_box.scrollToBottom()
+                if len(messages_to_add) == 0:
+                    all_observers_complete = False
 
         if all_observers_complete:
-            # stop the timer
             self.timer.stop()
+
+        for messages in stored_queues:
+            self._log_messages_to_output_box(messages)
+
+        # scroll the output box to the bottom
+        self.output_box.scrollToBottom()
 
     def _remove_extraneous_info(self, results: dict) -> dict:
         """Remove info from the simulation results that is not relevant to exporting."""

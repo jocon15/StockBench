@@ -10,8 +10,8 @@ from StockBench.models.constants.simulation_results_constants import *
 
 class FolderResultsTable(QFrame):
     TABLE_HEADERS = ['Strategy', 'Trades Made', 'Effectiveness (%)', 'Total PL ($)', 'Average PL ($)',
-                     'Median PL ($)', 'Stddev (P) PL ($)', 'Average PLPC (%)',
-                     'Median PLPC (%)', 'Stddev (P) PLPC (%)']
+                     'Median PL ($)', 'Stddev PL ($)', 'Average PLPC (%)',
+                     'Median PLPC (%)', 'Stddev PLPC (%)']
 
     WHITE_BRUSH = QColor(255, 255, 255)
     GREEN_BRUSH = QBrush(QColor(4, 186, 95))

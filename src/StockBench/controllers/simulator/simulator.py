@@ -2,7 +2,6 @@ import sys
 import math
 import logging
 
-from tqdm import tqdm
 from time import perf_counter
 from datetime import datetime
 from typing import Optional, List, Tuple
@@ -132,13 +131,6 @@ class Simulator:
 
         progress_bar_increment = self.__multi_pre_process(symbols, progress_observer)
 
-        tqdm_increment = 0
-        pbar = None
-        if not self.__running_as_exe:
-            # tqdm only works if running as python file
-            tqdm_increment = round(100.0 / len(symbols), 2)
-            pbar = tqdm(total=100)
-
         results = []
         for symbol in symbols:
             result = self.run(symbol=symbol)
@@ -149,9 +141,6 @@ class Simulator:
 
             if progress_observer:
                 progress_observer.update_progress(progress_bar_increment)
-
-            if not self.__running_as_exe:
-                pbar.update(tqdm_increment)
 
         log.info('Multi-simulation complete')
         self.gui_status_log.info('Multiple symbol simulation complete')
@@ -267,9 +256,10 @@ class Simulator:
             self.gui_status_log.info(f'Analytics for {symbol} complete \u2705')
             if progress_observer:
                 # inform the progress observer that the analytics is complete
+                self.gui_status_log.info(f'Analytics for {symbol} complete')
                 progress_observer.set_analytics_complete()
         else:
-            self.gui_status_log.info(f'Analytics for {symbol} complete')
+            pass
 
         return {
             STRATEGY_KEY: self.__algorithm.strategy_filename,
@@ -287,10 +277,10 @@ class Simulator:
             EFFECTIVENESS_KEY: analyzer.effectiveness(),
             TOTAL_PL_KEY: analyzer.total_pl(),
             AVERAGE_PL_KEY: analyzer.average_pl(),
-            AVERAGE_PLPC_KEY: analyzer.average_plpc(),
             MEDIAN_PL_KEY: analyzer.median_pl(),
-            MEDIAN_PLPC_KEY: analyzer.median_plpc(),
             STANDARD_DEVIATION_PL_KEY: analyzer.standard_deviation_pl(),
+            AVERAGE_PLPC_KEY: analyzer.average_plpc(),
+            MEDIAN_PLPC_KEY: analyzer.median_plpc(),
             STANDARD_DEVIATION_PLPC_KEY: analyzer.standard_deviation_plpc(),
             FINAL_ACCOUNT_VALUE_KEY: self.__account.get_balance(),
         }
@@ -342,10 +332,10 @@ class Simulator:
             EFFECTIVENESS_KEY: analyzer.effectiveness(),
             TOTAL_PL_KEY: analyzer.total_pl(),
             AVERAGE_PL_KEY: analyzer.average_pl(),
-            AVERAGE_PLPC_KEY: analyzer.average_plpc(),
             MEDIAN_PL_KEY: analyzer.median_pl(),
-            MEDIAN_PLPC_KEY: analyzer.median_plpc(),
             STANDARD_DEVIATION_PL_KEY: analyzer.standard_deviation_pl(),
+            AVERAGE_PLPC_KEY: analyzer.average_plpc(),
+            MEDIAN_PLPC_KEY: analyzer.median_plpc(),
             STANDARD_DEVIATION_PLPC_KEY: analyzer.standard_deviation_plpc(),
         }
 

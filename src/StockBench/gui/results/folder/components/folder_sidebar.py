@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import QListWidgetItem
 from PyQt6.QtGui import QColor
 
 from StockBench.controllers.export.markdown_exporter import MarkdownExporter
-from StockBench.gui.results.multi.components.multi_sidebar_metadata_table import MultiMetadataSidebarTable
+from StockBench.gui.results.folder.components.folder_sidebar_metadata_table import FolderMetadataSidebarTable
 from StockBench.gui.results.base.overview_sidebar import OverviewSideBar
 from StockBench.models.observers.progress_observer import ProgressObserver
 from StockBench.gui.results.folder.components.folder_selector import FolderSelector
@@ -23,7 +23,7 @@ class FolderOverviewSidebar(OverviewSideBar):
         # add shared_components to the layout
         self.layout.addWidget(self.metadata_header)
 
-        self.metadata_table = MultiMetadataSidebarTable()
+        self.metadata_table = FolderMetadataSidebarTable()
         self.layout.addWidget(self.metadata_table)
 
         self.layout.addWidget(self.export_json_btn)
@@ -77,7 +77,7 @@ class FolderOverviewSidebar(OverviewSideBar):
             self._show_message_box('Export Notification', f'File has been saved to {filepath}')
 
     def on_export_md_btn_clicked(self):
-        """Export simulation results to markdown."""
+        """Export simulation results to Markdown."""
         if self.simulation_results_to_export:
             filepath = MarkdownExporter.export_folder_simulation_to_md(self.simulation_results_to_export)
 

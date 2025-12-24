@@ -17,6 +17,7 @@ def main():
     load_cache_file()
     # must create the QApplication before QPixmap to avoid errors
     app = QApplication(sys.argv)
+    app.setStyle(QtWidgets.QStyleFactory.create('Fusion'))  # won't work on windows style
     splash_pix = QtGui.QPixmap(os.path.join('resources', 'images', 'candle.png'))
     splash = QtWidgets.QSplashScreen(splash_pix)
     splash.show()

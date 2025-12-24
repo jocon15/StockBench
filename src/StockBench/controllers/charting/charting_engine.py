@@ -318,6 +318,9 @@ class ChartingEngine:
             zerolinecolor='#283442'),  # Customize color
             template='plotly_dark', xaxis_rangeslider_visible=False, title=title, title_x=0.5)
 
+        # removes redundant strategy label to save space
+        fig.update_yaxes(showticklabels=False)
+
         return ChartingEngine.format_chart(fig)
 
     @staticmethod

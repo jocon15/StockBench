@@ -3,18 +3,11 @@ from StockBench.gui.results.base.sidebar_results_table import SidebarResultsTabl
 from StockBench.models.constants.simulation_results_constants import *
 
 
-class MultiMetadataSidebarTable(SidebarResultsTable):
+class FolderMetadataSidebarTable(SidebarResultsTable):
     """Table of overview metadata."""
     def __init__(self):
         super().__init__()
         row = 1
-        self.layout.addWidget(self.strategy_label, row, 1)
-        # strategy data label
-        self.strategy_data_label = QLabel()
-        self.strategy_data_label.setStyleSheet(self.RESULT_VALUE_STYLESHEET)
-        self.layout.addWidget(self.strategy_data_label, row, 2)
-
-        row += 1
         self.layout.addWidget(self.trade_able_days_label, row, 1)
         self.layout.addWidget(self.trade_able_days_data_label, row, 2)
 
@@ -26,6 +19,5 @@ class MultiMetadataSidebarTable(SidebarResultsTable):
 
     def render_data(self, simulation_results: dict):
         if simulation_results.keys():
-            self.strategy_data_label.setText(f'{simulation_results[STRATEGY_KEY]}')
             self.trade_able_days_data_label.setText(f'{simulation_results[TRADE_ABLE_DAYS_KEY]} days')
             self.elapsed_time_data_label.setText(f'{simulation_results[ELAPSED_TIME_KEY]:,.2f} seconds')

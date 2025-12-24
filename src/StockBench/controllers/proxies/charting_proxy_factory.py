@@ -8,4 +8,4 @@ class ChartingProxyFactory:
     @staticmethod
     def get_charting_proxy_instance(identifier: int) -> ChartingProxy:
         return ChartingProxy(SingularChartingEngine(identifier), MultiChartingEngine(identifier),
-                             FolderChartingEngine(identifier))
+                             FolderChartingEngine(identifier), identifier)

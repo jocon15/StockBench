@@ -35,7 +35,6 @@ class FolderOverviewSidebar(OverviewSideBar):
         self.layout.addStretch()
 
         self.layout.addWidget(self.status_header)
-
         self.layout.addWidget(self.output_box)
 
         self.setLayout(self.layout)
@@ -88,8 +87,7 @@ class FolderOverviewSidebar(OverviewSideBar):
             messages_to_add = progress_observer.get_messages()
             stored_queues.append(messages_to_add)
 
-            if not progress_observer.is_charting_completed():
-                if len(messages_to_add) == 0:
+            if not progress_observer.is_simulation_completed():
                     all_observers_complete = False
 
         if all_observers_complete:

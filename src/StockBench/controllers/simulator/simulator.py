@@ -54,7 +54,7 @@ class Simulator:
         self.__algorithm = None  # gets constructed once we have the strategy
         self.__available_indicators = IndicatorManager.load_indicators()
 
-        # logger dedicated to logging messages to the gui status box (must be here to avoid log duplication)
+        # logger dedicated to logging messages to the gui status box (must be in constructor to avoid log duplication)
         self.gui_status_log = logging.getLogger(f'gui_status_box_logging_{self.id}')
 
         # simulation settings
@@ -256,7 +256,7 @@ class Simulator:
             self.gui_status_log.info(f'Analytics for {symbol} complete \u2705')
             if progress_observer:
                 # inform the progress observer that the analytics is complete
-                self.gui_status_log.info(f'Analytics for {symbol} complete')
+                self.gui_status_log.info(f'Analytics complete \u2705')
                 progress_observer.set_analytics_complete()
         else:
             pass

@@ -30,7 +30,7 @@ class ChartingEngine:
 
     def __init__(self, identifier: int):
         self.id = identifier
-        # logger dedicated to logging messages to the gui status box (must be here to avoid log duplication)
+        # logger dedicated to logging messages to the gui status box (must be in constructor to avoid log duplication)
         self.gui_status_log = logging.getLogger(f'gui_status_box_logging_{self.id}')
 
     def build_rules_bar_chart(self, positions: list, side: str, symbol: Optional[str],

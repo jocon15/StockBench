@@ -88,14 +88,7 @@ class OverviewSideBar(QWidget):
             if len(messages) == 0:
                 self.timer.stop()
 
-        for message in messages:
-            list_item = QListWidgetItem(str(message.msg))
-            if message.levelname == 'WARNING':
-                list_item.setForeground(QColor('yellow'))
-            else:
-                list_item.setForeground(QColor('grey'))
-            self.output_box.addItem(list_item)
-            # print(str(message.msg))  # helpful for debugging queue
+        self._log_messages_to_output_box(messages)
 
         # scroll the output box to the bottom
         self.output_box.scrollToBottom()
@@ -116,6 +109,10 @@ class OverviewSideBar(QWidget):
     def on_export_md_btn_clicked(self):
         raise NotImplementedError('You must define an implementation for on_export_md_btn_clicked()!')
 
+    @abstractmethod
+    def render_data(self, simulation_results: dict):
+        raise NotImplementedError('You must define an implementation for render_data()!')
+
     @staticmethod
     def _copy_to_clipboard(text: str):
         # copy the dict to the clipboard
@@ -135,6 +132,12 @@ class OverviewSideBar(QWidget):
     def _remove_extraneous_info(self, results: dict) -> dict:
         raise NotImplementedError('You must define an implementation for _remove_extraneous_info()!')
 
-    @abstractmethod
-    def render_data(self, simulation_results: dict):
-        raise NotImplementedError('You must define an implementation for render_data()!')
+    def _log_messages_to_output_box(self, messages: list):
+        for message in messages:
+            list_item = QListWidgetItem(str(message.msg))
+            if message.levelname == 'WARNING':
+                list_item.setForeground(QColor('yellow'))
+            else:
+                list_item.setForeground(QColor('grey'))
+            self.output_box.addItem(list_item)
+            # print(str(message.msg))  # helpful for debugging queue

@@ -7,6 +7,12 @@ from StockBench.models.constants.simulation_results_constants import *
 class FolderResultsExporter(ExcelExporter):
     WORKSHEET_NAME = 'Results'
 
+    HEADERS = ['Strategy', 'Trades Made', 'Effectiveness (%)', 'Total PL ($)', 'Average PL ($)', 'Median PL ($)',
+               'Stddev PL ($)', 'Average PLPC (%)', 'Median PLPC (%)', 'Stddev PLPC (%)']
+
+    RESULTS_KEYS = [STRATEGY_KEY, TRADES_MADE_KEY, EFFECTIVENESS_KEY, TOTAL_PL_KEY, AVERAGE_PL_KEY, MEDIAN_PL_KEY,
+                    STANDARD_DEVIATION_PL_KEY, AVERAGE_PLPC_KEY, MEDIAN_PLPC_KEY, STANDARD_DEVIATION_PLPC_KEY]
+
     def export(self, results: list, folder_path: str, file_name_prefix: str) -> str:
         timestamp = datetime_timestamp()
 
@@ -21,25 +27,15 @@ class FolderResultsExporter(ExcelExporter):
         return filepath
 
     def __write_column_headers(self, worksheet: Worksheet):
-        worksheet.write_string(self.DATA_COLUMN_HEADER_ROW, 0, 'Strategy')
-        worksheet.write_string(self.DATA_COLUMN_HEADER_ROW, 1, 'Trades Made')
-        worksheet.write_string(self.DATA_COLUMN_HEADER_ROW, 2, 'Effectiveness')
-        worksheet.write_string(self.DATA_COLUMN_HEADER_ROW, 3, 'Total P/L')
-        worksheet.write_string(self.DATA_COLUMN_HEADER_ROW, 4, 'Average P/L')
-        worksheet.write_string(self.DATA_COLUMN_HEADER_ROW, 5, 'Median P/L')
-        worksheet.write_string(self.DATA_COLUMN_HEADER_ROW, 6, 'Stddev(P) P/L')
+        for i, header in enumerate(self.HEADERS):
+            worksheet.write_string(self.DATA_COLUMN_HEADER_ROW, i, header)
 
     def __write_results(self, results: list, worksheet: Worksheet):
         if len(results) == 0:
             raise ValueError('Results is empty!')
-        col = self.DATA_COLUMN_HEADER_COL
         row = self.DATA_COLUMN_HEADER_ROW + 1
+
         for result in results:
-            self._write_to_cell(worksheet, row, col, result[STRATEGY_KEY])
-            self._write_to_cell(worksheet, row, col+1, result[TRADES_MADE_KEY])
-            self._write_to_cell(worksheet, row, col+2, result[EFFECTIVENESS_KEY])
-            self._write_to_cell(worksheet, row, col + 3, result[TOTAL_PL_KEY])
-            self._write_to_cell(worksheet, row, col + 4, result[AVERAGE_PL_KEY])
-            self._write_to_cell(worksheet, row, col + 5, result[MEDIAN_PL_KEY])
-            self._write_to_cell(worksheet, row, col + 6, result[STANDARD_DEVIATION_PL_KEY])
+            for col, result_key in enumerate(self.RESULTS_KEYS):
+                self._write_to_cell(worksheet, row, col, result[STRATEGY_KEY])
             row += 1

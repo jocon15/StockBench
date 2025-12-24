@@ -11,15 +11,16 @@ class MarkdownExporter:
 
     @staticmethod
     def export_singular_simulation_to_md(simulation_results: dict) -> str:
-        """Export a singular simulation to markdown.
+        """Export a singular simulation to Markdown.
 
-        Pasting the chart file html into the md file seems like a good idea, but the html file is too big (2MB)
-        Because of how much data and wrapping code is in the file, the md file becomes un-loadable in any application.
+        Pasting the chart file HTML into the md file seems like a good idea, but the HTML file is too big (2MB).
+        Because of how much data and wrapping code is in the file, the md file becomes un-loadable.
         """
         df = DataFrame()
         df["Metric"] = ["Start Date", "End Date", "Initial Account Value", "Trade-able Days", "Trades Made",
-                        "Average Trade Duration", "Effectiveness", "Total Profit/Loss", "Average Profit/Loss",
-                        "Median Profit/Loss", "Standard Profit/Loss Deviation", "Final Account Value"]
+                        "Average Trade Duration", "Effectiveness", "Total PL", "Average PL", "Median PL",
+                        "Standard PL Deviation", "Average PLPC", "Median PLPC", "Standard PLPC Deviation",
+                        "Final Account Value"]
         df["Value"] = [MarkdownExporter._unix_to_date(simulation_results[SIMULATION_START_TIMESTAMP_KEY]),
                        MarkdownExporter._unix_to_date(simulation_results[SIMULATION_END_TIMESTAMP_KEY]),
                        f"$ {simulation_results[INITIAL_ACCOUNT_VALUE_KEY]}",
@@ -31,6 +32,9 @@ class MarkdownExporter:
                        f"$ {simulation_results[AVERAGE_PL_KEY]}",
                        f"$ {simulation_results[MEDIAN_PL_KEY]}",
                        f"$ {simulation_results[STANDARD_DEVIATION_PL_KEY]}",
+                       f"$ {simulation_results[AVERAGE_PLPC_KEY]}",
+                       f"$ {simulation_results[MEDIAN_PLPC_KEY]}",
+                       f"$ {simulation_results[STANDARD_DEVIATION_PLPC_KEY]}",
                        f"$ {simulation_results[FINAL_ACCOUNT_VALUE_KEY]}"]
 
         markdown_table = df.to_markdown(index=False)
@@ -59,15 +63,15 @@ class MarkdownExporter:
 
     @staticmethod
     def export_multi_simulation_to_md(simulation_results: dict) -> str:
-        """Export a multi simulation to markdown.
+        """Export a multi simulation to Markdown.
 
-        Pasting the chart file html into the md file seems like a good idea, but the html file is too big (2MB)
-        Because of how much data and wrapping code is in the file, the md file becomes un-loadable in any application.
+        Pasting the chart file HTML into the md file seems like a good idea, but the HTML file is too big (2MB).
+        Because of how much data and wrapping code is in the file, the md file becomes un-loadable.
         """
         df = DataFrame()
         df["Metric"] = ["Start Date", "End Date", "Initial Account Value", "Trade-able Days", "Trades Made",
-                        "Average Trade Duration", "Effectiveness", "Total Profit/Loss", "Average Profit/Loss",
-                        "Median Profit/Loss", "Standard Profit/Loss Deviation"]
+                        "Average Trade Duration", "Effectiveness", "Total PL", "Average PL", "Median PL",
+                        "Standard PL Deviation", "Average PLPC", "Median PLPC", "Standard PLPC Deviation"]
         df["Value"] = [MarkdownExporter._unix_to_date(simulation_results[SIMULATION_START_TIMESTAMP_KEY]),
                        MarkdownExporter._unix_to_date(simulation_results[SIMULATION_END_TIMESTAMP_KEY]),
                        f"$ {simulation_results[INITIAL_ACCOUNT_VALUE_KEY]}",
@@ -78,7 +82,10 @@ class MarkdownExporter:
                        f"$ {simulation_results[TOTAL_PL_KEY]}",
                        f"$ {simulation_results[AVERAGE_PL_KEY]}",
                        f"$ {simulation_results[MEDIAN_PL_KEY]}",
-                       f"$ {simulation_results[STANDARD_DEVIATION_PL_KEY]}"]
+                       f"$ {simulation_results[STANDARD_DEVIATION_PL_KEY]}",
+                       f"$ {simulation_results[AVERAGE_PLPC_KEY]}",
+                       f"$ {simulation_results[MEDIAN_PLPC_KEY]}",
+                       f"$ {simulation_results[STANDARD_DEVIATION_PLPC_KEY]}"]
 
         markdown_table = df.to_markdown(index=False)
 
@@ -110,17 +117,16 @@ class MarkdownExporter:
 
     @staticmethod
     def export_folder_simulation_to_md(simulation_results: dict) -> str:
-        """Export a folder simulation to markdown.
+        """Export a folder simulation to Markdown.
 
-        Pasting the chart file html into the md file seems like a good idea, but the html file is too big (2MB)
-        Because of how much data and wrapping code is in the file, the md file becomes un-loadable in any application.
+        Pasting the chart file HTML into the md file seems like a good idea, but the HTML file is too big (2MB).
+        Because of how much data and wrapping code is in the file, the md file becomes un-loadable.
         """
 
         df = DataFrame()
         df["Metric"] = ["Start Date", "End Date", "Initial Account Value", "Trade-able Days", "Trades Made",
-                        "Average Trade Duration", "Effectiveness", "Total Profit/Loss", "Average Profit/Loss",
-                        "Median Profit/Loss", "Standard Profit/Loss Deviation"]
-
+                        "Average Trade Duration", "Effectiveness", "Total PL", "Average PL", "Median PL",
+                        "Standard PL Deviation", "Average PLPC", "Median PLPC", "Standard PLPC Deviation"]
         for strategy_results in simulation_results['results']:
             df[strategy_results[STRATEGY_KEY]] = [
                 MarkdownExporter._unix_to_date(strategy_results[SIMULATION_START_TIMESTAMP_KEY]),
@@ -133,8 +139,10 @@ class MarkdownExporter:
                 f"$ {strategy_results[TOTAL_PL_KEY]}",
                 f"$ {strategy_results[AVERAGE_PL_KEY]}",
                 f"$ {strategy_results[MEDIAN_PL_KEY]}",
-                f"$ {strategy_results[STANDARD_DEVIATION_PL_KEY]}"
-            ]
+                f"$ {strategy_results[STANDARD_DEVIATION_PL_KEY]}",
+                f"$ {simulation_results[AVERAGE_PLPC_KEY]}",
+                f"$ {simulation_results[MEDIAN_PLPC_KEY]}",
+                f"$ {simulation_results[STANDARD_DEVIATION_PLPC_KEY]}"]
 
         markdown_table = df.to_markdown(index=False)
 

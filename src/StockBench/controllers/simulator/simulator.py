@@ -256,9 +256,10 @@ class Simulator:
             self.gui_status_log.info(f'Analytics for {symbol} complete \u2705')
             if progress_observer:
                 # inform the progress observer that the analytics is complete
+                self.gui_status_log.info(f'Analytics for {symbol} complete')
                 progress_observer.set_analytics_complete()
         else:
-            self.gui_status_log.info(f'Analytics for {symbol} complete')
+            pass
 
         return {
             STRATEGY_KEY: self.__algorithm.strategy_filename,
@@ -276,10 +277,10 @@ class Simulator:
             EFFECTIVENESS_KEY: analyzer.effectiveness(),
             TOTAL_PL_KEY: analyzer.total_pl(),
             AVERAGE_PL_KEY: analyzer.average_pl(),
-            AVERAGE_PLPC_KEY: analyzer.average_plpc(),
             MEDIAN_PL_KEY: analyzer.median_pl(),
-            MEDIAN_PLPC_KEY: analyzer.median_plpc(),
             STANDARD_DEVIATION_PL_KEY: analyzer.standard_deviation_pl(),
+            AVERAGE_PLPC_KEY: analyzer.average_plpc(),
+            MEDIAN_PLPC_KEY: analyzer.median_plpc(),
             STANDARD_DEVIATION_PLPC_KEY: analyzer.standard_deviation_plpc(),
             FINAL_ACCOUNT_VALUE_KEY: self.__account.get_balance(),
         }
@@ -331,10 +332,10 @@ class Simulator:
             EFFECTIVENESS_KEY: analyzer.effectiveness(),
             TOTAL_PL_KEY: analyzer.total_pl(),
             AVERAGE_PL_KEY: analyzer.average_pl(),
-            AVERAGE_PLPC_KEY: analyzer.average_plpc(),
             MEDIAN_PL_KEY: analyzer.median_pl(),
-            MEDIAN_PLPC_KEY: analyzer.median_plpc(),
             STANDARD_DEVIATION_PL_KEY: analyzer.standard_deviation_pl(),
+            AVERAGE_PLPC_KEY: analyzer.average_plpc(),
+            MEDIAN_PLPC_KEY: analyzer.median_plpc(),
             STANDARD_DEVIATION_PLPC_KEY: analyzer.standard_deviation_plpc(),
         }
 

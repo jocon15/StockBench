@@ -67,13 +67,11 @@ class ProgressObserver:
     def set_analytics_complete(self):
         """Manually list the analytics as complete."""
         with self.__progress_lock:
-            print("Analytics is complete")
             self.__analytics_completed = True
 
     def set_charting_complete(self):
         """Manually list the charting as complete."""
         with self.__progress_lock:
-            print("Charting is complete")
             self.__charting_completed = True
 
     def is_simulation_completed(self) -> bool:

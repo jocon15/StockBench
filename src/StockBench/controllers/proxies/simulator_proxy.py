@@ -96,6 +96,8 @@ class SimulatorProxy:
             # override the dummy strategy in the simulator with the correct one
             self.__simulator.load_strategy(strategy)
 
+            # since we are using DI and cannot create a new simulator instance, we must reset the simulator with a new
+            # logger id to prevent log duplication before running another simulation
             self.__simulator.reset_logger_with_id(i)
 
             results.append(self.__simulator.run_multiple(symbols, progress_observers[i]))

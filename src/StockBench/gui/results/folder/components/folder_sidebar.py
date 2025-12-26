@@ -1,3 +1,5 @@
+from typing import List
+
 from StockBench.controllers.export.markdown_exporter import MarkdownExporter
 from StockBench.gui.results.folder.components.folder_sidebar_metadata_table import FolderMetadataSidebarTable
 from StockBench.gui.results.base.overview_sidebar import OverviewSideBar
@@ -8,7 +10,7 @@ from StockBench.models.constants.simulation_results_constants import *
 
 
 class FolderOverviewSidebar(OverviewSideBar):
-    def __init__(self, progress_observers):
+    def __init__(self, progress_observers: List[ProgressObserver]):
         # pass a summy progress observer to the superclass as we are overriding the
         # update output box function now that we have a list of progress observers
         dummy_progress_observer = ProgressObserver()
@@ -88,7 +90,7 @@ class FolderOverviewSidebar(OverviewSideBar):
             stored_queues.append(messages_to_add)
 
             if not progress_observer.is_simulation_completed():
-                    all_observers_complete = False
+                all_observers_complete = False
 
         if all_observers_complete:
             self.timer.stop()

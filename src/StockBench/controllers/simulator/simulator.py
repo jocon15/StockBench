@@ -1,6 +1,7 @@
 import sys
 import math
 import logging
+from logging import Logger
 
 from time import perf_counter
 from datetime import datetime
@@ -55,7 +56,7 @@ class Simulator:
         self.__available_indicators = IndicatorManager.load_indicators()
 
         # logger dedicated to logging messages to the gui status box (must be in constructor to avoid log duplication)
-        self.gui_status_log = logging.getLogger(f'gui_status_box_logging_{self.id}')
+        self.gui_status_log = self.__set_logger_with_id(identifier)
 
         # simulation settings
         self.__algorithm = None
@@ -82,6 +83,16 @@ class Simulator:
         """Load a strategy."""
         self.__algorithm = Algorithm(strategy, self.__available_indicators.values())
 
+    def reset_logger_with_id(self, identifier: int):
+        """Reset the simulator to use a new logger.
+
+        This should be used EXCLUSIVELY during folder simulations. QThread for simulations is done at the controller
+        level, thus folder simulations do not have the luxury of creating a new simulator instance for each simulation
+        run. Instead of creating a new simulator instance, the logger identifier is reset with a new one to prevent
+        log messages from getting set to all progress observers, resulting in message duplication.
+        """
+        self.gui_status_log = self.__set_logger_with_id(identifier)
+
     def run(self, symbol: str, progress_observer=None) -> dict:
         """Run a simulation on a single asset."""
         start_time = perf_counter()
@@ -91,6 +102,7 @@ class Simulator:
 
         if not self.__running_multiple:
             if progress_observer:
+                self.__clear_logger_handlers()
                 self.gui_status_log.setLevel(logging.INFO)
                 self.gui_status_log.addHandler(ProgressMessageHandler(progress_observer))
 
@@ -342,6 +354,11 @@ class Simulator:
         self.__single_simulation_position_archive = []
         self.__account_value_archive = []
 
+    def __clear_logger_handlers(self):
+        """Clear all logger handlers."""
+        for handler in self.gui_status_log.handlers:
+            self.gui_status_log.removeHandler(handler)
+
     def __create_position(self, current_day_index: int, rule: str) -> Position:
         """Creates a position and updates the account.
 
@@ -432,6 +449,14 @@ class Simulator:
         if progress_observer is not None:
             increment = round(100.0 / (self.__data_manager.get_data_length() - sim_window_start_day), 2)
         return increment
+
+    @staticmethod
+    def __set_logger_with_id(identifier: int) -> Logger:
+        """Sets the logger instance to match the simulator instance using the instance id (identifier).
+
+        For example, we want simulator instance #1's log messages to only go to logger #1
+        """
+        return logging.getLogger(f'gui_status_box_logging_{identifier}')
 
     @staticmethod
     def __calculate_multi_progress_bar_increment(symbols: List[str],

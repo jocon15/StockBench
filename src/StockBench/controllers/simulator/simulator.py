@@ -1,3 +1,4 @@
+import os
 import sys
 import math
 import logging
@@ -7,6 +8,7 @@ from time import perf_counter
 from datetime import datetime
 from typing import Optional, List, Tuple
 
+from StockBench.controllers.function_tools.timestamp import datetime_timestamp
 from StockBench.models.constants.general_constants import *
 from StockBench.controllers.simulator.broker.broker_client import BrokerClient
 from StockBench.controllers.export.window_data_exporter import WindowDataExporter
@@ -42,6 +44,8 @@ class Simulator:
     |   OHLC   |
     ------------ - End of the simulation (user defined)
     """
+    LOGS_FOLDER = 'logs'
+
     ACCOUNT_VALUE_COLUMN_NAME = 'Account Value'
 
     CHARTS_AND_DATA = 0
@@ -70,6 +74,19 @@ class Simulator:
         self.__reporting_on = False
         self.__running_multiple = False
         self.__running_as_exe = getattr(sys, 'frozen', False)
+
+    def enable_logging(self) -> None:
+        """Enable user logging_handlers."""
+        log.setLevel(logging.INFO)
+        user_logging_filepath = os.path.join(self.LOGS_FOLDER, f'RunLog_{datetime_timestamp()}')
+
+        # make the directories if they don't already exist
+        os.makedirs(os.path.dirname(user_logging_filepath), exist_ok=True)
+
+        user_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
+        user_handler = logging.FileHandler(user_logging_filepath)
+        user_handler.setFormatter(user_logging_formatter)
+        log.addHandler(user_handler)
 
     def enable_reporting(self):
         """Enable report building."""

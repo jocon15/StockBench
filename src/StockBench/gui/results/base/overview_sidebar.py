@@ -6,12 +6,13 @@ from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton, QMessageBox, \
     QAbstractItemView
 from StockBench.gui.palette.palette import Palette
+from StockBench.models.observers.progress_observer import ProgressObserver
 
 
 class OverviewSideBar(QWidget):
     """Abstract base class for a sidebar widget."""
 
-    def __init__(self, progress_observer):
+    def __init__(self, progress_observer: ProgressObserver):
         super().__init__()
         # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
         self.threadpool = QThreadPool()

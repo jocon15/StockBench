@@ -1,3 +1,4 @@
+import logging
 import traceback
 from functools import wraps
 from typing import Callable
@@ -71,10 +72,14 @@ class ChartingProxy:
     }
 
     def __init__(self, singular_charting_engine: SingularChartingEngine, multi_charting_engine: MultiChartingEngine,
-                 folder_charting_engine: FolderChartingEngine):
+                 folder_charting_engine: FolderChartingEngine, identifier: int):
         self.__singular_charting_engine = singular_charting_engine
         self.__multi_charting_engine = multi_charting_engine
         self.__folder_charting_engine = folder_charting_engine
+        self.__id = identifier
+
+        # logger dedicated to logging messages to the gui status box (must be in constructor to avoid log duplication)
+        self.gui_status_log = logging.getLogger(f'gui_status_box_logging_{self.__id}')
 
     @ChartingProxyFunction(SINGULAR_DEFAULT_CHART_FILEPATHS)
     def build_singular_charts(self, simulation_results: dict, unique_chart_saving: bool, results_depth: int,
@@ -86,7 +91,7 @@ class ChartingProxy:
             save_option = self.__singular_charting_engine.TEMP_SAVE
 
         if results_depth == 0:
-            return {
+            charts = {
                 OVERVIEW_CHART_FILEPATH_KEY: self.__singular_charting_engine.build_singular_overview_chart(
                     simulation_results[NORMALIZED_SIMULATION_DATA], simulation_results[SYMBOL_KEY],
                     simulation_results[AVAILABLE_INDICATORS], show_volume, save_option),
@@ -114,7 +119,11 @@ class ChartingProxy:
             }
         else:
             # user opted to only see data, no charts
-            return ChartingProxy.SINGULAR_DEFAULT_CHART_FILEPATHS
+            charts = ChartingProxy.SINGULAR_DEFAULT_CHART_FILEPATHS
+
+        self.gui_status_log.info('Charting complete \u2705')
+
+        return charts
 
     @ChartingProxyFunction(MULTI_DEFAULT_CHART_FILEPATHS)
     def build_multi_charts(self, simulation_results: dict, unique_chart_saving: bool, results_depth: int) -> dict:
@@ -125,7 +134,7 @@ class ChartingProxy:
             save_option = self.__multi_charting_engine.TEMP_SAVE
 
         if results_depth == Simulator.CHARTS_AND_DATA:
-            return {
+            charts = {
                 OVERVIEW_CHART_FILEPATH_KEY: self.__multi_charting_engine.build_multi_overview_chart(
                     simulation_results[INDIVIDUAL_RESULTS_KEY], simulation_results[INITIAL_ACCOUNT_VALUE_KEY],
                     save_option),
@@ -147,12 +156,17 @@ class ChartingProxy:
             }
         else:
             # user opted to only see data, no charts
-            return ChartingProxy.MULTI_DEFAULT_CHART_FILEPATHS
+            charts = ChartingProxy.MULTI_DEFAULT_CHART_FILEPATHS
+
+        self.gui_status_log.info('Charting complete \u2705')
+
+        return charts
 
     @ChartingProxyFunction(FOLDER_DEFAULT_CHART_FILEPATHS)
     def build_folder_charts(self, simulation_results: list) -> dict:
         """Proxy function for charting folder simulation results with error capturing."""
         # NOTE: results depth is not an option for folder simulations
+        # NOTE: cannot perform gui terminal logging here, must be done in stockbench_controller
         return {
             TRADES_MADE_BAR_CHART_FILEPATH_KEY:
                 self.__folder_charting_engine.build_trades_made_bar_chart(simulation_results),

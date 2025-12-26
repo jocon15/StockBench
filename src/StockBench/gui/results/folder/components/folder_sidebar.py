@@ -1,5 +1,4 @@
-from PyQt6.QtWidgets import QListWidgetItem
-from PyQt6.QtGui import QColor
+from typing import List
 
 from StockBench.controllers.export.markdown_exporter import MarkdownExporter
 from StockBench.gui.results.folder.components.folder_sidebar_metadata_table import FolderMetadataSidebarTable
@@ -11,7 +10,7 @@ from StockBench.models.constants.simulation_results_constants import *
 
 
 class FolderOverviewSidebar(OverviewSideBar):
-    def __init__(self, progress_observers):
+    def __init__(self, progress_observers: List[ProgressObserver]):
         # pass a summy progress observer to the superclass as we are overriding the
         # update output box function now that we have a list of progress observers
         dummy_progress_observer = ProgressObserver()
@@ -38,10 +37,8 @@ class FolderOverviewSidebar(OverviewSideBar):
         self.layout.addStretch()
 
         self.layout.addWidget(self.status_header)
-
         self.layout.addWidget(self.output_box)
 
-        # apply the layout
         self.setLayout(self.layout)
 
     def on_export_json_btn_clicked(self):
@@ -87,23 +84,22 @@ class FolderOverviewSidebar(OverviewSideBar):
     def _update_output_box(self):
         """Update the output box with messages from the progress observer."""
         all_observers_complete = True
+        stored_queues = []
         for progress_observer in self.progress_observers:
-            if not progress_observer.is_charting_completed():
+            messages_to_add = progress_observer.get_messages()
+            stored_queues.append(messages_to_add)
+
+            if not progress_observer.is_simulation_completed():
                 all_observers_complete = False
-            messages = progress_observer.get_messages()
-            for message in messages:
-                list_item = QListWidgetItem(str(message.msg))
-                if message.levelname == 'WARNING':
-                    list_item.setForeground(QColor('yellow'))
-                else:
-                    list_item.setForeground(QColor('grey'))
-                self.output_box.addItem(list_item)
-            # scroll the output box to the bottom
-            self.output_box.scrollToBottom()
 
         if all_observers_complete:
-            # stop the timer
             self.timer.stop()
+
+        for messages in stored_queues:
+            self._log_messages_to_output_box(messages)
+
+        # scroll the output box to the bottom
+        self.output_box.scrollToBottom()
 
     def _remove_extraneous_info(self, results: dict) -> dict:
         """Remove info from the simulation results that is not relevant to exporting."""

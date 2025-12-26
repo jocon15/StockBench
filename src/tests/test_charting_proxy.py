@@ -39,7 +39,8 @@ def test_build_singular_charts_charting_error(mock_singular_charting_engine, moc
     # ============= Arrange ==============
     mock_singular_charting_engine.build_singular_overview_chart.side_effect = ChartingError
 
-    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine, mock_folder_charting_engine)
+    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine,
+                                mock_folder_charting_engine, 1)
 
     # ============= Act ==================
     result = test_object.build_singular_charts({
@@ -61,7 +62,8 @@ def test_build_singular_charts_unexpected_error(mock_singular_charting_engine, m
     # a random error not explicitly caught by the decorator
     mock_singular_charting_engine.build_singular_overview_chart.side_effect = ValueError
 
-    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine, mock_folder_charting_engine)
+    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine,
+                                mock_folder_charting_engine, 1)
 
     # ============= Act ==================
     result = test_object.build_singular_charts({
@@ -90,7 +92,8 @@ def test_build_singular_charts_normal_with_unique_chart_saving(mock_singular_cha
         'filepath'
     mock_singular_charting_engine.build_single_strategy_result_dataset_positions_plpc_box_plot.return_value = 'filepath'
 
-    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine, mock_folder_charting_engine)
+    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine,
+                                mock_folder_charting_engine, 1)
     normalized_sim_data = DataFrame()
     normalized_sim_data['Account Value'] = []
 
@@ -121,7 +124,8 @@ def test_build_singular_charts_normal_without_results_depth_chart_saving(mock_si
                                                                          mock_multi_charting_engine,
                                                                          mock_folder_charting_engine):
     # ============= Arrange ==============
-    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine, mock_folder_charting_engine)
+    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine,
+                                mock_folder_charting_engine, 1)
 
     # ============= Act ==================
     result = test_object.build_singular_charts({}, False, 1, False)
@@ -139,7 +143,8 @@ def test_build_multi_charts_charting_error(mock_singular_charting_engine, mock_m
     # ============= Arrange ==============
     mock_multi_charting_engine.build_multi_overview_chart.side_effect = ChartingError
 
-    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine, mock_folder_charting_engine)
+    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine,
+                                mock_folder_charting_engine, 1)
 
     # ============= Act ==================
     result = test_object.build_multi_charts({
@@ -160,7 +165,8 @@ def test_build_multi_charts_unexpected_error(mock_singular_charting_engine, mock
     # a random error not explicitly caught by the decorator
     mock_multi_charting_engine.build_multi_overview_chart.side_effect = ValueError
 
-    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine, mock_folder_charting_engine)
+    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine,
+                                mock_folder_charting_engine, 1)
 
     # ============= Act ==================
     result = test_object.build_multi_charts({
@@ -187,7 +193,8 @@ def test_build_multi_charts_normal_with_unique_chart_saving(mock_singular_charti
         'filepath'
     mock_multi_charting_engine.build_single_strategy_result_dataset_positions_plpc_box_plot.return_value = 'filepath'
 
-    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine, mock_folder_charting_engine)
+    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine,
+                                mock_folder_charting_engine, 1)
     normalized_sim_data = DataFrame()
     normalized_sim_data['Account Value'] = []
 
@@ -216,7 +223,8 @@ def test_build_multi_charts_normal_without_results_depth_chart_saving(mock_singu
                                                                       mock_multi_charting_engine,
                                                                       mock_folder_charting_engine):
     # ============= Arrange ==============
-    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine, mock_folder_charting_engine)
+    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine,
+                                mock_folder_charting_engine, 1)
 
     # ============= Act ==================
     result = test_object.build_multi_charts({}, False, 1)
@@ -234,7 +242,8 @@ def test_build_folder_charts_charting_error(mock_singular_charting_engine, mock_
     # ============= Arrange ==============
     mock_folder_charting_engine.build_trades_made_bar_chart.side_effect = ChartingError
 
-    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine, mock_folder_charting_engine)
+    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine,
+                                mock_folder_charting_engine, 1)
 
     # ============= Act ==================
     result = test_object.build_folder_charts([])
@@ -252,7 +261,8 @@ def test_build_folder_charts_unexpected_error(mock_singular_charting_engine, moc
     # a random error not explicitly caught by the decorator
     mock_folder_charting_engine.build_trades_made_bar_chart.side_effect = ValueError
 
-    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine, mock_folder_charting_engine)
+    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine,
+                                mock_folder_charting_engine, 1)
 
     # ============= Act ==================
     result = test_object.build_folder_charts([])
@@ -276,7 +286,8 @@ def test_build_folder_charts_normal(mock_singular_charting_engine, mock_multi_ch
     mock_folder_charting_engine.build_positions_plpc_histogram_chart.return_value = 'filepath'
     mock_folder_charting_engine.build_positions_plpc_box_chart.return_value = 'filepath'
 
-    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine, mock_folder_charting_engine)
+    test_object = ChartingProxy(mock_singular_charting_engine, mock_multi_charting_engine,
+                                mock_folder_charting_engine, 1)
 
     # ============= Act ==================
     result = test_object.build_folder_charts([])

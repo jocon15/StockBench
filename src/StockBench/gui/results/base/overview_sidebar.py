@@ -3,14 +3,16 @@ from abc import abstractmethod
 from PyQt6.QtCore import Qt, QTimer, QThreadPool
 from PyQt6 import QtGui
 from PyQt6.QtGui import QColor
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton, QMessageBox
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton, QMessageBox, \
+    QAbstractItemView
 from StockBench.gui.palette.palette import Palette
+from StockBench.models.observers.progress_observer import ProgressObserver
 
 
 class OverviewSideBar(QWidget):
     """Abstract base class for a sidebar widget."""
 
-    def __init__(self, progress_observer):
+    def __init__(self, progress_observer: ProgressObserver):
         super().__init__()
         # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
         self.threadpool = QThreadPool()
@@ -20,7 +22,6 @@ class OverviewSideBar(QWidget):
 
         self.simulation_results_to_export = {}
 
-        # define layout type
         self.layout = QVBoxLayout()
 
         # metadata header
@@ -53,8 +54,10 @@ class OverviewSideBar(QWidget):
 
         # output box (terminal)
         self.output_box = QListWidget()
+        self.output_box.setMinimumHeight(300)
         self.output_box.setWordWrap(True)
-        self.output_box.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.output_box.setAutoScroll(True)
+        self.output_box.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
         self.output_box.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.output_box.setStyleSheet(Palette.SIDEBAR_OUTPUT_BOX_STYLESHEET)
 
@@ -78,17 +81,16 @@ class OverviewSideBar(QWidget):
 
     def _update_output_box(self):
         """Update the output box with messages from the progress observer."""
-        if self.progress_observer.is_charting_completed():
-            # stop the timer
-            self.timer.stop()
+        # get_messages can only be called once as its impl. deletes queue items
         messages = self.progress_observer.get_messages()
-        for message in messages:
-            list_item = QListWidgetItem(str(message.msg))
-            if message.levelname == 'WARNING':
-                list_item.setForeground(QColor('yellow'))
-            else:
-                list_item.setForeground(QColor('grey'))
-            self.output_box.addItem(list_item)
+
+        # must make sure the sim is complete AND no more messages in the queue before stopping timer
+        if self.progress_observer.is_simulation_completed():
+            if len(messages) == 0:
+                self.timer.stop()
+
+        self._log_messages_to_output_box(messages)
+
         # scroll the output box to the bottom
         self.output_box.scrollToBottom()
 
@@ -107,6 +109,10 @@ class OverviewSideBar(QWidget):
     @abstractmethod
     def on_export_md_btn_clicked(self):
         raise NotImplementedError('You must define an implementation for on_export_md_btn_clicked()!')
+
+    @abstractmethod
+    def render_data(self, simulation_results: dict):
+        raise NotImplementedError('You must define an implementation for render_data()!')
 
     @staticmethod
     def _copy_to_clipboard(text: str):
@@ -127,6 +133,12 @@ class OverviewSideBar(QWidget):
     def _remove_extraneous_info(self, results: dict) -> dict:
         raise NotImplementedError('You must define an implementation for _remove_extraneous_info()!')
 
-    @abstractmethod
-    def render_data(self, simulation_results: dict):
-        raise NotImplementedError('You must define an implementation for render_data()!')
+    def _log_messages_to_output_box(self, messages: list):
+        for message in messages:
+            list_item = QListWidgetItem(str(message.msg))
+            if message.levelname == 'WARNING':
+                list_item.setForeground(QColor('yellow'))
+            else:
+                list_item.setForeground(QColor('grey'))
+            self.output_box.addItem(list_item)
+            # print(str(message.msg))  # helpful for debugging queue

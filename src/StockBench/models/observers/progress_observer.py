@@ -1,6 +1,7 @@
+import queue
 import threading
-from logging import LogRecord
 from queue import Queue
+from logging import LogRecord
 
 
 class ProgressObserver:
@@ -19,47 +20,48 @@ class ProgressObserver:
         self.__message_queue = Queue()
         self.__current_progress = 0.0
         self.__max_progress = 100.0
-        self.__simulation_completed = False
         self.__analytics_completed = False
         self.__charting_completed = False
 
     def update_progress(self, advance: float):
-        """Update the progress of the task.
-
-        Args:
-            advance (float): Amount to increase the progress by.
-        """
+        """Update the progress of the task."""
         advance = round(advance, 3)
-        # acquire lock to be thread-safe
         with self.__progress_lock:
             if advance + self.__current_progress >= self.__max_progress:
                 # If the advance will exceed the max progress, set progress to full progress.
                 # This will prevent the progress from going out of bounds in a gui if the advance does not evently
                 # divide the max progress (100)
-                self.__simulation_completed = True
                 self.__current_progress = self.__max_progress
             else:
                 self.__current_progress += advance
 
     def get_progress(self) -> float:
         """Get the progress of the task."""
-        # acquire lock to be thread-safe
         with self.__progress_lock:
             return self.__current_progress
 
     def add_log_record(self, record: LogRecord):
-        # reminder that queue is threadsafe by default
-        if not self.set_charting_complete():
-            self.__message_queue.put(record)
+        # reminder that queue is threadsafe by default (don't need locks)
+        self.__message_queue.put(record)
 
     def get_messages(self) -> list:
-        # reminder that queue is threadsafe by default
-        messages = []
-        if self.__message_queue.qsize() != 0:
-            for _ in range(self.__message_queue.qsize()):
-                messages.append(self.__message_queue.get())
+        """Gets a list of messages from the queue.
 
-            self.__message_queue.task_done()
+        WARNING:
+            This function inherently removes queue messages once they are read from the queue.
+            Calling clients must be aware that any queue messages read by calling this function will be destroyed.
+            After calling, the queue will be empty until more messages are added to the queue.
+        """
+        # reminder that queue is threadsafe by default (don't need locks)
+        messages = []
+        try:
+            item = self.__message_queue.get_nowait()
+            messages.append(item)
+            # print(f"Processing {item}")  # helpful for debugging queue
+            self.__message_queue.task_done()  # Mark the task as done
+        except queue.Empty:
+            # print("Queue is currently empty")  # helpful for debugging queue
+            pass
         return messages
 
     def set_analytics_complete(self):
@@ -70,12 +72,12 @@ class ProgressObserver:
     def set_charting_complete(self):
         """Manually list the charting as complete."""
         with self.__progress_lock:
-            self.__charting_completed = False
+            self.__charting_completed = True
 
     def is_simulation_completed(self) -> bool:
         """See if the simulation is complete."""
         with self.__progress_lock:
-            return self.__simulation_completed
+            return self.__analytics_completed and self.__charting_completed
 
     def is_analytics_completed(self) -> bool:
         """See if the analytics are complete."""

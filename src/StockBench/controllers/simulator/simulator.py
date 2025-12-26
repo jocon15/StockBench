@@ -1,11 +1,14 @@
+import os
 import sys
 import math
 import logging
+from logging import Logger
 
 from time import perf_counter
 from datetime import datetime
 from typing import Optional, List, Tuple
 
+from StockBench.controllers.function_tools.timestamp import datetime_timestamp
 from StockBench.models.constants.general_constants import *
 from StockBench.controllers.simulator.broker.broker_client import BrokerClient
 from StockBench.controllers.export.window_data_exporter import WindowDataExporter
@@ -41,6 +44,8 @@ class Simulator:
     |   OHLC   |
     ------------ - End of the simulation (user defined)
     """
+    LOGS_FOLDER = 'logs'
+
     ACCOUNT_VALUE_COLUMN_NAME = 'Account Value'
 
     CHARTS_AND_DATA = 0
@@ -54,11 +59,8 @@ class Simulator:
         self.__algorithm = None  # gets constructed once we have the strategy
         self.__available_indicators = IndicatorManager.load_indicators()
 
-        # logger dedicated to logging messages to the gui status box (must be here to avoid log duplication)
-        self.gui_status_log = logging.getLogger(f'gui_status_box_logging_{self.id}')
-
-        # simulation settings
-        self.__algorithm = None
+        # logger dedicated to logging messages to the gui status box (must be in constructor to avoid log duplication)
+        self.gui_status_log = self.__set_logger_with_id(identifier)
 
         # positions storage during simulation
         self.__single_simulation_position_archive = []
@@ -69,6 +71,19 @@ class Simulator:
         self.__reporting_on = False
         self.__running_multiple = False
         self.__running_as_exe = getattr(sys, 'frozen', False)
+
+    def enable_logging(self) -> None:
+        """Enable user logging_handlers."""
+        log.setLevel(logging.INFO)
+        user_logging_filepath = os.path.join(self.LOGS_FOLDER, f'RunLog_{datetime_timestamp()}')
+
+        # make the directories if they don't already exist
+        os.makedirs(os.path.dirname(user_logging_filepath), exist_ok=True)
+
+        user_logging_formatter = logging.Formatter('%(levelname)s|%(message)s')
+        user_handler = logging.FileHandler(user_logging_filepath)
+        user_handler.setFormatter(user_logging_formatter)
+        log.addHandler(user_handler)
 
     def enable_reporting(self):
         """Enable report building."""
@@ -82,6 +97,16 @@ class Simulator:
         """Load a strategy."""
         self.__algorithm = Algorithm(strategy, self.__available_indicators.values())
 
+    def reset_logger_with_id(self, identifier: int):
+        """Reset the simulator to use a new logger.
+
+        This should be used EXCLUSIVELY during folder simulations. QThread for simulations is done at the controller
+        level, thus folder simulations do not have the luxury of creating a new simulator instance for each simulation
+        run. Instead of creating a new simulator instance, the logger identifier is reset with a new one to prevent
+        log messages from getting set to all progress observers, resulting in message duplication.
+        """
+        self.gui_status_log = self.__set_logger_with_id(identifier)
+
     def run(self, symbol: str, progress_observer=None) -> dict:
         """Run a simulation on a single asset."""
         start_time = perf_counter()
@@ -91,6 +116,7 @@ class Simulator:
 
         if not self.__running_multiple:
             if progress_observer:
+                self.__clear_logger_handlers()
                 self.gui_status_log.setLevel(logging.INFO)
                 self.gui_status_log.addHandler(ProgressMessageHandler(progress_observer))
 
@@ -243,9 +269,6 @@ class Simulator:
 
         self.__log_results(elapsed_time, analyzer, self.__account.get_balance())
 
-        if not self.__running_multiple:
-            self.__print_singular_results(elapsed_time, analyzer, self.__account.get_balance())
-
         if self.__reporting_on:
             exporter = WindowDataExporter()
             exporter.export(chopped_temp_df, symbol)
@@ -253,13 +276,13 @@ class Simulator:
         log.info('Simulation complete!')
 
         if not self.__running_multiple:
-            self.gui_status_log.info(f'Analytics for {symbol} complete \u2705')
+            self.gui_status_log.info(f'Analytics for {symbol} complete')
             if progress_observer:
                 # inform the progress observer that the analytics is complete
-                self.gui_status_log.info(f'Analytics for {symbol} complete')
+                self.gui_status_log.info(f'Analytics complete \u2705')
                 progress_observer.set_analytics_complete()
         else:
-            pass
+            self.gui_status_log.info(f'Analytics for {symbol} complete')
 
         return {
             STRATEGY_KEY: self.__algorithm.strategy_filename,
@@ -344,6 +367,11 @@ class Simulator:
         self.__account.reset()
         self.__single_simulation_position_archive = []
         self.__account_value_archive = []
+
+    def __clear_logger_handlers(self):
+        """Clear all logger handlers."""
+        for handler in self.gui_status_log.handlers:
+            self.gui_status_log.removeHandler(handler)
 
     def __create_position(self, current_day_index: int, rule: str) -> Position:
         """Creates a position and updates the account.
@@ -437,6 +465,14 @@ class Simulator:
         return increment
 
     @staticmethod
+    def __set_logger_with_id(identifier: int) -> Logger:
+        """Sets the logger instance to match the simulator instance using the instance id (identifier).
+
+        For example, we want simulator instance #1's log messages to only go to logger #1
+        """
+        return logging.getLogger(f'gui_status_box_logging_{identifier}')
+
+    @staticmethod
     def __calculate_multi_progress_bar_increment(symbols: List[str],
                                                  progress_observer: ProgressObserver) -> float:
         """Calculate the multi-sim progress bar increment percentage per day."""
@@ -494,19 +530,6 @@ class Simulator:
         log.info(f'Stddev P/L    : $ {analyzer.standard_deviation_pl()}')
         log.info(f'Account Value : $ {balance}')
         log.info('================================')
-
-    @staticmethod
-    def __print_singular_results(elapsed_time: float, analyzer: PositionsAnalyzer, balance: float) -> None:
-        print('====== Simulation Results ======')
-        print(f'Elapsed Time  : {elapsed_time} seconds')
-        print(f'Trades Made   : {analyzer.total_trades()}')
-        print(f'Effectiveness : {analyzer.effectiveness()} %')
-        print(f'Total P/L     : $ {analyzer.total_pl()}')
-        print(f'Average P/L   : $ {analyzer.average_pl()}')
-        print(f'Median P/L    : $ {analyzer.median_pl()}')
-        print(f'Stddev P/L    : $ {analyzer.standard_deviation_pl()}')
-        print(f'Account Value : $ {balance}')
-        print('================================')
 
     @staticmethod
     def __unix_to_string(timestamp: int, date_format: str = '%m-%d-%Y') -> str:

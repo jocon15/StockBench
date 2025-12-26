@@ -44,7 +44,7 @@ class SingularOverviewSideBar(OverviewSideBar):
         raise NotImplementedError('Singular does not use the export to excel button')
 
     def on_export_md_btn_clicked(self):
-        """Export simulation results to markdown."""
+        """Export simulation results to Markdown."""
         if self.simulation_results_to_export:
             filepath = MarkdownExporter.export_singular_simulation_to_md(self.simulation_results_to_export)
 

@@ -59,8 +59,8 @@ class Palette:
 
     SIDEBAR_HEADER_STYLESHEET = """max-height:45px; color:#FFF;font-size:20px;font-weight:bold;"""
 
-    SIDEBAR_OUTPUT_BOX_STYLESHEET = """color: #fff; background-color: #303136; border-radius: 8px;border: 
-    0px; padding: 5px;max-height: 300px;"""
+    SIDEBAR_OUTPUT_BOX_STYLESHEET = """color: #fff; background-color: #303136; border-radius: 8px;border: 0px; 
+    padding: 5px;"""
 
     SECONDARY_BTN = """
                 QPushButton

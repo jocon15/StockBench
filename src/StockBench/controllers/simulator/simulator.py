@@ -62,9 +62,6 @@ class Simulator:
         # logger dedicated to logging messages to the gui status box (must be in constructor to avoid log duplication)
         self.gui_status_log = self.__set_logger_with_id(identifier)
 
-        # simulation settings
-        self.__algorithm = None
-
         # positions storage during simulation
         self.__single_simulation_position_archive = []
         self.__multiple_simulation_position_archive = []

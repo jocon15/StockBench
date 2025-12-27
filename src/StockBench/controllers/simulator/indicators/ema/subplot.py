@@ -16,7 +16,7 @@ class EMASubplot(Subplot):
         return None
 
     def get_traces(self, df: DataFrame):
-        # sma is only an OHLC trace
+        # ema is only an OHLC trace
         traces = []
         for (column_name, column_data) in df.items():
             if self.data_symbol in column_name:

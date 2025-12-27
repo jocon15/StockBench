@@ -23,10 +23,11 @@ class ChartingEngine:
     TEMP_SAVE = 0
     UNIQUE_SAVE = 1
 
+    PLOTLY_THEME = 'plotly_dark'
     PLOTLY_CHART_MARGIN_TOP = 50
     PLOTLY_CHART_MARGIN_BOTTOM = 60
     PLOTLY_CHART_MARGIN_LEFT = 60
-    PLOTLY_CHART_MARGIN_RIGHT = 100
+    PLOTLY_CHART_MARGIN_RIGHT = 100    
 
     def __init__(self, identifier: int):
         self.id = identifier
@@ -60,7 +61,7 @@ class ChartingEngine:
         fig.add_trace(rule_stats_traces[1], 2, 1)
         fig.add_trace(rule_stats_traces[2], 2, 1)
 
-        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
+        fig.update_layout(template=self.PLOTLY_THEME, xaxis_rangeslider_visible=False)
 
         # format the chart (remove plotly white border)
         formatted_fig = ChartingEngine.format_chart(fig)
@@ -96,7 +97,7 @@ class ChartingEngine:
         fig.add_trace(position_analysis_traces[1], 1, 1)
         fig.add_trace(position_analysis_traces[2], 1, 1)
 
-        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, xaxis_title='Position',
+        fig.update_layout(template=self.PLOTLY_THEME, xaxis_rangeslider_visible=False, xaxis_title='Position',
                           yaxis_title='Duration (days)')
 
         # format the chart (remove plotly white border)
@@ -133,7 +134,7 @@ class ChartingEngine:
         fig.add_trace(position_analysis_traces[1], 1, 1)
         fig.add_trace(position_analysis_traces[2], 1, 1)
 
-        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, xaxis_title='Position',
+        fig.update_layout(template=self.PLOTLY_THEME, xaxis_rangeslider_visible=False, xaxis_title='Position',
                           yaxis_title='Profit/Loss ($)')
 
         # format the chart (remove plotly white border)
@@ -299,7 +300,7 @@ class ChartingEngine:
             zeroline=True,  # Enable the zero line
             zerolinewidth=1,  # Adjust line width
             zerolinecolor='#283442'),  # Customize color
-            template='plotly_dark', xaxis_rangeslider_visible=False, title=title, title_x=0.5)
+            template=ChartingEngine.PLOTLY_THEME, xaxis_rangeslider_visible=False, title=title, title_x=0.5)
 
         return ChartingEngine.format_chart(fig)
 
@@ -316,7 +317,7 @@ class ChartingEngine:
             zeroline=True,  # Enable the zero line
             zerolinewidth=1,  # Adjust line width
             zerolinecolor='#283442'),  # Customize color
-            template='plotly_dark', xaxis_rangeslider_visible=False, title=title, title_x=0.5)
+            template=ChartingEngine.PLOTLY_THEME, xaxis_rangeslider_visible=False, title=title, title_x=0.5)
 
         # removes redundant strategy label to save space
         fig.update_yaxes(showticklabels=False)

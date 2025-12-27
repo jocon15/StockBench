@@ -120,7 +120,8 @@ class FolderChartingEngine(ChartingEngine):
         """Builds a generic bar chart."""
         fig = plotter.Figure(plotter.Bar(x=x_values, y=y_values, marker=dict(color=marker_color), name='Count'))
 
-        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, title=title, title_x=0.5)
+        fig.update_layout(template=ChartingEngine.PLOTLY_THEME, xaxis_rangeslider_visible=False, title=title,
+                          title_x=0.5)
 
         formatted_fig = ChartingEngine.format_chart(fig)
 

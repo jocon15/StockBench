@@ -50,28 +50,24 @@ class SimulatorProxy:
         self.__simulator = simulator
 
     @SimulatorProxyFunction
-    def run_singular_simulation(self, strategy: dict, symbol: str, initial_balance: float,
-                                logging_on: bool, reporting_on: bool, progress_observer: ProgressObserver) -> dict:
+    def run_singular_simulation(self, strategy: dict, symbol: str, initial_balance: float, reporting_on: bool,
+                                progress_observer: ProgressObserver) -> dict:
         """Proxy function for running a singular symbol simulation with error capturing."""
         self.__simulator.set_initial_balance(initial_balance)
         self.__simulator.load_strategy(strategy)
 
-        if logging_on:
-            self.__simulator.enable_logging()
         if reporting_on:
             self.__simulator.enable_reporting()
 
         return self.__simulator.run(symbol, progress_observer)
 
     @SimulatorProxyFunction
-    def run_multi_simulation(self, strategy: dict, symbols: List[str], initial_balance: float,
-                             logging_on: bool, reporting_on: bool, progress_observer: ProgressObserver) -> dict:
+    def run_multi_simulation(self, strategy: dict, symbols: List[str], initial_balance: float, reporting_on: bool,
+                             progress_observer: ProgressObserver) -> dict:
         """Proxy function for running a multi-symbol simulation with error capturing."""
         self.__simulator.set_initial_balance(initial_balance)
         self.__simulator.load_strategy(strategy)
 
-        if logging_on:
-            self.__simulator.enable_logging()
         if reporting_on:
             self.__simulator.enable_reporting()
 
@@ -79,12 +75,10 @@ class SimulatorProxy:
 
     @SimulatorProxyFunction
     def run_folder_simulation(self, strategies: List[dict], symbols: List[str], initial_balance: float,
-                              logging_on: bool, reporting_on: bool, progress_observers: List[ProgressObserver]) -> dict:
+                              reporting_on: bool, progress_observers: List[ProgressObserver]) -> dict:
         """Proxy function for running a multi-symbol simulation with error capturing."""
         self.__simulator.set_initial_balance(initial_balance)
 
-        if logging_on:
-            self.__simulator.enable_logging()
         if reporting_on:
             self.__simulator.enable_reporting()
 

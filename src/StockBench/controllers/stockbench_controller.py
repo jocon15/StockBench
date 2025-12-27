@@ -2,7 +2,7 @@ import logging
 from time import perf_counter
 from typing import List
 
-from StockBench.controllers.logging import LoggingController
+from StockBench.controllers.logging.logging import LoggingController
 from StockBench.controllers.proxies.charting_proxy import ChartingProxy
 from StockBench.controllers.proxies.simulator_proxy import SimulatorProxy
 from StockBench.models.constants.simulation_results_constants import *
@@ -28,8 +28,7 @@ class StockBenchController:
             LoggingController.enable_log_saving()
 
         simulation_results = self.__simulator_proxy.run_singular_simulation(strategy, symbol, initial_balance,
-                                                                            logging_on, reporting_on,
-                                                                            progress_observer)
+                                                                            reporting_on, progress_observer)
 
         if self.STATUS_CODE in simulation_results.keys():
             # simulation failed
@@ -66,7 +65,7 @@ class StockBenchController:
         if logging_on:
             LoggingController.enable_log_saving()
 
-        simulation_results = self.__simulator_proxy.run_multi_simulation(strategy, symbols, initial_balance, logging_on,
+        simulation_results = self.__simulator_proxy.run_multi_simulation(strategy, symbols, initial_balance,
                                                                          reporting_on, progress_observer)
 
         if self.STATUS_CODE in simulation_results.keys():
@@ -105,8 +104,7 @@ class StockBenchController:
 
         start_time = perf_counter()
         simulation_results = self.__simulator_proxy.run_folder_simulation(strategies, symbols, initial_balance,
-                                                                          logging_on, reporting_on,
-                                                                          progress_observers)
+                                                                          reporting_on, progress_observers)
 
         if self.STATUS_CODE in simulation_results.keys():
             # simulation failed

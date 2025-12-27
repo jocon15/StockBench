@@ -46,11 +46,6 @@ class DataManager:
             raise Exception('Input name type must be a string!')
         if type(current_day_index) is not int:
             raise Exception('Input day index must be an integer!')
-
-        # The return is type agnostic, as the outside could request data from a column
-        # of any type, it's best for the outside to do they type checking themselves.
-        # Not ideal but it keeps the number of functions to get data to a minimum.
-        # Also, the "outside" is just going to be the simulator.
         return self.__df[column_name][current_day_index]
 
     def get_multiple_data_points(self, name: str, current_day_index: int, num_points: int) -> list:

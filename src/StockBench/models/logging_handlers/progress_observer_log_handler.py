@@ -1,5 +1,4 @@
-import logging
-from logging import Handler
+from logging import Handler, LogRecord
 
 
 class ProgressMessageHandler(Handler):
@@ -11,8 +10,8 @@ class ProgressMessageHandler(Handler):
     handler to get the log messages into the progress observer queue."""
     def __init__(self, progress_observer):
         self.progress_observer = progress_observer
-        logging.Handler.__init__(self=self)
+        Handler.__init__(self=self)
 
-    def emit(self, record: logging.LogRecord) -> None:
+    def emit(self, record: LogRecord):
         """Add the log message to the progress observer."""
         self.progress_observer.add_log_record(record)

@@ -12,7 +12,6 @@ class DataManager:
 
     def __init__(self, data):
         self.__df = data
-        # add candle colors to the data
         self.__add_candle_colors()
 
     def add_column(self, name: str, data: any):

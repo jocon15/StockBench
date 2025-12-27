@@ -175,9 +175,6 @@ class Simulator:
 
         self.__algorithm.add_indicator_data(self.__data_manager)
 
-        if not self.__running_multiple:
-            self.__print_header(symbol)
-
         total_days, days_in_focus, sim_window_start_day, trade_able_days = (
             self.__calculate_simulation_window(start_date_unix, end_date_unix, augmented_start_date_unix,
                                                self.__data_manager))
@@ -483,12 +480,6 @@ class Simulator:
         if abs(position.profit_loss_percent(sell_price)) > STOCK_SPLIT_PLPC:
             return True
         return False
-
-    @staticmethod
-    def __print_header(symbol: str) -> None:
-        print('======= Simulation Start =======')
-        print(f'Running simulation on {symbol}...')
-        print('================================')
 
     @staticmethod
     def __log_details(filename: str, symbol: str, start_date: str, end_date: str, window_size: int, tradable_days: int,

@@ -1,3 +1,5 @@
+from typing import Iterable, Union
+
 from pandas import DataFrame
 
 
@@ -38,7 +40,7 @@ class DataManager:
             col_names.append(col_name)
         return col_names
 
-    def get_data_point(self, column_name: str, current_day_index: int) -> any:
+    def get_data_point(self, column_name: str, current_day_index: int) -> Union[str, int, float, None]:
         """Gets a single data point from the DataFrame."""
         if type(column_name) is not str:
             raise Exception('Input name type must be a string!')

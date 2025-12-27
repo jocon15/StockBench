@@ -40,7 +40,7 @@ class MultiChartingEngine(ChartingEngine):
         fig.add_trace(MultiChartingEngine.__build_overview_trades_made_bar_subplot(results), row=2, col=1)
         fig.add_trace(MultiChartingEngine.__overview_avg_profit_loss_gauge(results, initial_balance), row=2, col=2)
 
-        fig.update_layout(template='plotly_dark', title=f'Simulation Results for {len(results)} Symbols',
+        fig.update_layout(template=self.PLOTLY_THEME, title=f'Simulation Results for {len(results)} Symbols',
                           xaxis_rangeslider_visible=False, showlegend=False)
 
         formatted_fig = ChartingEngine.format_chart(fig)

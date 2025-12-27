@@ -51,7 +51,7 @@ class SingularChartingEngine(ChartingEngine):
                                              name='Account Value'))
 
         fig.add_hline(y=account_value_values[0], line_width=1, line_dash="dash", line_color='white')
-        fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False, xaxis_title='Simulation Day',
+        fig.update_layout(template=self.PLOTLY_THEME, xaxis_rangeslider_visible=False, xaxis_title='Simulation Day',
                           yaxis_title='Account Value ($)', title='Account Value', title_x=0.5)
 
         formatted_fig = ChartingEngine.format_chart(fig)
@@ -128,13 +128,13 @@ class SingularChartingEngine(ChartingEngine):
         window_size = len(df[SingularChartingEngine.CLOSE_COLUMN])
         if save_option != ChartingEngine.TEMP_SAVE:
             # non-temp save should show the simulation metadata in the title (uses DEFAULT margin)
-            fig.update_layout(template='plotly_dark', title=f'{window_size} day simulation for {symbol}',
+            fig.update_layout(template=ChartingEngine.PLOTLY_THEME, title=f'{window_size} day simulation for {symbol}',
                               xaxis_rangeslider_visible=False)
         else:
             # temp save: does not need a title because the data is shown elsewhere
             # setting xaxis_range prevents the buy and sell scatter traces from changing the chart scale
             # setting margin overrides plotly's default margin setting
-            fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False,
+            fig.update_layout(template=ChartingEngine.PLOTLY_THEME, xaxis_rangeslider_visible=False,
                               xaxis_range=(df[SingularChartingEngine.DATE_COLUMN][0],
                                            df[SingularChartingEngine.DATE_COLUMN][window_size - 1]),
                               margin=dict(l=SingularChartingEngine.PLOTLY_CHART_MARGIN_LEFT,

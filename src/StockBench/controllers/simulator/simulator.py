@@ -7,6 +7,7 @@ from time import perf_counter
 from datetime import datetime
 from typing import Optional, List, Tuple
 
+from StockBench.controllers.logging.logging import LoggingController
 from StockBench.models.constants.general_constants import *
 from StockBench.controllers.simulator.broker.broker_client import BrokerClient
 from StockBench.controllers.export.window_data_exporter import WindowDataExporter
@@ -19,10 +20,7 @@ from StockBench.controllers.simulator.analysis.positions_analyzer import Positio
 from StockBench.controllers.simulator.algorithm.algorithm import Algorithm
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.controllers.simulator.indicators.indicator_manager import IndicatorManager
-from StockBench.models.logging_handlers.progress_message_handler import ProgressMessageHandler
-
-# generic logger used for debugging the application
-log = logging.getLogger()
+from StockBench.models.logging_handlers.progress_observer_log_handler import ProgressMessageHandler
 
 
 class Simulator:
@@ -57,7 +55,10 @@ class Simulator:
         self.__algorithm = None  # gets constructed once we have the strategy
         self.__available_indicators = IndicatorManager.load_indicators()
 
-        # logger dedicated to logging messages to the gui status box (must be in constructor to avoid log duplication)
+        # user logging (to file if enabled)
+        self.log = logging.getLogger(LoggingController.USER_LOGGER_NAME)
+
+        # gui logging (must be in constructor to avoid log duplication)
         self.gui_status_log = self.__set_logger_with_id(identifier)
 
         # positions storage during simulation
@@ -105,10 +106,10 @@ class Simulator:
                 self.gui_status_log.setLevel(logging.INFO)
                 self.gui_status_log.addHandler(ProgressMessageHandler(progress_observer))
 
-            log.info(f'Using strategy: {self.__algorithm.strategy_filename}')
+            self.log.info(f'Using strategy: {self.__algorithm.strategy_filename}')
             self.gui_status_log.info(f'Using strategy: {self.__algorithm.strategy_filename}')
 
-        log.info(f'Starting simulation for symbol: {symbol}...')
+        self.log.info(f'Starting simulation for symbol: {symbol}...')
         self.gui_status_log.info(f'Starting simulation for {symbol}...')
 
         sim_window_start_day, trade_able_days, increment = self.__pre_process(symbol, progress_observer)
@@ -137,7 +138,7 @@ class Simulator:
 
         self.gui_status_log.info('Beginning multiple symbol simulation...')
 
-        log.info(f'Using strategy: {self.__algorithm.strategy_filename}')
+        self.log.info(f'Using strategy: {self.__algorithm.strategy_filename}')
         self.gui_status_log.info(f'Using strategy: {self.__algorithm.strategy_filename}')
 
         progress_bar_increment = self.__multi_pre_process(symbols, progress_observer)
@@ -153,14 +154,14 @@ class Simulator:
             if progress_observer:
                 progress_observer.update_progress(progress_bar_increment)
 
-        log.info('Multi-simulation complete')
+        self.log.info('Multi-simulation complete')
         self.gui_status_log.info('Multiple symbol simulation complete')
 
         return self.__multi_post_process(symbols, results, start_time, progress_observer)
 
     def __pre_process(self, symbol: str, progress_observer: ProgressObserver) -> Tuple[int, int, float]:
         """Setup for the simulation."""
-        log.info(f'Setting up simulation for symbol: {symbol}...')
+        self.log.info(f'Setting up simulation for symbol: {symbol}...')
 
         FSController.remove_temp_figures()
 
@@ -181,7 +182,7 @@ class Simulator:
 
         increment = self.__calculate_progress_bar_increment(progress_observer, sim_window_start_day)
 
-        log.info(f'Setup for symbol: {symbol} complete')
+        self.log.info(f'Setup for symbol: {symbol} complete')
 
         self.__log_details(self.__algorithm.strategy_filename, symbol, self.__unix_to_string(start_date_unix),
                            self.__unix_to_string(end_date_unix), days_in_focus, trade_able_days,
@@ -192,12 +193,12 @@ class Simulator:
     def __simulate_day(self, current_day_index: int, buy_mode: bool, position: Position,
                        progress_observer: ProgressObserver, increment: float) -> Tuple[bool, Position]:
         """Simulates trading on a single day."""
-        log.debug(f'Current day index: {current_day_index}')
+        self.log.debug(f'Current day index: {current_day_index}')
 
         if current_day_index == self.__data_manager.get_data_length() - 1:
             # reached the end of the simulation, if a position is still open, sell it
             if position:
-                log.info('Position closed due to end of simulation reached')
+                self.log.info('Position closed due to end of simulation reached')
                 self.__liquidate_position(position, current_day_index, 'end of simulation window')
                 position = None
         else:
@@ -255,7 +256,7 @@ class Simulator:
             exporter = WindowDataExporter()
             exporter.export(chopped_temp_df, symbol)
 
-        log.info('Simulation complete!')
+        self.log.info('Simulation complete!')
 
         if not self.__running_multiple:
             self.gui_status_log.info(f'Analytics for {symbol} complete')
@@ -292,7 +293,7 @@ class Simulator:
 
     def __multi_pre_process(self, symbols: List[str], progress_observer: ProgressObserver) -> float:
         """Pre-process tasks for a multi-sim."""
-        log.debug('Running multi simulation pre-process...')
+        self.log.debug('Running multi simulation pre-process...')
         self.__running_multiple = True
 
         FSController.remove_temp_figures()
@@ -305,7 +306,7 @@ class Simulator:
     def __multi_post_process(self, symbols: List[str], results: List[dict], start_time: float,
                              progress_observer: ProgressObserver) -> dict:
         """Post-process tasks for a multi-sim."""
-        log.info('Running multi simulation post-process...')
+        self.log.info('Running multi simulation post-process...')
         self.gui_status_log.info('Starting analytics...')
         self.__running_multiple = False
         # save the results in case the user wants to write them to file
@@ -361,14 +362,14 @@ class Simulator:
         Notes:
             The assumption is that the user wants to use full buying power (for now).
         """
-        log.info('Creating the position...')
+        self.log.info('Creating the position...')
 
         buy_price = self.__data_manager.get_data_point(self.__data_manager.CLOSE, current_day_index)
         share_count = float(math.floor(self.__account.get_balance() / buy_price))
 
         new_position = Position(buy_price, share_count, current_day_index, rule)
 
-        log.info('Position created successfully')
+        self.log.info('Position created successfully')
 
         self.__account.withdraw(round(buy_price * share_count, 3))
 
@@ -376,7 +377,7 @@ class Simulator:
 
     def __liquidate_position(self, position: Position, current_day_index: int, rule: str):
         """Closes the position and updates the account."""
-        log.info('Closing the position...')
+        self.log.info('Closing the position...')
 
         sell_price = float(self.__data_manager.get_data_point(self.__data_manager.CLOSE, current_day_index))
 
@@ -384,7 +385,7 @@ class Simulator:
 
         if self.__is_stock_split(position, sell_price):
             self.gui_status_log.warning(f'Stock split avoided at day: {current_day_index}')
-            log.info('Position excluded due to stock split!')
+            self.log.info('Position excluded due to stock split!')
             # deposit the initial investment amount (undoing the withdrawal)
             self.__account.deposit(position.get_buy_price() * position.get_share_count())
             # skip adding the position to the list
@@ -392,7 +393,7 @@ class Simulator:
 
         self.__single_simulation_position_archive.append(position)
 
-        log.info('Position closed successfully')
+        self.log.info('Position closed successfully')
 
         self.__account.deposit(round(sell_price * position.get_share_count(), 3))
 
@@ -446,6 +447,30 @@ class Simulator:
             increment = round(100.0 / (self.__data_manager.get_data_length() - sim_window_start_day), 2)
         return increment
 
+    def __log_details(self, filename: str, symbol: str, start_date: str, end_date: str, window_size: int,
+                      tradable_days: int, balance: float) -> None:
+        self.log.info('==== Simulation Details =====')
+        self.log.info(f'Strategy        : {filename}')
+        self.log.info(f'Symbol          : {symbol}')
+        self.log.info(f'Start Date      : {start_date}')
+        self.log.info(f'End Date        : {end_date}')
+        self.log.info(f'Window Size     : {window_size}')
+        self.log.info(f'Trade-able Days : {tradable_days}')
+        self.log.info(f'Account Value   : $ {balance}')
+        self.log.info('=============================')
+
+    def __log_results(self, elapsed_time: float, analyzer: PositionsAnalyzer, balance: float) -> None:
+        self.log.info('====== Simulation Results ======')
+        self.log.info(f'Elapsed Time  : {elapsed_time} seconds')
+        self.log.info(f'Trades Made   : {analyzer.total_trades()}')
+        self.log.info(f'Effectiveness : {analyzer.effectiveness()} %')
+        self.log.info(f'Total P/L     : $ {analyzer.total_pl()}')
+        self.log.info(f'Average P/L   : $ {analyzer.average_pl()}')
+        self.log.info(f'Median P/L    : $ {analyzer.median_pl()}')
+        self.log.info(f'Stddev P/L    : $ {analyzer.standard_deviation_pl()}')
+        self.log.info(f'Account Value : $ {balance}')
+        self.log.info('================================')
+
     @staticmethod
     def __set_logger_with_id(identifier: int) -> Logger:
         """Sets the logger instance to match the simulator instance using the instance id (identifier).
@@ -480,32 +505,6 @@ class Simulator:
         if abs(position.profit_loss_percent(sell_price)) > STOCK_SPLIT_PLPC:
             return True
         return False
-
-    @staticmethod
-    def __log_details(filename: str, symbol: str, start_date: str, end_date: str, window_size: int, tradable_days: int,
-                      balance: float) -> None:
-        log.info('==== Simulation Details =====')
-        log.info(f'Strategy        : {filename}')
-        log.info(f'Symbol          : {symbol}')
-        log.info(f'Start Date      : {start_date}')
-        log.info(f'End Date        : {end_date}')
-        log.info(f'Window Size     : {window_size}')
-        log.info(f'Trade-able Days : {tradable_days}')
-        log.info(f'Account Value   : $ {balance}')
-        log.info('=============================')
-
-    @staticmethod
-    def __log_results(elapsed_time: float, analyzer: PositionsAnalyzer, balance: float) -> None:
-        log.info('====== Simulation Results ======')
-        log.info(f'Elapsed Time  : {elapsed_time} seconds')
-        log.info(f'Trades Made   : {analyzer.total_trades()}')
-        log.info(f'Effectiveness : {analyzer.effectiveness()} %')
-        log.info(f'Total P/L     : $ {analyzer.total_pl()}')
-        log.info(f'Average P/L   : $ {analyzer.average_pl()}')
-        log.info(f'Median P/L    : $ {analyzer.median_pl()}')
-        log.info(f'Stddev P/L    : $ {analyzer.standard_deviation_pl()}')
-        log.info(f'Account Value : $ {balance}')
-        log.info('================================')
 
     @staticmethod
     def __unix_to_string(timestamp: int, date_format: str = '%m-%d-%Y') -> str:

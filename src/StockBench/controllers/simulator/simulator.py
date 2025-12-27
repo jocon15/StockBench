@@ -19,7 +19,7 @@ from StockBench.controllers.simulator.analysis.positions_analyzer import Positio
 from StockBench.controllers.simulator.algorithm.algorithm import Algorithm
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.controllers.simulator.indicators.indicator_manager import IndicatorManager
-from StockBench.models.logging_handlers.handlers import ProgressMessageHandler
+from StockBench.models.logging_handlers.progress_message_handler import ProgressMessageHandler
 
 # generic logger used for debugging the application
 log = logging.getLogger()

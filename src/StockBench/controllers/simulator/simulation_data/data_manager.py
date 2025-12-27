@@ -43,9 +43,9 @@ class DataManager:
     def get_data_point(self, column_name: str, current_day_index: int) -> Union[str, int, float, None]:
         """Gets a single data point from the DataFrame."""
         if type(column_name) is not str:
-            raise Exception('Input name type must be a string!')
+            raise Exception('Column name type must be a string!')
         if type(current_day_index) is not int:
-            raise Exception('Input day index must be an integer!')
+            raise Exception('Day index must be an integer!')
         return self.__df[column_name][current_day_index]
 
     def get_multiple_data_points(self, name: str, current_day_index: int, num_points: int) -> list:

@@ -1,4 +1,3 @@
-import logging
 from typing import Tuple, List
 from pandas import DataFrame
 from plotly.subplots import make_subplots
@@ -11,8 +10,6 @@ from StockBench.controllers.simulator.indicators.volume.subplot import VolumeSub
 from StockBench.controllers.charting.charting_engine import ChartingEngine
 from StockBench.controllers.charting.exceptions import ChartingError
 from StockBench.controllers.charting.display_constants import OFF_BLUE
-
-log = logging.getLogger()
 
 
 class VolumeNotFoundException(Exception):

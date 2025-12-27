@@ -17,7 +17,7 @@ class Trigger:
     SELL = 1
     AGNOSTIC = 2
 
-    def __init__(self, indicator_symbol: str, side: str):
+    def __init__(self, indicator_symbol: str, side: int):
         self.indicator_symbol = indicator_symbol
         self.__side = side
 

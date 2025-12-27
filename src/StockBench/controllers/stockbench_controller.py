@@ -2,7 +2,7 @@ import logging
 from time import perf_counter
 from typing import List
 
-from StockBench.controllers.logging import LoggingController
+from StockBench.controllers.logging.logging import LoggingController
 from StockBench.controllers.proxies.charting_proxy import ChartingProxy
 from StockBench.controllers.proxies.simulator_proxy import SimulatorProxy
 from StockBench.models.constants.simulation_results_constants import *

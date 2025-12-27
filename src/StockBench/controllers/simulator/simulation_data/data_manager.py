@@ -14,12 +14,12 @@ class DataManager:
         self.__df = data
         self.__add_candle_colors()
 
-    def add_column(self, name: str, data: any):
+    def add_column(self, name: str, data: list):
         """Adds a list of data as a column in the DataFrame."""
         if type(name) is not str:
-            raise Exception('Input data type must be a string!')
+            raise Exception('New column name must be a string!')
         if type(data) is not list:
-            raise Exception('Input data type must be a string!')
+            raise Exception('New column data must be a list!')
         for col_name in self.get_column_names():
             if name == col_name:
                 # a column with that name already exists, skip

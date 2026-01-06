@@ -77,9 +77,9 @@ class FolderResultsTable(QFrame):
                 QTableWidgetItem(f'{result[AVERAGE_PL_KEY]:,.2f}'),
                 QTableWidgetItem(f'{result[MEDIAN_PL_KEY]:,.2f}'),
                 QTableWidgetItem(f'{result[STANDARD_DEVIATION_PL_KEY]:,.2f}'),
-                QTableWidgetItem(f'{result[AVERAGE_PLPC_KEY]:,.2f}'),
-                QTableWidgetItem(f'{result[MEDIAN_PLPC_KEY]:,.2f}'),
-                QTableWidgetItem(f'{result[STANDARD_DEVIATION_PLPC_KEY]:,.2f}')
+                QTableWidgetItem(f'{result[AVERAGE_PLPC_KEY]:,.3f}'),
+                QTableWidgetItem(f'{result[MEDIAN_PLPC_KEY]:,.3f}'),
+                QTableWidgetItem(f'{result[STANDARD_DEVIATION_PLPC_KEY]:,.3f}')
             ]
 
             self.table.setRowHeight(row, self.TABLE_VALUE_ROW_HEIGHT)
@@ -142,6 +142,10 @@ class FolderResultsTable(QFrame):
         if self.table.item(1, 1) is not None:
             # starts at total PL (index: 3)
             for column_index in range(3, len(self.TABLE_HEADERS)):
+                if column_index == 6 or column_index == 9:
+                    # skip stddev values
+                    continue
+
                 for row_index in range(self.table.rowCount()):
                     value = self.table.item(row_index, column_index).text()
                     self.table.item(row_index, column_index).setForeground(

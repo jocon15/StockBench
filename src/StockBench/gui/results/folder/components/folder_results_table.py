@@ -149,7 +149,7 @@ class FolderResultsTable(QFrame):
                     )
 
     def __select_red_green_brush(self, value: Union[str, int, float]) -> QBrush:
-        if value is str:
+        if type(value) is str:
             value = self.__convert_comma_str_to_float(value)
         if float(value) >= 0:
             return self.GREEN_BRUSH

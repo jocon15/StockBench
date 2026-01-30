@@ -39,8 +39,6 @@ class MultiConfigTab(ConfigTab):
 
         self.layout.addStretch()
 
-        self.layout.addWidget(self.error_message_box)
-
         self.setLayout(self.layout)
 
     @CaptureConfigErrors

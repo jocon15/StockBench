@@ -37,6 +37,7 @@ def CaptureConfigErrors(original_fxn: Callable):
             return original_fxn(self, *args, **kwargs)
         except MessageBoxCaptureException as e:
             self.error_message_box.setText(str(e))
+            self.layout.addWidget(self.error_message_box)
     return wrapper
 
 

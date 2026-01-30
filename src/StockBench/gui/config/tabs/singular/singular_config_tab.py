@@ -43,8 +43,6 @@ class SingularConfigTab(ConfigTab):
 
         self.layout.addStretch()
 
-        self.layout.addWidget(self.error_message_box)
-
         self.setLayout(self.layout)
 
     def on_show_volume_btn_clicked(self, button: QPushButton):

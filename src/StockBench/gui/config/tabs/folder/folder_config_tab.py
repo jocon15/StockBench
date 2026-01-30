@@ -28,9 +28,7 @@ class FolderConfigTab(ConfigTab):
 
         self.simulation_length = SECONDS_1_YEAR
         self.grid_config_frame = GridConfigFrame(self.on_simulation_length_cbox_index_changed,
-                                                 self.on_logging_btn_clicked, self.on_reporting_btn_clicked,
-                                                 self.on_chart_saving_btn_clicked, self.data_and_charts_btn_selected,
-                                                 self.data_only_btn_selected)
+                                                 self.on_logging_btn_clicked, self.on_chart_saving_btn_clicked)
         self.layout.addWidget(self.grid_config_frame)
 
         self.layout.addWidget(self.run_btn, alignment=Qt.AlignmentFlag.AlignRight)

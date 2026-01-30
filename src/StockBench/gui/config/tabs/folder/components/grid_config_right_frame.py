@@ -16,9 +16,7 @@ class GridConfigRightFrame(QFrame):
             }
             """
 
-    def __init__(self, on_logging_btn_clicked: Callable, on_reporting_btn_clicked: Callable,
-                 on_chart_saving_btn_clicked: Callable, data_and_charts_btn_selected: Callable,
-                 data_only_btn_selected: Callable) -> None:
+    def __init__(self, on_logging_btn_clicked: Callable, on_chart_saving_btn_clicked: Callable) -> None:
         super().__init__()
 
         self.setFixedWidth(300)
@@ -39,18 +37,6 @@ class GridConfigRightFrame(QFrame):
         self.logging_btn.clicked.connect(lambda: on_logging_btn_clicked(self.logging_btn))  # noqa
         self.layout.addWidget(self.logging_btn)
 
-        self.reporting_label = QLabel()
-        self.reporting_label.setText('Reporting:')
-        self.reporting_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
-        self.layout.addWidget(self.reporting_label)
-
-        self.reporting_btn = QPushButton()
-        self.reporting_btn.setCheckable(True)
-        self.reporting_btn.setText(self.OFF)
-        self.reporting_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
-        self.reporting_btn.clicked.connect(lambda: on_reporting_btn_clicked(self.reporting_btn))  # noqa
-        self.layout.addWidget(self.reporting_btn)
-
         self.unique_chart_save_label = QLabel()
         self.unique_chart_save_label.setText('Save Unique Charts:')
         self.unique_chart_save_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -62,22 +48,6 @@ class GridConfigRightFrame(QFrame):
         self.unique_chart_save_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
         self.unique_chart_save_btn.clicked.connect(lambda: on_chart_saving_btn_clicked(self.unique_chart_save_btn))  # noqa
         self.layout.addWidget(self.unique_chart_save_btn)
-
-        self.results_depth_label = QLabel()
-        self.results_depth_label.setText('Results Depth:')
-        self.results_depth_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
-        self.layout.addWidget(self.results_depth_label)
-
-        self.data_and_charts_radio_btn = QRadioButton("Data and Charts")
-        self.data_and_charts_radio_btn.toggled.connect(data_and_charts_btn_selected)  # noqa
-        self.data_and_charts_radio_btn.setStyleSheet(Palette.RADIO_BTN_STYLESHEET)
-        self.data_and_charts_radio_btn.toggle()  # set data and charts as default
-        self.layout.addWidget(self.data_and_charts_radio_btn)
-
-        self.data_only_radio_btn = QRadioButton("Data Only")
-        self.data_only_radio_btn.toggled.connect(data_only_btn_selected)  # noqa
-        self.data_only_radio_btn.setStyleSheet(Palette.RADIO_BTN_STYLESHEET)
-        self.layout.addWidget(self.data_only_radio_btn)
 
         self.layout.addStretch()
 

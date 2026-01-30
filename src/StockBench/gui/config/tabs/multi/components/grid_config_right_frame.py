@@ -13,6 +13,7 @@ class GridConfigRightFrame(QFrame):
     FRAME_STYLESHEET = """
             #gridConfigRightFrame {
                 border-left: 1px solid grey;
+                padding-left: 25px;
             }
             """
 

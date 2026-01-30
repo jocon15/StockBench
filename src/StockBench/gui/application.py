@@ -24,9 +24,7 @@ class ConfigMainWindow(QMainWindow):
         # main window styling (do it first to prevent window shifting)
         self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
         self.setWindowTitle('Configuration')
-        # FIXME - decide on fixed or variable height
-        self.setFixedWidth(self.WIDTH)
-        # self.setFixedSize(self.WIDTH, self.HEIGHT)
+        # SEE BOTTOM FOR CONFIG WINDOW SIZING!!!
 
         self.layout = QVBoxLayout()
 
@@ -51,3 +49,12 @@ class ConfigMainWindow(QMainWindow):
         self.setCentralWidget(widget)
 
         self.splash.close()
+
+        # CONFIG WINDOW SIZING
+        # we want the window to shrink to the size of the widgets but also be non-resizable
+        # after the tabs are added, the following block shrinks the window to fit of the biggest tab and disables
+        # resizing
+        self.updateGeometry()
+        size = self.sizeHint()
+        self.setMinimumSize(size)
+        self.setMaximumSize(size)

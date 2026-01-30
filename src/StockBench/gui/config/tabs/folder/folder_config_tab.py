@@ -17,7 +17,6 @@ class FolderConfigTab(ConfigTab):
 
     def __init__(self, stockbench_controller: StockBenchController):
         super().__init__(stockbench_controller)
-        # add shared_components to the layout
         label = QLabel()
         label.setText('Folder:')
         label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -53,10 +52,8 @@ class FolderConfigTab(ConfigTab):
             instead of crashing. It also allows us to functionalize the filepath validation without the need for
             try blocks or return values.
         """
-        # extract the folder path from the input
         folderpath = self.folder_selection.folderpath_box.text()
 
-        # gather other data from UI shared_components
         raw_simulation_symbols = self.grid_config_frame.left_frame.symbol_tbox.text().split(',')
         simulation_symbols = []
         for symbol in raw_simulation_symbols:

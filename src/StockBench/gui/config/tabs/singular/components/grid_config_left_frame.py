@@ -17,18 +17,16 @@ class GridConfigLeftFrame(QFrame):
 
         self.layout = QVBoxLayout()
 
-        # simulation length label
         self.simulation_length_label = QLabel()
         self.simulation_length_label.setText('Simulation Length:')
         self.simulation_length_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(self.simulation_length_label)
 
-        # simulation length input
         self.simulation_length_cbox = QComboBox()
         self.simulation_length_cbox.addItem('1 Year')
         self.simulation_length_cbox.addItem('2 Year')
         self.simulation_length_cbox.addItem('5 Year')
-        # set simulation length default to 1 year (must set attribute as well)
+        # set simulation length default to 1 year (must set attribute as well in application)
         self.simulation_length_cbox.setCurrentIndex(0)
         self.simulation_length_cbox.setStyleSheet(Palette.COMBOBOX_STYLESHEET)
         self.simulation_length_cbox.currentIndexChanged.connect(on_simulation_length_cbox_index_changed)  # noqa

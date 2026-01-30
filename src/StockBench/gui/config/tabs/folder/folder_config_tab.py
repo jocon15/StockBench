@@ -67,7 +67,6 @@ class FolderConfigTab(ConfigTab):
             strategy = self.load_strategy(filepath, self.FOLDER_CACHE_KEY, folderpath)
             strategies.append(strategy)
 
-        # create a new simulations results window
         self.simulation_result_window = FolderResultsWindow(
             self._stockbench_controller,
             strategies,

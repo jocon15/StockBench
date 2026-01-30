@@ -49,10 +49,17 @@ class Palette:
         border-width:0px;
         border-radius:10px;
         padding: 5px;
+        text-indent:4px;
     """
 
-    TEXT_BOX_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
-            text-indent:3px;"""
+    TEXT_BOX_STYLESHEET = """
+        background-color: #303134;
+        color:#FFF;
+        border-width:0px;
+        border-radius:10px;
+        height:25px;
+        text-indent:4px;
+    """
 
     COMBOBOX_STYLESHEET = """
         color:#FFF;
@@ -60,7 +67,7 @@ class Palette:
         border-width:0px;
         border-radius:10px;
         height:25px;
-        text-indent:3px;"""
+        text-indent:4px;"""
 
     RADIO_BTN_STYLESHEET = """color: #fff; margin-left: 15px;"""
 

@@ -1,11 +1,13 @@
-from PyQt6.QtWidgets import QLabel, QPushButton, QLineEdit
+from PyQt6.QtWidgets import QLabel, QPushButton
 from PyQt6.QtCore import Qt
 
 from StockBench.controllers.stockbench_controller import StockBenchController
 from StockBench.gui.config.tabs.base.config_tab import ConfigTab, MessageBoxCaptureException, CaptureConfigErrors
+from StockBench.gui.config.tabs.singular.components.grid_config_frame import GridConfigFrame
 from StockBench.gui.results.singular.singular_results_window import SingularResultsWindow
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.config.components.strategy_selection import StrategySelection
+from StockBench.models.constants.general_constants import SECONDS_1_YEAR
 
 
 class SingularConfigTab(ConfigTab):
@@ -14,89 +16,46 @@ class SingularConfigTab(ConfigTab):
 
         self.show_volume = True
 
-        # add shared_components to the layout
         label = QLabel()
         label.setText('Strategy:')
         label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
         self.strategy_selection_box = StrategySelection()
-        self.strategy_selection_box.setStyleSheet(Palette.INPUT_BOX_STYLESHEET)
         self.layout.addWidget(self.strategy_selection_box)
 
         self.strategy_studio_btn = QPushButton()
         self.strategy_studio_btn.setText('Strategy Studio')
         self.strategy_studio_btn.clicked.connect(lambda: self.on_strategy_studio_btn_clicked(  # noqa
                                                  self.strategy_selection_box.filepath_box.text()))
-        self.strategy_studio_btn.setStyleSheet(Palette.SECONDARY_BTN)
+        self.strategy_studio_btn.setStyleSheet(Palette.STRATEGY_STUDIO_BTN)
         self.layout.addWidget(self.strategy_studio_btn)
 
-        self.layout.addWidget(self.simulation_length_label)
-
-        self.layout.addWidget(self.simulation_length_cbox)
-
-        label = QLabel()
-        label.setText('Simulation Symbol:')
-        label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
-        self.layout.addWidget(label)
-
-        self.symbol_tbox = QLineEdit()
-        self.symbol_tbox.setText("MSFT")
-        self.symbol_tbox.setStyleSheet(Palette.LINE_EDIT_STYLESHEET)
-        self.layout.addWidget(self.symbol_tbox)
-
-        self.layout.addWidget(self.initial_balance_label)
-
-        self.layout.addWidget(self.initial_balance_tbox)
-
-        self.layout.addWidget(self.logging_label)
-
-        self.layout.addWidget(self.logging_btn)
-
-        self.layout.addWidget(self.reporting_label)
-
-        self.layout.addWidget(self.reporting_btn)
-
-        # update the label to remove plural
-        self.unique_chart_save_label.setText('Save Unique Chart:')
-        self.layout.addWidget(self.unique_chart_save_label)
-
-        self.layout.addWidget(self.unique_chart_save_btn)
-
-        self.show_volume_label = QLabel()
-        self.show_volume_label.setText('Show Volume:')
-        self.show_volume_label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
-        self.layout.addWidget(self.show_volume_label)
-
-        self.show_volume_btn = QPushButton()
-        self.show_volume_btn.setCheckable(True)
-        self.show_volume_btn.setChecked(True)
-        self.show_volume_btn.setText(self.ON)
-        self.show_volume_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
-        self.show_volume_btn.clicked.connect(self.on_show_volume_btn_clicked)  # noqa
-        self.layout.addWidget(self.show_volume_btn)
-
-        self.layout.addWidget(self.results_depth_label)
-
-        self.layout.addWidget(self.data_and_charts_radio_btn)
-
-        self.layout.addWidget(self.data_only_radio_btn)
+        self.simulation_length = SECONDS_1_YEAR
+        self.grid_config_frame = GridConfigFrame(self.on_simulation_length_cbox_index_changed,
+                                                 self.on_logging_btn_clicked, self.on_reporting_btn_clicked,
+                                                 self.on_show_volume_btn_clicked,
+                                                 self.on_chart_saving_btn_clicked, self.data_and_charts_btn_selected,
+                                                 self.data_only_btn_selected)
+        self.layout.addWidget(self.grid_config_frame)
 
         self.layout.addWidget(self.run_btn, alignment=Qt.AlignmentFlag.AlignRight)
+
+        self.layout.addStretch()
 
         self.layout.addWidget(self.error_message_box)
 
         self.setLayout(self.layout)
 
-    def on_show_volume_btn_clicked(self):
-        if self.show_volume_btn.isChecked():
+    def on_show_volume_btn_clicked(self, button: QPushButton):
+        if button.isChecked():
             self.show_volume = True
-            self.show_volume_btn.setText(self.ON)
-            self.show_volume_btn.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
+            button.setText(self.ON)
+            button.setStyleSheet(Palette.TOGGLE_BTN_ENABLED_STYLESHEET)
         else:
             self.show_volume = False
-            self.show_volume_btn.setText(self.OFF)
-            self.show_volume_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
+            button.setText(self.OFF)
+            button.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
 
     @CaptureConfigErrors
     def on_run_btn_clicked(self, clicked_signal: bool):
@@ -115,8 +74,8 @@ class SingularConfigTab(ConfigTab):
         strategy = self.load_strategy(self.strategy_selection_box.filepath_box.text())
 
         # gather other data from UI shared_components
-        simulation_symbol = self.symbol_tbox.text().upper().strip()
-        simulation_balance = float(self.initial_balance_tbox.text())
+        simulation_symbol = self.grid_config_frame.left_frame.symbol_tbox.text().upper().strip()
+        simulation_balance = float(self.grid_config_frame.left_frame.initial_balance_tbox.text())
 
         if simulation_balance <= 0:
             raise MessageBoxCaptureException('Initial account balance must be a positive number!')

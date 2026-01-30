@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QLabel, QPushButton
+from PyQt6.QtWidgets import QLabel, QPushButton, QFrame
 from PyQt6.QtCore import Qt
 
 from StockBench.controllers.stockbench_controller import StockBenchController
@@ -27,6 +27,11 @@ class MultiConfigTab(ConfigTab):
                                                  self.strategy_selection_box.filepath_box.text()))
         self.strategy_studio_btn.setStyleSheet(Palette.STRATEGY_STUDIO_BTN)
         self.layout.addWidget(self.strategy_studio_btn)
+
+        # spacer to even out multi layout
+        self.spacer = QFrame()
+        self.spacer.setFixedHeight(15)
+        self.layout.addWidget(self.spacer)
 
         self.simulation_length = SECONDS_1_YEAR
         self.grid_config_frame = GridConfigFrame(self.on_simulation_length_cbox_index_changed,

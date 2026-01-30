@@ -1,18 +1,18 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTabWidget, QLabel
 from PyQt6 import QtGui
 
+from StockBench.gui.config.tabs.compare.compare_config_tab import CompareConfigTab
+from StockBench.gui.config.tabs.folder.folder_config_tab import FolderConfigTab
+from StockBench.gui.config.tabs.singular.singular_config_tab import SingularConfigTab
 from StockBench.gui.palette.palette import Palette
-from StockBench.gui.config.tabs.singular_config_tab import SingularConfigTab
-from StockBench.gui.config.tabs.multi_config_tab import MultiConfigTab
-from StockBench.gui.config.tabs.compare_config_tab import CompareConfigTab
-from StockBench.gui.config.tabs.folder_config_tab import FolderConfigTab
+from StockBench.gui.config.tabs.multi.multi_config_tab import MultiConfigTab
 from StockBench.gui.configuration import AppConfiguration
 from StockBench.controllers.controller_factory import StockBenchControllerFactory
 
 
 class ConfigMainWindow(QMainWindow):
-    WIDTH = 400
-    HEIGHT = 680
+    WIDTH = 650
+    HEIGHT = 600
 
     def __init__(self, splash, config: AppConfiguration):
         super().__init__()
@@ -24,11 +24,14 @@ class ConfigMainWindow(QMainWindow):
         # main window styling (do it first to prevent window shifting)
         self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
         self.setWindowTitle('Configuration')
-        self.setFixedSize(self.WIDTH, self.HEIGHT)
+        # FIXME - decide on fixed or variable height
+        self.setFixedWidth(self.WIDTH)
+        # self.setFixedSize(self.WIDTH, self.HEIGHT)
 
         self.layout = QVBoxLayout()
 
         self.tab_widget = QTabWidget()
+        # FIXME: DEBUG comments
         self.tab_widget.addTab(SingularConfigTab(self.__stockbench_controller), "Single")
         self.tab_widget.addTab(MultiConfigTab(self.__stockbench_controller), "Multi")
         self.tab_widget.addTab(CompareConfigTab(self.__stockbench_controller), "Compare")

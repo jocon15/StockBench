@@ -43,24 +43,54 @@ class Palette:
 
     INPUT_LABEL_STYLESHEET = """color: #FFF;"""
 
-    INPUT_BOX_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;
-            height:25px;"""
+    INPUT_BOX_STYLESHEET = """
+        color:#FFF;
+        background-color: #303134;
+        border-width:0px;
+        border-radius:10px;
+        padding: 5px;
+    """
 
     TEXT_BOX_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
             text-indent:3px;"""
 
-    COMBOBOX_STYLESHEET = """background-color: #303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
-            text-indent:3px;"""
+    COMBOBOX_STYLESHEET = """
+        color:#FFF;
+        background-color: #303134;
+        border-width:0px;
+        border-radius:10px;
+        height:25px;
+        text-indent:3px;"""
 
     RADIO_BTN_STYLESHEET = """color: #fff; margin-left: 15px;"""
 
-    LINE_EDIT_STYLESHEET = """background-color:#303134;color:#FFF;border-width:0px;border-radius:10px;height:25px;
-            text-indent:5px;"""
+    LINE_EDIT_STYLESHEET = """
+        color:#FFF;
+        background-color:#303134;
+        border-width:0px;
+        border-radius:10px;
+        height:25px;
+        text-indent:5px;"""
 
     SIDEBAR_HEADER_STYLESHEET = """max-height:45px; color:#FFF;font-size:20px;font-weight:bold;"""
 
     SIDEBAR_OUTPUT_BOX_STYLESHEET = """color: #fff; background-color: #303136; border-radius: 8px;border: 0px; 
     padding: 5px;"""
+
+    STRATEGY_STUDIO_BTN = """QPushButton
+                {
+                    color: #FFF;
+                    background-color: #303134;
+                    border-width:0px;
+                    border-radius:10px;
+                    height:25px;
+                    margin-left: 100px;
+                    margin-right: 100px;
+                }
+                QPushButton:hover
+                {
+                    background-color: #3f4145;
+                }"""
 
     SECONDARY_BTN = """
                 QPushButton

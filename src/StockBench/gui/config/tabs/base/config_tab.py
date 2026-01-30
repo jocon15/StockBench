@@ -162,7 +162,6 @@ class ConfigTab(QWidget):
         except Exception as e:
             raise MessageBoxCaptureException(f'Uncaught error parsing strategy file: {e}')
 
-        # cache the strategy filepath (create if it does not already exist)
         self.cache_strategy_filepath(filepath, cache_key, cache_value)
 
         # inject the unix equivalent dates from the combobox to the dict
@@ -173,23 +172,19 @@ class ConfigTab(QWidget):
         return strategy
 
     def cache_strategy_filepath(self, strategy_filepath, cache_key=None, cache_value=None):
-        # cache the strategy filepath (create if it does not already exist)
-
+        """Caches the strategy filepath if it does not already exist."""
         key = self.DEFAULT_CACHE_KEY
         if cache_key:
             key = cache_key
 
-        # get the existing cache data
         with open(CACHE_FILE_FILEPATH, 'r') as file:
             data = json.load(file)
 
-        # add the filepath to the cache data
         if cache_value:
             data[key] = cache_value
         else:
             data[key] = strategy_filepath
 
-        # write the cache data
         with open(CACHE_FILE_FILEPATH, 'w+') as file:
             json.dump(data, file)
 

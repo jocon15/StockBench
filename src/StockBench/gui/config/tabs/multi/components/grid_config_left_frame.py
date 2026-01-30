@@ -1,5 +1,6 @@
 from typing import Callable
 
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QDoubleValidator
 from PyQt6.QtWidgets import QFrame, QVBoxLayout, QLabel, QComboBox, QLineEdit
 
@@ -7,6 +8,8 @@ from StockBench.gui.palette.palette import Palette
 
 
 class GridConfigLeftFrame(QFrame):
+    INPUT_WIDTH = 240
+
     def __init__(self, on_simulation_length_cbox_index_changed: Callable):
         super().__init__()
 
@@ -29,7 +32,8 @@ class GridConfigLeftFrame(QFrame):
         self.simulation_length_cbox.setCurrentIndex(0)
         self.simulation_length_cbox.setStyleSheet(Palette.COMBOBOX_STYLESHEET)
         self.simulation_length_cbox.currentIndexChanged.connect(on_simulation_length_cbox_index_changed)  # noqa
-        self.layout.addWidget(self.simulation_length_cbox)
+        self.simulation_length_cbox.setFixedWidth(self.INPUT_WIDTH)
+        self.layout.addWidget(self.simulation_length_cbox, alignment=Qt.AlignmentFlag.AlignCenter)
 
         label = QLabel()
         label.setText('Simulation Symbols:')
@@ -39,7 +43,8 @@ class GridConfigLeftFrame(QFrame):
         self.symbol_tbox = QLineEdit()
         self.symbol_tbox.setText("MSFT, AAPL")
         self.symbol_tbox.setStyleSheet(Palette.LINE_EDIT_STYLESHEET)
-        self.layout.addWidget(self.symbol_tbox)
+        self.symbol_tbox.setFixedWidth(self.INPUT_WIDTH)
+        self.layout.addWidget(self.symbol_tbox, alignment=Qt.AlignmentFlag.AlignCenter)
 
         self.initial_balance_label = QLabel()
         self.initial_balance_label.setText('Initial Balance:')
@@ -51,7 +56,8 @@ class GridConfigLeftFrame(QFrame):
         self.onlyFloat = QDoubleValidator()
         self.initial_balance_tbox.setValidator(self.onlyFloat)
         self.initial_balance_tbox.setStyleSheet(Palette.LINE_EDIT_STYLESHEET)
-        self.layout.addWidget(self.initial_balance_tbox)
+        self.initial_balance_tbox.setFixedWidth(self.INPUT_WIDTH)
+        self.layout.addWidget(self.initial_balance_tbox, alignment=Qt.AlignmentFlag.AlignCenter)
 
         self.layout.addStretch()
 

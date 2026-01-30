@@ -78,7 +78,6 @@ class ConfigTab(QWidget):
     @CaptureConfigErrors
     def on_strategy_studio_btn_clicked(self, filepath: str):
         """
-
         Decorator:
             The CaptureErrors decorator allows custom exceptions to be caught and logged to the error message box
             instead of crashing. It also allows us to functionalize the filepath validation without the need for

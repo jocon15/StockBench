@@ -43,6 +43,15 @@ class Palette:
 
     INPUT_LABEL_STYLESHEET = """color: #FFF;"""
 
+    FILEPATH_BOX_STYLESHEET = """
+        color: #8c8c8c;
+        background-color: #303134;
+        border-width:0px;
+        border-radius:10px;
+        padding: 5px;
+        text-indent:4px;
+    """
+
     INPUT_BOX_STYLESHEET = """
         color:#FFF;
         background-color: #303134;

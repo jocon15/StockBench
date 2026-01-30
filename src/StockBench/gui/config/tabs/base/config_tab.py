@@ -5,8 +5,7 @@ from abc import abstractmethod
 from functools import wraps
 from typing import Callable
 
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QRadioButton, QComboBox
-from PyQt6.QtGui import QDoubleValidator
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
 from PyQt6.QtCore import QPoint
 
 from StockBench.controllers.stockbench_controller import StockBenchController

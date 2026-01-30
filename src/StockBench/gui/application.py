@@ -31,7 +31,6 @@ class ConfigMainWindow(QMainWindow):
         self.layout = QVBoxLayout()
 
         self.tab_widget = QTabWidget()
-        # FIXME: DEBUG comments
         self.tab_widget.addTab(SingularConfigTab(self.__stockbench_controller), "Single")
         self.tab_widget.addTab(MultiConfigTab(self.__stockbench_controller), "Multi")
         self.tab_widget.addTab(CompareConfigTab(self.__stockbench_controller), "Compare")
@@ -48,9 +47,7 @@ class ConfigMainWindow(QMainWindow):
         widget.setStyleSheet(Palette.WINDOW_STYLESHEET)
         widget.setLayout(self.layout)
 
-        # Set the central widget of the Window. Widget will expand
-        # to take up all the space in the window by default.
+        # set the central widget of the Window. Widget will expand to take up all the space in the window by default
         self.setCentralWidget(widget)
 
-        # close the splash window
         self.splash.close()

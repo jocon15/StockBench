@@ -17,7 +17,7 @@ class StrategySelection(QWidget):
         self.layout = QHBoxLayout()
 
         self.filepath_box = QLabel()
-        self.filepath_box.setStyleSheet(Palette.INPUT_BOX_STYLESHEET)
+        self.filepath_box.setStyleSheet(Palette.FILEPATH_BOX_STYLESHEET)
         self.filepath_box.setFixedHeight(25)
         self.layout.addWidget(self.filepath_box)
         self.apply_cached_strategy_filepath(cache_key)

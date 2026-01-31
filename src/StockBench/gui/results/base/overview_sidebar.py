@@ -124,7 +124,7 @@ class OverviewSideBar(QWidget):
     def _show_message_box(title: str, message: str):
         # show a message box indicating the file was saved
         msgbox = QMessageBox()
-        msgbox.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
+        msgbox.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON_FILEPATH))
         msgbox.setText(message)
         msgbox.setWindowTitle(title)
         msgbox.exec()

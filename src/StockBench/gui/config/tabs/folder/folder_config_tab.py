@@ -1,21 +1,23 @@
 import os
+from typing import Callable
 
-from PyQt6.QtWidgets import QLabel, QLineEdit
+from PyQt6.QtWidgets import QLabel
 from PyQt6.QtCore import Qt
 
 from StockBench.controllers.stockbench_controller import StockBenchController
 from StockBench.gui.config.tabs.base.config_tab import ConfigTab, MessageBoxCaptureException, CaptureConfigErrors
+from StockBench.gui.config.tabs.folder.components.grid_config_frame import GridConfigFrame
 from StockBench.gui.palette.palette import Palette
 from StockBench.gui.results.folder.folder_results_window import FolderResultsWindow
 from StockBench.gui.config.components.cached_folder_selector import CachedFolderSelector
+from StockBench.models.constants.general_constants import SECONDS_1_YEAR
 
 
 class FolderConfigTab(ConfigTab):
     FOLDER_CACHE_KEY = 'cached_folderpath'
 
-    def __init__(self, stockbench_controller: StockBenchController):
-        super().__init__(stockbench_controller)
-        # add shared_components to the layout
+    def __init__(self, update_geometry: Callable, stockbench_controller: StockBenchController):
+        super().__init__(update_geometry, stockbench_controller)
         label = QLabel()
         label.setText('Folder:')
         label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -25,35 +27,14 @@ class FolderConfigTab(ConfigTab):
         self.folder_selection.setStyleSheet(Palette.SECONDARY_BTN)
         self.layout.addWidget(self.folder_selection)
 
-        self.layout.addWidget(self.simulation_length_label)
-
-        self.layout.addWidget(self.simulation_length_cbox)
-
-        label = QLabel()
-        label.setText('Simulation Symbols:')
-        label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
-        self.layout.addWidget(label)
-
-        self.symbol_tbox = QLineEdit()
-        self.symbol_tbox.setText("MSFT, AAPL")
-        self.symbol_tbox.setStyleSheet(Palette.LINE_EDIT_STYLESHEET)
-        self.layout.addWidget(self.symbol_tbox)
-
-        self.layout.addWidget(self.initial_balance_label)
-
-        self.layout.addWidget(self.initial_balance_tbox)
-
-        self.layout.addWidget(self.logging_label)
-
-        self.layout.addWidget(self.logging_btn)
-
-        self.layout.addWidget(self.unique_chart_save_label)
-
-        self.layout.addWidget(self.unique_chart_save_btn)
+        self.simulation_length = SECONDS_1_YEAR
+        self.grid_config_frame = GridConfigFrame(self.on_simulation_length_cbox_index_changed,
+                                                 self.on_logging_btn_clicked, self.on_chart_saving_btn_clicked)
+        self.layout.addWidget(self.grid_config_frame)
 
         self.layout.addWidget(self.run_btn, alignment=Qt.AlignmentFlag.AlignRight)
 
-        self.layout.addWidget(self.error_message_box)
+        self.layout.addStretch()
 
         self.setLayout(self.layout)
 
@@ -70,15 +51,13 @@ class FolderConfigTab(ConfigTab):
             instead of crashing. It also allows us to functionalize the filepath validation without the need for
             try blocks or return values.
         """
-        # extract the folder path from the input
         folderpath = self.folder_selection.folderpath_box.text()
 
-        # gather other data from UI shared_components
-        raw_simulation_symbols = self.symbol_tbox.text().split(',')
+        raw_simulation_symbols = self.grid_config_frame.left_frame.symbol_tbox.text().split(',')
         simulation_symbols = []
         for symbol in raw_simulation_symbols:
             simulation_symbols.append(symbol.upper().strip())
-        simulation_balance = float(self.initial_balance_tbox.text())
+        simulation_balance = float(self.grid_config_frame.left_frame.initial_balance_tbox.text())
 
         if simulation_balance <= 0:
             raise MessageBoxCaptureException('Initial account balance must be a positive number!')
@@ -89,7 +68,6 @@ class FolderConfigTab(ConfigTab):
             strategy = self.load_strategy(filepath, self.FOLDER_CACHE_KEY, folderpath)
             strategies.append(strategy)
 
-        # create a new simulations results window
         self.simulation_result_window = FolderResultsWindow(
             self._stockbench_controller,
             strategies,

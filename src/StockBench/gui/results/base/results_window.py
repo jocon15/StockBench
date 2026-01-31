@@ -55,7 +55,7 @@ class SimulationResultsWindow(QWidget):
         self.overview_tab = None
 
         self.setWindowTitle('Simulation Results')
-        self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
+        self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON_FILEPATH))
         self.setStyleSheet(Palette.WINDOW_STYLESHEET)
 
         # define layout type

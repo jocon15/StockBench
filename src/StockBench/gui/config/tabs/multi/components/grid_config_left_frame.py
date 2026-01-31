@@ -14,7 +14,7 @@ class GridConfigLeftFrame(QFrame):
 
     def __init__(self, on_simulation_length_cbox_index_changed: Callable):
         super().__init__()
-        self.setFixedWidth(self.INPUT_WIDTH)
+        self.setFixedWidth(self.FRAME_WIDTH)
 
         self.layout = QVBoxLayout()
 

@@ -18,7 +18,6 @@ class ConfigMainWindow(QMainWindow):
         super().__init__()
         self.splash = splash
 
-        # get an instance of the controller for the application to use (reference passed to all results windows)
         self.__stockbench_controller = StockBenchControllerFactory.get_controller_instance()
 
         # main window styling (do it first to prevent window shifting)

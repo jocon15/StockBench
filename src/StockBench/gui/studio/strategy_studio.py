@@ -18,7 +18,7 @@ class StrategyStudioWindow(QWidget):
         self.filepath = filepath
 
         # header
-        self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
+        self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON_FILEPATH))
         self.setWindowTitle('Strategy Studio')
 
         # layout type
@@ -93,7 +93,7 @@ class StrategyStudioWindow(QWidget):
     @staticmethod
     def _show_message_box(title: str, message: str):
         msgbox = QMessageBox()
-        msgbox.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
+        msgbox.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON_FILEPATH))
         msgbox.setText(message)
         msgbox.setWindowTitle(title)
         msgbox.exec()

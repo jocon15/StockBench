@@ -34,7 +34,7 @@ class GridConfigLeftFrame(QFrame):
         self.layout.addWidget(self.simulation_length_cbox, alignment=Qt.AlignmentFlag.AlignCenter)
 
         label = QLabel()
-        label.setText('Simulation Symbols:')
+        label.setText('Simulation Symbol:')
         label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 

@@ -7,6 +7,8 @@ from StockBench.gui.palette.palette import Palette
 
 
 class GridConfigRightFrame(QFrame):
+    FRAME_WIDTH = 300
+
     ON = 'ON'
     OFF = 'OFF'
 
@@ -22,7 +24,7 @@ class GridConfigRightFrame(QFrame):
                  data_and_charts_btn_selected: Callable, data_only_btn_selected: Callable):
         super().__init__()
 
-        self.setFixedWidth(300)
+        self.setFixedWidth(self.FRAME_WIDTH)
         self.setObjectName("gridConfigRightFrame")  # apply styles based on id (must inherit from QFrame)
         self.setStyleSheet(self.FRAME_STYLESHEET)
 

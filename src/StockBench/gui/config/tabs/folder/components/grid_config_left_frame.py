@@ -8,12 +8,13 @@ from StockBench.gui.palette.palette import Palette
 
 
 class GridConfigLeftFrame(QFrame):
+    FRAME_WIDTH = 300
+
     INPUT_WIDTH = 240
 
     def __init__(self, on_simulation_length_cbox_index_changed: Callable):
         super().__init__()
-
-        self.setFixedWidth(300)
+        self.setFixedWidth(self.FRAME_WIDTH)
 
         self.layout = QVBoxLayout()
 

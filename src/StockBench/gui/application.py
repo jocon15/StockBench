@@ -56,7 +56,12 @@ class ConfigMainWindow(QMainWindow):
         self.__update_geometry()
 
     def __update_geometry(self):
-        """Updates the geometry of the main config window while maintaining the in-ability for manual resize."""
+        """Updates the geometry of the main config window while maintaining the in-ability for manual resize.
+
+        Use 1: Used to set the initial size of the main config window after tabs are added to the layout.
+        Use 2: Callback for when the error message label is added to the layout, preventing other widget squishing by
+            resizing the layout to fit all contained widgets.
+        """
         self.updateGeometry()
         self.adjustSize()
         size = self.sizeHint()

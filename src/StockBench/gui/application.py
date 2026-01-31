@@ -45,7 +45,6 @@ class ConfigMainWindow(QMainWindow):
         widget.setStyleSheet(Palette.WINDOW_STYLESHEET)
         widget.setLayout(self.layout)
 
-        # set the central widget of the Window. Widget will expand to take up all the space in the window by default
         self.setCentralWidget(widget)
 
         self.splash.close()
@@ -57,8 +56,7 @@ class ConfigMainWindow(QMainWindow):
         self.__update_geometry()
 
     def __update_geometry(self):
-
-        # FIXME: need to invalidate the layout and force it to recalculate
+        """Updates the geometry of the main config window while maintaining the in-ability for manual resize."""
         self.updateGeometry()
         self.adjustSize()
         size = self.sizeHint()

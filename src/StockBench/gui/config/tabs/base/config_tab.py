@@ -37,6 +37,8 @@ def CaptureConfigErrors(original_fxn: Callable):
         except MessageBoxCaptureException as e:
             self.error_message_box.setText(str(e))
             self.layout.addWidget(self.error_message_box)
+            # update config window geometry using callback
+            self.update_geometry()
     return wrapper
 
 
@@ -47,8 +49,9 @@ class ConfigTab(QWidget):
 
     DEFAULT_CACHE_KEY = 'cached_strategy_filepath'
 
-    def __init__(self, stockbench_controller: StockBenchController):
+    def __init__(self, update_geometry: Callable, stockbench_controller: StockBenchController):
         super().__init__()
+        self.update_geometry = update_geometry
         self._stockbench_controller = stockbench_controller
 
         # windows launched from a class need to be attributes or else they will be closed when the function

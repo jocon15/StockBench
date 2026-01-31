@@ -22,17 +22,17 @@ class ConfigMainWindow(QMainWindow):
         self.__stockbench_controller = StockBenchControllerFactory.get_controller_instance()
 
         # main window styling (do it first to prevent window shifting)
-        self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON))
+        self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON_FILEPATH))
         self.setWindowTitle('Configuration')
         # SEE BOTTOM FOR CONFIG WINDOW SIZING!!!
 
         self.layout = QVBoxLayout()
 
         self.tab_widget = QTabWidget()
-        self.tab_widget.addTab(SingularConfigTab(self.__stockbench_controller), "Single")
-        self.tab_widget.addTab(MultiConfigTab(self.__stockbench_controller), "Multi")
-        self.tab_widget.addTab(CompareConfigTab(self.__stockbench_controller), "Compare")
-        self.tab_widget.addTab(FolderConfigTab(self.__stockbench_controller), "Folder")
+        self.tab_widget.addTab(SingularConfigTab(self.__update_geometry, self.__stockbench_controller), "Single")
+        self.tab_widget.addTab(MultiConfigTab(self.__update_geometry, self.__stockbench_controller), "Multi")
+        self.tab_widget.addTab(CompareConfigTab(self.__update_geometry, self.__stockbench_controller), "Compare")
+        self.tab_widget.addTab(FolderConfigTab(self.__update_geometry, self.__stockbench_controller), "Folder")
         self.tab_widget.setStyleSheet(Palette.TAB_WIDGET_STYLESHEET)
         self.layout.addWidget(self.tab_widget)
 
@@ -54,7 +54,13 @@ class ConfigMainWindow(QMainWindow):
         # we want the window to shrink to the size of the widgets but also be non-resizable
         # after the tabs are added, the following block shrinks the window to fit of the biggest tab and disables
         # resizing
+        self.__update_geometry()
+
+    def __update_geometry(self):
+
+        # FIXME: need to invalidate the layout and force it to recalculate
         self.updateGeometry()
+        self.adjustSize()
         size = self.sizeHint()
         self.setMinimumSize(size)
         self.setMaximumSize(size)

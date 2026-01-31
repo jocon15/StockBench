@@ -20,7 +20,7 @@ class ConfigMainWindow(QMainWindow):
 
         self.__stockbench_controller = StockBenchControllerFactory.get_controller_instance()
 
-        # main window styling (do it first to prevent window shifting)
+        # main window styling (done first to prevent window shifting)
         self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON_FILEPATH))
         self.setWindowTitle('Configuration')
         # SEE BOTTOM FOR CONFIG WINDOW SIZING!!!

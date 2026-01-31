@@ -1,3 +1,5 @@
+from typing import Callable
+
 from PyQt6.QtWidgets import QLabel, QPushButton
 from PyQt6.QtCore import Qt
 
@@ -15,8 +17,8 @@ class CompareConfigTab(ConfigTab):
 
     STRATEGY_2_CACHE_KEY = 'cached_h2h_strategy_2_filepath'
 
-    def __init__(self, stockbench_controller: StockBenchController):
-        super().__init__(stockbench_controller)
+    def __init__(self, update_geometry: Callable, stockbench_controller: StockBenchController):
+        super().__init__(update_geometry, stockbench_controller)
         label = QLabel()
         label.setText('Strategy 1:')
         label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -30,7 +32,7 @@ class CompareConfigTab(ConfigTab):
         self.strategy_1_studio_btn.clicked.connect(lambda: self.on_strategy_studio_btn_clicked(  # noqa
                                                    self.strategy_1_selection_box.filepath_box.text()))
         self.strategy_1_studio_btn.setStyleSheet(Palette.STRATEGY_STUDIO_BTN)
-        self.layout.addWidget(self.strategy_1_studio_btn)
+        self.layout.addWidget(self.strategy_1_studio_btn, alignment=Qt.AlignmentFlag.AlignRight)
 
         label = QLabel()
         label.setText('Strategy 2:')
@@ -45,7 +47,7 @@ class CompareConfigTab(ConfigTab):
         self.strategy_2_studio_btn.clicked.connect(lambda: self.on_strategy_studio_btn_clicked(  # noqa
                                                    self.strategy_2_selection_box.filepath_box.text()))
         self.strategy_2_studio_btn.setStyleSheet(Palette.STRATEGY_STUDIO_BTN)
-        self.layout.addWidget(self.strategy_2_studio_btn)
+        self.layout.addWidget(self.strategy_2_studio_btn, alignment=Qt.AlignmentFlag.AlignRight)
 
         self.simulation_length = SECONDS_1_YEAR
         self.grid_config_frame = GridConfigFrame(self.on_simulation_length_cbox_index_changed,

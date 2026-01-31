@@ -1,4 +1,5 @@
 import os
+from typing import Callable
 
 from PyQt6.QtWidgets import QLabel
 from PyQt6.QtCore import Qt
@@ -15,8 +16,8 @@ from StockBench.models.constants.general_constants import SECONDS_1_YEAR
 class FolderConfigTab(ConfigTab):
     FOLDER_CACHE_KEY = 'cached_folderpath'
 
-    def __init__(self, stockbench_controller: StockBenchController):
-        super().__init__(stockbench_controller)
+    def __init__(self, update_geometry: Callable, stockbench_controller: StockBenchController):
+        super().__init__(update_geometry, stockbench_controller)
         label = QLabel()
         label.setText('Folder:')
         label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)

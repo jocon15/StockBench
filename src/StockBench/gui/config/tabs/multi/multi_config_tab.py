@@ -1,3 +1,5 @@
+from typing import Callable
+
 from PyQt6.QtWidgets import QLabel, QPushButton, QFrame
 from PyQt6.QtCore import Qt
 
@@ -11,8 +13,8 @@ from StockBench.models.constants.general_constants import SECONDS_1_YEAR
 
 
 class MultiConfigTab(ConfigTab):
-    def __init__(self, stockbench_controller: StockBenchController):
-        super().__init__(stockbench_controller)
+    def __init__(self, update_geometry: Callable, stockbench_controller: StockBenchController):
+        super().__init__(update_geometry, stockbench_controller)
         label = QLabel()
         label.setText('Strategy:')
         label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
@@ -26,7 +28,7 @@ class MultiConfigTab(ConfigTab):
         self.strategy_studio_btn.clicked.connect(lambda: self.on_strategy_studio_btn_clicked(  # noqa
                                                  self.strategy_selection_box.filepath_box.text()))
         self.strategy_studio_btn.setStyleSheet(Palette.STRATEGY_STUDIO_BTN)
-        self.layout.addWidget(self.strategy_studio_btn)
+        self.layout.addWidget(self.strategy_studio_btn, alignment=Qt.AlignmentFlag.AlignCenter)
 
         # spacer to even out multi layout
         self.spacer = QFrame()

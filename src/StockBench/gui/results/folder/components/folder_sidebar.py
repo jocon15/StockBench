@@ -108,6 +108,7 @@ class FolderOverviewSidebar(OverviewSideBar):
         # remove extraneous data from exported results
         export_dict.pop(ELAPSED_TIME_KEY)
         export_dict.pop(POSITIONS_KEY)
+        export_dict.pop(INDIVIDUAL_RESULTS_KEY)
 
         return export_dict
 

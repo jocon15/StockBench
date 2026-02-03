@@ -116,13 +116,11 @@ class OverviewSideBar(QWidget):
 
     @staticmethod
     def _copy_to_clipboard(text: str):
-        # copy the dict to the clipboard
         cmd = 'echo ' + text + '|clip'
         return subprocess.check_call(cmd, shell=True)
 
     @staticmethod
     def _show_message_box(title: str, message: str):
-        # show a message box indicating the file was saved
         msgbox = QMessageBox()
         msgbox.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON_FILEPATH))
         msgbox.setText(message)

@@ -37,5 +37,5 @@ class FolderResultsExporter(ExcelExporter):
 
         for result in results:
             for col, result_key in enumerate(self.RESULTS_KEYS):
-                self._write_to_cell(worksheet, row, col, result[STRATEGY_KEY])
+                self._write_to_cell(worksheet, row, col, result[result_key])
             row += 1

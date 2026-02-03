@@ -14,45 +14,38 @@ class OverviewSideBar(QWidget):
 
     def __init__(self, progress_observer: ProgressObserver):
         super().__init__()
+        self.progress_observer = progress_observer
+
         # Note: this must be declared before everything else so that the thread pool exists before we attempt to use it
         self.threadpool = QThreadPool()
-
-        # attributes
-        self.progress_observer = progress_observer
 
         self.simulation_results_to_export = {}
 
         self.layout = QVBoxLayout()
 
-        # metadata header
         self.metadata_header = QLabel()
         self.metadata_header.setText('Metadata')
         self.metadata_header.setStyleSheet(Palette.SIDEBAR_HEADER_STYLESHEET)
 
-        # results header
         self.results_header = QLabel()
         self.results_header.setText('Simulation Results')
         self.results_header.setStyleSheet(Palette.SIDEBAR_HEADER_STYLESHEET)
 
-        # export JSON button
         self.export_json_btn = QPushButton()
         self.export_json_btn.setText('Export to Clipboard (JSON)')
         self.export_json_btn.setStyleSheet(Palette.SECONDARY_BTN)
         self.export_json_btn.clicked.connect(self.on_export_json_btn_clicked)  # noqa
 
-        # export excel button
         self.export_excel_btn = QPushButton()
         self.export_excel_btn.setText('Export to Excel (.xlsx)')
         self.export_excel_btn.setStyleSheet(Palette.SECONDARY_BTN)
         self.export_excel_btn.clicked.connect(self.on_export_excel_btn_clicked)  # noqa
 
-        # export markdown button
         self.export_md_btn = QPushButton()
         self.export_md_btn.setText('Export to Markdown (.md)')
         self.export_md_btn.setStyleSheet(Palette.SECONDARY_BTN)
         self.export_md_btn.clicked.connect(self.on_export_md_btn_clicked)  # noqa
 
-        # output box (terminal)
         self.output_box = QListWidget()
         self.output_box.setMinimumHeight(300)
         self.output_box.setWordWrap(True)
@@ -61,14 +54,11 @@ class OverviewSideBar(QWidget):
         self.output_box.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.output_box.setStyleSheet(Palette.SIDEBAR_OUTPUT_BOX_STYLESHEET)
 
-        # status header
         self.status_header = QLabel()
         self.status_header.setText('Status')
         self.status_header.setStyleSheet(Palette.SIDEBAR_HEADER_STYLESHEET)
 
-        # timer to periodically read from the progress observer and update output box
         self.timer = QTimer()
-        # start the timer to update the output box every 100ms
         self.timer.setInterval(100)
         self.timer.timeout.connect(self._update_output_box)  # noqa
         self.timer.start()

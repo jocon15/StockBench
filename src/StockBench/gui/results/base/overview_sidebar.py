@@ -98,12 +98,10 @@ class OverviewSideBar(QWidget):
         """On click function for exporting to JSON button."""
         # make sure that results exist before trying to export
         if self.simulation_results_to_export:
-            # copy and clean the results info
             export_dict = self._remove_extraneous_info(self.simulation_results_to_export)
 
             self._copy_to_clipboard(str(export_dict))
 
-            # show a message box indicating the file was saved
             self._show_message_box('Export Notification', 'Results copied to clipboard')
 
     @abstractmethod

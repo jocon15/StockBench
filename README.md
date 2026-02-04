@@ -73,10 +73,12 @@ Want to run 2 strategies side by side? We have you covered with the compare tab!
 </p>
 
 ## Exporting Results
+
 StockBench offers a set of exporting tools that allow you to keep simulation results. Check out our export to markdown 
 feature that allow you to export your results to a markdown file. Markdown is especially well-equipped for developing
 elegant documents with its simple and powerful syntax. Our markdown exporter creates a template for a study document 
 and inserts the results of the simulation for you, making it a breeze to create studies easily.
+
 ![report](https://github.com/jocon15/StockBench/blob/master/images/markdown_export.png)
 
 ## Diving Deeper

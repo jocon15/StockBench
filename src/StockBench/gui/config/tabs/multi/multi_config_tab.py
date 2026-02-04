@@ -13,6 +13,8 @@ from StockBench.models.constants.general_constants import SECONDS_1_YEAR
 
 
 class MultiConfigTab(ConfigTab):
+    CACHE_KEY = 'multi_strategy_filepath'
+
     def __init__(self, update_geometry: Callable, stockbench_controller: StockBenchController):
         super().__init__(update_geometry, stockbench_controller)
         label = QLabel()
@@ -20,7 +22,7 @@ class MultiConfigTab(ConfigTab):
         label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
-        self.strategy_selection_box = StrategySelection()
+        self.strategy_selection_box = StrategySelection(self.cache_strategy_filepath, self.CACHE_KEY)
         self.layout.addWidget(self.strategy_selection_box)
 
         self.strategy_studio_btn = QPushButton()

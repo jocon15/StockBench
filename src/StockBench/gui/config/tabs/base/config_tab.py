@@ -1,5 +1,4 @@
 import json
-import os.path
 import time
 from abc import abstractmethod
 from functools import wraps
@@ -66,7 +65,6 @@ class ConfigTab(QWidget):
         self.head_to_head_window = None
         self.results_depth = Simulator.CHARTS_AND_DATA
 
-        # ========================= Shared Components ================================
         self.layout = QVBoxLayout()
 
         self.run_btn = QPushButton()
@@ -175,8 +173,6 @@ class ConfigTab(QWidget):
             raise MessageBoxCaptureException('Strategy filepath is not a valid file!')
         except json.decoder.JSONDecodeError as e:
             raise MessageBoxCaptureException(f'This strategy is not valid JSON!: {e.args[0]}')
-
-        self.cache_strategy_filepath(filepath, cache_key, cache_value)
 
         # inject the unix equivalent dates from the combobox to the dict
         strategy['strategy_filepath'] = filepath

@@ -23,7 +23,7 @@ class FolderConfigTab(ConfigTab):
         label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
-        self.folder_selection = CachedFolderSelector()
+        self.folder_selection = CachedFolderSelector(self.cache_strategy_filepath)
         self.folder_selection.setStyleSheet(Palette.SECONDARY_BTN)
         self.layout.addWidget(self.folder_selection)
 

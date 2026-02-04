@@ -13,9 +13,9 @@ from StockBench.models.constants.general_constants import SECONDS_1_YEAR
 
 
 class CompareConfigTab(ConfigTab):
-    STRATEGY_1_CACHE_KEY = 'cached_h2h_strategy_1_filepath'
+    STRATEGY_1_CACHE_KEY = 'h2h_strategy_1_filepath'
 
-    STRATEGY_2_CACHE_KEY = 'cached_h2h_strategy_2_filepath'
+    STRATEGY_2_CACHE_KEY = 'h2h_strategy_2_filepath'
 
     def __init__(self, update_geometry: Callable, stockbench_controller: StockBenchController):
         super().__init__(update_geometry, stockbench_controller)
@@ -24,7 +24,7 @@ class CompareConfigTab(ConfigTab):
         label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
-        self.strategy_1_selection_box = StrategySelection(self.STRATEGY_1_CACHE_KEY)
+        self.strategy_1_selection_box = StrategySelection(self.cache_strategy_filepath, self.STRATEGY_1_CACHE_KEY)
         self.layout.addWidget(self.strategy_1_selection_box)
 
         self.strategy_1_studio_btn = QPushButton()
@@ -39,7 +39,7 @@ class CompareConfigTab(ConfigTab):
         label.setStyleSheet(Palette.INPUT_LABEL_STYLESHEET)
         self.layout.addWidget(label)
 
-        self.strategy_2_selection_box = StrategySelection(self.STRATEGY_2_CACHE_KEY)
+        self.strategy_2_selection_box = StrategySelection(self.cache_strategy_filepath, self.STRATEGY_2_CACHE_KEY)
         self.layout.addWidget(self.strategy_2_selection_box)
 
         self.strategy_2_studio_btn = QPushButton()

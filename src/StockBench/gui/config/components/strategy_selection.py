@@ -1,5 +1,6 @@
 import os
 import json
+from typing import Callable
 
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton
 from PyQt6.QtWidgets import QFileDialog
@@ -8,11 +9,12 @@ from StockBench.caching.file_cache import CACHE_FILE_FILEPATH
 
 
 class StrategySelection(QWidget):
-
     DEFAULT_CACHE_KEY = 'cached_strategy_filepath'
 
-    def __init__(self, cache_key=None):
+    def __init__(self, update_cache: Callable, cache_key=None):
         super().__init__()
+        self.update_cache = update_cache
+        self.cache_key = cache_key
 
         self.layout = QHBoxLayout()
 
@@ -50,4 +52,6 @@ class StrategySelection(QWidget):
         dlg.setNameFilter("JSON (*.json)")
         if dlg.exec():
             filenames = dlg.selectedFiles()
+            # QFileDialog does not have an easy way of limiting selection to 1 file - only the first file is selected
             self.filepath_box.setText(filenames[0])
+            self.update_cache(filenames[0], cache_key=self.cache_key)

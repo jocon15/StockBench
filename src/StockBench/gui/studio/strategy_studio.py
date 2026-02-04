@@ -5,9 +5,6 @@ from StockBench.gui.palette.palette import Palette
 
 
 class StrategyStudioWindow(QWidget):
-    STRATEGY_TEXT_EDIT_STYLESHEET = """border-radius: 12px;padding: 5px;background-color: #303134;color: #fff"""
-    STATUS_STYLESHEET = """border-radius: 5px;padding: 3px;background-color: #303134;color: #fff"""
-
     WIDTH = 400
     HEIGHT = 600
 
@@ -23,14 +20,14 @@ class StrategyStudioWindow(QWidget):
         self.layout = QVBoxLayout()
 
         self.status = QLabel()
-        self.status.setStyleSheet(self.STATUS_STYLESHEET)
+        self.status.setStyleSheet(Palette.STATUS_STYLESHEET)
         self.layout.addWidget(self.status)
         self.save_buttons = SaveButtons()
         self.save_buttons.save_btn.clicked.connect(self.on_save_btn_clicked)  # noqa
         self.save_buttons.save_as_btn.clicked.connect(self.on_save_as_btn_clicked)  # noqa
         self.layout.addWidget(self.save_buttons)
         self.text_edit = QTextEdit()
-        self.text_edit.setStyleSheet(self.STRATEGY_TEXT_EDIT_STYLESHEET)
+        self.text_edit.setStyleSheet(Palette.STRATEGY_TEXT_EDIT_STYLESHEET)
         self.setStyleSheet(Palette.WINDOW_STYLESHEET)
         self.layout.addWidget(self.text_edit)
 

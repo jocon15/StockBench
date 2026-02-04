@@ -102,10 +102,35 @@ class Palette:
         height: 30px;
     """
 
-    SIDEBAR_HEADER_STYLESHEET = """max-height:45px; color:#FFF;font-size:20px;font-weight:bold;"""
+    STRATEGY_TEXT_EDIT_STYLESHEET = """
+        color: #fff;
+        background-color: #303134;
+        font-size: 15px;
+        border-radius: 12px;
+        padding: 5px;
+    """
 
-    SIDEBAR_OUTPUT_BOX_STYLESHEET = """color: #fff; background-color: #303136; border-radius: 8px;border: 0px; 
-    padding: 5px;"""
+    STATUS_STYLESHEET = """
+        border-radius: 5px;
+        padding: 3px;
+        background-color: #303134;
+        color: #fff
+    """
+
+    SIDEBAR_HEADER_STYLESHEET = """
+        color:#FFF;
+        max-height:45px;
+        font-size:20px;
+        font-weight:bold;
+    """
+
+    SIDEBAR_OUTPUT_BOX_STYLESHEET = """
+        color: #fff;
+        background-color: #303136;
+        border-radius: 8px;
+        border: 0px; 
+        padding: 5px;
+    """
 
     STRATEGY_STUDIO_BTN = """
         QPushButton

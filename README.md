@@ -7,7 +7,7 @@
 ### A back-testing app for testing stock trading strategies with historical data.
 
 <p align="center">
-    <img src="https://github.com/jocon15/StockBench/blob/master/images/singular_v2.gif" />
+    <img src="https://github.com/jocon15/StockBench/blob/master/images/singular.gif" />
 </p>
 
 # How it Works

@@ -34,6 +34,9 @@ class StrategyStudioWindow(QWidget):
         self.setStyleSheet(Palette.WINDOW_STYLESHEET)
         self.layout.addWidget(self.text_edit)
 
+        self.error_message_box = QLabel()
+        self.error_message_box.setStyleSheet(Palette.ERROR_LABEL_STYLESHEET)
+
         self.__set_geometry(config_pos, config_width)
 
         self.__load_filepath_into_editor()
@@ -59,8 +62,14 @@ class StrategyStudioWindow(QWidget):
     def __load_filepath_into_editor(self):
         # if a filepath was injected, try loading it, else, show the template
         if self.filepath is not None and self.filepath != '':
-            with open(self.filepath, 'r') as file:
-                json_data = json.load(file)
+            try:
+                with open(self.filepath, 'r') as file:
+                    json_data = json.load(file)
+            except json.decoder.JSONDecodeError as e:
+                self.error_message_box.setText(f'This strategy is not valid JSON!: {e.args[0]}')
+                self.layout.addWidget(self.error_message_box)
+                self.__set_status('Invalid JSON!')
+                return
 
             self.text_edit.setText(json.dumps(json_data, indent=4))
 

@@ -20,9 +20,9 @@ Now that you have everything the way you like, you can start the simulation. The
 
 And just like that, you have simulated a strategy on historical data. Have fun!
 
-| Configuration                                                                         | Results                                                                        |
-|:-------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------:|
-| ![single](https://github.com/jocon15/StockBench/blob/master/images/configuration.png) | ![multi](https://github.com/jocon15/StockBench/blob/master/images/results.png) |
+| Configuration                                                                         |                                         Results                                         |
+|:-------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------:|
+| ![single](https://github.com/jocon15/StockBench/blob/master/images/configuration.png) | ![multi](https://github.com/jocon15/StockBench/blob/master/images/singular_results.png) |
 
 ## In-Depth Results Across Multiple Strategies
 

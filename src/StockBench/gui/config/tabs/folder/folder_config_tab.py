@@ -65,7 +65,7 @@ class FolderConfigTab(ConfigTab):
         strategies = []
         for filename in os.listdir(folderpath):
             filepath = os.path.join(folderpath, filename)
-            strategy = self.load_strategy(filepath, self.FOLDER_CACHE_KEY, folderpath)
+            strategy = self._load_strategy(filepath, self.FOLDER_CACHE_KEY, folderpath)
             strategies.append(strategy)
 
         self.simulation_result_window = FolderResultsWindow(

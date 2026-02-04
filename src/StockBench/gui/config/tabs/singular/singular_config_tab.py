@@ -76,7 +76,7 @@ class SingularConfigTab(ConfigTab):
             try blocks or return values.
         """
         # load the strategy from the JSON file into a strategy python dict
-        strategy = self.load_strategy(self.strategy_selection_box.filepath_box.text())
+        strategy = self._load_strategy(self.strategy_selection_box.filepath_box.text())
 
         # gather other data from UI shared_components
         simulation_symbol = self.grid_config_frame.left_frame.symbol_tbox.text().upper().strip()

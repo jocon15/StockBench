@@ -86,8 +86,6 @@ class ConfigTab(QWidget):
             instead of crashing. It also allows us to functionalize the filepath validation without the need for
             try blocks or return values.
         """
-        self._validate_filepath(filepath)
-
         # launch the strategy studio window injecting the filepath from the filepath box into the strategy editor
         coordinates = self.mapToGlobal(QPoint(0, 0))
         self.strategy_studio_window = StrategyStudioWindow(
@@ -149,31 +147,6 @@ class ConfigTab(QWidget):
         if selected:
             self.results_depth = Simulator.DATA_ONLY
 
-    @CaptureConfigErrors
-    def load_strategy(self, filepath: str, cache_key=None, cache_value=None):
-        """Loads a strategy from a filepath.
-
-        Decorator:
-            The CaptureErrors decorator allows custom exceptions to be caught and logged to the error message box
-            instead of crashing. It also allows us to functionalize the filepath validation without the need for
-            try blocks or return values.
-        """
-        self._validate_filepath(filepath)
-        try:
-            with open(filepath, 'r') as file:
-                strategy = json.load(file)
-        except Exception as e:
-            raise MessageBoxCaptureException(f'Uncaught error parsing strategy file: {e}')
-
-        self.cache_strategy_filepath(filepath, cache_key, cache_value)
-
-        # inject the unix equivalent dates from the combobox to the dict
-        strategy['strategy_filepath'] = filepath
-        strategy[START_KEY] = int(time.time()) - self.simulation_length
-        strategy[END_KEY] = int(time.time())
-
-        return strategy
-
     def cache_strategy_filepath(self, strategy_filepath, cache_key=None, cache_value=None):
         """Caches the strategy filepath if it does not already exist."""
         key = self.DEFAULT_CACHE_KEY
@@ -191,12 +164,26 @@ class ConfigTab(QWidget):
         with open(CACHE_FILE_FILEPATH, 'w+') as file:
             json.dump(data, file)
 
-    @staticmethod
-    def _validate_filepath(filepath: str):
+    def _load_strategy(self, filepath: str, cache_key=None, cache_value=None):
+        """Loads a strategy from a filepath."""
         if filepath is None or filepath == '':
             raise MessageBoxCaptureException('You must select a strategy file!')
-        if not os.path.isfile(filepath):
+        try:
+            with open(filepath, 'r') as file:
+                strategy = json.load(file)
+        except FileNotFoundError:
             raise MessageBoxCaptureException('Strategy filepath is not a valid file!')
+        except json.decoder.JSONDecodeError as e:
+            raise MessageBoxCaptureException(f'This strategy is not valid JSON!: {e.args[0]}')
+
+        self.cache_strategy_filepath(filepath, cache_key, cache_value)
+
+        # inject the unix equivalent dates from the combobox to the dict
+        strategy['strategy_filepath'] = filepath
+        strategy[START_KEY] = int(time.time()) - self.simulation_length
+        strategy[END_KEY] = int(time.time())
+
+        return strategy
 
     @abstractmethod
     def on_run_btn_clicked(self, clicked_signal: bool):

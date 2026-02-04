@@ -76,8 +76,8 @@ class CompareConfigTab(ConfigTab):
             try blocks or return values.
         """
         # load the strategy from the JSON file into a strategy python dict
-        strategy1 = self.load_strategy(self.strategy_1_selection_box.filepath_box.text(), self.STRATEGY_1_CACHE_KEY)
-        strategy2 = self.load_strategy(self.strategy_2_selection_box.filepath_box.text(), self.STRATEGY_2_CACHE_KEY)
+        strategy1 = self._load_strategy(self.strategy_1_selection_box.filepath_box.text(), self.STRATEGY_1_CACHE_KEY)
+        strategy2 = self._load_strategy(self.strategy_2_selection_box.filepath_box.text(), self.STRATEGY_2_CACHE_KEY)
 
         # gather other data from UI shared_components
         raw_simulation_symbols = self.grid_config_frame.left_frame.symbol_tbox.text().split(',')

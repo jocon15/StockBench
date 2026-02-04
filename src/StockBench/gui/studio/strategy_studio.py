@@ -65,6 +65,11 @@ class StrategyStudioWindow(QWidget):
             try:
                 with open(self.filepath, 'r') as file:
                     json_data = json.load(file)
+            except FileNotFoundError:
+                self.error_message_box.setText('Strategy filepath is not a valid file!')
+                self.layout.addWidget(self.error_message_box)
+                self.__set_status('Invalid filepath!')
+                return
             except json.decoder.JSONDecodeError as e:
                 self.error_message_box.setText(f'This strategy is not valid JSON!: {e.args[0]}')
                 self.layout.addWidget(self.error_message_box)

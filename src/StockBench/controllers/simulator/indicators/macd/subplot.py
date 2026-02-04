@@ -19,7 +19,7 @@ class MACDSubplot(Subplot):
         return:
             A plotly subplot.
         """
-        return fplt.Bar(x=df['Date'], y=df[self.data_symbol], name=self.data_symbol)
+        return fplt.Bar(x=df['Date'], y=df[self.data_symbol], name=self.data_symbol, marker=dict(color='#086a50'))
 
     def get_traces(self, df) -> list:
         """Build a list of traces to add to the subplot.

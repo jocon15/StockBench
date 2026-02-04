@@ -19,7 +19,6 @@ class FolderOverviewSidebar(OverviewSideBar):
 
         self.progress_observers = progress_observers
 
-        # add shared_components to the layout
         self.layout.addWidget(self.metadata_header)
 
         self.metadata_table = FolderMetadataSidebarTable()
@@ -42,7 +41,6 @@ class FolderOverviewSidebar(OverviewSideBar):
         self.setLayout(self.layout)
 
     def on_export_json_btn_clicked(self):
-        # make sure that results exist before trying to export
         if self.simulation_results_to_export:
             export_string = ''
             for result in self.simulation_results_to_export['results']:
@@ -57,20 +55,14 @@ class FolderOverviewSidebar(OverviewSideBar):
             export_string = export_string.rsplit(',', 1)[0]
             self._copy_to_clipboard(export_string)
 
-            # show a message box indicating results were copied
             self._show_message_box('Export Notification', 'Results copied to clipboard')
 
     def on_export_excel_btn_clicked(self):
-        # make sure that results exist before trying to export
         if self.simulation_results_to_export:
-            # get the filepath from the ui component
             folder_path = self.folder_selection.folderpath_box.text()
-
-            # export the data to the xlsx file
             exporter = FolderResultsExporter()
             filepath = exporter.export(self.simulation_results_to_export['results'], folder_path, 'FolderResults')
 
-            # show a message box indicating the file was saved
             self._show_message_box('Export Notification', f'File has been saved to {filepath}')
 
     def on_export_md_btn_clicked(self):
@@ -78,7 +70,6 @@ class FolderOverviewSidebar(OverviewSideBar):
         if self.simulation_results_to_export:
             filepath = MarkdownExporter.export_folder_simulation_to_md(self.simulation_results_to_export)
 
-            # show a message box indicating results were copied
             self._show_message_box('Export Notification', f'Results exported to {filepath}')
 
     def _update_output_box(self):
@@ -115,7 +106,6 @@ class FolderOverviewSidebar(OverviewSideBar):
     def render_data(self, simulation_results: dict):
         # save the results to allow exporting
         self.simulation_results_to_export = simulation_results
-        # extract the results list
         results = simulation_results['results']
         # select the first result to use as a template
         result_to_use = results[0]

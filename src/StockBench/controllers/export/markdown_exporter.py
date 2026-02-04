@@ -140,9 +140,9 @@ class MarkdownExporter:
                 f"$ {strategy_results[AVERAGE_PL_KEY]}",
                 f"$ {strategy_results[MEDIAN_PL_KEY]}",
                 f"$ {strategy_results[STANDARD_DEVIATION_PL_KEY]}",
-                f"$ {simulation_results[AVERAGE_PLPC_KEY]}",
-                f"$ {simulation_results[MEDIAN_PLPC_KEY]}",
-                f"$ {simulation_results[STANDARD_DEVIATION_PLPC_KEY]}"]
+                f"$ {strategy_results[AVERAGE_PLPC_KEY]}",
+                f"$ {strategy_results[MEDIAN_PLPC_KEY]}",
+                f"$ {strategy_results[STANDARD_DEVIATION_PLPC_KEY]}"]
 
         markdown_table = df.to_markdown(index=False)
 

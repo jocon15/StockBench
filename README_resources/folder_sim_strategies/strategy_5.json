@@ -1,0 +1,14 @@
+{
+	"buy": {
+		"EMA20$slope2": ">0",
+		"stochastic": "<30"
+	},
+	"sell": {
+		"stop_loss": "1%",
+		"stop_loss_intraday": "1%",
+		"color": {
+			"0": "red",
+			"1": "red"
+		}
+	}
+}

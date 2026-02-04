@@ -1,0 +1,12 @@
+{
+    "buy": {
+        "EMA20": ">0",
+        "RSI": "<40",
+        "stochastic": "<20",
+        "MACD$slope2": ">0"
+    },
+    "sell": {
+        "RSI": ">60",
+        "stochastic": ">80"
+    }
+}

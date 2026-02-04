@@ -17,14 +17,11 @@ class StrategyStudioWindow(QWidget):
         super().__init__()
         self.filepath = filepath
 
-        # header
         self.setWindowIcon(QtGui.QIcon(Palette.CANDLE_ICON_FILEPATH))
         self.setWindowTitle('Strategy Studio')
 
-        # layout type
         self.layout = QVBoxLayout()
 
-        # add shared_components to the layout
         self.status = QLabel()
         self.status.setStyleSheet(self.STATUS_STYLESHEET)
         self.layout.addWidget(self.status)
@@ -37,21 +34,16 @@ class StrategyStudioWindow(QWidget):
         self.setStyleSheet(Palette.WINDOW_STYLESHEET)
         self.layout.addWidget(self.text_edit)
 
-        # set window geometry
         self.__set_geometry(config_pos, config_width)
 
-        # load the strategy from the file
         self.__load_filepath_into_editor()
 
-        # apply the layout
         self.setLayout(self.layout)
 
     def on_save_btn_clicked(self):
         if self.filepath is not None and self.filepath != '':
-            # write the json to the filepath
             self.__save_json_file(self.filepath)
         else:
-            # this file has not been saved yet and needs to use save_as instead
             self.on_save_as_btn_clicked()
 
     def on_save_as_btn_clicked(self):
@@ -67,16 +59,13 @@ class StrategyStudioWindow(QWidget):
     def __load_filepath_into_editor(self):
         # if a filepath was injected, try loading it, else, show the template
         if self.filepath is not None and self.filepath != '':
-            # load the strategy from the file
             with open(self.filepath, 'r') as file:
                 json_data = json.load(file)
 
-            # set the strategy text to the editor widget
             self.text_edit.setText(json.dumps(json_data, indent=4))
 
             self.__set_status(f'You are editing: {self.filepath}')
         else:
-            # set the strategy text to the editor widget
             self.text_edit.setText(json.dumps(self.TEMPLATE_JSON, indent=4))
 
             self.__set_status('You are creating a new strategy')

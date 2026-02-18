@@ -36,9 +36,10 @@ class MultiChartingEngine(ChartingEngine):
                             subplot_titles=chart_titles)
 
         fig.add_trace(MultiChartingEngine.__build_overview_profit_loss_bar_subplot(results), row=1, col=1)
-        fig.add_trace(MultiChartingEngine.__overview_avg_effectiveness_gauge_subplot(results), row=1, col=2)
+        fig.add_trace(MultiChartingEngine.__build_overview_avg_effectiveness_gauge_subplot(results), row=1, col=2)
         fig.add_trace(MultiChartingEngine.__build_overview_trades_made_bar_subplot(results), row=2, col=1)
-        fig.add_trace(MultiChartingEngine.__overview_avg_profit_loss_gauge(results, initial_balance), row=2, col=2)
+        fig.add_trace(MultiChartingEngine.__build_overview_avg_profit_loss_gauge_subplot(results, initial_balance),
+                      row=2, col=2)
 
         fig.update_layout(template=self.PLOTLY_THEME, title=f'Simulation Results for {len(results)} Symbols',
                           xaxis_rangeslider_visible=False, showlegend=False)
@@ -67,7 +68,7 @@ class MultiChartingEngine(ChartingEngine):
         )
 
     @staticmethod
-    def __overview_avg_effectiveness_gauge_subplot(results: List[dict]) -> Indicator:
+    def __build_overview_avg_effectiveness_gauge_subplot(results: List[dict]) -> Indicator:
         """Builds an overview average effectiveness gauge subplot."""
         indicator_value = MultiChartingEngine.__calculate_avg_effectiveness_from_results(results)
 
@@ -86,7 +87,7 @@ class MultiChartingEngine(ChartingEngine):
                        {'range': [50, 100], 'color': PLOTLY_DARK_BACKGROUND}]})
 
     @staticmethod
-    def __overview_avg_profit_loss_gauge(results: List[dict], initial_balance: float) -> Indicator:
+    def __build_overview_avg_profit_loss_gauge_subplot(results: List[dict], initial_balance: float) -> Indicator:
         """Builds an overview average profit/loss gauge subplot."""
         indicator_value = MultiChartingEngine.__calculate_avg_pl_from_results(results)
         upper_bound = initial_balance

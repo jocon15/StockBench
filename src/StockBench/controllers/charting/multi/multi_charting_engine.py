@@ -62,7 +62,9 @@ class MultiChartingEngine(ChartingEngine):
         return plotter.Bar(
             x=MultiChartingEngine.__get_symbols_from_results(results),
             y=MultiChartingEngine.__get_total_pl_per_symbol_from_results(results),
-            marker_color=color_df['colors'])
+            marker_color=color_df['colors'],
+            name='PL'
+        )
 
     @staticmethod
     def __overview_avg_effectiveness_gauge_subplot(results: List[dict]) -> Indicator:

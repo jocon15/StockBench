@@ -63,7 +63,7 @@ class MultiChartingEngine(ChartingEngine):
         return plotter.Bar(
             x=MultiChartingEngine.__get_symbols_from_results(results),
             y=MultiChartingEngine.__get_total_pl_per_symbol_from_results(results),
-            marker_color=color_df['colors'],
+            marker_color=color_df['colors'],  # noqa
             name='PL'
         )
 
@@ -113,7 +113,9 @@ class MultiChartingEngine(ChartingEngine):
         return plotter.Bar(
             x=MultiChartingEngine.__get_symbols_from_results(results),
             y=MultiChartingEngine.__get_trades_made_per_symbol_from_results(results),
-            marker=dict(color=OFF_BLUE))
+            marker=dict(color=OFF_BLUE),
+            name='Trades made'
+        )
 
     @staticmethod
     def __get_symbols_from_results(results: List[dict]) -> list:

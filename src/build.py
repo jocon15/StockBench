@@ -21,7 +21,7 @@ def main():
     print('Extracting branch version...')
     branch_name = run_command(['git', 'branch', '--show-current']).strip()
 
-    if "/" not in branch_name or "." not in branch_name:
+    if branch_name.count('/') != 1 or branch_name.count('.') != 2:
         print('ERROR: You must checkout a branch in format {release_type}/{X.X.X}')
         sys.exit()
 

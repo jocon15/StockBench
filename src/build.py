@@ -27,6 +27,12 @@ def main():
 
     version = branch_name.split('/')[1]
 
+    for segment in version.split('.'):
+        if not segment.isdigit():
+            print('ERROR: You must checkout a branch in format {release_type}/{X.X.X}')
+            print('ERROR: Version number segments must be numbers only')
+            sys.exit()
+
     with open(os.path.join('resources', 'version.txt'), 'w') as file:
         file.write(f'Version: {version}')
 

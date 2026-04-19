@@ -2,7 +2,8 @@
 # python. If you want to upgrade, consult the matrix, select the latest python version with full support and then
 # install PyQt6 without a version specification. Pip should select a compatible version, use that! - This is the
 # easiest way to upgrade it without breaking anything
-python~=3.12.13
+
+# NOTE: Do NOT define python version here, that is done in workflow file
 pyqt6~=6.11.0
 PyQtWebEngine~=5.15.7
 PyQt6-WebEngine~=6.11.0

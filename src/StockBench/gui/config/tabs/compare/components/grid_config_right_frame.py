@@ -1,5 +1,6 @@
 from typing import Callable
 
+from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QFrame
 from PyQt6.QtWidgets import QVBoxLayout, QLabel, QPushButton, QRadioButton
 
@@ -19,7 +20,9 @@ class GridConfigRightFrame(QFrame):
             }
             """
 
-    def __init__(self, on_logging_btn_clicked: Callable, on_reporting_btn_clicked: Callable,
+    logging_btn_clicked_signal = pyqtSignal(QPushButton)
+
+    def __init__(self, on_reporting_btn_clicked: Callable,
                  on_chart_saving_btn_clicked: Callable, data_and_charts_btn_selected: Callable,
                  data_only_btn_selected: Callable) -> None:
         super().__init__()
@@ -38,7 +41,7 @@ class GridConfigRightFrame(QFrame):
         self.logging_btn.setCheckable(True)
         self.logging_btn.setText(self.OFF)
         self.logging_btn.setStyleSheet(Palette.TOGGLE_BTN_DISABLED_STYLESHEET)
-        self.logging_btn.clicked.connect(lambda: on_logging_btn_clicked(self.logging_btn))  # noqa
+        self.logging_btn.clicked.connect(lambda: self.logging_btn_clicked_signal.emit(self.logging_btn))
         self.layout.addWidget(self.logging_btn)
 
         self.reporting_label = QLabel()

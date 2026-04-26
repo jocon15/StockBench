@@ -1,5 +1,6 @@
 from typing import Callable
 
+from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QFrame, QGridLayout
 
 from StockBench.gui.config.tabs.compare.components.grid_config_left_frame import GridConfigLeftFrame
@@ -7,7 +8,10 @@ from StockBench.gui.config.tabs.compare.components.grid_config_right_frame impor
 
 
 class GridConfigFrame(QFrame):
-    def __init__(self, on_simulation_length_cbox_index_changed: Callable, on_logging_btn_clicked: Callable,
+
+    logging_btn_clicked_signal_intermediary = pyqtSignal()
+
+    def __init__(self, on_simulation_length_cbox_index_changed: Callable,
                  on_reporting_btn_clicked: Callable, on_chart_saving_btn_clicked: Callable,
                  data_and_charts_btn_selected: Callable, data_only_btn_selected: Callable):
         super().__init__()
@@ -15,7 +19,7 @@ class GridConfigFrame(QFrame):
         self.layout = QGridLayout()
 
         self.left_frame = GridConfigLeftFrame(on_simulation_length_cbox_index_changed)
-        self.right_frame = GridConfigRightFrame(on_logging_btn_clicked, on_reporting_btn_clicked,
+        self.right_frame = GridConfigRightFrame(on_reporting_btn_clicked,
                                                 on_chart_saving_btn_clicked, data_and_charts_btn_selected,
                                                 data_only_btn_selected)
 

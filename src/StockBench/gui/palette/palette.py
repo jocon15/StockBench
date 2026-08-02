@@ -169,6 +169,7 @@ class Palette:
     TOGGLE_BTN_ENABLED_STYLESHEET = """
         QPushButton
         {
+            color: #fff;
             background-color: #04ba5f;
             margin-left: auto;
             margin-right: auto;
@@ -186,6 +187,7 @@ class Palette:
     TOGGLE_BTN_DISABLED_STYLESHEET = """
         QPushButton
         {
+            color: #fff;
             background-color: #303134;
             margin-left: auto;
             margin-right: auto;

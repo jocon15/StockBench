@@ -7,7 +7,7 @@
 pyqt6~=6.11.0
 PyQtWebEngine~=5.15.7
 PyQt6-WebEngine~=6.11.0
-requests~=2.33.1
+requests~=2.34.2
 pandas~=3.0.2
 numpy~=2.4.4
 tabulate~=0.10.0

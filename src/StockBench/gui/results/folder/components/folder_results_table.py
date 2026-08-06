@@ -17,7 +17,7 @@ class FolderResultsTable(QFrame):
     GREEN_BRUSH = QBrush(QColor(4, 186, 95))
     RED_BRUSH = QBrush(QColor(209, 82, 84))
 
-    TABLE_HEADER_FONT_SIZE = 16
+    TABLE_HEADER_FONT_SIZE = 15
 
     TABLE_VALUE_ROW_HEIGHT = 50
     TABLE_VALUE_FONT_SIZE = 13
@@ -128,6 +128,7 @@ class FolderResultsTable(QFrame):
         self.__apply_green_red_values()
 
     def __setup_table_headers(self):
+        foreground_color = QColor(255, 255, 255)
         background_color = QColor(33, 39, 51)
         header_font = QFont()
         header_font.setPointSize(self.TABLE_HEADER_FONT_SIZE)
@@ -135,6 +136,7 @@ class FolderResultsTable(QFrame):
         for i, header in enumerate(self.TABLE_HEADERS):
             item = QTableWidgetItem(header)
             item.setFont(header_font)
+            item.setForeground(foreground_color)
             item.setBackground(background_color)
             self.table.setHorizontalHeaderItem(i, item)
 

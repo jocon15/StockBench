@@ -19,9 +19,10 @@ jobs:
   
       - name: Install Dependencies
         run: pip install -r requirements.txt;
+      - name: Change working directory
+        run: cd src
       - name: Build
-        run: |
-          pyinstaller src/main.py --name StockBench --onefile --windowed --noconfirm --icon=src/resources/images/candle.ico --version-file=src/version_spec.YAML
+        run: python build.py
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:

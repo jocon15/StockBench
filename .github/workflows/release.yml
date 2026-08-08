@@ -29,6 +29,6 @@ jobs:
       - name: Upload StockBench Executable Artifact
         uses: actions/upload-artifact@v7
         with:
-          name: StockBench (Needs Version)
+          name: StockBench Artifact
           # Only pick out the zip file that is in the dist folder
           path: src/dist/*.zip

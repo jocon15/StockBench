@@ -11,24 +11,17 @@ jobs:
         python-version: [ "3.12" ]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
   
-      - name: Build
+      - name: Install Dependencies
         run: pip install -r requirements.txt;
       - name: Build
         run: |
-          pyinstaller src/main.py 
-          --name StockBench 
-          --onefile 
-          --windowed 
-          --noconfirm 
-          --icon=src/resources/images/candle.ico 
-           --version-file=src/version_spec.YAML
-
+          pyinstaller src/main.py --name StockBench --onefile --windowed --noconfirm --icon=src/resources/images/candle.ico --version-file=src/version_spec.YAML
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:

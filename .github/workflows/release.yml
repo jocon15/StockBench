@@ -22,6 +22,7 @@ jobs:
       - name: Change working directory
         run: cd src
       - name: Build
+        working-directory: ./src
         run: python build.py
       - name: Upload artifact
         uses: actions/upload-artifact@v4

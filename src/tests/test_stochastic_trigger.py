@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.controllers.simulator.indicators.stochastic.trigger import StochasticTrigger
@@ -48,6 +48,36 @@ def test_add_to_data_rule_key(data_mocker, logger_mocker, test_object):
 
     # test normal case
     test_object.add_indicator_data_from_rule_key('stochastic', '>30', 'buy', data_mocker)
+    # assertions are done in side effect function
+
+
+@patch('logging.getLogger')
+@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
+@patch('StockBench.controllers.simulator.indicators.stochastic.trigger.StochasticTrigger'
+       '.calculate_stochastic_oscillator')
+def test_add_to_data_rule_key_non_default_length(calculation_mocker, data_mocker, logger_mocker, test_object):
+    calculation_mocker.return_value = [0.0 for _ in EXAMPLE_DATA_MSFT['MSFT']]
+
+    logger_mocker.return_value = logger_mocker
+    logger_mocker.warning.side_effect = logger_side_effect
+
+    data_mocker.add_column.side_effect = add_column_side_effect_non_default_length_30
+
+    # assemble a price list from the example data
+    price_data = []
+    for day in EXAMPLE_DATA_MSFT['MSFT']:
+        price_data.append(float(day['c']))
+
+    data_mocker.HIGH = DataManager.HIGH
+    data_mocker.LOW = DataManager.LOW
+    data_mocker.CLOSE = DataManager.CLOSE
+
+    data_mocker.get_column_data.side_effect = get_column_data_side_effect
+    data_mocker.get_column_names.return_value = []
+    data_mocker.get_data_length.return_value = 200
+
+    # test 30 case to match side effect check
+    test_object.add_indicator_data_from_rule_key('stochastic30', '>30', 'buy', data_mocker)
     # assertions are done in side effect function
 
 
@@ -495,6 +525,14 @@ def add_column_side_effect(*args):
                            30.0,
                            30.0,
                            30.0]
+    else:
+        assert False
+
+
+def add_column_side_effect_non_default_length_30(*args):
+    if args[0] == 'stochastic':
+        assert len(args[1]) == 200
+        assert args[1][0] == 0.0
     elif args[0] == 'stochastic_30.0':
         assert args[1] == [30.0,
                            30.0,

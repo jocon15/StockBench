@@ -52,13 +52,13 @@ class RSITrigger(Trigger):
     def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager,
                                             current_day_index: int) -> float:
         # parse rule key will work even when passed a rule value
-        return Trigger._parse_rule_key(rule_value, self.indicator_symbol, data_manager, current_day_index)
+        return Trigger.parse_rule_key(rule_value, self.indicator_symbol, data_manager, current_day_index)
 
     def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,
                       current_day_index: int) -> bool:
         log.debug(f'Checking {self.indicator_symbol} algorithm: {rule_key}...')
 
-        indicator_value = Trigger._parse_rule_key(rule_key, self.indicator_symbol, data_manager, current_day_index)
+        indicator_value = Trigger.parse_rule_key(rule_key, self.indicator_symbol, data_manager, current_day_index)
 
         log.debug(f'{self.indicator_symbol} algorithm: {rule_key} checked successfully')
 

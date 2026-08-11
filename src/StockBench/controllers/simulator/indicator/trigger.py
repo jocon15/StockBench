@@ -106,8 +106,8 @@ class Trigger:
             raise StrategyIndicatorError(f'Invalid amount of numbers found in algorithm value: {rule_value}')
 
     @staticmethod
-    def _parse_rule_key(rule_key: str, indicator_symbol: str, data_manager: DataManager,
-                        current_day_index: int) -> float:
+    def parse_rule_key(rule_key: str, indicator_symbol: str, data_manager: DataManager,
+                       current_day_index: int) -> float:
         """Parses a rule key for an indicator value."""
         rule_key_number_groups = Trigger.find_all_nums_in_str(rule_key)
         if len(rule_key_number_groups) == 0:

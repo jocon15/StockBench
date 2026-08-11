@@ -16,3 +16,4 @@ xlsxwriter~=3.2.9
 pyinstaller~=6.19.0
 scipy~=1.17.1
 pytest~=9.0.3
+pytest-cov~=7.1.0

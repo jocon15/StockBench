@@ -133,8 +133,8 @@ class Trigger:
         return self.find_operator_in_str(rule_value), self.find_single_numeric_in_str(rule_value)
 
     @staticmethod
-    def _parse_rule_key_no_default_indicator_length(rule_key: str, indicator_symbol: str, data_manager: DataManager,
-                                                    current_day_index: int) -> float:
+    def parse_rule_key_no_default_indicator_length(rule_key: str, indicator_symbol: str, data_manager: DataManager,
+                                                   current_day_index: int) -> float:
         """Parses a rule key for an indicator value where the indicator DOES NOT have a default value."""
         rule_key_number_groups = Trigger.find_all_nums_in_str(rule_key)
 

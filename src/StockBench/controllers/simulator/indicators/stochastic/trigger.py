@@ -15,17 +15,18 @@ class StochasticTrigger(TriggerInterface):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=TriggerInterface.AGNOSTIC)
 
-    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
+    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: Union[str, int, dict]) -> int:
         rule_key_number_groups = list(map(int, self.find_all_nums_in_str(rule_key)))
         if rule_key_number_groups:
             return max(rule_key_number_groups)
         return DEFAULT_STOCHASTIC_LENGTH
 
-    def calculate_additional_days_from_rule_value(self, rule_value: any) -> int:
+    def calculate_additional_days_from_rule_value(self, rule_value: Union[str, int, dict]) -> int:
         # logic for rule value is the same as the logic for rule key
         return self.calculate_additional_days_from_rule_key(rule_value, None)
 
-    def add_indicator_data_from_rule_key(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
+    def add_indicator_data_from_rule_key(self, rule_key: str, rule_value: Union[str, int, dict], side: str,
+                                         data_manager: DataManager):
         # ======== key based =========
         rule_key_number_groups = self.find_all_nums_in_str(rule_key)
         if len(rule_key_number_groups) > 0:
@@ -53,11 +54,12 @@ class StochasticTrigger(TriggerInterface):
         # parse rule key will work even when passed a rule value
         return TriggerInterface.parse_rule_key(rule_value, self.indicator_symbol, data_manager, current_day_index)
 
-    def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,
-                      current_day_index: int) -> bool:
+    def check_trigger(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager,
+                      position: Position, current_day_index: int) -> bool:
         log.debug(f'Checking stochastic algorithm: {rule_key}...')
 
-        indicator_value = TriggerInterface.parse_rule_key(rule_key, self.indicator_symbol, data_manager, current_day_index)
+        indicator_value = TriggerInterface.parse_rule_key(rule_key, self.indicator_symbol, data_manager,
+                                                          current_day_index)
 
         log.debug(f'{self.DISPLAY_NAME} algorithm: {rule_key} checked successfully')
 

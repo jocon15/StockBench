@@ -12,7 +12,7 @@ class CandlestickColorTrigger(TriggerInterface):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=TriggerInterface.AGNOSTIC)
 
-    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
+    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: Union[str, int, dict]) -> int:
         # Candlestick is a unique indicator
         #   color: {
         #       "0", "red",
@@ -33,11 +33,11 @@ class CandlestickColorTrigger(TriggerInterface):
                 additional_days = int(sub_key)
         return additional_days
 
-    def calculate_additional_days_from_rule_value(self, rule_value: any) -> int:
+    def calculate_additional_days_from_rule_value(self, rule_value: Union[str, int, dict]) -> int:
         # cannot deduce additional days from color rule value
         return 0
 
-    def add_indicator_data_from_rule_key(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
+    def add_indicator_data_from_rule_key(self, rule_key: str, rule_value: Union[str, int, dict], side: str, data_manager: DataManager):
         # candle colors are included in the data by default
         return
 
@@ -49,7 +49,7 @@ class CandlestickColorTrigger(TriggerInterface):
                                             current_day_index: int) -> float:
         raise NotImplementedError('Candlestick color cannot be referenced in a rule value!')
 
-    def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,
+    def check_trigger(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager, position: Position,
                       current_day_index: int) -> bool:
         log.debug('Checking candle stick algorithm...')
 

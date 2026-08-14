@@ -320,7 +320,7 @@ class Algorithm:
         return f'{key}:{self.strategy[side][key]}'
 
     @staticmethod
-    def _inject_rule_value_with_values(rule_value: any, triggers: list, data_manager: DataManager,
+    def _inject_rule_value_with_values(rule_value: Union[str, int, dict], triggers: list, data_manager: DataManager,
                                        current_day_index: int) -> str:
         """Replaces indicators in rule value with indicator values."""
         for trigger in triggers:

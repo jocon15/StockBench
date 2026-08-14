@@ -16,13 +16,13 @@ class MACDTrigger(TriggerInterface):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=TriggerInterface.AGNOSTIC)
 
-    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
+    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: Union[str, int, dict]) -> int:
         return self.LARGE_EMA_LENGTH
 
-    def calculate_additional_days_from_rule_value(self, rule_value: any) -> int:
+    def calculate_additional_days_from_rule_value(self, rule_value: Union[str, int, dict]) -> int:
         return self.LARGE_EMA_LENGTH
 
-    def add_indicator_data_from_rule_key(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
+    def add_indicator_data_from_rule_key(self, rule_key: str, rule_value: Union[str, int, dict], side: str, data_manager: DataManager):
         # if we already have MACD values in the df, we don't need to add them again
         for col_name in data_manager.get_column_names():
             if self.indicator_symbol == col_name:
@@ -42,7 +42,7 @@ class MACDTrigger(TriggerInterface):
         return TriggerInterface._parse_rule_key_no_indicator_length(rule_value, self.indicator_symbol, data_manager,
                                                                     current_day_index)
 
-    def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,
+    def check_trigger(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager, position: Position,
                       current_day_index: int) -> bool:
         log.debug(f'Checking {self.indicator_symbol} algorithm: {rule_key}...')
 

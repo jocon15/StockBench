@@ -25,19 +25,19 @@ class TriggerInterface:
         return self.__side
 
     @abstractmethod
-    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
+    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: Union[str, int, dict]) -> int:
         """Calculates the additional days required from a rule key and a rule value."""
         # Must include rule value as a parameter because some triggers (candlestick) cannot deduce indicator length from
         # the rule key and cannot be identified from the rule value.
         raise NotImplementedError('Additional days from rule key not implemented!')
 
     @abstractmethod
-    def calculate_additional_days_from_rule_value(self, rule_value: any) -> int:
+    def calculate_additional_days_from_rule_value(self, rule_value: Union[str, int, dict]) -> int:
         """Calculates the additional days required from a rule value."""
         raise NotImplementedError('Additional days from rule value not implemented!')
 
     @abstractmethod
-    def add_indicator_data_from_rule_key(self, rule_key: str, rule_value: any, side: str, data_manager: DataManager):
+    def add_indicator_data_from_rule_key(self, rule_key: str, rule_value: Union[str, int, dict], side: str, data_manager: DataManager):
         """Adds the indicator data to the simulation data from a rule key."""
         # Must include rule value as a parameter because oscillator triggers (RSI, stochastic,...) have literal
         # threshold values in the rule value that need to be added to the data. Literal threshold values cannot be
@@ -56,8 +56,8 @@ class TriggerInterface:
         raise NotImplementedError('Get value when referenced not implemented!')
 
     @abstractmethod
-    def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,
-                      current_day_index: int) -> bool:
+    def check_trigger(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager,
+                      position: Position, current_day_index: int) -> bool:
         """Evaluate the trigger for a trigger event."""
         raise NotImplementedError('Check algorithm from rule value not implemented!')
 

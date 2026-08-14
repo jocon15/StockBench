@@ -11,10 +11,10 @@ class StopProfitTrigger(TriggerInterface):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=TriggerInterface.SELL)
 
-    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
+    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: Union[str, int, dict]) -> int:
         return 0
 
-    def calculate_additional_days_from_rule_value(self, rule_value: any) -> int:
+    def calculate_additional_days_from_rule_value(self, rule_value: Union[str, int, dict]) -> int:
         return 0
 
     def add_indicator_data_from_rule_key(self, rule_key: str, rule_value, side: str, data_manager: str):
@@ -29,7 +29,7 @@ class StopProfitTrigger(TriggerInterface):
                                             current_day_index: int) -> float:
         raise NotImplementedError('Stop profit cannot be referenced in a rule value!')
 
-    def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,
+    def check_trigger(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager, position: Position,
                       current_day_index: int) -> bool:
         log.debug('Checking stop profit algorithm...')
 

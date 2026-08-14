@@ -8,15 +8,15 @@ class CandlestickColorIndicator(IndicatorInterface):
         self.__data_name = self.__strategy_name
         self.__trigger = CandlestickColorTrigger(self.__strategy_name)
 
-    def get_strategy_name(self):
+    def strategy_name(self):
         return self.__strategy_name
 
-    def get_data_name(self):
+    def data_name(self):
         return self.__data_name
 
-    def get_trigger(self):
+    def trigger(self):
         return self.__trigger
 
-    def get_subplot(self):
+    def subplot(self):
         # note: candlestick colors do not have a subplot
         return None

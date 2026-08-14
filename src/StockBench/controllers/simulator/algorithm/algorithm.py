@@ -167,12 +167,12 @@ class Algorithm:
             indicators (list): Generic list of all indicators available in StockBench.
         """
         for indicator in indicators:
-            if indicator.get_trigger().get_side() == Trigger.AGNOSTIC:
-                self.__side_agnostic_triggers.append(indicator.get_trigger())
-            elif indicator.get_trigger().get_side() == Trigger.SELL:
-                self.__sell_only_triggers.append(indicator.get_trigger())
+            if indicator.trigger().get_side() == Trigger.AGNOSTIC:
+                self.__side_agnostic_triggers.append(indicator.trigger())
+            elif indicator.trigger().get_side() == Trigger.SELL:
+                self.__sell_only_triggers.append(indicator.trigger())
             else:
-                self.__buy_only_triggers.append(indicator.get_trigger())
+                self.__buy_only_triggers.append(indicator.trigger())
 
     def __get_additional_days_per_side(self, triggers: list, side: str) -> int:
         """Finds the number of additional days required per side."""

@@ -2,18 +2,22 @@ from abc import abstractmethod
 
 
 class IndicatorInterface:
+    @property
     @abstractmethod
-    def get_strategy_name(self):
+    def strategy_name(self):
         raise NotImplementedError('Not implemented yet!')
 
+    @property
     @abstractmethod
-    def get_data_name(self):
+    def data_name(self):
         raise NotImplementedError('Not implemented yet!')
 
+    @property
     @abstractmethod
-    def get_trigger(self):
+    def trigger(self):
         raise NotImplementedError('Not implemented yet!')
 
+    @property
     @abstractmethod
-    def get_subplot(self):
+    def subplot(self):
         raise NotImplementedError('Not implemented yet!')

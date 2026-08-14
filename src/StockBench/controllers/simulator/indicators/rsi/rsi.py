@@ -10,14 +10,14 @@ class RSIIndicator(IndicatorInterface):
         self.__trigger = RSITrigger(self.__strategy_name)
         self.__subplot = RSISubplot()
 
-    def get_strategy_name(self):
+    def strategy_name(self):
         return self.__strategy_name
 
-    def get_data_name(self):
+    def data_name(self):
         return self.__data_name
 
-    def get_trigger(self):
+    def trigger(self):
         return self.__trigger
 
-    def get_subplot(self):
+    def subplot(self):
         return self.__subplot

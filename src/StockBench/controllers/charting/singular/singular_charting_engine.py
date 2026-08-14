@@ -66,14 +66,14 @@ class SingularChartingEngine(ChartingEngine):
 
         ohlc_indicator = SingularChartingEngine.__find_ohlc_indicator(available_indicators)
 
-        subplot_objects.append(ohlc_indicator.get_subplot())
+        subplot_objects.append(ohlc_indicator.subplot())
 
         # build subplots for indicators found in the df
         for (column_name, column_data) in df.items():
             for indicator in available_indicators:
-                indicator_subplot = indicator.get_subplot()
+                indicator_subplot = indicator.subplot()
                 if indicator_subplot is not None:
-                    if column_name == indicator.get_data_name():
+                    if column_name == indicator.data_name():
                         if not indicator_subplot.is_ohlc_trace():
                             subplot_objects = [x for n in (subplot_objects, [indicator_subplot]) for x in n]
 
@@ -97,13 +97,13 @@ class SingularChartingEngine(ChartingEngine):
         # add discovered subplots to the parent plot
         for enum_row, subplot in enumerate(subplot_objects):
             row = enum_row + 1
-            fig.add_trace(subplot.get_subplot(df), row=row, col=col)
+            fig.add_trace(subplot.subplot(df), row=row, col=col)
             if subplot.get_type()[0]['type'] == 'ohlc':
                 # special case for OHLC subplot
                 traces = [trace for trace in subplot.get_traces(df)]
                 # get the traces from all aux OHLC trace indicators
                 for indicator in available_indicators:
-                    indicator_subplot = indicator.get_subplot()
+                    indicator_subplot = indicator.subplot()
                     if indicator_subplot is not None:
                         if indicator_subplot.is_ohlc_trace():
                             for trace in indicator_subplot.get_traces(df):
@@ -148,7 +148,7 @@ class SingularChartingEngine(ChartingEngine):
         """Locates the OHLC indicator."""
         ohlc_indicator = None
         for indicator in available_indicators:
-            indicator_subplot = indicator.get_subplot()
+            indicator_subplot = indicator.subplot()
             if indicator_subplot is not None:
                 try:
                     if indicator_subplot.get_type()[0]['type'] == 'ohlc':

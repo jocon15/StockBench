@@ -11,7 +11,7 @@ class StopProfitIndicator(IndicatorInterface):
     def strategy_name(self):
         return self.__strategy_name
 
-    def data_name(self):
+    def dataframe_name(self):
         return self.__data_name
 
     def trigger(self):

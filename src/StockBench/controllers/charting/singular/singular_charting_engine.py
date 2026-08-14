@@ -73,7 +73,7 @@ class SingularChartingEngine(ChartingEngine):
             for indicator in available_indicators:
                 indicator_subplot = indicator.subplot()
                 if indicator_subplot is not None:
-                    if column_name == indicator.data_name():
+                    if column_name == indicator.dataframe_name():
                         if not indicator_subplot.is_ohlc_trace():
                             subplot_objects = [x for n in (subplot_objects, [indicator_subplot]) for x in n]
 

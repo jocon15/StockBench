@@ -1,9 +1,27 @@
 import pytest
-from unittest.mock import patch, Mock
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.controllers.simulator.indicators.stochastic.trigger import StochasticTrigger
 from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
+
+# NOTE: mocker is a fixture provided by pytest plugin pip package "pytest-mock"
+# (pytest version of @patch)
+
+
+@pytest.fixture
+def logger_mocker(mocker):
+    return mocker.patch('logging.Logger')
+
+
+@pytest.fixture
+def data_mocker(mocker):
+    return mocker.patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
+
+
+@pytest.fixture
+def trigger_interface_mocker(mocker):
+    # WARNING: for static functions, you must mock the path it is used at (stochastic.trigger)
+    return mocker.patch('StockBench.controllers.simulator.indicators.stochastic.trigger.TriggerInterface')
 
 
 @pytest.fixture
@@ -11,88 +29,167 @@ def test_object():
     return StochasticTrigger('stochastic')
 
 
-def test_additional_days_from_rule_key(test_object):
+def test_additional_days_from_rule_key():
+    test_object = StochasticTrigger('stochastic')
     assert test_object.calculate_additional_days_from_rule_key('stochastic', None) == 14
     assert test_object.calculate_additional_days_from_rule_key('stochastic20', None) == 20
     assert test_object.calculate_additional_days_from_rule_key('stochastic20$slope10', None) == 20
     assert test_object.calculate_additional_days_from_rule_key('stochastic20$slope30', None) == 30
 
 
-def test_additional_days_from_rule_value(test_object):
+def test_additional_days_from_rule_value():
+    test_object = StochasticTrigger('stochastic')
     assert test_object.calculate_additional_days_from_rule_value('stochastic') == 14
     assert test_object.calculate_additional_days_from_rule_value('stochastic20') == 20
     assert test_object.calculate_additional_days_from_rule_value('stochastic20$slope10') == 20
     assert test_object.calculate_additional_days_from_rule_value('stochastic20$slope30') == 30
 
 
-@patch('logging.getLogger')
-@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_add_to_data_rule_key(data_mocker, logger_mocker, test_object):
-    logger_mocker.return_value = logger_mocker
-    logger_mocker.warning.side_effect = logger_side_effect
+    setup_logger_mocker(logger_mocker)
 
-    data_mocker.add_column.side_effect = add_column_side_effect
+    setup_data_mocker(data_mocker)
 
-    # assemble a price list from the example data
-    price_data = []
-    for day in EXAMPLE_DATA_MSFT['MSFT']:
-        price_data.append(float(day['c']))
-
-    data_mocker.HIGH = DataManager.HIGH
-    data_mocker.LOW = DataManager.LOW
-    data_mocker.CLOSE = DataManager.CLOSE
-
-    data_mocker.get_column_data.side_effect = get_column_data_side_effect
-    data_mocker.get_column_names.return_value = []
-    data_mocker.get_data_length.return_value = 200
-
-    # test normal case
     test_object.add_indicator_data_from_rule_key('stochastic', '>30', 'buy', data_mocker)
     # assertions are done in side effect function
 
 
-@patch('logging.getLogger')
-@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
-@patch('StockBench.controllers.simulator.indicators.stochastic.trigger.StochasticTrigger'
-       '.calculate_stochastic_oscillator')
-def test_add_to_data_rule_key_non_default_length(calculation_mocker, data_mocker, logger_mocker, test_object):
-    calculation_mocker.return_value = [0.0 for _ in EXAMPLE_DATA_MSFT['MSFT']]
+def test_add_to_data_rule_key_non_default_length(data_mocker, logger_mocker, test_object):
+    setup_logger_mocker(logger_mocker)
 
-    logger_mocker.return_value = logger_mocker
-    logger_mocker.warning.side_effect = logger_side_effect
+    setup_data_mocker(data_mocker)
 
-    data_mocker.add_column.side_effect = add_column_side_effect_non_default_length_30
-
-    # assemble a price list from the example data
-    price_data = []
-    for day in EXAMPLE_DATA_MSFT['MSFT']:
-        price_data.append(float(day['c']))
-
-    data_mocker.HIGH = DataManager.HIGH
-    data_mocker.LOW = DataManager.LOW
-    data_mocker.CLOSE = DataManager.CLOSE
-
-    data_mocker.get_column_data.side_effect = get_column_data_side_effect
-    data_mocker.get_column_names.return_value = []
-    data_mocker.get_data_length.return_value = 200
-
-    # test 30 case to match side effect check
     test_object.add_indicator_data_from_rule_key('stochastic30', '>30', 'buy', data_mocker)
     # assertions are done in side effect function
 
 
-@patch('logging.getLogger')
-@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_add_to_data_rule_value(data_mocker, logger_mocker, test_object):
+    setup_logger_mocker(logger_mocker)
+
+    setup_data_mocker(data_mocker)
+
+    test_object.add_indicator_data_from_rule_value('>stochastic', 'buy', data_mocker)
+    # assertions are done in side effect function
+
+
+def test_add_to_data_rule_value_non_default_length(data_mocker, logger_mocker, test_object):
+    setup_logger_mocker(logger_mocker)
+
+    setup_data_mocker(data_mocker)
+
+    test_object.add_indicator_data_from_rule_value('>stochastic30', 'buy', data_mocker)
+    # assertions are done in side effect function
+
+
+def test_indicator_already_in_data_manager(data_mocker, logger_mocker, test_object):
+    setup_logger_mocker(logger_mocker)
+
+    data_mocker.get_column_names.return_value = ['stochastic']
+
+    # should not try to add column to data manager
+    data_mocker.add_column.side_effect = fail_if_called_side_effect
+
+    # test both rule key and rule value to be sure it works for both
+    # (from rule key without numeric limits in rule key to avoid the add_column call in the value based block)
+
+    test_object.add_indicator_data_from_rule_key('stochastic', '>RSI', 'buy', data_mocker)
+    test_object.add_indicator_data_from_rule_value('>stochastic', 'buy', data_mocker)
+
+    # test passed if side effect was not called (did not fail)
+    assert True
+
+
+def test_get_value_when_referenced(data_mocker, test_object):
+    data_mocker.get_data_point.return_value = 234.5
+
+    assert test_object.get_indicator_value_when_referenced('>=stochastic', data_mocker, 25) == 234.5
+
+
+def test_check_trigger(data_mocker, trigger_interface_mocker, logger_mocker, test_object):
+    data_mocker.get_data_point.return_value = 10
+
+    trigger_interface_mocker.parse_rule_key.return_value = 25.5
+
+    assert test_object.check_trigger('stochastic', '>60', data_mocker, None, 0) is False
+
+
+def test_check_trigger_value_error(data_mocker, test_object):
+    data_mocker.get_data_point.return_value = 90
+
+    try:
+        assert test_object.check_trigger('12stochastic12', '>60', data_mocker, None, 0)
+        assert False
+    except StrategyIndicatorError:
+        assert True
+
+
+# def test_check_trigger_current_price_symbol_used(data_mocker, trigger_interface_mocker, logger_mocker, test_object):
+#     setup_logger_mocker(logger_mocker)
+#
+#     data_mocker.get_data_point.side_effect = data_point_side_effect
+#     data_mocker.CLOSE = 'Close'
+#
+#     trigger_interface_mocker.parse_rule_key.return_value = 25.5
+#
+#     assert test_object.check_trigger('stochastic20', '>$price', data_mocker, None, 0) is False
+
+
+def data_point_side_effect(*args):
+    if 'stochastic' not in args[0] and 'Close' not in args[0]:
+        assert False
+    if args[0] == 'close':
+        return 100.1
+    else:
+        return 40.2
+
+
+def test_check_trigger_2_numbers_present_bad_format(data_mocker, test_object):
+    data_mocker.get_data_point.side_effect = data_point_side_effect
+    data_mocker.CLOSE = 'Close'
+
+    try:
+        test_object.check_trigger('stochasticran50', '>price', data_mocker, None, 0)
+        assert False
+    except StrategyIndicatorError:
+        assert True
+
+
+def test_check_trigger_slope_used(data_mocker, trigger_interface_mocker, logger_mocker, test_object):
+    # ============= Arrange ==============
+    data_mocker.get_data_point.side_effect = slope_data_side_effect
+
+    trigger_interface_mocker.parse_rule_key.return_value = 25.5
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    # slope used algorithm not hit case
+    assert test_object.check_trigger('stochastic$slope2', '>50', data_mocker, None, 2) is False
+    assert test_object.check_trigger('stochastic$slope2', '>20', data_mocker, None, 2) is True
+
+
+def test_check_trigger_slope_value_error(data_mocker, test_object):
+    # ============= Arrange ==============
+    data_mocker.get_data_point.return_value = 90
+
+    # ============= Act ==================
+
+    # ============= Assert ===============
+    # simple algorithm not hit case
+    try:
+        assert test_object.check_trigger('stochastic$slope', '>60', data_mocker, None, 0) is False
+        assert False
+    except StrategyIndicatorError:
+        assert True
+
+
+def setup_logger_mocker(logger_mocker):
     logger_mocker.return_value = logger_mocker
     logger_mocker.warning.side_effect = logger_side_effect
 
-    data_mocker.add_column.side_effect = add_column_side_effect
 
-    # assemble a price list from the example data
-    price_data = []
-    for day in EXAMPLE_DATA_MSFT['MSFT']:
-        price_data.append(float(day['c']))
+def setup_data_mocker(data_mocker):
+    data_mocker.add_column.side_effect = add_column_side_effect
 
     data_mocker.HIGH = DataManager.HIGH
     data_mocker.LOW = DataManager.LOW
@@ -101,10 +198,6 @@ def test_add_to_data_rule_value(data_mocker, logger_mocker, test_object):
     data_mocker.get_column_data.side_effect = get_column_data_side_effect
     data_mocker.get_column_names.return_value = []
     data_mocker.get_data_length.return_value = 200
-
-    # test normal case
-    test_object.add_indicator_data_from_rule_value('>stochastic', 'buy', data_mocker)
-    # assertions are done in side effect function
 
 
 def get_column_data_side_effect(*args):
@@ -116,10 +209,7 @@ def get_column_data_side_effect(*args):
     else:
         candle_section = 'c'
 
-    price_data = []
-    for day in EXAMPLE_DATA_MSFT['MSFT']:
-        price_data.append(float(day[candle_section]))
-    return price_data
+    return [float(day[candle_section]) for day in EXAMPLE_DATA_MSFT['MSFT']]
 
 
 def add_column_side_effect(*args):
@@ -525,339 +615,38 @@ def add_column_side_effect(*args):
                            30.0,
                            30.0,
                            30.0]
+    elif args[0] == '30stochastic':
+        assert args[1] == [67.958, 2.785, 55.57, 19.678, 16.355, 23.715, 44.451, 21.612, 16.304, 18.996, 28.901, 50.339,
+                           19.629, 31.343, 52.103, 60.425, 49.344, 63.637, 73.316, 44.912, 63.863, 43.691, 61.33,
+                           65.039, 88.467, 91.126, 91.782, 85.221, 80.836, 80.801, 62.12, 63.225, 64.002, 64.192,
+                           69.095, 47.997, 58.356, 22.307, 28.108, 21.505, 11.995, 26.605, 65.821, 92.497, 93.787,
+                           65.684, 40.0, 58.877, 55.614, 62.07, 62.351, 52.105, 39.825, 44.526, 37.614, 36.737, 49.965,
+                           49.579, 54.982, 51.298, 58.211, 55.439, 51.404, 51.86, 51.579, 57.439, 41.368, 38.228,
+                           47.895, 50.232, 44.16, 55.261, 56.413, 50.05, 72.194, 90.498, 73.612, 83.286, 94.012,
+                           84.805, 71.083, 74.711, 50.736, 51.788, 21.346, 51.474, 57.775, 46.431, 32.208, 40.398,
+                           21.638, 19.203, 40.564, 83.398, 87.382, 79.819, 97.376, 93.63, 74.211, 87.915, 64.723,
+                           90.065, 89.707, 93.514, 90.377, 91.282, 92.097, 96.109, 90.848, 95.88, 97.469, 92.922,
+                           94.531, 93.156, 85.044, 66.188, 62.287, 66.012, 49.267, 59.12, 73.05, 63.403, 35.574,
+                           18.895, 33.592, 14.605, 43.073, 37.174, 59.442, 52.766, 48.24, 61.408, 59.122, 29.538,
+                           25.834, 53.864, 60.677, 51.212, 36.854, 55.876, 50.343, 39.9, 59.278, 92.5, 96.537,
+                           91.868, 96.1, 97.058, 99.496, 94.882, 97.996, 90.61, 98.963, 99.247, 92.664, 90.041,
+                           97.292, 85.877, 97.996, 97.325, 97.015, 74.941, 68.292, 67.731, 65.779, 52.446, 48.021,
+                           57.993, 66.158, 50.39, 47.142, 21.558, 19.212, 40.127, 28.304, 19.705, 20.183, 33.479,
+                           28.344, 50.876, 54.857, 53.463, 46.298, 46.656, 37.062, 36.863, 30.414, 50.597, 62.898,
+                           57.604, 84.191, 98.865, 97.077, 99.68, 93.294, 86.362, 96.453, 87.701, 96.503, 99.062]
     else:
         assert False
 
 
-def add_column_side_effect_non_default_length_30(*args):
-    if args[0] == 'stochastic':
-        assert len(args[1]) == 200
-        assert args[1][0] == 0.0
-    elif args[0] == 'stochastic_30.0':
-        assert args[1] == [30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0,
-                           30.0]
-    else:
-        assert False
+def fail_if_called_side_effect(*args):  # noqa
+    assert False
 
 
 def logger_side_effect(*args):
-    if args[0] == 'Warning: RSI is in incorrect format and will be ignored':
+    if args[0] == 'Warning: stochastic is in incorrect format and will be ignored':
         assert True
     else:
         assert False
-
-
-@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
-def test_get_value_when_referenced(data_mocker, test_object):
-    # ============= Arrange ==============
-    data_mocker.get_data_point.return_value = 234.5
-
-    # ============= Act ==================
-
-    # ============= Assert ===============
-    assert test_object.get_indicator_value_when_referenced('>=MACD', data_mocker, 25) == 234.5
-
-
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_single_numeric_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_operator_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.basic_trigger_check')
-@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
-def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
-    # ============= Arrange ==============
-    data_mocker.get_data_point.return_value = 10
-    basic_trigger_mocker.return_value = False
-    operator_mocker.return_value = None
-    numeric_mocker.return_value = None
-
-    # ============= Act ==================
-
-    # ============= Assert ===============
-    assert test_object.check_trigger('stochastic', '>60', data_mocker, None, 0) is False  # noqa
-
-    assert test_object.check_trigger('stochastic', '>60', data_mocker, None, 0) is False  # noqa
-
-
-@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
-def test_check_trigger_value_error(data_mocker, test_object):
-    # ============= Arrange ==============
-    data_mocker.get_data_point.return_value = 90
-
-    # ============= Act ==================
-
-    # ============= Assert ===============
-    # simple algorithm not hit case
-    try:
-        assert test_object.check_trigger('12stochastic12', '>60', data_mocker, None, 0)  # noqa
-        assert False
-    except StrategyIndicatorError:
-        assert True
-
-
-# unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_single_numeric_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_operator_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.basic_trigger_check')
-@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
-def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker,
-                                                 test_object):
-    # ============= Arrange ==============
-    data_mocker.get_data_point.side_effect = data_side_effect
-    data_mocker.CLOSE = 'Close'
-    basic_trigger_mocker.return_value = False
-    operator_mocker.return_value = None
-    numeric_mocker.return_value = None
-
-    # ============= Act ==================
-
-    # ============= Assert ===============
-    # simple algorithm not hit case
-    assert test_object.check_trigger('stochastic20', '>price', data_mocker, None, 0) is False  # noqa
-
-
-def data_side_effect(*args):
-    if 'stochastic' not in args[0] and 'Close' not in args[0]:
-        assert False
-    if args[0] == 'close':
-        return 100.1
-    else:
-        return 40.2
-
-
-@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
-def test_check_trigger_2_numbers_present_bad_format(data_mocker, test_object):
-    # ============= Arrange ==============
-    data_mocker.get_data_point.side_effect = data_side_effect
-    data_mocker.CLOSE = 'Close'
-
-    # ============= Act ==================
-
-    # ============= Assert ===============
-    # has 2 numbers but does not include slope symbol
-    try:
-        test_object.check_trigger('stochasticran50', '>price', data_mocker, None, 0)
-        assert False
-    except StrategyIndicatorError:
-        assert True
-
-
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_single_numeric_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_operator_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.basic_trigger_check')
-@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
-def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
-    # ============= Arrange ==============
-    data_mocker.get_data_point.side_effect = slope_data_side_effect
-    basic_trigger_mocker.return_value = False
-    operator_mocker.return_value = None
-    numeric_mocker.return_value = None
-
-    # ============= Act ==================
-
-    # ============= Assert ===============
-    # slope used algorithm not hit case
-    assert test_object.check_trigger('stochastic$slope2', '>50', data_mocker, None, 2) is False  # noqa
-
-    # slope used algorithm hit case
-    basic_trigger_mocker.return_value = True
-    assert test_object.check_trigger('stochastic$slope2', '>50', data_mocker, None, 2) is True  # noqa
 
 
 def slope_data_side_effect(*args):
@@ -867,19 +656,3 @@ def slope_data_side_effect(*args):
         return 200.0
     else:
         return 100.0
-
-
-@patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
-def test_check_trigger_slope_value_error(data_mocker, test_object):
-    # ============= Arrange ==============
-    data_mocker.get_data_point.return_value = 90
-
-    # ============= Act ==================
-
-    # ============= Assert ===============
-    # simple algorithm not hit case
-    try:
-        assert test_object.check_trigger('stochastic$slope', '>60', data_mocker, None, 0) is False  # noqa
-        assert False
-    except StrategyIndicatorError:
-        assert True

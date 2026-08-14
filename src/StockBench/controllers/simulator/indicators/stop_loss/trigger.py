@@ -1,5 +1,7 @@
 import logging
 
+from typing import Union
+
 from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.models.position.position import Position

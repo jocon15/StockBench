@@ -1,7 +1,7 @@
 import re
 import logging
 from abc import abstractmethod
-from typing import Tuple
+from typing import Tuple, Union
 
 from StockBench.models.constants.general_constants import *
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
@@ -41,7 +41,9 @@ class TriggerInterface:
         """Adds the indicator data to the simulation data from a rule key."""
         # Must include rule value as a parameter because oscillator triggers (RSI, stochastic,...) have literal
         # threshold values in the rule value that need to be added to the data. Literal threshold values cannot be
-        # identified with only the rule value.
+        # identified with only the rule value, which is why we pass them in as a parameter.
+        # "by_rule_key" just implies that the rule key was responsible for identifying the trigger type via the mathing
+        # indicator's strategy name
         raise NotImplementedError('Add to data from rule key not implemented!')
 
     @abstractmethod

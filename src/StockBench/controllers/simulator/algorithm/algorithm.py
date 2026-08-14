@@ -1,7 +1,7 @@
 import os
 import time
 import logging
-from typing import ValuesView, Tuple, List
+from typing import ValuesView, Tuple, List, Union
 
 from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
 from StockBench.models.constants.general_constants import BUY_SIDE, SELL_SIDE, START_KEY, END_KEY, AND_KEY

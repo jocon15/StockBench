@@ -1,6 +1,7 @@
 from abc import abstractmethod
 
 from StockBench.controllers.simulator.indicator.subplot_interface import SubplotInterface
+from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
 
 
 class IndicatorInterface:
@@ -20,7 +21,7 @@ class IndicatorInterface:
 
     @property
     @abstractmethod
-    def trigger(self) -> Trigger:
+    def trigger(self) -> TriggerInterface:
         # FIXME: validate docstring accuracy
         """The indicator's trigger."""
         raise NotImplementedError('Not implemented yet!')

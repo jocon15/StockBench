@@ -1,5 +1,7 @@
 import logging
 
+from typing import Union
+
 from StockBench.models.constants.general_constants import *
 from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
@@ -34,7 +36,7 @@ class StochasticTrigger(TriggerInterface):
             self.__add_stochastic_to_simulation_data(num, data_manager)
         else:
             self.__add_stochastic_to_simulation_data(DEFAULT_STOCHASTIC_LENGTH, data_manager)
-        # ======== value based (stochastic limit)=========
+        # ======== value based (stochastic limit) =========
         rule_key_number_groups = self.find_all_nums_in_str(rule_value)
         if len(rule_key_number_groups) > 0:
             trigger_value = float(rule_key_number_groups[0])
@@ -77,7 +79,12 @@ class StochasticTrigger(TriggerInterface):
         close_data = data_manager.get_column_data(data_manager.CLOSE)
         stochastic_values = StochasticTrigger.calculate_stochastic_oscillator(length, high_data, low_data, close_data)
 
-        data_manager.add_column(self.indicator_symbol, stochastic_values)
+        if length == DEFAULT_STOCHASTIC_LENGTH:
+            column_title = self.indicator_symbol
+        else:
+            column_title = f"{length}{self.indicator_symbol}"
+
+        data_manager.add_column(column_title, stochastic_values)
 
     @staticmethod
     def calculate_stochastic_oscillator(length: int, high_data: list, low_data: list, close_data: list) -> list:

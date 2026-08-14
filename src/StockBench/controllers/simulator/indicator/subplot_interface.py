@@ -2,7 +2,7 @@ from abc import abstractmethod
 from pandas import DataFrame
 
 
-class Subplot:
+class SubplotInterface:
     def __init__(self, data_symbol, subplot_type, is_ohlc_trace):
         self.data_symbol = data_symbol
         self._type = subplot_type

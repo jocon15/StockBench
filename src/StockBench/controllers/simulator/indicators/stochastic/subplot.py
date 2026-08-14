@@ -1,11 +1,11 @@
 import plotly.graph_objects as fplt
 from pandas import DataFrame
 
-from StockBench.controllers.simulator.indicator.subplot import Subplot
+from StockBench.controllers.simulator.indicator.subplot_interface import SubplotInterface
 from StockBench.controllers.charting.display_constants import WHITE, HORIZONTAL_TRIGGER_YELLOW
 
 
-class StochasticSubplot(Subplot):
+class StochasticSubplot(SubplotInterface):
     """This class is a subclass of the Subplot class.
 
     A Stochastic object contains the subplot with stochastic oscillator data.

@@ -1,6 +1,6 @@
 from .subplot import OHLCSubplot
 from .trigger import PriceTrigger
-from StockBench.controllers.simulator.indicator.indicator import IndicatorInterface
+from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 
 
 class PriceIndicator(IndicatorInterface):

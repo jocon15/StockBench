@@ -1,6 +1,6 @@
 import logging
 
-from StockBench.controllers.simulator.indicator.trigger import Trigger
+from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
 from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.models.position.position import Position
@@ -8,9 +8,9 @@ from StockBench.models.position.position import Position
 log = logging.getLogger()
 
 
-class CandlestickColorTrigger(Trigger):
+class CandlestickColorTrigger(TriggerInterface):
     def __init__(self, indicator_symbol):
-        super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
+        super().__init__(indicator_symbol, side=TriggerInterface.AGNOSTIC)
 
     def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
         # Candlestick is a unique indicator

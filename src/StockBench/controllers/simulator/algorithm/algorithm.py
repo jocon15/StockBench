@@ -3,7 +3,7 @@ import time
 import logging
 from typing import ValuesView, Tuple, List
 
-from StockBench.controllers.simulator.indicator.trigger import Trigger
+from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
 from StockBench.models.constants.general_constants import BUY_SIDE, SELL_SIDE, START_KEY, END_KEY, AND_KEY
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.models.position.position import Position
@@ -167,9 +167,9 @@ class Algorithm:
             indicators (list): Generic list of all indicators available in StockBench.
         """
         for indicator in indicators:
-            if indicator.trigger().get_side() == Trigger.AGNOSTIC:
+            if indicator.trigger().get_side() == TriggerInterface.AGNOSTIC:
                 self.__side_agnostic_triggers.append(indicator.trigger())
-            elif indicator.trigger().get_side() == Trigger.SELL:
+            elif indicator.trigger().get_side() == TriggerInterface.SELL:
                 self.__sell_only_triggers.append(indicator.trigger())
             else:
                 self.__buy_only_triggers.append(indicator.trigger())
@@ -237,7 +237,7 @@ class Algorithm:
         else:
             return self.__handle_or_triggers(triggers, data_manager, current_day_index, position, key, side)
 
-    def __handle_and_triggers(self, triggers: List[Trigger], data_manager: DataManager, current_day_index: int,
+    def __handle_and_triggers(self, triggers: List[TriggerInterface], data_manager: DataManager, current_day_index: int,
                               position: Position, key: str, side: str) -> bool:
         """Check all triggers for hits.
 
@@ -274,7 +274,7 @@ class Algorithm:
         # all AND_KEY triggers were hit
         return True
 
-    def __handle_or_triggers(self, triggers: List[Trigger], data_manager: DataManager, current_day_index: int,
+    def __handle_or_triggers(self, triggers: List[TriggerInterface], data_manager: DataManager, current_day_index: int,
                              position: Position, key: str, side: str) -> bool:
         """Check all triggers for hits.
 

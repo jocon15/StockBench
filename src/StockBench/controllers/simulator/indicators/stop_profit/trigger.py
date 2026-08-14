@@ -1,15 +1,15 @@
 import logging
 
-from StockBench.controllers.simulator.indicator.trigger import Trigger
+from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.models.position.position import Position
 
 log = logging.getLogger()
 
 
-class StopProfitTrigger(Trigger):
+class StopProfitTrigger(TriggerInterface):
     def __init__(self, indicator_symbol):
-        super().__init__(indicator_symbol, side=Trigger.SELL)
+        super().__init__(indicator_symbol, side=TriggerInterface.SELL)
 
     def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
         return 0
@@ -61,7 +61,7 @@ class StopProfitTrigger(Trigger):
     @staticmethod
     def __check_plpc_profit(value: str, plpc_value: float) -> bool:
         """Checks stop profit trigger for profit percent trigger event."""
-        nums = Trigger.find_all_nums_in_str(value)
+        nums = TriggerInterface.find_all_nums_in_str(value)
         trigger_value = float(nums[0])
         if plpc_value >= trigger_value:
             log.info('Stop profit algorithm hit!')

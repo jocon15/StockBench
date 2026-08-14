@@ -1,5 +1,5 @@
 from .trigger import StopLossTrigger
-from StockBench.controllers.simulator.indicator.indicator import IndicatorInterface
+from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 
 
 class StopLossIndicator(IndicatorInterface):

@@ -1,20 +1,20 @@
-from StockBench.controllers.simulator.indicator.trigger import Trigger
+from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
 from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
 from StockBench.controllers.simulator.indicators.sma.trigger import SMATrigger
 
 
 def test_get_side():
     # ============= Arrange ==============
-    test_object_1 = Trigger('SMA', Trigger.BUY)
-    test_object_2 = Trigger('SMA', Trigger.SELL)
-    test_object_3 = Trigger('SMA', Trigger.AGNOSTIC)
+    test_object_1 = TriggerInterface('SMA', TriggerInterface.BUY)
+    test_object_2 = TriggerInterface('SMA', TriggerInterface.SELL)
+    test_object_3 = TriggerInterface('SMA', TriggerInterface.AGNOSTIC)
 
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object_1.get_side() == Trigger.BUY
-    assert test_object_2.get_side() == Trigger.SELL
-    assert test_object_3.get_side() == Trigger.AGNOSTIC
+    assert test_object_1.get_side() == TriggerInterface.BUY
+    assert test_object_2.get_side() == TriggerInterface.SELL
+    assert test_object_3.get_side() == TriggerInterface.AGNOSTIC
 
 
 def test_basic_trigger_check():
@@ -54,18 +54,18 @@ def test_find_single_numeric_in_str():
 
     # ============= Assert ===============
     # normal
-    assert Trigger.find_single_numeric_in_str('SMA21') == 21
+    assert TriggerInterface.find_single_numeric_in_str('SMA21') == 21
 
     # less than 1 number
     try:
-        Trigger.find_single_numeric_in_str('SMA')
+        TriggerInterface.find_single_numeric_in_str('SMA')
         assert False
     except StrategyIndicatorError:
         assert True
 
     # more than 1 number
     try:
-        Trigger.find_single_numeric_in_str('SMA21$slope4')
+        TriggerInterface.find_single_numeric_in_str('SMA21$slope4')
         assert False
     except StrategyIndicatorError:
         assert True
@@ -77,9 +77,9 @@ def test_find_all_nums_in_str():
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert Trigger.find_all_nums_in_str('this thing') == []
-    assert Trigger.find_all_nums_in_str('SMA21') == ['21']
-    assert Trigger.find_all_nums_in_str('SMA21$slope12') == ['21', '12']
+    assert TriggerInterface.find_all_nums_in_str('this thing') == []
+    assert TriggerInterface.find_all_nums_in_str('SMA21') == ['21']
+    assert TriggerInterface.find_all_nums_in_str('SMA21$slope12') == ['21', '12']
 
 
 def test_find_operator_in_str():
@@ -88,10 +88,10 @@ def test_find_operator_in_str():
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert Trigger.find_operator_in_str('>21') == '>'
-    assert Trigger.find_operator_in_str('<=32') == '<='
+    assert TriggerInterface.find_operator_in_str('>21') == '>'
+    assert TriggerInterface.find_operator_in_str('<=32') == '<='
     try:
-        Trigger.find_operator_in_str('>')
+        TriggerInterface.find_operator_in_str('>')
         assert False
     except StrategyIndicatorError:
         assert True

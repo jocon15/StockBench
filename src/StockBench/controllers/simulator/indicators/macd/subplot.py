@@ -1,8 +1,8 @@
 import plotly.graph_objects as fplt
-from StockBench.controllers.simulator.indicator.subplot import Subplot
+from StockBench.controllers.simulator.indicator.subplot_interface import SubplotInterface
 
 
-class MACDSubplot(Subplot):
+class MACDSubplot(SubplotInterface):
     """Subplot for the MACD indicator.
 
     Additional traces include:

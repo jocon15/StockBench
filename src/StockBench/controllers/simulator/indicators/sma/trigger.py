@@ -1,7 +1,7 @@
 import logging
 import statistics
 
-from StockBench.controllers.simulator.indicator.trigger import Trigger
+from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
 from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.models.position.position import Position
@@ -9,9 +9,9 @@ from StockBench.models.position.position import Position
 log = logging.getLogger()
 
 
-class SMATrigger(Trigger):
+class SMATrigger(TriggerInterface):
     def __init__(self, indicator_symbol):
-        super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
+        super().__init__(indicator_symbol, side=TriggerInterface.AGNOSTIC)
 
     def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
         rule_key_number_groups = list(map(int, self.find_all_nums_in_str(rule_key)))
@@ -38,15 +38,15 @@ class SMATrigger(Trigger):
     def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager,
                                             current_day_index) -> float:
         # parse rule key will work even when passed a rule value
-        return Trigger.parse_rule_key_no_default_indicator_length(rule_value, self.indicator_symbol, data_manager,
-                                                                  current_day_index)
+        return TriggerInterface.parse_rule_key_no_default_indicator_length(rule_value, self.indicator_symbol, data_manager,
+                                                                           current_day_index)
 
     def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,
                       current_day_index: int) -> bool:
         log.debug(f'Checking {self.indicator_symbol} algorithm: {rule_key}...')
 
-        indicator_value = Trigger.parse_rule_key_no_default_indicator_length(rule_key, self.indicator_symbol,
-                                                                             data_manager, current_day_index)
+        indicator_value = TriggerInterface.parse_rule_key_no_default_indicator_length(rule_key, self.indicator_symbol,
+                                                                                      data_manager, current_day_index)
 
         log.debug(f'{self.indicator_symbol} algorithm: {rule_key} checked successfully')
 

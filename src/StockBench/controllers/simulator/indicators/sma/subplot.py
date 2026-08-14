@@ -2,11 +2,11 @@ import re
 import plotly.graph_objects as fplt
 from pandas import DataFrame
 
-from StockBench.controllers.simulator.indicator.subplot import Subplot
+from StockBench.controllers.simulator.indicator.subplot_interface import SubplotInterface
 from StockBench.controllers.charting.display_constants import SMA_COLOR, MOVING_AVERAGE_LINE_WIDTH
 
 
-class SMASubplot(Subplot):
+class SMASubplot(SubplotInterface):
     def __init__(self):
         # but make sure that the subplot is defined as an OHLC trace
         super().__init__('SMA', [{}], is_ohlc_trace=True)

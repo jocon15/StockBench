@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from StockBench.controllers.simulator.indicator.subplot import Subplot
+from StockBench.controllers.simulator.indicator.subplot_interface import SubplotInterface
 
 
 class IndicatorInterface:
@@ -27,7 +27,7 @@ class IndicatorInterface:
 
     @property
     @abstractmethod
-    def subplot(self) -> Subplot:
+    def subplot(self) -> SubplotInterface:
         # FIXME: validate docstring accuracy
         """The indicator's subplot."""
         raise NotImplementedError('Not implemented yet!')

@@ -2,11 +2,11 @@ import numpy as np
 import plotly.graph_objects as fplt
 from pandas import DataFrame
 
-from StockBench.controllers.simulator.indicator.subplot import Subplot
+from StockBench.controllers.simulator.indicator.subplot_interface import SubplotInterface
 from StockBench.controllers.charting.display_constants import BEAR_RED, BULL_GREEN
 
 
-class VolumeSubplot(Subplot):
+class VolumeSubplot(SubplotInterface):
     """Subplot for the volume indicator.
 
     Additional traces include:

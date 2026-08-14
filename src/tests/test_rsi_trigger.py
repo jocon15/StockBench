@@ -694,9 +694,9 @@ def test_get_value_when_referenced(data_mocker, test_object):
     assert test_object.get_indicator_value_when_referenced('>=MACD', data_mocker, 25) == 234.5
 
 
-@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_single_numeric_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_operator_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.basic_trigger_check')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_single_numeric_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_operator_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.basic_trigger_check')
 @patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============
@@ -713,7 +713,7 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
     assert test_object.check_trigger('RSI', '>60', data_mocker, None, 0) is False  # noqa
 
 
-@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_single_numeric_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_single_numeric_in_str')
 @patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger_value_error(data_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============
@@ -732,9 +732,9 @@ def test_check_trigger_value_error(data_mocker, numeric_mocker, test_object):
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
-@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_single_numeric_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_operator_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.basic_trigger_check')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_single_numeric_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_operator_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.basic_trigger_check')
 @patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker,
                                                  test_object):
@@ -778,9 +778,9 @@ def test_check_trigger_2_numbers_present_bad_format(data_mocker, test_object):
         assert True
 
 
-@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_single_numeric_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.find_operator_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.Trigger.basic_trigger_check')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_single_numeric_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_operator_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.basic_trigger_check')
 @patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============

@@ -4,8 +4,8 @@ from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 import plotly.graph_objects as plotter
 
-from StockBench.controllers.simulator.indicator.indicator import IndicatorInterface
-from StockBench.controllers.simulator.indicator.subplot import Subplot
+from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
+from StockBench.controllers.simulator.indicator.subplot_interface import SubplotInterface
 from StockBench.controllers.simulator.indicators.volume.subplot import VolumeSubplot
 from StockBench.controllers.charting.charting_engine import ChartingEngine
 from StockBench.controllers.charting.exceptions import ChartingError
@@ -82,7 +82,7 @@ class SingularChartingEngine(ChartingEngine):
         return subplot_objects, subplot_types
 
     @staticmethod
-    def __build_overview_parent_figure(df: DataFrame, subplot_objects: List[Subplot], subplot_types: List[List],
+    def __build_overview_parent_figure(df: DataFrame, subplot_objects: List[SubplotInterface], subplot_types: List[List],
                                        available_indicators: List[IndicatorInterface], show_volume: bool) -> Figure:
         """Builds the overview parent figure consisting of multiple subplots."""
         if not show_volume:
@@ -160,7 +160,7 @@ class SingularChartingEngine(ChartingEngine):
             raise ChartingError('No OHLC indicator found, cannot chart!')
 
     @staticmethod
-    def __remove_volume_subplot(subplot_objects: List[Subplot], subplot_types: List[List]) -> tuple:
+    def __remove_volume_subplot(subplot_objects: List[SubplotInterface], subplot_types: List[List]) -> tuple:
         """Removes the volume subplot from the list of subplots to exclude it from being charted."""
         for index, subplot in enumerate(subplot_objects):
             if type(subplot) is VolumeSubplot:

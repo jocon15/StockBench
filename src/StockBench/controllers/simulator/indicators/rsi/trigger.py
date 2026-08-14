@@ -2,16 +2,16 @@ import logging
 import statistics
 
 from StockBench.models.constants.general_constants import *
-from StockBench.controllers.simulator.indicator.trigger import Trigger
+from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.models.position.position import Position
 
 log = logging.getLogger()
 
 
-class RSITrigger(Trigger):
+class RSITrigger(TriggerInterface):
     def __init__(self, indicator_symbol):
-        super().__init__(indicator_symbol, side=Trigger.AGNOSTIC)
+        super().__init__(indicator_symbol, side=TriggerInterface.AGNOSTIC)
 
     def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: any) -> int:
         rule_key_number_groups = self.find_all_nums_in_str(rule_key)
@@ -38,8 +38,8 @@ class RSITrigger(Trigger):
         nums = self.find_all_nums_in_str(rule_value)
         if len(nums) > 0:
             trigger_value = float(nums[0])
-            Trigger._add_trigger_value_as_column(f'{self.indicator_symbol}_{trigger_value}', trigger_value,
-                                                 data_manager)
+            TriggerInterface._add_trigger_value_as_column(f'{self.indicator_symbol}_{trigger_value}', trigger_value,
+                                                          data_manager)
 
     def add_indicator_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
         rule_value_number_groups = self.find_all_nums_in_str(rule_value)
@@ -52,13 +52,13 @@ class RSITrigger(Trigger):
     def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager,
                                             current_day_index: int) -> float:
         # parse rule key will work even when passed a rule value
-        return Trigger.parse_rule_key(rule_value, self.indicator_symbol, data_manager, current_day_index)
+        return TriggerInterface.parse_rule_key(rule_value, self.indicator_symbol, data_manager, current_day_index)
 
     def check_trigger(self, rule_key: str, rule_value: any, data_manager: DataManager, position: Position,
                       current_day_index: int) -> bool:
         log.debug(f'Checking {self.indicator_symbol} algorithm: {rule_key}...')
 
-        indicator_value = Trigger.parse_rule_key(rule_key, self.indicator_symbol, data_manager, current_day_index)
+        indicator_value = TriggerInterface.parse_rule_key(rule_key, self.indicator_symbol, data_manager, current_day_index)
 
         log.debug(f'{self.indicator_symbol} algorithm: {rule_key} checked successfully')
 

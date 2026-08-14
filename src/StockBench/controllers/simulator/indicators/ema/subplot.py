@@ -2,11 +2,11 @@ import re
 import plotly.graph_objects as fplt
 from pandas import DataFrame
 
-from StockBench.controllers.simulator.indicator.subplot import Subplot
+from StockBench.controllers.simulator.indicator.subplot_interface import SubplotInterface
 from StockBench.controllers.charting.display_constants import EMA_COLOR, MOVING_AVERAGE_LINE_WIDTH
 
 
-class EMASubplot(Subplot):
+class EMASubplot(SubplotInterface):
     def __init__(self):
         super().__init__('EMA', [{}], is_ohlc_trace=True)
 

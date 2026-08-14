@@ -196,7 +196,7 @@ class TriggerInterface:
         return indicator_value
 
     @staticmethod
-    def _add_trigger_value_as_column(column_name: str, trigger_value: float, data_manager: DataManager):
+    def add_trigger_value_as_column(column_name: str, trigger_value: float, data_manager: DataManager):
         """Add a trigger value as a column of repeated values to the simulation data."""
         for col_name in data_manager.get_column_names():
             if column_name == col_name:

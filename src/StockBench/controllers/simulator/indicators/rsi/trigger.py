@@ -38,8 +38,8 @@ class RSITrigger(TriggerInterface):
         nums = self.find_all_nums_in_str(rule_value)
         if len(nums) > 0:
             trigger_value = float(nums[0])
-            TriggerInterface._add_trigger_value_as_column(f'{self.indicator_symbol}_{trigger_value}', trigger_value,
-                                                          data_manager)
+            TriggerInterface.add_trigger_value_as_column(f'{self.indicator_symbol}_{trigger_value}', trigger_value,
+                                                         data_manager)
 
     def add_indicator_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
         rule_value_number_groups = self.find_all_nums_in_str(rule_value)

@@ -97,7 +97,7 @@ class SingularChartingEngine(ChartingEngine):
         # add discovered subplots to the parent plot
         for enum_row, subplot in enumerate(subplot_objects):
             row = enum_row + 1
-            fig.add_trace(subplot.subplot(df), row=row, col=col)
+            fig.add_trace(subplot.get_subplot(df), row=row, col=col)
             if subplot.get_type()[0]['type'] == 'ohlc':
                 # special case for OHLC subplot
                 traces = [trace for trace in subplot.get_traces(df)]

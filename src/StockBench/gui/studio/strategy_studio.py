@@ -68,7 +68,7 @@ class StrategyStudioWindow(QWidget):
                 self.__set_status('Invalid filepath!')
                 return
             except json.decoder.JSONDecodeError as e:
-                self.error_message_box.setText(f'This strategy is not valid JSON!: {e.args[0]}')
+                self.error_message_box.setText(f'This strategy contains invalid JSON!: {e.args[0]}')
                 self.layout.addWidget(self.error_message_box)
                 self.__set_status('Invalid JSON!')
                 return

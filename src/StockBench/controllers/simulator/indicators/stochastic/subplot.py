@@ -35,7 +35,8 @@ class StochasticSubplot(SubplotInterface):
         primary_traces = []
         primary_trace_names = []
         for (column_name, column_data) in df.items():
-            if self.data_symbol in column_name and column_name not in primary_trace_names:
+            # avoid underscored column names because those are thresholds and handled in get_traces
+            if self.data_symbol in column_name and column_name not in primary_trace_names and '_' not in column_name:
                 primary_traces.append(fplt.Scatter(
                     x=df['Date'],
                     y=column_data,
@@ -54,10 +55,9 @@ class StochasticSubplot(SubplotInterface):
 
     def get_traces(self, df: DataFrame) -> list:
         """Builds and a list of traces to add to the subplot."""
-        # builds and returns a list of traces to add to the subplot
         for (column_name, column_data) in df.items():
-            # stochastic + underscore indicates it is a stochastic trigger value
-            if f'{self.data_symbol}_' in column_name:
+            # contains stochastic AND contains underscore indicates it is a stochastic threshold value
+            if f'{self.data_symbol}' in column_name and '_' in column_name:
                 self.remaining_traces.append(fplt.Scatter(
                     x=df['Date'],
                     y=df[column_name],

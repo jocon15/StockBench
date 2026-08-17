@@ -172,7 +172,7 @@ class ConfigTab(QWidget):
         except FileNotFoundError:
             raise MessageBoxCaptureException('Strategy filepath is not a valid file!')
         except json.decoder.JSONDecodeError as e:
-            raise MessageBoxCaptureException(f'This strategy is not valid JSON!: {e.args[0]}')
+            raise MessageBoxCaptureException(f'This strategy contains invalid JSON!: {e.args[0]}')
 
         # inject the unix equivalent dates from the combobox to the dict
         strategy['strategy_filepath'] = filepath

@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from pandas import DataFrame
+from typing import Union
 
 from plotly.graph_objects import Scatter, Ohlc
 

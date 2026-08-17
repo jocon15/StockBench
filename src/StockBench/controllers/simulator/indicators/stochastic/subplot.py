@@ -1,46 +1,56 @@
 import plotly.graph_objects as fplt
 from pandas import DataFrame
+from plotly.graph_objs import Scatter
 
 from StockBench.controllers.simulator.indicator.subplot_interface import SubplotInterface
-from StockBench.controllers.charting.display_constants import WHITE, HORIZONTAL_TRIGGER_YELLOW
+from StockBench.controllers.charting.display_constants import HORIZONTAL_TRIGGER_YELLOW
+from StockBench.controllers.simulator.indicator.exceptions import SimulationDataException
 
 
 class StochasticSubplot(SubplotInterface):
     """This class is a subclass of the Subplot class.
 
-    A Stochastic object contains the subplot with stochastic oscillator data.
+    A Stochastic object contains the subplot with main stochastic oscillator data. If multiple lengths of the indicator
+    are used, they will be added as traces.
 
     Additional traces include:
         - RSI upper algorithm
         - RSI lower algorithm
     """
+
     def __init__(self):
         super().__init__('stochastic', [{"type": "scatter"}], False)
 
-    def get_subplot(self, df: DataFrame):
-        """Builds and returns the subplot.
+    def get_subplot(self, df: DataFrame) -> Scatter:
+        """Builds the subplot.
 
-        Args:
-            df: The dataframe of simulation data.
+        This subplot could contain any number custom length (primary) stochastic oscillator traces.
+        EX: 20stochastic, 30stochastic, stochastic, etc.
 
-        return:
-            A plotly subplot.
+        They will all end up on the same subplot because they share the same scale.
         """
-        return fplt.Scatter(
-            x=df['Date'],
-            y=df[self.data_symbol],
-            line=dict(color=WHITE),
-            name='Stochastic')
+        primary_traces = []
+        primary_trace_names = []
+        for (column_name, column_data) in df.items():
+            if {self.data_symbol} in column_name and column_name not in primary_trace_names:
+                primary_traces.append(fplt.Scatter(
+                    x=df['Date'],
+                    y=column_data,
+                    # line=dict(color=WHITE),  # we want the color to change between
+                    name=column_name))
+
+        if not primary_traces:
+            raise SimulationDataException('Stochastic subplot build invoked but no data element labeled stochastic was '
+                                          'encountered!')
+
+        subplot = primary_traces[0]
+        for trace in primary_traces:
+            subplot.add_trace(trace)
+
+        return subplot
 
     def get_traces(self, df: DataFrame) -> list:
-        """builds and returns a list of traces to add to the subplot.
-
-        Args:
-            df: The dataframe of simulation data.
-
-        return:
-            list: A list of traces to add to the subplot defined in this class.
-        """
+        """Builds and a list of traces to add to the subplot."""
         # builds and returns a list of traces to add to the subplot
         traces = []
         for (column_name, column_data) in df.items():

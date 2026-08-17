@@ -36,7 +36,7 @@ class StochasticSubplot(SubplotInterface):
                 primary_traces.append(fplt.Scatter(
                     x=df['Date'],
                     y=column_data,
-                    # line=dict(color=WHITE),  # we want the color to change between
+                    # line=dict(color=WHITE),  # we want the color to change between traces
                     name=column_name))
 
         if not primary_traces:

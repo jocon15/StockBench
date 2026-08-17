@@ -3,7 +3,7 @@
         "SMA20$slope4": ">10",
         "RSI": "<30",
         "stochastic": "<20",
-        "20stochastic": "<20",
+        "stochastic20": "<30",
         "EMA20": "<30",
         "and1": {
             "SMA20": ">50",

@@ -6,3 +6,7 @@ class StrategyIndicatorError(Exception):
 
 class SimulationDataException(Exception):
     pass
+
+
+class NoThresholdFoundException(Exception):
+    pass

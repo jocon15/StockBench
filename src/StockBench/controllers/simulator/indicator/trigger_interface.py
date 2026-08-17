@@ -6,7 +6,7 @@ from typing import Tuple, Union
 from StockBench.models.constants.general_constants import *
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.models.position.position import Position
-from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
+from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError, NoThresholdFoundException
 
 log = logging.getLogger()
 
@@ -17,6 +17,8 @@ class TriggerInterface:
     SELL = 1
     AGNOSTIC = 2
 
+    OPERATORS = ['<=', '>=', '<', '>', '=']
+
     def __init__(self, indicator_symbol: str, side: int):
         self.indicator_symbol = indicator_symbol
         self.__side = side
@@ -25,7 +27,7 @@ class TriggerInterface:
         return self.__side
 
     @abstractmethod
-    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: Union[str, int, dict]) -> int:
+    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: Union[str, int, dict, None]) -> int:
         """Calculates the additional days required from a rule key and a rule value."""
         # Must include rule value as a parameter because some triggers (candlestick) cannot deduce indicator length from
         # the rule key and cannot be identified from the rule value.
@@ -83,6 +85,16 @@ class TriggerInterface:
             if abs(indicator_value - trigger_value) <= 0.001:  # DOUBLE_COMPARISON_EPSILON
                 return True
         return False
+
+    def get_threshold_from_rule_value(self, rule_value: str) -> float:
+        for operator in self.OPERATORS:
+            if operator in str(rule_value):
+                rule_value_stripped = str(rule_value).strip(operator)
+                try:
+                    return float(str(rule_value_stripped))
+                except ValueError:
+                    raise NoThresholdFoundException()
+        raise NoThresholdFoundException()
 
     @staticmethod
     def find_single_numeric_in_str(rule_value: str) -> float:

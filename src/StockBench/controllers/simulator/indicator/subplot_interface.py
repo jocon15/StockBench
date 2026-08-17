@@ -1,6 +1,8 @@
 from abc import abstractmethod
 from pandas import DataFrame
 
+from plotly.graph_objects import Scatter, Ohlc
+
 
 class SubplotInterface:
     def __init__(self, data_symbol, subplot_type, is_ohlc_trace):
@@ -15,9 +17,9 @@ class SubplotInterface:
         return self.__is_ohlc_trace
 
     @abstractmethod
-    def get_subplot(self, df: DataFrame):
+    def get_subplot(self, df: DataFrame) -> Union[Scatter, Ohlc]:
         raise NotImplementedError('Not implemented yet!')
 
     @abstractmethod
-    def get_traces(self, df: DataFrame):
+    def get_traces(self, df: DataFrame) -> list:
         raise NotImplementedError('Not implemented yet!')

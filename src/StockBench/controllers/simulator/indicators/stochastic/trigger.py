@@ -69,20 +69,21 @@ class StochasticTrigger(TriggerInterface):
 
     def __add_stochastic_to_simulation_data(self, length: int, data_manager: DataManager):
         """Adds the stochastic values to the simulation data."""
+        if length == DEFAULT_STOCHASTIC_LENGTH:
+            column_title = self.indicator_symbol
+        else:
+            column_title = f"{self.indicator_symbol}{length}"
+
         # skip if there are stochastic values in the simulation data
         for col_name in data_manager.get_column_names():
-            if self.indicator_symbol in col_name:
+            # since this indicator supports custom lengths it is direct equality, not contains
+            if column_title == col_name:
                 return
 
         high_data = data_manager.get_column_data(data_manager.HIGH)
         low_data = data_manager.get_column_data(data_manager.LOW)
         close_data = data_manager.get_column_data(data_manager.CLOSE)
         stochastic_values = StochasticTrigger.calculate_stochastic_oscillator(length, high_data, low_data, close_data)
-
-        if length == DEFAULT_STOCHASTIC_LENGTH:
-            column_title = self.indicator_symbol
-        else:
-            column_title = f"{length}{self.indicator_symbol}"
 
         data_manager.add_column(column_title, stochastic_values)
 

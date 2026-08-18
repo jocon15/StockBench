@@ -13,26 +13,12 @@ class StopLossTrigger(TriggerInterface):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=TriggerInterface.SELL)
 
-    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: Union[str, int, dict]) -> int:
-        return 0
-
-    def calculate_additional_days_from_rule_value(self, rule_value: Union[str, int, dict]) -> int:
-        return 0
-
-    def add_indicator_data_from_rule_key(self, rule_key: str, rule_value: Union[str, int, dict], side: str, data_manager: DataManager):
-        # stop loss does not require any additional data to be added to the data
-        return
-
-    def add_indicator_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
-        # stop loss does not require any additional data to be added to the data
-        return
-
     def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager,
                                             current_day_index: int) -> float:
         raise NotImplementedError('Stop loss cannot be referenced in a rule value!')
 
-    def check_trigger(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager, position: Position,
-                      current_day_index: int) -> bool:
+    def check_trigger(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager,
+                      position: Position, current_day_index: int) -> bool:
         log.debug('Checking stop loss algorithm...')
 
         current_price = data_manager.get_data_point(data_manager.CLOSE, current_day_index)
@@ -46,16 +32,16 @@ class StopLossTrigger(TriggerInterface):
 
         if 'intraday' in rule_key:
             if intraday_pl < 0:
-                if '%' in rule_value:
-                    return self.__check_plpc_loss(rule_value, intraday_plpc)
+                if '%' in str(rule_value):
+                    return self.__check_plpc_loss(str(rule_value), intraday_plpc)
                 else:
-                    return self.__check_pl_loss(rule_value, intraday_pl)
+                    return self.__check_pl_loss(str(rule_value), intraday_pl)
         else:
             if lifetime_pl < 0:
-                if '%' in rule_value:
-                    return self.__check_plpc_loss(rule_value, lifetime_plpc)
+                if '%' in str(rule_value):
+                    return self.__check_plpc_loss(str(rule_value), lifetime_plpc)
                 else:
-                    return self.__check_pl_loss(rule_value, lifetime_pl)
+                    return self.__check_pl_loss(str(rule_value), lifetime_pl)
 
         log.debug('Stop loss algorithm checked')
         return False

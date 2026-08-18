@@ -1,5 +1,5 @@
 from .setup import VolumeSetup
-from .trigger import VolumeTrigger
+from .trigger import VolumeRule
 from .subplot import VolumeSubplot
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 
@@ -9,7 +9,7 @@ class VolumeIndicator(IndicatorInterface):
         self.__strategy_name = 'volume'
         self.__data_name = self.__strategy_name
         self.__setup = VolumeSetup(self.__strategy_name)
-        self.__trigger = VolumeTrigger(self.__strategy_name)
+        self.__trigger = VolumeRule(self.__strategy_name)
         self.__subplot = VolumeSubplot()
 
     def strategy_name(self):

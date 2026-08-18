@@ -1,8 +1,8 @@
 from .setup import CandleStickSetup
-from .trigger import CandlestickColorTrigger
+from .trigger import CandlestickColorRule
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 from StockBench.controllers.simulator.indicator.setup_interface import SetupInterface
-from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
+from StockBench.controllers.simulator.indicator.rule_interface import RuleInterface
 
 
 class CandlestickColorIndicator(IndicatorInterface):
@@ -10,7 +10,7 @@ class CandlestickColorIndicator(IndicatorInterface):
         self.__strategy_symbol = 'color'
         self.__data_name = self.__strategy_symbol
         self.__setup = CandleStickSetup(self.__strategy_symbol)
-        self.__trigger = CandlestickColorTrigger(self.__strategy_symbol)
+        self.__trigger = CandlestickColorRule(self.__strategy_symbol)
 
     def strategy_name(self) -> str:
         return self.__strategy_symbol
@@ -23,7 +23,7 @@ class CandlestickColorIndicator(IndicatorInterface):
         return self.__setup
 
     @property
-    def trigger(self) -> TriggerInterface:
+    def trigger(self) -> RuleInterface:
         return self.__trigger
 
     @property

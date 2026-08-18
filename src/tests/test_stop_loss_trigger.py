@@ -1,11 +1,11 @@
 import pytest
 from unittest.mock import patch
-from StockBench.controllers.simulator.indicators.stop_loss.trigger import StopLossTrigger
+from StockBench.controllers.simulator.indicators.stop_loss.trigger import StopLossRule
 
 
 @pytest.fixture
 def test_object():
-    return StopLossTrigger('stop_loss')
+    return StopLossRule('stop_loss')
 
 
 def test_additional_days_from_rule_key(test_object):

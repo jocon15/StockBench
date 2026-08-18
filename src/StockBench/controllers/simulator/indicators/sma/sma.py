@@ -1,5 +1,5 @@
 from .setup import SMASetup
-from .trigger import SMATrigger
+from .trigger import SMARule
 from .subplot import SMASubplot
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 
@@ -9,7 +9,7 @@ class SMAIndicator(IndicatorInterface):
         self.__strategy_name = 'SMA'
         self.__data_name = self.__strategy_name
         self.__setup = SMASetup(self.__strategy_name)
-        self.__trigger = SMATrigger(self.__strategy_name)
+        self.__trigger = SMARule(self.__strategy_name)
         self.__subplot = SMASubplot()
 
     def strategy_name(self):

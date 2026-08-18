@@ -2,16 +2,16 @@ import logging
 
 from typing import Union
 
-from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
+from StockBench.controllers.simulator.indicator.rule_interface import RuleInterface
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.models.position.position import Position
 
 log = logging.getLogger()
 
 
-class VolumeTrigger(TriggerInterface):
+class VolumeRule(RuleInterface):
     def __init__(self, indicator_symbol):
-        super().__init__(indicator_symbol, side=TriggerInterface.AGNOSTIC)
+        super().__init__(indicator_symbol, side=RuleInterface.AGNOSTIC)
 
     def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager,
                                             current_day_index: int) -> float:

@@ -1,7 +1,7 @@
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 from .setup import StochasticSetup
 from .subplot import StochasticSubplot
-from .trigger import StochasticTrigger
+from .trigger import StochasticRule
 
 
 class StochasticIndicator(IndicatorInterface):
@@ -9,7 +9,7 @@ class StochasticIndicator(IndicatorInterface):
         self.__strategy_symbol = 'stochastic'
         self.__data_name = self.__strategy_symbol
         self.__setup = StochasticSetup(self.__strategy_symbol)
-        self.__trigger = StochasticTrigger(self.__strategy_symbol)
+        self.__trigger = StochasticRule(self.__strategy_symbol)
         self.__subplot = StochasticSubplot()
 
     def strategy_name(self) -> str:
@@ -23,7 +23,7 @@ class StochasticIndicator(IndicatorInterface):
         return self.__setup
 
     @property
-    def trigger(self) -> StochasticTrigger:
+    def trigger(self) -> StochasticRule:
         return self.__trigger
 
     @property

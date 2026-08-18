@@ -1,12 +1,12 @@
 import pytest
 from unittest.mock import patch
 
-from StockBench.controllers.simulator.indicators.stop_profit.trigger import StopProfitTrigger
+from StockBench.controllers.simulator.indicators.stop_profit.trigger import StopProfitRule
 
 
 @pytest.fixture
 def test_object():
-    return StopProfitTrigger('stop_profit')
+    return StopProfitRule('stop_profit')
 
 
 def test_additional_days_from_rule_key(test_object):

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from StockBench.controllers.simulator.indicator.setup_interface import SetupInterface
 from StockBench.controllers.simulator.indicator.subplot_interface import SubplotInterface
-from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
+from StockBench.controllers.simulator.indicator.rule_interface import RuleInterface
 
 
 class IndicatorInterface(ABC):
@@ -24,7 +24,7 @@ class IndicatorInterface(ABC):
 
     @property
     @abstractmethod
-    def trigger(self) -> TriggerInterface:
+    def trigger(self) -> RuleInterface:
         """The indicator's trigger interface."""
         raise NotImplementedError('Not implemented yet!')
 

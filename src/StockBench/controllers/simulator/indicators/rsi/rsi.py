@@ -1,6 +1,6 @@
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 from .setup import RSISetup
-from .trigger import RSITrigger
+from .trigger import RSIRule
 from .subplot import RSISubplot
 
 
@@ -9,7 +9,7 @@ class RSIIndicator(IndicatorInterface):
         self.__strategy_name = 'RSI'
         self.__data_name = self.__strategy_name
         self.__setup = RSISetup(self.__strategy_name)
-        self.__trigger = RSITrigger(self.__strategy_name)
+        self.__trigger = RSIRule(self.__strategy_name)
         self.__subplot = RSISubplot()
 
     def strategy_name(self):

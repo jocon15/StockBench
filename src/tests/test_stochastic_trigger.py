@@ -3,7 +3,7 @@ import pytest
 from StockBench.models.position.position import Position
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
-from StockBench.controllers.simulator.indicators.stochastic.trigger import StochasticTrigger
+from StockBench.controllers.simulator.indicators.stochastic.trigger import StochasticRule
 from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
 
 # NOTE: mocker is a fixture provided by pytest plugin pip package "pytest-mock"
@@ -32,12 +32,12 @@ def position_mocker(mocker):
 
 
 @pytest.fixture
-def test_object() -> StochasticTrigger:
-    return StochasticTrigger('stochastic')
+def test_object() -> StochasticRule:
+    return StochasticRule('stochastic')
 
 
 def test_additional_days_from_rule_key():
-    test_object = StochasticTrigger('stochastic')
+    test_object = StochasticRule('stochastic')
     assert test_object.calculate_additional_days_from_rule_key('stochastic', None) == 14
     assert test_object.calculate_additional_days_from_rule_key('stochastic20', None) == 20
     assert test_object.calculate_additional_days_from_rule_key('stochastic20$slope10', None) == 20
@@ -45,14 +45,14 @@ def test_additional_days_from_rule_key():
 
 
 def test_additional_days_from_rule_value():
-    test_object = StochasticTrigger('stochastic')
+    test_object = StochasticRule('stochastic')
     assert test_object.calculate_additional_days_from_rule_value('stochastic') == 14
     assert test_object.calculate_additional_days_from_rule_value('stochastic20') == 20
     assert test_object.calculate_additional_days_from_rule_value('stochastic20$slope10') == 20
     assert test_object.calculate_additional_days_from_rule_value('stochastic20$slope30') == 30
 
 
-def test_add_to_data_rule_key(data_mocker, logger_mocker, test_object: StochasticTrigger):
+def test_add_to_data_rule_key(data_mocker, logger_mocker, test_object: StochasticRule):
     setup_logger_mocker(logger_mocker)
 
     setup_data_mocker(data_mocker)
@@ -61,7 +61,7 @@ def test_add_to_data_rule_key(data_mocker, logger_mocker, test_object: Stochasti
     # assertions are done in side effect function
 
 
-def test_add_to_data_rule_key_non_default_length(data_mocker, logger_mocker, test_object: StochasticTrigger):
+def test_add_to_data_rule_key_non_default_length(data_mocker, logger_mocker, test_object: StochasticRule):
     setup_logger_mocker(logger_mocker)
 
     setup_data_mocker(data_mocker)
@@ -70,7 +70,7 @@ def test_add_to_data_rule_key_non_default_length(data_mocker, logger_mocker, tes
     # assertions are done in side effect function
 
 
-def test_add_to_data_rule_value(data_mocker, logger_mocker, test_object: StochasticTrigger):
+def test_add_to_data_rule_value(data_mocker, logger_mocker, test_object: StochasticRule):
     setup_logger_mocker(logger_mocker)
 
     setup_data_mocker(data_mocker)
@@ -79,7 +79,7 @@ def test_add_to_data_rule_value(data_mocker, logger_mocker, test_object: Stochas
     # assertions are done in side effect function
 
 
-def test_add_to_data_rule_value_non_default_length(data_mocker, logger_mocker, test_object: StochasticTrigger):
+def test_add_to_data_rule_value_non_default_length(data_mocker, logger_mocker, test_object: StochasticRule):
     setup_logger_mocker(logger_mocker)
 
     setup_data_mocker(data_mocker)
@@ -88,7 +88,7 @@ def test_add_to_data_rule_value_non_default_length(data_mocker, logger_mocker, t
     # assertions are done in side effect function
 
 
-def test_indicator_already_in_data_manager(data_mocker, logger_mocker, test_object: StochasticTrigger):
+def test_indicator_already_in_data_manager(data_mocker, logger_mocker, test_object: StochasticRule):
     setup_logger_mocker(logger_mocker)
 
     data_mocker.get_column_names.return_value = ['stochastic']
@@ -106,14 +106,14 @@ def test_indicator_already_in_data_manager(data_mocker, logger_mocker, test_obje
     assert True
 
 
-def test_get_value_when_referenced(data_mocker, test_object: StochasticTrigger):
+def test_get_value_when_referenced(data_mocker, test_object: StochasticRule):
     data_mocker.get_data_point.return_value = 234.5
 
     assert test_object.get_indicator_value_when_referenced('>=stochastic', data_mocker, 25) == 234.5
 
 
 def test_check_trigger(data_mocker, trigger_interface_mocker, logger_mocker, position_mocker,
-                       test_object: StochasticTrigger):
+                       test_object: StochasticRule):
     data_mocker.get_data_point.return_value = 10
 
     trigger_interface_mocker.parse_rule_key.return_value = 25.5
@@ -121,7 +121,7 @@ def test_check_trigger(data_mocker, trigger_interface_mocker, logger_mocker, pos
     assert test_object.check_triggered('stochastic', '>60', data_mocker, position_mocker, 0) is False
 
 
-def test_check_trigger_value_error(data_mocker, position_mocker, test_object: StochasticTrigger):
+def test_check_trigger_value_error(data_mocker, position_mocker, test_object: StochasticRule):
     data_mocker.get_data_point.return_value = 90
 
     try:
@@ -151,7 +151,7 @@ def data_point_side_effect(*args):
         return 40.2
 
 
-def test_check_trigger_2_numbers_present_bad_format(data_mocker, position_mocker, test_object: StochasticTrigger):
+def test_check_trigger_2_numbers_present_bad_format(data_mocker, position_mocker, test_object: StochasticRule):
     data_mocker.get_data_point.side_effect = data_point_side_effect
     data_mocker.CLOSE = 'Close'
 
@@ -163,7 +163,7 @@ def test_check_trigger_2_numbers_present_bad_format(data_mocker, position_mocker
 
 
 def test_check_trigger_slope_used(data_mocker, trigger_interface_mocker, logger_mocker, position_mocker,
-                                  test_object: StochasticTrigger):
+                                  test_object: StochasticRule):
     # ============= Arrange ==============
     data_mocker.get_data_point.side_effect = slope_data_side_effect
 
@@ -178,7 +178,7 @@ def test_check_trigger_slope_used(data_mocker, trigger_interface_mocker, logger_
 
 
 def test_check_trigger_slope_value_error(data_mocker, position_mocker,
-                                         test_object: StochasticTrigger):
+                                         test_object: StochasticRule):
     # ============= Arrange ==============
     data_mocker.get_data_point.return_value = 90
 

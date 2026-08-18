@@ -2,16 +2,16 @@ import logging
 
 from typing import Union
 
-from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
+from StockBench.controllers.simulator.indicator.rule_interface import RuleInterface
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.models.position.position import Position
 
 log = logging.getLogger()
 
 
-class StopLossTrigger(TriggerInterface):
+class StopLossRule(RuleInterface):
     def __init__(self, indicator_symbol):
-        super().__init__(indicator_symbol, side=TriggerInterface.SELL)
+        super().__init__(indicator_symbol, side=RuleInterface.SELL)
 
     def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager,
                                             current_day_index: int) -> float:
@@ -49,7 +49,7 @@ class StopLossTrigger(TriggerInterface):
     @staticmethod
     def __check_plpc_loss(value: str, plpc_value: float) -> bool:
         """Checks stop loss trigger for loss percent trigger event."""
-        nums = TriggerInterface.find_all_nums_in_str(value)
+        nums = RuleInterface.find_all_nums_in_str(value)
         trigger_value = float(nums[0])
         if abs(plpc_value) >= trigger_value:
             log.info('Stop loss algorithm hit!')

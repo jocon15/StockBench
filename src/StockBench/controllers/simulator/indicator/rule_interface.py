@@ -11,7 +11,7 @@ from StockBench.controllers.simulator.indicator.exceptions import StrategyIndica
 log = logging.getLogger()
 
 
-class TriggerInterface(ABC):
+class RuleInterface(ABC):
     """Base class for an indicator trigger."""
     BUY = 0
     SELL = 1
@@ -84,19 +84,19 @@ class TriggerInterface(ABC):
     def parse_rule_key(rule_key: str, indicator_symbol: str, data_manager: DataManager,
                        current_day_index: int) -> float:
         """Parses a rule key for an indicator value."""
-        rule_key_number_groups = TriggerInterface.find_all_nums_in_str(rule_key)
+        rule_key_number_groups = RuleInterface.find_all_nums_in_str(rule_key)
         if len(rule_key_number_groups) == 0:
-            indicator_value = TriggerInterface.__parse_rule_key_0_number_groupings(rule_key, rule_key_number_groups,
-                                                                                   indicator_symbol, data_manager,
-                                                                                   current_day_index)
+            indicator_value = RuleInterface.__parse_rule_key_0_number_groupings(rule_key, rule_key_number_groups,
+                                                                                indicator_symbol, data_manager,
+                                                                                current_day_index)
         elif len(rule_key_number_groups) == 1:
-            indicator_value = TriggerInterface.__parse_rule_key_1_number_grouping(rule_key, rule_key_number_groups,
-                                                                                  indicator_symbol, data_manager,
-                                                                                  current_day_index)
+            indicator_value = RuleInterface.__parse_rule_key_1_number_grouping(rule_key, rule_key_number_groups,
+                                                                               indicator_symbol, data_manager,
+                                                                               current_day_index)
         elif len(rule_key_number_groups) == 2:
-            indicator_value = TriggerInterface.__parse_rule_key_2_number_groupings(rule_key, rule_key_number_groups,
-                                                                                   indicator_symbol, data_manager,
-                                                                                   current_day_index)
+            indicator_value = RuleInterface.__parse_rule_key_2_number_groupings(rule_key, rule_key_number_groups,
+                                                                                indicator_symbol, data_manager,
+                                                                                current_day_index)
         else:
             raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} contains invalid number '
                                          f'groupings!')
@@ -111,7 +111,7 @@ class TriggerInterface(ABC):
     def parse_rule_key_no_default_indicator_length(rule_key: str, indicator_symbol: str, data_manager: DataManager,
                                                    current_day_index: int) -> float:
         """Parses a rule key for an indicator value where the indicator DOES NOT have a default value."""
-        rule_key_number_groups = TriggerInterface.find_all_nums_in_str(rule_key)
+        rule_key_number_groups = RuleInterface.find_all_nums_in_str(rule_key)
 
         if len(rule_key_number_groups) == 1:
             if SLOPE_SYMBOL in rule_key:
@@ -123,9 +123,9 @@ class TriggerInterface(ABC):
             column_title = f'{indicator_symbol}{int(rule_key_number_groups[0])}'
             # 2 number groupings suggests the $slope indicator is being used
             if SLOPE_SYMBOL in rule_key:
-                indicator_value = TriggerInterface.__calculate_slope(column_title, int(rule_key_number_groups[1]),
-                                                                     current_day_index,
-                                                                     data_manager)
+                indicator_value = RuleInterface.__calculate_slope(column_title, int(rule_key_number_groups[1]),
+                                                                  current_day_index,
+                                                                  data_manager)
             else:
                 raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} contains too many number '
                                              f'groupings! Are you missing a $slope emblem?')
@@ -148,7 +148,7 @@ class TriggerInterface(ABC):
         else:
             column_title = indicator_symbol
 
-        rule_key_number_groups = TriggerInterface.find_all_nums_in_str(rule_key)
+        rule_key_number_groups = RuleInterface.find_all_nums_in_str(rule_key)
 
         # ex: MACD can only have slope emblem therefore 1 or 0 number groupings are acceptable
         if len(rule_key_number_groups) == 0:
@@ -159,8 +159,8 @@ class TriggerInterface(ABC):
         elif len(rule_key_number_groups) == 1:
             # 1 number grouping suggests the $slope indicator is being used
             if SLOPE_SYMBOL in rule_key:
-                indicator_value = TriggerInterface.__calculate_slope(column_title, int(rule_key_number_groups[0]),
-                                                                     current_day_index, data_manager)
+                indicator_value = RuleInterface.__calculate_slope(column_title, int(rule_key_number_groups[0]),
+                                                                  current_day_index, data_manager)
             else:
                 raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} contains too many number '
                                              f'groupings! Are you missing a $slope emblem?')
@@ -200,8 +200,8 @@ class TriggerInterface(ABC):
         column_title = f'{indicator_symbol}{int(rule_key_number_groups[0])}'
         # 2 number groupings suggests the $slope indicator is being used
         if SLOPE_SYMBOL in rule_key:
-            return TriggerInterface.__calculate_slope(column_title, int(rule_key_number_groups[1]),
-                                                      current_day_index, data_manager)
+            return RuleInterface.__calculate_slope(column_title, int(rule_key_number_groups[1]),
+                                                   current_day_index, data_manager)
         else:
             raise StrategyIndicatorError(f'{indicator_symbol} rule key: {rule_key} contains too many number '
                                          f'groupings! Are you missing a $slope emblem?')
@@ -213,7 +213,7 @@ class TriggerInterface(ABC):
         # data request length is window - 1 to account for the current day index being a part of the window
         slope_data_request_length = slope_window_length - 1
 
-        return TriggerInterface.__calculate_point_slope(
+        return RuleInterface.__calculate_point_slope(
             float(data_manager.get_data_point(column_title, current_day_index)),
             float(data_manager.get_data_point(column_title, current_day_index - slope_data_request_length)),
             slope_window_length

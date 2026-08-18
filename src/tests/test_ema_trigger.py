@@ -1,13 +1,13 @@
 import pytest
 from unittest.mock import patch
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
-from StockBench.controllers.simulator.indicators.ema.trigger import EMATrigger
+from StockBench.controllers.simulator.indicators.ema.trigger import EMARule
 from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
 
 
 @pytest.fixture
 def test_object():
-    return EMATrigger('EMA')
+    return EMARule('EMA')
 
 
 def test_additional_days_from_rule_key(test_object):
@@ -331,9 +331,9 @@ def logger_side_effect(*args):
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_single_numeric_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_operator_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.basic_trigger_check')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.RuleInterface.find_single_numeric_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.RuleInterface.find_operator_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.RuleInterface.basic_trigger_check')
 @patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============
@@ -371,9 +371,9 @@ def test_check_trigger_value_error(data_mocker, test_object):
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_single_numeric_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_operator_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.basic_trigger_check')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.RuleInterface.find_single_numeric_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.RuleInterface.find_operator_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.RuleInterface.basic_trigger_check')
 @patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker,
                                                  test_object):
@@ -414,9 +414,9 @@ def test_check_trigger_2_numbers_present_bad_format(test_object):
         assert True
 
 
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_single_numeric_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_operator_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.basic_trigger_check')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.RuleInterface.find_single_numeric_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.RuleInterface.find_operator_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.RuleInterface.basic_trigger_check')
 @patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============

@@ -1,5 +1,5 @@
 from .setup import EMASetup
-from .trigger import EMATrigger
+from .trigger import EMARule
 from .subplot import EMASubplot
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 
@@ -9,7 +9,7 @@ class EMAIndicator(IndicatorInterface):
         self.__strategy_name = 'EMA'
         self.__data_name = self.__strategy_name
         self.__setup = EMASetup(self.__strategy_name)
-        self.__trigger = EMATrigger(self.__strategy_name)
+        self.__trigger = EMARule(self.__strategy_name)
         self.__subplot = EMASubplot()
 
     def strategy_name(self):

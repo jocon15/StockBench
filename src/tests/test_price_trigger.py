@@ -1,12 +1,12 @@
 import pytest
 from unittest.mock import patch
-from StockBench.controllers.simulator.indicators.price.price import PriceTrigger
+from StockBench.controllers.simulator.indicators.price.price import PriceRule
 from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
 
 
 @pytest.fixture
 def test_object():
-    return PriceTrigger('price')
+    return PriceRule('price')
 
 
 def test_additional_days_from_rule_key(test_object):
@@ -66,9 +66,9 @@ def test_get_value_when_referenced(data_mocker, test_object):
     assert test_object.get_indicator_value_when_referenced('>=price', data_mocker, 25) == 234.5
 
 
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_single_numeric_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_operator_in_str')
-@patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.basic_trigger_check')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.RuleInterface.find_single_numeric_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.RuleInterface.find_operator_in_str')
+@patch('StockBench.controllers.simulator.algorithm.algorithm.RuleInterface.basic_trigger_check')
 @patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
 def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numeric_mocker, test_object):
     # ============= Arrange ==============

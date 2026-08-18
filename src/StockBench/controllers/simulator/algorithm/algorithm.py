@@ -4,7 +4,7 @@ import logging
 from typing import Tuple, List, Union
 
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
-from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
+from StockBench.controllers.simulator.indicator.rule_interface import RuleInterface
 from StockBench.models.constants.general_constants import BUY_SIDE, SELL_SIDE, START_KEY, END_KEY, AND_KEY
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 from StockBench.models.position.position import Position
@@ -168,9 +168,9 @@ class Algorithm:
             indicators (list): Generic list of all indicators available in StockBench.
         """
         for indicator in indicators:
-            if indicator.trigger.get_side() == TriggerInterface.AGNOSTIC:
+            if indicator.trigger.get_side() == RuleInterface.AGNOSTIC:
                 self.__side_agnostic_indicators.append(indicator)
-            elif indicator.trigger.get_side() == TriggerInterface.SELL:
+            elif indicator.trigger.get_side() == RuleInterface.SELL:
                 self.__sell_only_indicators.append(indicator)
             else:
                 self.__buy_only_indicators.append(indicator)

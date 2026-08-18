@@ -2,12 +2,12 @@ import pytest
 from unittest.mock import patch
 
 from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
-from StockBench.controllers.simulator.indicators.candlestick_color.trigger import CandlestickColorTrigger
+from StockBench.controllers.simulator.indicators.candlestick_color.trigger import CandlestickColorRule
 
 
 @pytest.fixture
 def test_object():
-    return CandlestickColorTrigger('color')
+    return CandlestickColorRule('color')
 
 
 def test_additional_days_from_rule_key_normal(test_object):

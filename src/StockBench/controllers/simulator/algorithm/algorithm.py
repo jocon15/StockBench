@@ -1,8 +1,9 @@
 import os
 import time
 import logging
-from typing import ValuesView, Tuple, List, Union
+from typing import Tuple, List, Union
 
+from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
 from StockBench.models.constants.general_constants import BUY_SIDE, SELL_SIDE, START_KEY, END_KEY, AND_KEY
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
@@ -17,21 +18,21 @@ class Algorithm:
     Encapsulates a strategy dictionary along with other functionality related to using an algorithm.
 
     The available triggers are selected and stored based on the strategy. This allows the simulator to simply use the
-    algorithm as a delegate for checking the rules of the strategy for trigger events.
+    algorithm as a delegate for checking the rules of the strategy for rule trigger events.
     True = trigger event hit. False = trigger event not hit.
     """
     FILEPATH_KEY = 'strategy_filepath'
 
-    def __init__(self, strategy: dict, available_indicators: ValuesView):
+    def __init__(self, strategy: dict, available_indicators: List[IndicatorInterface]):
         self.strategy = strategy
         self.strategy_filename = self.__load_strategy_filename()
 
         # generic list of available algorithm sorted by side
-        self.__buy_only_triggers = []
-        self.__sell_only_triggers = []
-        self.__side_agnostic_triggers = []
+        self.__buy_only_indicators: List[IndicatorInterface] = []
+        self.__sell_only_indicators: List[IndicatorInterface] = []
+        self.__side_agnostic_indicators: List[IndicatorInterface] = []
         # sort the indicator algorithm into their respective list
-        self.__sort_indicator_triggers_by_side(available_indicators)
+        self.__sort_indicators_by_side(available_indicators)
 
         self.__validate_strategy()
 
@@ -62,13 +63,13 @@ class Algorithm:
         additional_days = 0
 
         # assemble a list of triggers that could cause a buy
-        triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
+        triggers = [x for n in (self.__side_agnostic_indicators, self.__buy_only_indicators) for x in n]
 
         # search all buy triggers for additional days
         additional_days = max(additional_days, self.__get_additional_days_per_side(triggers, BUY_SIDE))
 
         # assemble a list of triggers that could cause a sell
-        triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
+        triggers = [x for n in (self.__side_agnostic_indicators, self.__sell_only_indicators) for x in n]
 
         # search all sell triggers for additional days
         additional_days = max((additional_days, self.__get_additional_days_per_side(triggers, SELL_SIDE)))
@@ -80,16 +81,16 @@ class Algorithm:
         log.debug('Adding indicators to data based on strategy...')
 
         # assemble a list of triggers that could cause a buy
-        triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
+        indicators = [x for n in (self.__side_agnostic_indicators, self.__buy_only_indicators) for x in n]
 
         # find all buy triggers and add their indicator to the data
-        self.__add_to_data_per_side(triggers, BUY_SIDE, data_manager)
+        self.__add_to_data_per_side(indicators, BUY_SIDE, data_manager)
 
         # assemble a list of triggers that could cause a sell
-        triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
+        indicators = [x for n in (self.__side_agnostic_indicators, self.__sell_only_indicators) for x in n]
 
         # find all sell triggers and add their indicator to the data
-        self.__add_to_data_per_side(triggers, SELL_SIDE, data_manager)
+        self.__add_to_data_per_side(indicators, SELL_SIDE, data_manager)
 
     def check_triggers_by_side(self, data_manager: DataManager, current_day_index: int, position: Position,
                                side: str) -> Tuple[bool, str]:
@@ -134,7 +135,7 @@ class Algorithm:
                 filename = os.path.basename(self.strategy[self.FILEPATH_KEY])
         except TypeError:
             raise MalformedStrategyError('Filepath is not defined in strategy!')
-        return filename
+        return str(filename)
 
     def __validate_strategy(self) -> None:
         """Check the strategy for errors."""
@@ -156,7 +157,7 @@ class Algorithm:
             raise Exception(f"Strategy missing '{SELL_SIDE}' key")
         log.debug('No errors found in the strategy')
 
-    def __sort_indicator_triggers_by_side(self, indicators: ValuesView) -> None:
+    def __sort_indicators_by_side(self, indicators: List[IndicatorInterface]) -> None:
         """Sorts the algorithm of each indicator into their respective list based on trade side.
 
         Buy - algorithm can be used only to algorithm a position creation.
@@ -168,102 +169,84 @@ class Algorithm:
         """
         for indicator in indicators:
             if indicator.trigger().get_side() == TriggerInterface.AGNOSTIC:
-                self.__side_agnostic_triggers.append(indicator.trigger())
+                self.__side_agnostic_indicators.append(indicator)
             elif indicator.trigger().get_side() == TriggerInterface.SELL:
-                self.__sell_only_triggers.append(indicator.trigger())
+                self.__sell_only_indicators.append(indicator)
             else:
-                self.__buy_only_triggers.append(indicator.trigger())
+                self.__buy_only_indicators.append(indicator)
 
-    def __get_additional_days_per_side(self, triggers: list, side: str) -> int:
+    def __get_additional_days_per_side(self, indicators: List[IndicatorInterface], side: str) -> int:
         """Finds the number of additional days required per side."""
         additional_days = 0
         for rule_key in self.strategy[side].keys():
             rule_value = self.strategy[side][rule_key]
-            for trigger in triggers:
+            for indicator in indicators:
                 if AND_KEY in rule_key:
                     for inner_key in rule_value.keys():
                         inner_value = rule_value[inner_key]
-                        if trigger.indicator_symbol in inner_key:
-                            additional_days = max(additional_days, trigger.calculate_additional_days_from_rule_key(inner_key,
-                                                                                                                   inner_value))
-                        elif trigger.indicator_symbol in inner_value:
-                            additional_days = max(additional_days, trigger.calculate_additional_days_from_rule_value(inner_value))
-                elif trigger.indicator_symbol in rule_key:
-                    additional_days = max(additional_days, trigger.calculate_additional_days_from_rule_key(rule_key, rule_value))
-                elif trigger.indicator_symbol in rule_value:
-                    additional_days = max(additional_days, trigger.calculate_additional_days_from_rule_value(rule_value))
+                        if indicator.setup.indicator_symbol in inner_key:
+                            additional_days = max(additional_days,
+                                                  indicator.setup.calculate_additional_days_from_rule_key(inner_key,
+                                                                                                          inner_value))
+                        elif indicator.setup.indicator_symbol in inner_value:
+                            additional_days = max(additional_days,
+                                                  indicator.setup.calculate_additional_days_from_rule_value(
+                                                      inner_value))
+                elif indicator.setup.indicator_symbol in rule_key:
+                    additional_days = max(additional_days,
+                                          indicator.setup.calculate_additional_days_from_rule_key(rule_key, rule_value))
+                elif indicator.setup.indicator_symbol in rule_value:
+                    additional_days = max(additional_days,
+                                          indicator.setup.calculate_additional_days_from_rule_value(rule_value))
         return additional_days
 
-    def __add_to_data_per_side(self, triggers: list, side: str, data_manager: DataManager):
+    def __add_to_data_per_side(self, indicators: List[IndicatorInterface], side: str, data_manager: DataManager):
         """Adds the indicator data to the data manager per side."""
         for rule_key in self.strategy[side].keys():
             rule_value = self.strategy[side][rule_key]
-            for trigger in triggers:
+            for indicator in indicators:
                 if AND_KEY in rule_key:
                     for inner_key in rule_value.keys():
                         inner_value = rule_value[inner_key]
-                        if trigger.indicator_symbol in inner_key:
-                            trigger.add_indicator_data_from_rule_key(inner_key, inner_value, side, data_manager)
-                        elif trigger.indicator_symbol in inner_value:
-                            trigger.add_indicator_data_from_rule_value(inner_value, side, data_manager)
-                elif trigger.indicator_symbol in rule_key:
-                    trigger.add_indicator_data_from_rule_key(rule_key, rule_value, side, data_manager)
-                elif trigger.indicator_symbol in rule_value:
-                    trigger.add_indicator_data_from_rule_value(rule_value, side, data_manager)
+                        if indicator.setup.indicator_symbol in inner_key:
+                            indicator.setup.add_indicator_data_from_rule_key(inner_key, inner_value, side, data_manager)
+                        elif indicator.setup.indicator_symbol in inner_value:
+                            indicator.setup.add_indicator_data_from_rule_value(inner_value, side, data_manager)
+                elif indicator.setup.indicator_symbol in rule_key:
+                    indicator.setup.add_indicator_data_from_rule_key(rule_key, rule_value, side, data_manager)
+                elif indicator.setup.indicator_symbol in rule_value:
+                    indicator.setup.add_indicator_data_from_rule_value(rule_value, side, data_manager)
 
     def __handle_triggers_by_side(self, data_manager: DataManager, current_day_index: int, position: Position, key: str,
                                   side: str) -> bool:
-        """Check all triggers of a side for hits.
-
-        Args:
-            data_manager: DataManager housing the simulation data.
-            current_day_index: Index of the current day in the simulation.
-            position: Currently open position (if applicable).
-            key: The key of the current context in the strategy.
-            side: Buy or sell.
-
-        return:
-            bool: True if triggered, false if not.
-        """
+        """Check all triggers of a side for hits."""
         if side == BUY_SIDE:
             # assemble triggers that could cause a buy
-            triggers = [x for n in (self.__side_agnostic_triggers, self.__buy_only_triggers) for x in n]
+            indicators = [x for n in (self.__side_agnostic_indicators, self.__buy_only_indicators) for x in n]
         else:
             # assemble triggers that could trigger a sell
-            triggers = [x for n in (self.__side_agnostic_triggers, self.__sell_only_triggers) for x in n]
+            indicators = [x for n in (self.__side_agnostic_indicators, self.__sell_only_indicators) for x in n]
 
         if AND_KEY in key:
-            return self.__handle_and_triggers(triggers, data_manager, current_day_index, position, key, side)
+            return self.__handle_and_indicator_rules(indicators, data_manager, current_day_index, position, key, side)
         else:
-            return self.__handle_or_triggers(triggers, data_manager, current_day_index, position, key, side)
+            return self.__handle_or_indicator_rules(indicators, data_manager, current_day_index, position, key, side)
 
-    def __handle_and_triggers(self, triggers: List[TriggerInterface], data_manager: DataManager, current_day_index: int,
-                              position: Position, key: str, side: str) -> bool:
-        """Check all triggers for hits.
-
-        Args:
-            triggers: A list of applicable triggers based on side.
-            data_manager: DataManager housing the simulation data.
-            current_day_index: Index of the current day in the simulation.
-            position: Currently open position (if applicable).
-            key: The key of the current context in the strategy.
-            side: BUY_SIDE or SELL_SIDE
-
-        return:
-            bool: True if triggered, false if not.
-        """
+    def __handle_and_indicator_rules(self, indicators: List[IndicatorInterface], data_manager: DataManager,
+                                     current_day_index: int, position: Position, key: str, side: str) -> bool:
+        """Check all and indicator rules for hits."""
         for inner_key in self.strategy[side][key].keys():
             inner_value = self.strategy[side][key][inner_key]
             trigger_hit = False
             key_matched_with_trigger = False
-            for trigger in triggers:
-                if trigger.indicator_symbol in inner_key:
+            for indicator in indicators:
+                if indicator.trigger().indicator_symbol in inner_key:
                     key_matched_with_trigger = True
                     # replace any rule values with indicator references with their actual value
-                    injected_inner_value = self._inject_rule_value_with_values(inner_value, triggers, data_manager,
+                    injected_inner_value = self._inject_rule_value_with_values(inner_value, indicators, data_manager,
                                                                                current_day_index)
-                    trigger_hit = trigger.check_trigger(inner_key, injected_inner_value, data_manager, position,
-                                                        current_day_index)
+                    trigger_hit = indicator.trigger().check_trigger(inner_key, injected_inner_value, data_manager,
+                                                                    position, current_day_index)
             # placement of this conditional can be here or inside key check (doesn't matter)
             if not trigger_hit:
                 # not all AND_KEY triggers were hit
@@ -274,30 +257,19 @@ class Algorithm:
         # all AND_KEY triggers were hit
         return True
 
-    def __handle_or_triggers(self, triggers: List[TriggerInterface], data_manager: DataManager, current_day_index: int,
-                             position: Position, key: str, side: str) -> bool:
-        """Check all triggers for hits.
-
-        Args:
-            triggers: A list of applicable triggers based on side.
-            data_manager: DataManager housing the simulation data.
-            current_day_index: Index of the current day in the simulation.
-            position: Currently open position (if applicable).
-            key: The key of the current context in the strategy.
-            side: BUY_SIDE or SELL_SIDE
-
-        return:
-            bool: True if triggered, false if not.
-        """
+    def __handle_or_indicator_rules(self, indicators: List[IndicatorInterface], data_manager: DataManager,
+                                    current_day_index: int, position: Position, key: str, side: str) -> bool:
+        """Check all or indicator rules for hits."""
         rule_value = self.strategy[side][key]
         key_matched_with_trigger = False
-        for trigger in triggers:
-            if trigger.indicator_symbol in key:
+        for indicator in indicators:
+            if indicator.trigger().indicator_symbol in key:
                 key_matched_with_trigger = True
                 # replace any rule values that have indicator references with their actual value
-                injected_rule_value = self._inject_rule_value_with_values(rule_value, triggers, data_manager,
+                injected_rule_value = self._inject_rule_value_with_values(rule_value, indicators, data_manager,
                                                                           current_day_index)
-                trigger_hit = trigger.check_trigger(key, injected_rule_value, data_manager, position, current_day_index)
+                trigger_hit = indicator.trigger().check_trigger(key, injected_rule_value, data_manager, position,
+                                                                current_day_index)
                 if trigger_hit:
                     # any 'OR' trigger was hit
                     return True
@@ -308,32 +280,25 @@ class Algorithm:
         return False
 
     def __get_rule_string(self, key: str, side: str) -> str:
-        """Get the rule as a string.
-
-        Args:
-            key: The key of strategy rule.
-            side: Buy or sell.
-
-        return:
-            The full strategy rule as a string
-        """
+        """Get the rule as a string."""
         return f'{key}:{self.strategy[side][key]}'
 
     @staticmethod
-    def _inject_rule_value_with_values(rule_value: Union[str, int, dict], triggers: list, data_manager: DataManager,
-                                       current_day_index: int) -> str:
+    def _inject_rule_value_with_values(rule_value: Union[str, int, dict], indicators: List[IndicatorInterface],
+                                       data_manager: DataManager, current_day_index: int) -> str:
         """Replaces indicators in rule value with indicator values."""
-        for trigger in triggers:
-            if trigger.indicator_symbol in rule_value:
+        for indicator in indicators:
+            if indicator.trigger().indicator_symbol in str(rule_value):
                 # pull out comparison operator (comparison operator always comes before indicator symbol in rule value)
-                injected_rule_value = rule_value.split(trigger.indicator_symbol)[0]
+                injected_rule_value = str(rule_value).split(indicator.trigger().indicator_symbol)[0]
                 # inject the indicator value into the right side of the comparison
-                injected_rule_value += str(trigger.get_indicator_value_when_referenced(rule_value, data_manager,
-                                                                                       current_day_index))
+                injected_rule_value += str(indicator.trigger().
+                                           get_indicator_value_when_referenced(str(rule_value), data_manager,
+                                                                               current_day_index))
                 return injected_rule_value
 
         # not all rules will require an injection which is ok, just return the rule_value
-        return rule_value
+        return str(rule_value)
 
     @staticmethod
     def __validate_timestamps(start_time_unix: int, end_time_unix: int) -> None:

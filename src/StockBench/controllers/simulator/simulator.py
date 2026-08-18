@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import Optional, List, Tuple
 
 from StockBench.controllers.logging.logging import LoggingController
+from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 from StockBench.models.constants.general_constants import *
 from StockBench.controllers.simulator.broker.broker_client import BrokerClient
 from StockBench.controllers.export.window_data_exporter import WindowDataExporter
@@ -53,7 +54,7 @@ class Simulator:
         self.__account = None  # gets constructed once the initial balance is set
         self.__data_manager = None  # gets constructed once we request the data
         self.__algorithm = None  # gets constructed once we have the strategy
-        self.__available_indicators = IndicatorManager.load_indicators()
+        self.__available_indicators: List[IndicatorInterface] = list(IndicatorManager.load_indicators().values())
 
         # user logging (to file if enabled)
         self.log = logging.getLogger(LoggingController.USER_LOGGER_NAME)
@@ -81,7 +82,7 @@ class Simulator:
 
     def load_strategy(self, strategy: dict):
         """Load a strategy."""
-        self.__algorithm = Algorithm(strategy, self.__available_indicators.values())
+        self.__algorithm = Algorithm(strategy, self.__available_indicators)
 
     def reset_logger_with_id(self, identifier: int):
         """Reset the simulator to use a new logger.
@@ -190,8 +191,8 @@ class Simulator:
 
         return sim_window_start_day, trade_able_days, increment
 
-    def __simulate_day(self, current_day_index: int, buy_mode: bool, position: Position,
-                       progress_observer: ProgressObserver, increment: float) -> Tuple[bool, Position]:
+    def __simulate_day(self, current_day_index: int, buy_mode: bool, position: Optional[Position],
+                       progress_observer: ProgressObserver, increment: float) -> Tuple[bool, Optional[Position]]:
         """Simulates trading on a single day."""
         self.log.debug(f'Current day index: {current_day_index}')
 
@@ -275,7 +276,7 @@ class Simulator:
             INITIAL_ACCOUNT_VALUE_KEY: self.__account.get_initial_balance(),
             POSITIONS_KEY: self.__single_simulation_position_archive,
             NORMALIZED_SIMULATION_DATA: chopped_temp_df,
-            AVAILABLE_INDICATORS: list(self.__available_indicators.values()),
+            AVAILABLE_INDICATORS: list(self.__available_indicators),
             TRADE_ABLE_DAYS_KEY: trade_able_days,
             ELAPSED_TIME_KEY: elapsed_time,
             TRADES_MADE_KEY: analyzer.total_trades(),
@@ -291,7 +292,7 @@ class Simulator:
             FINAL_ACCOUNT_VALUE_KEY: self.__account.get_balance(),
         }
 
-    def __multi_pre_process(self, symbols: List[str], progress_observer: ProgressObserver) -> float:
+    def __multi_pre_process(self, symbols: List[str], progress_observer: Optional[ProgressObserver]) -> float:
         """Pre-process tasks for a multi-sim."""
         self.log.debug('Running multi simulation pre-process...')
         self.__running_multiple = True
@@ -304,7 +305,7 @@ class Simulator:
         return self.__calculate_multi_progress_bar_increment(symbols, progress_observer)
 
     def __multi_post_process(self, symbols: List[str], results: List[dict], start_time: float,
-                             progress_observer: ProgressObserver) -> dict:
+                             progress_observer: ProgressObserver | None) -> dict:
         """Post-process tasks for a multi-sim."""
         self.log.info('Running multi simulation post-process...')
         self.gui_status_log.info('Starting analytics...')
@@ -481,7 +482,7 @@ class Simulator:
 
     @staticmethod
     def __calculate_multi_progress_bar_increment(symbols: List[str],
-                                                 progress_observer: ProgressObserver) -> float:
+                                                 progress_observer: Optional[ProgressObserver]) -> float:
         """Calculate the multi-sim progress bar increment percentage per day."""
         increment = 1.0  # default value
         if progress_observer is not None:

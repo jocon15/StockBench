@@ -204,14 +204,14 @@ class Simulator:
                 position = None
         else:
             if buy_mode:
-                was_triggered, rule = self.__algorithm.check_triggers_by_side(self.__data_manager, current_day_index,
-                                                                              None, BUY_SIDE)
+                was_triggered, rule = self.__algorithm.check_rules_by_side(self.__data_manager, current_day_index,
+                                                                           None, BUY_SIDE)
                 if was_triggered:
                     position = self.__create_position(current_day_index, rule)
                     buy_mode = False  # switch to selling
             else:
-                was_triggered, rule = self.__algorithm.check_triggers_by_side(self.__data_manager, current_day_index,
-                                                                              position, SELL_SIDE)
+                was_triggered, rule = self.__algorithm.check_rules_by_side(self.__data_manager, current_day_index,
+                                                                           position, SELL_SIDE)
                 if was_triggered:
                     self.__liquidate_position(position, current_day_index, rule)
                     position = None

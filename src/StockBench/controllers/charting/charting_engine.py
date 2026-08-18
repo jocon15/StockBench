@@ -350,7 +350,7 @@ class ChartingEngine:
 
     @staticmethod
     def __calculate_average_plpc(positions: List[Position], side: str, rule: str) -> float:
-        """Calculates the average profit/loss percent of the positions triggers by a given rule."""
+        """Calculates the average profit/loss percent of the positions triggered by a given rule."""
         plpc_values = []
         for position in positions:
             if ChartingEngine.__get_rule_from_side(position, side) == rule:
@@ -359,7 +359,7 @@ class ChartingEngine:
 
     @staticmethod
     def __calculate_median_plpc(positions: List[Position], side: str, rule: str) -> float:
-        """Calculates the median profit/loss percent of the positions triggers by a given rule."""
+        """Calculates the median profit/loss percent of the positions triggered by a given rule."""
         plpc_values = []
         for position in positions:
             if ChartingEngine.__get_rule_from_side(position, side) == rule:
@@ -368,7 +368,7 @@ class ChartingEngine:
 
     @staticmethod
     def __calculate_stddev_plpc(positions: List[Position], side: str, rule: str) -> float:
-        """Calculates the stddev (population) profit/loss percent of the positions triggers by a given rule."""
+        """Calculates the stddev (population) profit/loss percent of the positions triggered by a given rule."""
         plpc_values = []
         for position in positions:
             if ChartingEngine.__get_rule_from_side(position, side) == rule:

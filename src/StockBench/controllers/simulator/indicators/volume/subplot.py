@@ -15,14 +15,7 @@ class VolumeSubplot(SubplotInterface):
         super().__init__('volume', [{"type": "bar"}], False)
 
     def get_subplot(self, df: DataFrame):
-        """Builds the subplot.
-
-        Args:
-            df: The dataframe of simulation data.
-
-        return:
-            A plotly subplot.
-        """
+        """Builds the subplot."""
         df['volume_colors'] = np.where(df['color'] == 'red', BEAR_RED, BULL_GREEN)
         return fplt.Bar(
                     x=df['Date'],
@@ -31,12 +24,5 @@ class VolumeSubplot(SubplotInterface):
                     marker_color=df['volume_colors'])
 
     def get_traces(self, df: DataFrame) -> list:
-        """Build a list of traces to add to the subplot.
-
-        Args:
-            df: The dataframe of simulation data.
-
-        return:
-            list: A list of traces to add to the subplot defined in this class.
-        """
+        """Build a list of traces to add to the subplot."""
         return []

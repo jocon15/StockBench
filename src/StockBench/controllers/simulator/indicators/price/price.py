@@ -18,9 +18,11 @@ class PriceIndicator(IndicatorInterface):
     def dataframe_name(self):
         return self.__data_name
 
+    @property
     def setup(self):
         return self.__setup
 
+    @property
     def trigger(self):
         return self.__trigger
 

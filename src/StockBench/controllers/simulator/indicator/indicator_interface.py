@@ -22,6 +22,7 @@ class IndicatorInterface(ABC):
         """The indicator's setup interface."""
         raise NotImplementedError('Not implemented yet!')
 
+    @property
     @abstractmethod
     def trigger(self) -> TriggerInterface:
         """The indicator's trigger interface."""

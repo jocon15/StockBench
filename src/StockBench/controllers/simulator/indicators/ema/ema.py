@@ -22,6 +22,7 @@ class EMAIndicator(IndicatorInterface):
     def setup(self) -> EMASetup:
         return self.__setup
 
+    @property
     def trigger(self):
         return self.__trigger
 

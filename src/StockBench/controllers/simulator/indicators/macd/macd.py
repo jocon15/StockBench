@@ -22,6 +22,7 @@ class MACDIndicator(IndicatorInterface):
     def setup(self):
         return self.__startup
 
+    @property
     def trigger(self):
         return self.__trigger
 

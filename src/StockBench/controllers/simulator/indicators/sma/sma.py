@@ -22,6 +22,7 @@ class SMAIndicator(IndicatorInterface):
     def setup(self) -> SMASetup:
         return self.__setup
 
+    @property
     def trigger(self):
         return self.__trigger
 

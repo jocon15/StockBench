@@ -22,6 +22,7 @@ class RSIIndicator(IndicatorInterface):
     def setup(self) -> RSISetup:
         return self.__setup
 
+    @property
     def trigger(self):
         return self.__trigger
 

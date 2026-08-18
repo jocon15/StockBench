@@ -23,7 +23,7 @@ class CandlestickColorIndicator(IndicatorInterface):
         return self.__setup
 
     @property
-    def trigger(self) -> RuleInterface:
+    def rule(self) -> RuleInterface:
         return self.__trigger
 
     @property

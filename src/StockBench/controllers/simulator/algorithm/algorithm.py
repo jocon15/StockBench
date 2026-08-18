@@ -168,9 +168,9 @@ class Algorithm:
             indicators (list): Generic list of all indicators available in StockBench.
         """
         for indicator in indicators:
-            if indicator.trigger.get_side() == RuleInterface.AGNOSTIC:
+            if indicator.rule.get_side() == RuleInterface.AGNOSTIC:
                 self.__side_agnostic_indicators.append(indicator)
-            elif indicator.trigger.get_side() == RuleInterface.SELL:
+            elif indicator.rule.get_side() == RuleInterface.SELL:
                 self.__sell_only_indicators.append(indicator)
             else:
                 self.__buy_only_indicators.append(indicator)
@@ -240,13 +240,13 @@ class Algorithm:
             trigger_hit = False
             key_matched_with_trigger = False
             for indicator in indicators:
-                if indicator.trigger.indicator_symbol in inner_key:
+                if indicator.rule.indicator_symbol in inner_key:
                     key_matched_with_trigger = True
                     # replace any rule values with indicator references with their actual value
                     injected_inner_value = self._inject_rule_value_with_values(inner_value, indicators, data_manager,
                                                                                current_day_index)
-                    trigger_hit = indicator.trigger.check_triggered(inner_key, injected_inner_value, data_manager,
-                                                                    position, current_day_index)
+                    trigger_hit = indicator.rule.check_triggered(inner_key, injected_inner_value, data_manager,
+                                                                 position, current_day_index)
             # placement of this conditional can be here or inside key check (doesn't matter)
             if not trigger_hit:
                 # not all AND_KEY triggers were hit
@@ -263,13 +263,13 @@ class Algorithm:
         rule_value = self.strategy[side][key]
         key_matched_with_trigger = False
         for indicator in indicators:
-            if indicator.trigger.indicator_symbol in key:
+            if indicator.rule.indicator_symbol in key:
                 key_matched_with_trigger = True
                 # replace any rule values that have indicator references with their actual value
                 injected_rule_value = self._inject_rule_value_with_values(rule_value, indicators, data_manager,
                                                                           current_day_index)
-                trigger_hit = indicator.trigger.check_triggered(key, injected_rule_value, data_manager, position,
-                                                                current_day_index)
+                trigger_hit = indicator.rule.check_triggered(key, injected_rule_value, data_manager, position,
+                                                             current_day_index)
                 if trigger_hit:
                     # any 'OR' trigger was hit
                     return True
@@ -288,11 +288,11 @@ class Algorithm:
                                        data_manager: DataManager, current_day_index: int) -> Union[str, int, dict]:
         """Replaces indicators in rule value with indicator values."""
         for indicator in indicators:
-            if indicator.trigger.indicator_symbol in str(rule_value):
+            if indicator.rule.indicator_symbol in str(rule_value):
                 # pull out comparison operator (comparison operator always comes before indicator symbol in rule value)
-                injected_rule_value = str(rule_value).split(indicator.trigger.indicator_symbol)[0]
+                injected_rule_value = str(rule_value).split(indicator.rule.indicator_symbol)[0]
                 # inject the indicator value into the right side of the comparison
-                injected_rule_value += str(indicator.trigger.
+                injected_rule_value += str(indicator.rule.
                                            get_indicator_value_when_referenced(str(rule_value), data_manager,
                                                                                current_day_index))
                 return injected_rule_value

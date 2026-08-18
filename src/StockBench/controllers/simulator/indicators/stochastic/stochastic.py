@@ -23,7 +23,7 @@ class StochasticIndicator(IndicatorInterface):
         return self.__setup
 
     @property
-    def trigger(self) -> StochasticRule:
+    def rule(self) -> StochasticRule:
         return self.__trigger
 
     @property

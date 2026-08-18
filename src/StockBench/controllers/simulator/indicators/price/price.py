@@ -23,7 +23,7 @@ class PriceIndicator(IndicatorInterface):
         return self.__setup
 
     @property
-    def trigger(self):
+    def rule(self):
         return self.__trigger
 
     @property

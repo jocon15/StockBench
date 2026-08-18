@@ -41,7 +41,7 @@ class StochasticSetup(SetupInterface):
 
         # NOTE: this column name is JUST for charting purposes and NOT for trigger purposes
         # column name is in "stochastic_xx.x"format
-        TriggerInterface.add_trigger_value_as_column(f'{self.indicator_symbol}_{threshold_value}',
+        self.add_trigger_value_as_column(f'{self.indicator_symbol}_{threshold_value}',
                                                      threshold_value, data_manager)
 
     def add_indicator_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):

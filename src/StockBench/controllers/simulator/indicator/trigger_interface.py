@@ -171,17 +171,6 @@ class TriggerInterface(ABC):
         return indicator_value
 
     @staticmethod
-    def add_trigger_value_as_column(column_name: str, trigger_value: float, data_manager: DataManager):
-        """Add a trigger value as a column of repeated values to the simulation data."""
-        for col_name in data_manager.get_column_names():
-            if column_name == col_name:
-                return
-
-        list_values = [trigger_value for _ in range(data_manager.get_data_length())]
-
-        data_manager.add_column(column_name, list_values)
-
-    @staticmethod
     def __parse_rule_key_0_number_groupings(rule_key: str, rule_key_number_groups: list, indicator_symbol: str,
                                             data_manager: DataManager, current_day_index: int) -> float:
         """Parses a rule key with 0 number groupings for an indicator value."""

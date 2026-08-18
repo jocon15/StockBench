@@ -40,6 +40,17 @@ class SetupInterface(ABC):
         """Adds the indicator data to the simulation data from a rule value."""
         raise NotImplementedError('Add to data not implemented!')
 
+    @staticmethod
+    def add_trigger_value_as_column(column_name: str, trigger_value: float, data_manager: DataManager):
+        """Add a trigger value as a column of repeated values to the simulation data."""
+        for col_name in data_manager.get_column_names():
+            if column_name == col_name:
+                return
+
+        list_values = [trigger_value for _ in range(data_manager.get_data_length())]
+
+        data_manager.add_column(column_name, list_values)
+
     def get_threshold_from_rule_value(self, rule_value: str) -> float:
         for operator in self.OPERATORS:
             if operator in str(rule_value):

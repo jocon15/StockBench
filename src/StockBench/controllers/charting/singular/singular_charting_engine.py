@@ -66,12 +66,12 @@ class SingularChartingEngine(ChartingEngine):
 
         ohlc_indicator = SingularChartingEngine.__find_ohlc_indicator(available_indicators)
 
-        subplot_objects.append(ohlc_indicator.subplot())
+        subplot_objects.append(ohlc_indicator.subplot)
 
         # build subplots for indicators found in the df
         for (column_name, column_data) in df.items():
             for indicator in available_indicators:
-                indicator_subplot = indicator.subplot()
+                indicator_subplot = indicator.subplot
                 if indicator_subplot is not None:
                     if column_name == indicator.dataframe_name():
                         if not indicator_subplot.is_ohlc_trace():
@@ -103,7 +103,7 @@ class SingularChartingEngine(ChartingEngine):
                 traces = [trace for trace in subplot.get_traces(df)]
                 # get the traces from all aux OHLC trace indicators
                 for indicator in available_indicators:
-                    indicator_subplot = indicator.subplot()
+                    indicator_subplot = indicator.subplot
                     if indicator_subplot is not None:
                         if indicator_subplot.is_ohlc_trace():
                             for trace in indicator_subplot.get_traces(df):
@@ -148,7 +148,7 @@ class SingularChartingEngine(ChartingEngine):
         """Locates the OHLC indicator."""
         ohlc_indicator = None
         for indicator in available_indicators:
-            indicator_subplot = indicator.subplot()
+            indicator_subplot = indicator.subplot
             if indicator_subplot is not None:
                 try:
                     if indicator_subplot.get_type()[0]['type'] == 'ohlc':

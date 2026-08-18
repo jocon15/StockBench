@@ -26,6 +26,7 @@ class CandlestickColorIndicator(IndicatorInterface):
     def trigger(self) -> TriggerInterface:
         return self.__trigger
 
+    @property
     def subplot(self):
         # note: candlestick colors do not have a subplot
         return None

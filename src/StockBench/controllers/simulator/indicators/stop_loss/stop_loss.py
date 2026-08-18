@@ -24,6 +24,7 @@ class StopLossIndicator(IndicatorInterface):
     def trigger(self):
         return self.__trigger
 
+    @property
     def subplot(self):
         # note: does not have a subplot
         return None

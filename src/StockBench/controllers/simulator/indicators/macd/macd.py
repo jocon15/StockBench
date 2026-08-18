@@ -26,5 +26,6 @@ class MACDIndicator(IndicatorInterface):
     def trigger(self):
         return self.__trigger
 
+    @property
     def subplot(self):
         return self.__subplot

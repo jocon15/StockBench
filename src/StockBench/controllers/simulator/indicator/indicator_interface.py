@@ -28,6 +28,7 @@ class IndicatorInterface(ABC):
         """The indicator's trigger interface."""
         raise NotImplementedError('Not implemented yet!')
 
+    @property
     @abstractmethod
     def subplot(self) -> SubplotInterface:
         """The indicator's subplot interface."""

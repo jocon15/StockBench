@@ -1,3 +1,4 @@
+from .setup import StopProfitSetup
 from .trigger import StopProfitTrigger
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 
@@ -6,6 +7,7 @@ class StopProfitIndicator(IndicatorInterface):
     def __init__(self):
         self.__data_name = 'stop_profit'
         self.__strategy_name = self.__data_name
+        self.__setup = StopProfitSetup(self.__strategy_name)
         self.__trigger = StopProfitTrigger(self.__strategy_name)
 
     def strategy_name(self):
@@ -13,6 +15,10 @@ class StopProfitIndicator(IndicatorInterface):
 
     def dataframe_name(self):
         return self.__data_name
+
+    @property
+    def setup(self) -> StopProfitSetup:
+        return self.__setup
 
     def trigger(self):
         return self.__trigger

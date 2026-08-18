@@ -14,45 +14,12 @@ class CandlestickColorTrigger(TriggerInterface):
     def __init__(self, indicator_symbol):
         super().__init__(indicator_symbol, side=TriggerInterface.AGNOSTIC)
 
-    def calculate_additional_days_from_rule_key(self, rule_key: str, rule_value: Union[str, int, dict]) -> int:
-        # Candlestick is a unique indicator
-        #   color: {
-        #       "0", "red",
-        #       "1", "green"
-        #       }
-        #   Key = color
-        #   Value = {...}
-        # You cannot deduce the length from the key, and you cannot identify the indicator from the value.
-        # Therefore, we must have rule_value as a parameter to this function because rule_key identifies this as a color
-        # trigger, and rule_value shows us the length.
-
-        if len(rule_value.keys()) == 0:
-            raise StrategyIndicatorError(f'Color rules must have at least one color child!')
-
-        additional_days = 0
-        for sub_key in rule_value.keys():
-            if int(sub_key) > additional_days:
-                additional_days = int(sub_key)
-        return additional_days
-
-    def calculate_additional_days_from_rule_value(self, rule_value: Union[str, int, dict]) -> int:
-        # cannot deduce additional days from color rule value
-        return 0
-
-    def add_indicator_data_from_rule_key(self, rule_key: str, rule_value: Union[str, int, dict], side: str, data_manager: DataManager):
-        # candle colors are included in the data by default
-        return
-
-    def add_indicator_data_from_rule_value(self, rule_value: str, side: str, data_manager: DataManager):
-        # candle colors are included in the data by default
-        return
-
     def get_indicator_value_when_referenced(self, rule_value: str, data_manager: DataManager,
                                             current_day_index: int) -> float:
         raise NotImplementedError('Candlestick color cannot be referenced in a rule value!')
 
-    def check_trigger(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager, position: Position,
-                      current_day_index: int) -> bool:
+    def check_trigger(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager,
+                      position: Position, current_day_index: int) -> bool:
         log.debug('Checking candle stick algorithm...')
 
         key_count = len(rule_value)

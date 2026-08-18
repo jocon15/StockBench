@@ -2,7 +2,7 @@ from typing import Union
 
 from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
 from StockBench.controllers.simulator.indicator.setup_interface import SetupInterface
-from StockBench.controllers.simulator.indicators.sma.trigger import SMATrigger
+from StockBench.controllers.simulator.indicators.sma.setup import SMASetup
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 
 
@@ -53,7 +53,7 @@ class EMASetup(SetupInterface):
         k = 2 / (length + 1)
 
         # get the initial ema value (uses sma of length days)
-        previous_ema = SMATrigger.calculate_sma(length, price_data[0:length])[-1]
+        previous_ema = SMASetup.calculate_sma(length, price_data[0:length])[-1]
 
         ema_values = []
         for i in range(len(price_data)):

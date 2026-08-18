@@ -26,5 +26,6 @@ class StochasticIndicator(IndicatorInterface):
     def trigger(self) -> StochasticTrigger:
         return self.__trigger
 
+    @property
     def subplot(self) -> StochasticSubplot:
         return self.__subplot

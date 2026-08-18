@@ -82,8 +82,9 @@ class SingularChartingEngine(ChartingEngine):
         return subplot_objects, subplot_types
 
     @staticmethod
-    def __build_overview_parent_figure(df: DataFrame, subplot_objects: List[SubplotInterface], subplot_types: List[List],
-                                       available_indicators: List[IndicatorInterface], show_volume: bool) -> Figure:
+    def __build_overview_parent_figure(df: DataFrame, subplot_objects: List[SubplotInterface],
+                                       subplot_types: List[List], available_indicators: List[IndicatorInterface],
+                                       show_volume: bool) -> Figure:
         """Builds the overview parent figure consisting of multiple subplots."""
         if not show_volume:
             subplot_objects, subplot_types = SingularChartingEngine.__remove_volume_subplot(subplot_objects,
@@ -144,9 +145,8 @@ class SingularChartingEngine(ChartingEngine):
         return formatted_fig
 
     @staticmethod
-    def __find_ohlc_indicator(available_indicators: List[IndicatorInterface]):
+    def __find_ohlc_indicator(available_indicators: List[IndicatorInterface]) -> IndicatorInterface:
         """Locates the OHLC indicator."""
-        ohlc_indicator = None
         for indicator in available_indicators:
             indicator_subplot = indicator.subplot
             if indicator_subplot is not None:
@@ -155,9 +155,7 @@ class SingularChartingEngine(ChartingEngine):
                         return indicator
                 except (KeyError, TypeError):
                     continue
-
-        if not ohlc_indicator:
-            raise ChartingError('No OHLC indicator found, cannot chart!')
+        raise ChartingError('No OHLC indicator found, cannot chart!')
 
     @staticmethod
     def __remove_volume_subplot(subplot_objects: List[SubplotInterface], subplot_types: List[List]) -> tuple:

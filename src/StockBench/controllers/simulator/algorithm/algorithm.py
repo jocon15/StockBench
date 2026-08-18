@@ -246,7 +246,7 @@ class Algorithm:
                     injected_inner_value = self._inject_rule_value_with_values(inner_value, indicators, data_manager,
                                                                                current_day_index)
                     trigger_hit = indicator.trigger.check_trigger(inner_key, injected_inner_value, data_manager,
-                                                                    position, current_day_index)
+                                                                  position, current_day_index)
             # placement of this conditional can be here or inside key check (doesn't matter)
             if not trigger_hit:
                 # not all AND_KEY triggers were hit
@@ -269,7 +269,7 @@ class Algorithm:
                 injected_rule_value = self._inject_rule_value_with_values(rule_value, indicators, data_manager,
                                                                           current_day_index)
                 trigger_hit = indicator.trigger.check_trigger(key, injected_rule_value, data_manager, position,
-                                                                current_day_index)
+                                                              current_day_index)
                 if trigger_hit:
                     # any 'OR' trigger was hit
                     return True
@@ -285,7 +285,7 @@ class Algorithm:
 
     @staticmethod
     def _inject_rule_value_with_values(rule_value: Union[str, int, dict], indicators: List[IndicatorInterface],
-                                       data_manager: DataManager, current_day_index: int) -> str:
+                                       data_manager: DataManager, current_day_index: int) -> Union[str, int, dict]:
         """Replaces indicators in rule value with indicator values."""
         for indicator in indicators:
             if indicator.trigger.indicator_symbol in str(rule_value):
@@ -298,7 +298,7 @@ class Algorithm:
                 return injected_rule_value
 
         # not all rules will require an injection which is ok, just return the rule_value
-        return str(rule_value)
+        return rule_value
 
     @staticmethod
     def __validate_timestamps(start_time_unix: int, end_time_unix: int) -> None:

@@ -1,5 +1,5 @@
 from .setup import VolumeSetup
-from .trigger import VolumeRule
+from .rule import VolumeRule
 from .subplot import VolumeSubplot
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 

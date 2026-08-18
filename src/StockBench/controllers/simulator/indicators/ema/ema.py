@@ -1,5 +1,5 @@
 from .setup import EMASetup
-from .trigger import EMARule
+from .rule import EMARule
 from .subplot import EMASubplot
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 

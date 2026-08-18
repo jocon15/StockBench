@@ -1,5 +1,5 @@
 from .setup import StopProfitSetup
-from .trigger import StopProfitRule
+from .rule import StopProfitRule
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 
 

@@ -1,5 +1,5 @@
 from .setup import SMASetup
-from .trigger import SMARule
+from .rule import SMARule
 from .subplot import SMASubplot
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 

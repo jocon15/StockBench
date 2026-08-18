@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
-from StockBench.controllers.simulator.indicators.sma.trigger import SMARule
+from StockBench.controllers.simulator.indicators.sma.rule import SMARule
 from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
 
 

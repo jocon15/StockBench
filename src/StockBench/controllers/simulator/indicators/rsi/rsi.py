@@ -1,6 +1,6 @@
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 from .setup import RSISetup
-from .trigger import RSIRule
+from .rule import RSIRule
 from .subplot import RSISubplot
 
 

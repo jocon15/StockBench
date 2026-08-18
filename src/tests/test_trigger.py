@@ -1,6 +1,6 @@
 from StockBench.controllers.simulator.indicator.rule_interface import RuleInterface
 from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
-from StockBench.controllers.simulator.indicators.sma.trigger import SMARule
+from StockBench.controllers.simulator.indicators.sma.rule import SMARule
 
 
 def test_get_side():

@@ -1,7 +1,7 @@
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 from .setup import StochasticSetup
 from .subplot import StochasticSubplot
-from .trigger import StochasticRule
+from .rule import StochasticRule
 
 
 class StochasticIndicator(IndicatorInterface):

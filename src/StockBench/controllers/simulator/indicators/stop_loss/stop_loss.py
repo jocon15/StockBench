@@ -1,5 +1,5 @@
 from .setup import StopLossSetup
-from .trigger import StopLossRule
+from .rule import StopLossRule
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 
 

@@ -1,5 +1,5 @@
 from .setup import MACDSetup
-from .trigger import MACDRule
+from .rule import MACDRule
 from .subplot import MACDSubplot
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 

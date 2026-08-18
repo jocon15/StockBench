@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from StockBench.controllers.simulator.indicators.volume.trigger import VolumeRule
+from StockBench.controllers.simulator.indicators.volume.rule import VolumeRule
 
 
 @pytest.fixture

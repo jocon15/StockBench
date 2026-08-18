@@ -1,5 +1,5 @@
 from .setup import CandleStickSetup
-from .trigger import CandlestickColorRule
+from .rule import CandlestickColorRule
 from StockBench.controllers.simulator.indicator.indicator_interface import IndicatorInterface
 from StockBench.controllers.simulator.indicator.setup_interface import SetupInterface
 from StockBench.controllers.simulator.indicator.rule_interface import RuleInterface

@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from StockBench.controllers.simulator.indicators.stop_loss.trigger import StopLossRule
+from StockBench.controllers.simulator.indicators.stop_loss.rule import StopLossRule
 
 
 @pytest.fixture

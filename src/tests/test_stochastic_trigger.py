@@ -3,7 +3,7 @@ import pytest
 from StockBench.models.position.position import Position
 from tests.example_data.ExampleBarsData import EXAMPLE_DATA_MSFT
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
-from StockBench.controllers.simulator.indicators.stochastic.trigger import StochasticRule
+from StockBench.controllers.simulator.indicators.stochastic.rule import StochasticRule
 from StockBench.controllers.simulator.indicator.exceptions import StrategyIndicatorError
 
 # NOTE: mocker is a fixture provided by pytest plugin pip package "pytest-mock"

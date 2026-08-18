@@ -3,7 +3,6 @@ from typing import Union
 from StockBench.controllers.simulator.indicator.exceptions import NoThresholdFoundException
 from StockBench.controllers.simulator.indicator.setup_interface import SetupInterface
 from StockBench.models.constants.general_constants import *
-from StockBench.controllers.simulator.indicator.trigger_interface import TriggerInterface
 from StockBench.controllers.simulator.simulation_data.data_manager import DataManager
 
 

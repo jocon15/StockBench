@@ -9,7 +9,7 @@ class StochasticIndicator(IndicatorInterface):
         self.__strategy_symbol = 'stochastic'
         self.__data_name = self.__strategy_symbol
         self.__setup = StochasticSetup(self.__strategy_symbol)
-        self.__trigger = StochasticRule(self.__strategy_symbol)
+        self.__rule = StochasticRule(self.__strategy_symbol)
         self.__subplot = StochasticSubplot()
 
     def strategy_name(self) -> str:
@@ -24,7 +24,7 @@ class StochasticIndicator(IndicatorInterface):
 
     @property
     def rule(self) -> StochasticRule:
-        return self.__trigger
+        return self.__rule
 
     @property
     def subplot(self) -> StochasticSubplot:

@@ -9,13 +9,13 @@ class VolumeIndicator(IndicatorInterface):
         self.__strategy_name = 'volume'
         self.__data_name = self.__strategy_name
         self.__setup = VolumeSetup(self.__strategy_name)
-        self.__trigger = VolumeRule(self.__strategy_name)
+        self.__rule = VolumeRule(self.__strategy_name)
         self.__subplot = VolumeSubplot()
 
-    def strategy_name(self):
+    def strategy_name(self) -> str:
         return self.__strategy_name
 
-    def dataframe_name(self):
+    def dataframe_name(self) -> str:
         return self.__data_name
 
     @property
@@ -23,9 +23,9 @@ class VolumeIndicator(IndicatorInterface):
         return self.__setup
 
     @property
-    def rule(self):
-        return self.__trigger
+    def rule(self) -> VolumeRule:
+        return self.__rule
 
     @property
-    def subplot(self):
+    def subplot(self) -> VolumeSubplot:
         return self.__subplot

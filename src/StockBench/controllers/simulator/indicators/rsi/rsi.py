@@ -9,13 +9,13 @@ class RSIIndicator(IndicatorInterface):
         self.__strategy_name = 'RSI'
         self.__data_name = self.__strategy_name
         self.__setup = RSISetup(self.__strategy_name)
-        self.__trigger = RSIRule(self.__strategy_name)
+        self.__rule = RSIRule(self.__strategy_name)
         self.__subplot = RSISubplot()
 
-    def strategy_name(self):
+    def strategy_name(self) -> str:
         return self.__strategy_name
 
-    def dataframe_name(self):
+    def dataframe_name(self) -> str:
         return self.__data_name
 
     @property
@@ -23,9 +23,9 @@ class RSIIndicator(IndicatorInterface):
         return self.__setup
 
     @property
-    def rule(self):
-        return self.__trigger
+    def rule(self) -> RSIRule:
+        return self.__rule
 
     @property
-    def subplot(self):
+    def subplot(self) -> RSISubplot:
         return self.__subplot

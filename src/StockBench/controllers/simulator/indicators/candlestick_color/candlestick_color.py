@@ -10,7 +10,7 @@ class CandlestickColorIndicator(IndicatorInterface):
         self.__strategy_symbol = 'color'
         self.__data_name = self.__strategy_symbol
         self.__setup = CandleStickSetup(self.__strategy_symbol)
-        self.__trigger = CandlestickColorRule(self.__strategy_symbol)
+        self.__rule = CandlestickColorRule(self.__strategy_symbol)
 
     def strategy_name(self) -> str:
         return self.__strategy_symbol
@@ -24,7 +24,7 @@ class CandlestickColorIndicator(IndicatorInterface):
 
     @property
     def rule(self) -> RuleInterface:
-        return self.__trigger
+        return self.__rule
 
     @property
     def subplot(self):

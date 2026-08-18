@@ -8,12 +8,12 @@ class StopProfitIndicator(IndicatorInterface):
         self.__data_name = 'stop_profit'
         self.__strategy_name = self.__data_name
         self.__setup = StopProfitSetup(self.__strategy_name)
-        self.__trigger = StopProfitRule(self.__strategy_name)
+        self._rule = StopProfitRule(self.__strategy_name)
 
-    def strategy_name(self):
+    def strategy_name(self) -> str:
         return self.__strategy_name
 
-    def dataframe_name(self):
+    def dataframe_name(self) -> str:
         return self.__data_name
 
     @property
@@ -21,8 +21,8 @@ class StopProfitIndicator(IndicatorInterface):
         return self.__setup
 
     @property
-    def rule(self):
-        return self.__trigger
+    def rule(self) -> StopProfitRule:
+        return self._rule
 
     @property
     def subplot(self):

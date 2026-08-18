@@ -9,13 +9,13 @@ class EMAIndicator(IndicatorInterface):
         self.__strategy_name = 'EMA'
         self.__data_name = self.__strategy_name
         self.__setup = EMASetup(self.__strategy_name)
-        self.__trigger = EMARule(self.__strategy_name)
+        self.__rule = EMARule(self.__strategy_name)
         self.__subplot = EMASubplot()
 
-    def strategy_name(self):
+    def strategy_name(self) -> str:
         return self.__strategy_name
 
-    def dataframe_name(self):
+    def dataframe_name(self) -> str:
         return self.__data_name
 
     @property
@@ -23,9 +23,9 @@ class EMAIndicator(IndicatorInterface):
         return self.__setup
 
     @property
-    def rule(self):
-        return self.__trigger
+    def rule(self) -> EMARule:
+        return self.__rule
 
     @property
-    def subplot(self):
+    def subplot(self) -> EMASubplot:
         return self.__subplot

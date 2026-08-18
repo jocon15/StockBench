@@ -10,10 +10,10 @@ class StopLossIndicator(IndicatorInterface):
         self.__setup = StopLossSetup(self.__strategy_name)
         self.__trigger = StopLossRule(self.__strategy_name)
 
-    def strategy_name(self):
+    def strategy_name(self) -> str:
         return self.__strategy_name
 
-    def dataframe_name(self):
+    def dataframe_name(self) -> str:
         return self.__data_name
 
     @property
@@ -21,7 +21,7 @@ class StopLossIndicator(IndicatorInterface):
         return self.__setup
 
     @property
-    def rule(self):
+    def rule(self) -> StopLossRule:
         return self.__trigger
 
     @property

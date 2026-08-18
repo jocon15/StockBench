@@ -17,8 +17,8 @@ class VolumeTrigger(TriggerInterface):
                                             current_day_index: int) -> float:
         raise NotImplementedError('Volume cannot be referenced in a rule value')
 
-    def check_trigger(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager,
-                      position: Position, current_day_index: int) -> bool:
+    def check_triggered(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager,
+                        position: Position, current_day_index: int) -> bool:
         volume = data_manager.get_data_point(data_manager.VOLUME, current_day_index)
 
         result = self.basic_trigger_check(float(volume), str(rule_value))

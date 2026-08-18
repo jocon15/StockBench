@@ -18,8 +18,8 @@ class CandlestickColorTrigger(TriggerInterface):
                                             current_day_index: int) -> float:
         raise NotImplementedError('Candlestick color cannot be referenced in a rule value!')
 
-    def check_trigger(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager,
-                      position: Position, current_day_index: int) -> bool:
+    def check_triggered(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager,
+                        position: Position, current_day_index: int) -> bool:
         log.debug('Checking candle stick algorithm...')
 
         key_count = len(rule_value)

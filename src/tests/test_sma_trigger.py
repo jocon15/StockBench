@@ -345,11 +345,11 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
 
     # ============= Assert ===============
     # simple algorithm not hit case
-    assert test_object.check_trigger('SMA20', '>60', data_mocker, None, 0) is False  # noqa
+    assert test_object.check_triggered('SMA20', '>60', data_mocker, None, 0) is False  # noqa
 
     # simple algorithm hit case
     basic_trigger_mocker.return_value = True
-    assert test_object.check_trigger('SMA20', '>60', data_mocker, None, 0) is True  # noqa
+    assert test_object.check_triggered('SMA20', '>60', data_mocker, None, 0) is True  # noqa
 
 
 # unless you use @patch.multiple, you must patch full path lengths for multiple methods in the same class
@@ -363,7 +363,7 @@ def test_check_trigger_value_error(data_mocker, test_object):
     # ============= Assert ===============
     # simple algorithm not hit case
     try:
-        test_object.check_trigger('SMA', '>', data_mocker, None, 0)  # noqa
+        test_object.check_triggered('SMA', '>', data_mocker, None, 0)  # noqa
         assert False
     except StrategyIndicatorError:
         assert True
@@ -387,7 +387,7 @@ def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mock
 
     # ============= Assert ===============
     # simple algorithm not hit case
-    assert test_object.check_trigger('SMA20', '>price', data_mocker, None, 0) is False  # noqa
+    assert test_object.check_triggered('SMA20', '>price', data_mocker, None, 0) is False  # noqa
 
 
 def data_side_effect(*args):
@@ -410,7 +410,7 @@ def test_check_trigger_2_numbers_present_bad_format(data_mocker, test_object):
     # ============= Assert ===============
     # has 2 numbers but does not include slope symbol
     try:
-        test_object.check_trigger('SMA20ran50', '>price', data_mocker, None, 0)  # noqa
+        test_object.check_triggered('SMA20ran50', '>price', data_mocker, None, 0)  # noqa
         assert False
     except StrategyIndicatorError:
         assert True
@@ -431,11 +431,11 @@ def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mo
 
     # ============= Assert ===============
     # slope used algorithm not hit case
-    assert test_object.check_trigger('SMA20$slope2', '>50', data_mocker, None, 2) is False  # noqa
+    assert test_object.check_triggered('SMA20$slope2', '>50', data_mocker, None, 2) is False  # noqa
 
     # slope used algorithm hit case
     basic_trigger_mocker.return_value = True
-    assert test_object.check_trigger('SMA20$slope2', '>50', data_mocker, None, 2) is True  # noqa
+    assert test_object.check_triggered('SMA20$slope2', '>50', data_mocker, None, 2) is True  # noqa
 
 
 def slope_data_side_effect(*args):
@@ -457,7 +457,7 @@ def test_check_trigger_slope_value_error(data_mocker, test_object):
     # ============= Assert ===============
     # simple algorithm not hit case
     try:
-        test_object.check_trigger('SMA20$slope', '>60', data_mocker, None, 0)  # noqa
+        test_object.check_triggered('SMA20$slope', '>60', data_mocker, None, 0)  # noqa
         assert False
     except StrategyIndicatorError:
         assert True

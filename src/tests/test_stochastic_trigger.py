@@ -118,14 +118,14 @@ def test_check_trigger(data_mocker, trigger_interface_mocker, logger_mocker, pos
 
     trigger_interface_mocker.parse_rule_key.return_value = 25.5
 
-    assert test_object.check_trigger('stochastic', '>60', data_mocker, position_mocker, 0) is False
+    assert test_object.check_triggered('stochastic', '>60', data_mocker, position_mocker, 0) is False
 
 
 def test_check_trigger_value_error(data_mocker, position_mocker, test_object: StochasticTrigger):
     data_mocker.get_data_point.return_value = 90
 
     try:
-        assert test_object.check_trigger('12stochastic12', '>60', data_mocker, position_mocker, 0)
+        assert test_object.check_triggered('12stochastic12', '>60', data_mocker, position_mocker, 0)
         assert False
     except StrategyIndicatorError:
         assert True
@@ -156,7 +156,7 @@ def test_check_trigger_2_numbers_present_bad_format(data_mocker, position_mocker
     data_mocker.CLOSE = 'Close'
 
     try:
-        test_object.check_trigger('stochasticran50', '>price', data_mocker, position_mocker, 0)
+        test_object.check_triggered('stochasticran50', '>price', data_mocker, position_mocker, 0)
         assert False
     except StrategyIndicatorError:
         assert True
@@ -173,8 +173,8 @@ def test_check_trigger_slope_used(data_mocker, trigger_interface_mocker, logger_
 
     # ============= Assert ===============
     # slope used algorithm not hit case
-    assert test_object.check_trigger('stochastic$slope2', '>50', data_mocker, position_mocker, 2) is False
-    assert test_object.check_trigger('stochastic$slope2', '>20', data_mocker, position_mocker, 2) is True
+    assert test_object.check_triggered('stochastic$slope2', '>50', data_mocker, position_mocker, 2) is False
+    assert test_object.check_triggered('stochastic$slope2', '>20', data_mocker, position_mocker, 2) is True
 
 
 def test_check_trigger_slope_value_error(data_mocker, position_mocker,
@@ -187,7 +187,7 @@ def test_check_trigger_slope_value_error(data_mocker, position_mocker,
     # ============= Assert ===============
     # simple algorithm not hit case
     try:
-        assert test_object.check_trigger('stochastic$slope', '>60', data_mocker, position_mocker, 0) is False
+        assert test_object.check_triggered('stochastic$slope', '>60', data_mocker, position_mocker, 0) is False
         assert False
     except StrategyIndicatorError:
         assert True

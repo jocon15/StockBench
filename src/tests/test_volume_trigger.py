@@ -82,10 +82,10 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
 
     # ============= Assert ===============
     # algorithm not hit
-    assert (test_object.check_trigger('volume', '>350', data_mocker, None, 2)  # noqa
+    assert (test_object.check_triggered('volume', '>350', data_mocker, None, 2)  # noqa
             is False)
 
     # algorithm hit
     basic_trigger_mocker.return_value = True
-    assert (test_object.check_trigger('volume', '>350', data_mocker, None, 2)  # noqa
+    assert (test_object.check_triggered('volume', '>350', data_mocker, None, 2)  # noqa
             is True)

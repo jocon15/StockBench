@@ -75,7 +75,7 @@ def test_check_trigger_intraday_percent_hit_case(data_mocker, position_mocker, t
     position_mocker.intraday_profit_loss_percent.return_value = -1.5
 
     # ============= Act ==================
-    actual = test_object.check_trigger('stop_loss_intraday', '1%', data_mocker, position_mocker, 0)
+    actual = test_object.check_triggered('stop_loss_intraday', '1%', data_mocker, position_mocker, 0)
 
     # ============= Assert ===============
     assert position_mocker.profit_loss_percent.called is True
@@ -90,7 +90,7 @@ def test_check_trigger_intraday_percent_not_hit_case(data_mocker, position_mocke
     position_mocker.intraday_profit_loss_percent.return_value = -0.5
 
     # ============= Act ==================
-    actual = test_object.check_trigger('stop_loss_intraday', '1%', data_mocker, position_mocker, 0)
+    actual = test_object.check_triggered('stop_loss_intraday', '1%', data_mocker, position_mocker, 0)
 
     # ============= Assert ===============
     assert position_mocker.profit_loss_percent.called is True
@@ -104,7 +104,7 @@ def test_check_trigger_intraday_hit_case(data_mocker, position_mocker, test_obje
     position_mocker.intraday_profit_loss.return_value = -1500
 
     # ============= Act ==================
-    actual = test_object.check_trigger('stop_loss_intraday', '1000', data_mocker, position_mocker, 0)
+    actual = test_object.check_triggered('stop_loss_intraday', '1000', data_mocker, position_mocker, 0)
 
     # ============= Assert ===============
     assert position_mocker.profit_loss_percent.called is True
@@ -118,7 +118,7 @@ def test_check_trigger_intraday_not_hit_case(data_mocker, position_mocker, test_
     position_mocker.intraday_profit_loss.return_value = -150
 
     # ============= Act ==================
-    actual = test_object.check_trigger('stop_loss_intraday', '1000', data_mocker, position_mocker, 0)
+    actual = test_object.check_triggered('stop_loss_intraday', '1000', data_mocker, position_mocker, 0)
 
     # ============= Assert ===============
     assert position_mocker.profit_loss_percent.called is True
@@ -133,7 +133,7 @@ def test_check_trigger_lifetime_percent_hit_case(data_mocker, position_mocker, t
     position_mocker.profit_loss_percent.return_value = -1.1
 
     # ============= Act ==================
-    actual = test_object.check_trigger('stop_loss', '1%', data_mocker, position_mocker, 0)
+    actual = test_object.check_triggered('stop_loss', '1%', data_mocker, position_mocker, 0)
 
     # ============= Assert ===============
     assert position_mocker.profit_loss_percent.called is True
@@ -148,7 +148,7 @@ def test_check_trigger_lifetime_percent_not_hit_case(data_mocker, position_mocke
     position_mocker.profit_loss_percent.return_value = -0.1
 
     # ============= Act ==================
-    actual = test_object.check_trigger('stop_loss', '1%', data_mocker, position_mocker, 0)
+    actual = test_object.check_triggered('stop_loss', '1%', data_mocker, position_mocker, 0)
 
     # ============= Assert ===============
     assert position_mocker.profit_loss_percent.called is True
@@ -162,7 +162,7 @@ def test_check_trigger_lifetime_hit_case(data_mocker, position_mocker, test_obje
     position_mocker.profit_loss.return_value = -1500
 
     # ============= Act ==================
-    actual = test_object.check_trigger('stop_loss', '1000', data_mocker, position_mocker, 0)
+    actual = test_object.check_triggered('stop_loss', '1000', data_mocker, position_mocker, 0)
 
     # ============= Assert ===============
     assert position_mocker.profit_loss_percent.called is True
@@ -176,7 +176,7 @@ def test_check_trigger_lifetime_not_hit_case(data_mocker, position_mocker, test_
     position_mocker.profit_loss.return_value = 100
 
     # ============= Act ==================
-    actual = test_object.check_trigger('stop_loss', '1000', data_mocker, position_mocker, 0)
+    actual = test_object.check_triggered('stop_loss', '1000', data_mocker, position_mocker, 0)
 
     # ============= Assert ===============
     assert position_mocker.profit_loss_percent.called is True

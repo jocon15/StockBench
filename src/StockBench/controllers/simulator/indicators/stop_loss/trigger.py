@@ -17,8 +17,8 @@ class StopLossTrigger(TriggerInterface):
                                             current_day_index: int) -> float:
         raise NotImplementedError('Stop loss cannot be referenced in a rule value!')
 
-    def check_trigger(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager,
-                      position: Position, current_day_index: int) -> bool:
+    def check_triggered(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager,
+                        position: Position, current_day_index: int) -> bool:
         log.debug('Checking stop loss algorithm...')
 
         current_price = data_manager.get_data_point(data_manager.CLOSE, current_day_index)

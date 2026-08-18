@@ -31,8 +31,8 @@ class TriggerInterface(ABC):
         raise NotImplementedError('Get value when referenced not implemented!')
 
     @abstractmethod
-    def check_trigger(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager,
-                      position: Position, current_day_index: int) -> bool:
+    def check_triggered(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager,
+                        position: Position, current_day_index: int) -> bool:
         """Evaluate the trigger for a trigger event."""
         raise NotImplementedError('Check algorithm from rule value not implemented!')
 

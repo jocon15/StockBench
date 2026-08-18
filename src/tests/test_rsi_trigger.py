@@ -708,9 +708,9 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.check_trigger('RSI', '>60', data_mocker, None, 0) is False  # noqa
+    assert test_object.check_triggered('RSI', '>60', data_mocker, None, 0) is False  # noqa
 
-    assert test_object.check_trigger('RSI', '>60', data_mocker, None, 0) is False  # noqa
+    assert test_object.check_triggered('RSI', '>60', data_mocker, None, 0) is False  # noqa
 
 
 @patch('StockBench.controllers.simulator.algorithm.algorithm.TriggerInterface.find_single_numeric_in_str')
@@ -725,7 +725,7 @@ def test_check_trigger_value_error(data_mocker, numeric_mocker, test_object):
     # ============= Assert ===============
     # simple algorithm not hit case
     try:
-        assert test_object.check_trigger('12RSI12', '>60', data_mocker, None, 0)  # noqa
+        assert test_object.check_triggered('12RSI12', '>60', data_mocker, None, 0)  # noqa
         assert False
     except StrategyIndicatorError:
         assert True
@@ -749,7 +749,7 @@ def test_check_trigger_current_price_symbol_used(data_mocker, basic_trigger_mock
 
     # ============= Assert ===============
     # simple algorithm not hit case
-    assert test_object.check_trigger('RSI20', '>$price', data_mocker, None, 0) is False  # noqa
+    assert test_object.check_triggered('RSI20', '>$price', data_mocker, None, 0) is False  # noqa
 
 
 def data_side_effect(*args):
@@ -772,7 +772,7 @@ def test_check_trigger_2_numbers_present_bad_format(data_mocker, test_object):
     # ============= Assert ===============
     # has 2 numbers but does not include slope symbol
     try:
-        test_object.check_trigger('RSIran50', '>$price', data_mocker, None, 0)  # noqa
+        test_object.check_triggered('RSIran50', '>$price', data_mocker, None, 0)  # noqa
         assert False
     except StrategyIndicatorError:
         assert True
@@ -793,11 +793,11 @@ def test_check_trigger_slope_used(data_mocker, basic_trigger_mocker, operator_mo
 
     # ============= Assert ===============
     # slope used algorithm not hit case
-    assert test_object.check_trigger('RSI$slope2', '>50', data_mocker, None, 2) is False  # noqa
+    assert test_object.check_triggered('RSI$slope2', '>50', data_mocker, None, 2) is False  # noqa
 
     # slope used algorithm hit case
     basic_trigger_mocker.return_value = True
-    assert test_object.check_trigger('RSI$slope2', '>50', data_mocker, None, 2) is True  # noqa
+    assert test_object.check_triggered('RSI$slope2', '>50', data_mocker, None, 2) is True  # noqa
 
 
 def slope_data_side_effect(*args):
@@ -819,7 +819,7 @@ def test_check_trigger_slope_value_error(data_mocker, test_object):
     # ============= Assert ===============
     # simple algorithm not hit case
     try:
-        assert test_object.check_trigger('RSI$slope', '>60', data_mocker, None, 0) is False  # noqa
+        assert test_object.check_triggered('RSI$slope', '>60', data_mocker, None, 0) is False  # noqa
         assert False
     except StrategyIndicatorError:
         assert True

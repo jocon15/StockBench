@@ -18,8 +18,8 @@ class MACDTrigger(TriggerInterface):
         return TriggerInterface._parse_rule_key_no_indicator_length(rule_value, self.indicator_symbol, data_manager,
                                                                     current_day_index)
 
-    def check_trigger(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager,
-                      position: Position, current_day_index: int) -> bool:
+    def check_triggered(self, rule_key: str, rule_value: Union[str, int, dict], data_manager: DataManager,
+                        position: Position, current_day_index: int) -> bool:
         log.debug(f'Checking {self.indicator_symbol} algorithm: {rule_key}...')
 
         indicator_value = TriggerInterface._parse_rule_key_no_indicator_length(rule_key, self.indicator_symbol,

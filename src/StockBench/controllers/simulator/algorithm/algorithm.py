@@ -245,8 +245,8 @@ class Algorithm:
                     # replace any rule values with indicator references with their actual value
                     injected_inner_value = self._inject_rule_value_with_values(inner_value, indicators, data_manager,
                                                                                current_day_index)
-                    trigger_hit = indicator.trigger.check_trigger(inner_key, injected_inner_value, data_manager,
-                                                                  position, current_day_index)
+                    trigger_hit = indicator.trigger.check_triggered(inner_key, injected_inner_value, data_manager,
+                                                                    position, current_day_index)
             # placement of this conditional can be here or inside key check (doesn't matter)
             if not trigger_hit:
                 # not all AND_KEY triggers were hit
@@ -268,8 +268,8 @@ class Algorithm:
                 # replace any rule values that have indicator references with their actual value
                 injected_rule_value = self._inject_rule_value_with_values(rule_value, indicators, data_manager,
                                                                           current_day_index)
-                trigger_hit = indicator.trigger.check_trigger(key, injected_rule_value, data_manager, position,
-                                                              current_day_index)
+                trigger_hit = indicator.trigger.check_triggered(key, injected_rule_value, data_manager, position,
+                                                                current_day_index)
                 if trigger_hit:
                     # any 'OR' trigger was hit
                     return True

@@ -95,11 +95,11 @@ def test_check_trigger(data_mocker, test_object):
     # ============= Act ==================
 
     # ============= Assert ===============
-    assert test_object.check_trigger('color', {'0': 'green', '1': 'red'}, data_mocker, None,  # noqa
-                                     current_day_index) is True
+    assert test_object.check_triggered('color', {'0': 'green', '1': 'red'}, data_mocker, None,  # noqa
+                                       current_day_index) is True
 
-    assert test_object.check_trigger('color', {'0': 'red', '1': 'green'}, data_mocker, None,  # noqa
-                                     current_day_index) is False
+    assert test_object.check_triggered('color', {'0': 'red', '1': 'green'}, data_mocker, None,  # noqa
+                                       current_day_index) is False
 
 
 @patch('StockBench.controllers.simulator.simulation_data.data_manager.DataManager')
@@ -114,7 +114,7 @@ def test_check_trigger_no_values(data_mocker, test_object):
 
     # ============= Assert ===============
     try:
-        test_object.check_trigger('color', {}, data_mocker, None, current_day_index)  # noqa
+        test_object.check_triggered('color', {}, data_mocker, None, current_day_index)  # noqa
         assert False
     except StrategyIndicatorError:
         assert True

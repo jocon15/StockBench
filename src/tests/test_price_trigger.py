@@ -81,12 +81,12 @@ def test_check_trigger(data_mocker, basic_trigger_mocker, operator_mocker, numer
 
     # ============= Assert ===============
     # algorithm not hit
-    assert (test_object.check_trigger('price', '>350', data_mocker, None, 2)
+    assert (test_object.check_triggered('price', '>350', data_mocker, None, 2)
             is False)
 
     # algorithm hit
     basic_trigger_mocker.return_value = True
-    assert (test_object.check_trigger('price', '>350', data_mocker, None, 2)
+    assert (test_object.check_triggered('price', '>350', data_mocker, None, 2)
             is True)
 
 
@@ -99,7 +99,7 @@ def test_check_trigger_value_error(data_mocker, test_object):
 
     # ============= Assert ===============
     try:
-        test_object.check_trigger('price$slope', '>60', data_mocker, None, 0)
+        test_object.check_triggered('price$slope', '>60', data_mocker, None, 0)
         assert False
     except StrategyIndicatorError:
         assert True
